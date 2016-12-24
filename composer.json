@@ -1,8 +1,8 @@
 {
     "name":"markocupic/gallery-creator-bundle",
-    "description":"Gallery extension for the Contao Open Source CMS",
     "keywords":["contao", "Gallery Creator", "gallery_creator gallery-creator-bundle", "Frontend", "Backend"],
-    "type":"contao-module",
+    "type": "contao-bundle",
+    "description": "Contao 4 Gallery Extension",
     "license":"LGPL-3.0+",
     "authors":[
         {

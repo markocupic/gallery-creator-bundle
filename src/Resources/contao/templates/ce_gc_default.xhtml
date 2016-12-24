@@ -1,0 +1,138 @@
+<?php
+/* CSS for the frontend-output */
+$GLOBALS['TL_CSS'][] = 'system/modules/gallery_creator/assets/css/gallery_creator_fe.css';
+?>
+<?php if (!\Input::get('items')): ?>
+<!-- gallery_creator - album list -->
+<head/><div class="<?php echo $this->class; ?> gallery_creator block" <?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+<?php if ($this->headline): ?>
+<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+<?php endif; ?>
+<?php echo $this->pagination; ?>
+<?php if (count($this->arrAlbums)>0): ?>
+<ul class="list_albums">
+<?php foreach ($this->arrAlbums as $Album): ?>
+<li class="level_1 <?= $Album['cssClass'] ?> clearfix block" <?php echo $this->imagemargin ? 'style="'.$this->imagemargin.'"' : ''; ?>>
+<div class="tstamp block"><p>[<?php echo $Album['event_date']; ?>]</p></div>
+<div class="col_1">
+<figure class="image_container" onmouseover="<?php echo $Album['thumbMouseover']; ?>">
+<?php if ($Album['href']): ?>
+<a href="<?php echo $Album['href']; ?>" title="<?php echo $Album['title']; ?>">
+<?php endif; ?>
+<?php $this->insert('picture_default', $Album['picture']); ?>
+<?php if ($Album['href']): ?>
+</a>
+<?php endif; ?>
+</figure>
+</div>
+<div class="col_2">
+<h2><?php echo $Album['name']; ?></h2>
+<?php if ($Album['count']): ?>
+<p class="count_pics"><?php echo $Album['count']; ?> <?php echo $GLOBALS['TL_LANG']['gallery_creator']['pictures']; ?></p>
+<p class="visitors"><?php echo $Album['visitors']; ?> <?php echo $GLOBALS['TL_LANG']['gallery_creator']['visitors']; ?></p>
+<?php endif; ?>
+<?php if ($Album['count_subalbums']): ?>
+<p class="count_pics"><?php echo $Album['count_subalbums']; ?> <?php echo $GLOBALS['TL_LANG']['gallery_creator']['subalbums']; ?></p>
+<?php endif; ?>
+<?php if ($Album['comment']): ?>
+<div class="album_comment"><?php echo $Album['comment']; ?></div>
+<?php endif; ?>
+</div>
+</li>
+<?php endforeach; ?>
+</ul>
+<?php endif; ?>
+</div>
+<?php endif; ?>
+<?php if (\Input::get('items')): ?>
+<!-- gallery_creator - album preview -->
+<div class="<?php echo $this->class; ?> gallery_creator block" <?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+<?php if ($this->insertArticlePre):?>
+<!-- articleBoxPre-->
+<div id="articleBoxPre" class="block">
+<?php echo $this->insertArticlePre; ?>
+</div>
+<!-- end articleBoxPre-->
+<?php endif; ?>
+<?php if ($this->headline): ?>
+<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+<?php endif; ?>
+<?php if ($this->backLink): ?>
+<div class="backLink"><a href="<?php echo $this->backLink; ?>" title="zurück">« <?php echo $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view']; ?></a></div>
+<?php endif; ?>
+<?php if ($this->Albumname): ?>
+<h2><?php echo $this->Albumname; ?></h2>
+<?php endif; ?>
+<?php if ($this->subalbums): ?>
+<div class="subalbums">
+<h3><?php echo $GLOBALS['TL_LANG']['gallery_creator']['subalbums_of']; ?>: <?php echo $this->Albumname; ?></h3>
+<ul class="list_albums">
+<?php foreach ($this->subalbums as $Subalbum): ?>
+<li class="level_1 <?= $Subalbum['cssClass'] ?> clearfix block" <?php echo $this->imagemargin ? 'style="'.$this->imagemargin.'"' : ''; ?>>
+<div class="tstamp block"><p>[<?php echo $Subalbum['event_date']; ?>]</p></div>
+<div class="col_1">
+<figure class="image_container" onmouseover="<?php echo  $Subalbum['thumbMouseover']; ?>">
+<?php if ($Subalbum['href']): ?>
+<a href="<?php echo $Subalbum['href']; ?>" title="<?php echo $Subalbum['title']; ?>">
+<?php endif; ?>
+<?php $this->insert('picture_default', $Subalbum['picture']); ?>
+<?php if ($Subalbum['href']): ?>
+</a>
+<?php endif; ?>
+</figure>
+</div>
+<div class="col_2">
+<h2><?php echo $Subalbum['name']; ?></h2>
+<?php if ($Subalbum['count']): ?>
+<p class="count_pics"><?php echo $Subalbum['count']; ?> <?php echo $GLOBALS['TL_LANG']['gallery_creator']['pictures']; ?></p>
+<p class="visitors"><?php echo $Subalbum['visitors']; ?> <?php echo $GLOBALS['TL_LANG']['gallery_creator']['visitors']; ?></p>
+<?php endif; ?>
+<?php if ($Subalbum['count_subalbums']): ?>
+<p class="count_pics"><?php echo $Subalbum['count_subalbums']; ?> <?php echo $GLOBALS['TL_LANG']['gallery_creator']['subalbums']; ?></p>
+<?php endif; ?>
+<?php if ($Subalbum['comment']): ?>
+<div class="album_comment"><?php echo $Subalbum['comment']; ?></div>
+<?php endif; ?>
+</div>
+</li>
+<?php endforeach; ?>
+</ul>
+</div>
+<?php endif; ?>
+<?php if ($this->albumComment): ?>
+<div class="album_comment">
+<?php echo $this->albumComment; ?>
+</div>
+<?php endif; ?>
+<?php echo $this->pagination; ?>
+<?php $col=0; ?>
+<?php if ($this->arrPictures): ?>
+<div id="galleryContainer" class="block">
+<ul class="album_preview">
+<?php foreach ($this->arrPictures as $Picture): ?>
+<li class="col_<?php echo $col; ?><?php echo ($col == 0 ? ' col_first' : ''); ?><?php echo ($col == $this->colsPerRow - 1 ? ' col_last' : ''); ?>">
+<figure<?php echo (strlen($Picture['cssID']) ? ' id="' . $Picture['cssID'] . '"' : ''); ?> class="image_container<?php echo strlen($Picture['cssClass']) ? ' ' . $Picture['cssClass'] : ''; ?>"<?php echo $this->imagemargin ? ' style="'.$this->imagemargin.'"' : ''; ?>>
+<?php if ($Picture['href']): ?>
+<a href="<?php echo $Picture['href']; ?>" <?php echo $Picture['lightbox']; ?> title="<?php echo $Picture['comment'] ? $Picture['comment'] : ($Picture['title'] ? $Picture['title'] : $Picture['filename']); ?>">
+<?php endif; ?>
+<?php $this->insert('picture_default', $Picture['picture']); ?>
+<?php if ($Picture['href'] != ''): ?>
+</a>
+<?php endif; ?>
+</figure>
+</li>
+<?php $col++;?>
+<?php if ($col == $this->colsPerRow) $col=0; ?>
+<?php endforeach;?>
+</ul>
+</div>
+<?php endif;?>
+<?php if ($this->insertArticlePost):?>
+<!-- articleBoxPre-->
+<div id="articleBoxPost" class="block">
+<?php echo $this->insertArticlePost; ?>
+</div>
+<!-- end articleBoxPost-->
+<?php endif; ?>
+</div>
+<?php endif; ?>

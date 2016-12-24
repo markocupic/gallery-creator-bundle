@@ -1,0 +1,118 @@
+
+
+/* close commented backslash hack */
+/* Reset Margin & Padding */
+.gallery_creator ul,
+.gallery_creator ul.list_albums > li,
+.gallery_creator ul.album_preview li
+{
+	margin:0;
+	padding:0;
+	list-style-type:none;
+    display:block
+}
+
+
+/* General Settings */
+.gallery_creator li.inline
+{
+	display:inline;
+}
+
+.gallery_creator li.block
+{
+	display:block;
+}
+
+.gallery_creator .backLink
+{
+       display:block;
+}
+
+ 
+/* list albums */
+.gallery_creator .list_albums .tstamp p
+{
+       margin-bottom: 2px !important;
+}
+
+.gallery_creator .list_albums .col_1
+{
+       float:left;
+       clear:left;
+}
+
+.gallery_creator .list_albums .col_2
+{
+       float:left;
+       width:350px;
+	margin-left:30px;
+}
+
+
+.gallery_creator .list_albums .level_1
+{
+	width:100%;
+    padding:0;
+}
+
+/** Clearfix **/
+.gallery_creator .clearfix:before,
+.gallery_creator .clearfix:after {
+    content: " ";
+    display: table;
+}
+
+.gallery_creator .clearfix:after {
+    clear: both;
+}
+
+.gallery_creator .clearfix {
+    *zoom: 1;
+}
+
+
+
+/* album preview */
+.gallery_container {
+    display:block;
+    clear:both;
+}
+
+ul.album_preview:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+ul.album_preview {
+    display: inline-block;
+}
+
+/* start commented backslash hack \*/
+* html ul.album_preview {
+    height: 1%;
+}
+
+ul.album_preview {
+    display: block;
+}
+
+.gallery_creator .albumComment
+{
+       margin-top:1em;
+}
+
+.gallery_creator .album_preview li
+{
+	float:left;
+}
+
+.gallery_creator .album_preview .col_first
+{
+       clear:both;
+}
+

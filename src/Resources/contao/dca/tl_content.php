@@ -3,11 +3,9 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (C) 2005-2015 Leo Feyer
+ * Copyright (c) 2005-2017 Leo Feyer
  *
- * @package Gallery Creator
- * @link    http://www.contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license LGPL-3.0+
  */
 
 
@@ -41,10 +39,11 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce_news'] = 'name,
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
 
+
+
 /**
  * Add fields to tl_content
  */
-
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_rows'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_content']['gc_rows'],
     'exclude'   => true,
@@ -353,5 +352,4 @@ class ce_gallery_creator extends Backend
             $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce'] = str_replace('gc_publish_albums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce']);
         }
     }
-
 }

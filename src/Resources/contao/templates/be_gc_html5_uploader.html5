@@ -14,20 +14,20 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZO
     <h3><?= $GLOBALS['TL_LANG']['tl_files']['fileupload'][0] ?></h3>
     <input type="hidden" name="action" value="fileupload">
     <div class="fallback">
-        <input type="file" name="<?php echo $this->strName; ?>[]" multiple>
+        <input type="file" name="<?= $this->strName ?>[]" multiple>
     </div>
     <div class="dz-container">
         <div class="dz-default dz-message">
-            <span><?php echo $GLOBALS['TL_LANG']['tl_files']['dropzone']; ?></span>
+            <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
         </div>
         <div class="dropzone-previews"></div>
     </div>
     <script>
         window.addEvent("domready", function () {
             new Dropzone("#tl_gallery_creator_albums", {
-                paramName: "<?php echo $this->strName; ?>",
-                maxFilesize: <?php echo $intMaxSize; ?>,
-                acceptedFiles: "<?php echo $strAccepted; ?>",
+                paramName: "<?= $this->strName ?>",
+                maxFilesize: <?= $intMaxSize ?>,
+                acceptedFiles: "<?= $strAccepted ?>",
                 previewsContainer: ".dropzone-previews",
                 uploadMultiple: true
             }).on("processing", function () {

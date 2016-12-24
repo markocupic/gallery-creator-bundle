@@ -11,6 +11,8 @@
  */
 
 use Markocupic\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorPicturesModel;
+use Markocupic\GcHelpers;
 
 
 $this->import('BackendUser', 'User');

@@ -15,6 +15,10 @@
  */
 namespace Markocupic\GalleryCreator;
 
+use Markocupic\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorPicturesModel;
+use Markocupic\GcHelpers;
+
 /**
  * Class ContentGalleryCreator
  *

@@ -9,6 +9,12 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
+
+use Markocupic\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorPicturesModel;
+use Markocupic\GcHelpers;
+
+
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
     // Config
     'config'      => array(

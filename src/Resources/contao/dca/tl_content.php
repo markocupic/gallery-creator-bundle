@@ -10,6 +10,12 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
+
+use Markocupic\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorPicturesModel;
+use Markocupic\GcHelpers;
+
+
 /**
  * Add palettes to tl_content
  */

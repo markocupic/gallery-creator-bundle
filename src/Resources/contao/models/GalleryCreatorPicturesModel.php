@@ -14,7 +14,7 @@
 /**
  * Run in a custom namespace, so the class can be replaced
  */
-namespace MCupic;
+namespace Markocupic;
 
 /**
  * Reads and writes tl_gallery_creator_pictures

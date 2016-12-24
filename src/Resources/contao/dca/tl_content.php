@@ -315,7 +315,7 @@ class ce_gallery_creator extends Backend
         $dbContent = $this->Database->prepare('SELECT * FROM tl_content WHERE id=?')->execute($this->Input->get('id'));
 
         $selectedAlbums = $dbContent->gc_publish_albums != '' ? deserialize($dbContent->gc_publish_albums) : array();
-        $level = \MCupic\GalleryCreator\GcHelpers::getAlbumLevel($pid);
+        $level = \Markocupic\GalleryCreator\GcHelpers::getAlbumLevel($pid);
         $db = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY sorting')->execute($pid, 1);
         while ($db->next()) {
             $checked = in_array($db->id, $selectedAlbums) ? ' checked' : '';

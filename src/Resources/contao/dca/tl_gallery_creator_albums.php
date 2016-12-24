@@ -10,6 +10,8 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
+use Markocupic\GalleryCreatorAlbumsModel;
+
 
 $this->import('BackendUser', 'User');
 
@@ -840,7 +842,7 @@ class tl_gallery_creator_albums extends Backend
         $href = sprintf("contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s", $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
-        $level = \MCupic\GalleryCreator\GcHelpers::getAlbumLevel($row["pid"]);
+        $level = \Markocupic\GalleryCreator\GcHelpers::getAlbumLevel($row["pid"]);
         $padding = $this->isNode($row["id"]) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:' . $padding . 'px;', $label);
 
@@ -1354,7 +1356,7 @@ class tl_gallery_creator_albums extends Backend
                 'value'  => array($dc->id),
                 'order'  => 'sorting ASC',
             );
-            $objPicture = MCupic\GalleryCreatorPicturesModel::findAll($arrOptions);
+            $objPicture = Markocupic\GalleryCreatorPicturesModel::findAll($arrOptions);
             if ($objPicture !== null)
             {
                 while ($objPicture->next())

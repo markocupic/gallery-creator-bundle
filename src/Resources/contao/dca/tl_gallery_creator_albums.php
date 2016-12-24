@@ -10,8 +10,8 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
-use Markocupic\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorPicturesModel;
+use Contao\GalleryCreatorAlbumsModel;
+use Contao\GalleryCreatorPicturesModel;
 use Markocupic\GcHelpers;
 
 
@@ -1358,7 +1358,7 @@ class tl_gallery_creator_albums extends Backend
                 'value'  => array($dc->id),
                 'order'  => 'sorting ASC',
             );
-            $objPicture = Markocupic\GalleryCreatorPicturesModel::findAll($arrOptions);
+            $objPicture = Contao\GalleryCreatorPicturesModel::findAll($arrOptions);
             if ($objPicture !== null)
             {
                 while ($objPicture->next())

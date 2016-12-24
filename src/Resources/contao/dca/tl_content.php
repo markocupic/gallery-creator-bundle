@@ -11,8 +11,8 @@
  */
 
 
-use Markocupic\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorPicturesModel;
+use Contao\GalleryCreatorAlbumsModel;
+use Contao\GalleryCreatorPicturesModel;
 use Markocupic\GcHelpers;
 
 

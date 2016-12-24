@@ -11,7 +11,7 @@
 /**
  * Run in a custom namespace, so the class can be replaced
  */
-namespace Markocupic\GalleryCreator;
+namespace Markocupic\GalleryCreatorBundle;
 
 /**
  * Class GcHelpers

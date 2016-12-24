@@ -11,11 +11,11 @@
 /**
  * Run in a custom namespace, so the class can be replaced
  */
-namespace Markocupic\GalleryCreator;
+namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GalleryCreator\GcHelpers;
+use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
 /**

@@ -18,8 +18,8 @@ define('GALLERY_CREATOR_UPLOAD_PATH', $GLOBALS['TL_CONFIG']['uploadPath'] . '/ga
  * Front end content element
  */
 // Display a single album within the news module
-array_insert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce_news' => 'Markocupic\GalleryCreator\ContentGalleryCreatorNews')));
-array_insert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce' => 'Markocupic\GalleryCreator\ContentGalleryCreator')));
+array_insert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce_news' => 'Markocupic\GalleryCreatorBundle\ContentGalleryCreatorNews')));
+array_insert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce' => 'Markocupic\GalleryCreatorBundle\ContentGalleryCreator')));
 
 // Show news ce_element in the news-module only
 if (TL_MODE == 'BE' && Input::get('do') == 'news')

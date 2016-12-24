@@ -10,7 +10,7 @@
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GalleryCreator\GcHelpers;
+use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
 $this->import('BackendUser', 'User');
@@ -725,7 +725,7 @@ class tl_gallery_creator_albums extends Backend
     public function inputFieldCbGenerateUploaderMarkup()
     {
 
-        return \Markocupic\GalleryCreator\GcHelpers::generateUploader($this->User->gc_be_uploader_template);
+        return \Markocupic\GalleryCreatorBundle\GcHelpers::generateUploader($this->User->gc_be_uploader_template);
     }
 
     /**
@@ -776,12 +776,12 @@ class tl_gallery_creator_albums extends Backend
                     if (Input::get('reviseTables') && $this->User->isAdmin)
                     {
                         // delete damaged datarecords
-                        \Markocupic\GalleryCreator\GcHelpers::reviseTables($albumId, true);
+                        \Markocupic\GalleryCreatorBundle\GcHelpers::reviseTables($albumId, true);
                         $response = true;
                     }
                     else
                     {
-                        \Markocupic\GalleryCreator\GcHelpers::reviseTables($albumId, false);
+                        \Markocupic\GalleryCreatorBundle\GcHelpers::reviseTables($albumId, false);
                         $response = true;
 
                     }
@@ -842,7 +842,7 @@ class tl_gallery_creator_albums extends Backend
         $href = sprintf("contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s", $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
-        $level = \Markocupic\GalleryCreator\GcHelpers::getAlbumLevel($row["pid"]);
+        $level = \Markocupic\GalleryCreatorBundle\GcHelpers::getAlbumLevel($row["pid"]);
         $padding = $this->isNode($row["id"]) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:' . $padding . 'px;', $label);
 
@@ -1063,12 +1063,12 @@ class tl_gallery_creator_albums extends Backend
             return;
         }
         // Call the uploader script
-        $arrUpload = \Markocupic\GalleryCreator\GcHelpers::fileupload($intAlbumId, $strName);
+        $arrUpload = \Markocupic\GalleryCreatorBundle\GcHelpers::fileupload($intAlbumId, $strName);
 
         foreach ($arrUpload as $strFileSrc)
         {
             // Add  new datarecords into tl_gallery_creator_pictures
-            \Markocupic\GalleryCreator\GcHelpers::createNewImage($objAlb->id, $strFileSrc);
+            \Markocupic\GalleryCreatorBundle\GcHelpers::createNewImage($objAlb->id, $strFileSrc);
         }
 
         // Do not exit script if html5_uploader is selected and Javascript is disabled
@@ -1110,7 +1110,7 @@ class tl_gallery_creator_albums extends Backend
             {
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserve_filename']['eval']['submitOnChange'] = false;
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
-                \Markocupic\GalleryCreator\GcHelpers::importFromFilesystem($intAlbumId, $strMultiSRC);
+                \Markocupic\GalleryCreatorBundle\GcHelpers::importFromFilesystem($intAlbumId, $strMultiSRC);
                 $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id=' . $intAlbumId . '&ref=' . TL_REFERER_ID . '&filesImported=true');
             }
         }

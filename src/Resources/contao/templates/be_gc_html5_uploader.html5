@@ -10,34 +10,35 @@ $GLOBALS['TL_CSS'][] = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . 
 $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
 ?>
 
-
-<h3><?= $GLOBALS['TL_LANG']['tl_files']['fileupload'][0] ?></h3>
-<input type="hidden" name="action" value="fileupload">
-<div class="fallback">
-    <input type="file" name="<?php echo $this->strName; ?>[]" multiple>
-</div>
-<div class="dz-container">
-    <div class="dz-default dz-message">
-        <span><?php echo $GLOBALS['TL_LANG']['tl_files']['dropzone']; ?></span>
+<div class="long widget">
+    <h3><?= $GLOBALS['TL_LANG']['tl_files']['fileupload'][0] ?></h3>
+    <input type="hidden" name="action" value="fileupload">
+    <div class="fallback">
+        <input type="file" name="<?php echo $this->strName; ?>[]" multiple>
     </div>
-    <div class="dropzone-previews"></div>
+    <div class="dz-container">
+        <div class="dz-default dz-message">
+            <span><?php echo $GLOBALS['TL_LANG']['tl_files']['dropzone']; ?></span>
+        </div>
+        <div class="dropzone-previews"></div>
+    </div>
+    <script>
+        window.addEvent("domready", function () {
+            new Dropzone("#tl_gallery_creator_albums", {
+                paramName: "<?php echo $this->strName; ?>",
+                maxFilesize: <?php echo $intMaxSize; ?>,
+                acceptedFiles: "<?php echo $strAccepted; ?>",
+                previewsContainer: ".dropzone-previews",
+                uploadMultiple: true
+            }).on("processing", function () {
+                    //$$(".dz-message").setStyle("padding", "12px 18px 0");
+                }).on("success", function (objFile, responseString, xhrProgressEvent) {
+                    // Add code here
+                });
+        });
+
+    </script>
+    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maxFileSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
+
+    <noscript>Javascript ist in Ihrem Browser deaktiviert.</noscript>
 </div>
-<script>
-    window.addEvent("domready", function () {
-        new Dropzone("#tl_gallery_creator_albums", {
-            paramName: "<?php echo $this->strName; ?>",
-            maxFilesize: <?php echo $intMaxSize; ?>,
-            acceptedFiles: "<?php echo $strAccepted; ?>",
-            previewsContainer: ".dropzone-previews",
-            uploadMultiple: true
-        }).on("processing", function () {
-                //$$(".dz-message").setStyle("padding", "12px 18px 0");
-            }).on("success", function (objFile, responseString, xhrProgressEvent) {
-                // Add code here
-            });
-    });
-
-</script>
-<p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maxFileSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
-
-<noscript>Javascript ist in Ihrem Browser deaktiviert.</noscript>

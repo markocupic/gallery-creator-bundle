@@ -17,7 +17,7 @@
 namespace Contao;
 
 use Contao\GalleryCreatorAlbumsModel;
-use Markocupic\GcHelpers;
+use Markocupic\GalleryCreator\GcHelpers;
 
 
 /**

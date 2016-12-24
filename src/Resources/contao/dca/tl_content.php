@@ -13,7 +13,7 @@
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GcHelpers;
+use Markocupic\GalleryCreator\GcHelpers;
 
 
 /**

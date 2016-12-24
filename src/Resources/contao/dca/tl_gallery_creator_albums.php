@@ -12,7 +12,7 @@
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GcHelpers;
+use Markocupic\GalleryCreator\GcHelpers;
 
 
 $this->import('BackendUser', 'User');
@@ -78,7 +78,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             'edit'          => array(
                 'label'           => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['list_pictures'],
                 'href'            => 'table=tl_gallery_creator_pictures',
-                'icon'            => 'system/modules/gallery_creator/assets/images/text_list_bullets.png',
+                'icon'            => 'bundles/markocupicgallerycreator/images/text_list_bullets.png',
                 'attributes'      => 'class="contextmenu"',
                 'button_callback' => array('tl_gallery_creator_albums', 'buttonCbEdit'),
             ),
@@ -97,12 +97,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             ),
             'upload_images' => array(
                 'label'           => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['upload_images'],
-                'icon'            => 'system/modules/gallery_creator/assets/images/image_add.png',
+                'icon'            => 'bundles/markocupicgallerycreator/images/image_add.png',
                 'button_callback' => array('tl_gallery_creator_albums', 'buttonCbAddImages'),
             ),
             'import_images' => array(
                 'label'           => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['import_images'],
-                'icon'            => 'system/modules/gallery_creator/assets/images/folder_picture.png',
+                'icon'            => 'bundles/markocupicgallerycreator/images/folder_picture.png',
                 'button_callback' => array('tl_gallery_creator_albums', 'buttonCbImportImages'),
             ),
             'cut'           => array(
@@ -727,7 +727,7 @@ class tl_gallery_creator_albums extends Backend
     public function inputFieldCbGenerateUploaderMarkup()
     {
 
-        return \GalleryCreator\GcHelpers::generateUploader($this->User->gc_be_uploader_template);
+        return \Markocupic\GalleryCreator\GcHelpers::generateUploader($this->User->gc_be_uploader_template);
     }
 
     /**
@@ -778,12 +778,12 @@ class tl_gallery_creator_albums extends Backend
                     if (Input::get('reviseTables') && $this->User->isAdmin)
                     {
                         // delete damaged datarecords
-                        \GalleryCreator\GcHelpers::reviseTables($albumId, true);
+                        \Markocupic\GalleryCreator\GcHelpers::reviseTables($albumId, true);
                         $response = true;
                     }
                     else
                     {
-                        \GalleryCreator\GcHelpers::reviseTables($albumId, false);
+                        \Markocupic\GalleryCreator\GcHelpers::reviseTables($albumId, false);
                         $response = true;
 
                     }
@@ -840,7 +840,7 @@ class tl_gallery_creator_albums extends Backend
         $label = str_replace('#count_pics#', $mysql->countImg, $label);
         $label = str_replace('#datum#', date('Y-m-d', $row['date']), $label);
         $image = $row['published'] ? 'picture_edit.png' : 'picture_edit_1.png';
-        $label = str_replace('#icon#', "system/modules/gallery_creator/assets/images/" . $image, $label);
+        $label = str_replace('#icon#', "bundles/markocupicgallerycreator/images/" . $image, $label);
         $href = sprintf("contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s", $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
@@ -893,19 +893,11 @@ class tl_gallery_creator_albums extends Backend
         if (Input::get('mode') == 'revise_tables')
         {
             // remove buttons
-            if (version_compare(VERSION, '4.0', '<'))
-            {
-                $strContent = preg_replace('/<input type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"save\"((\r|\n|.)+?)>/', '<input type="button" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s" value="' . $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'][0] . '">', $strContent);
 
-            }
-            else
-            {
-                $strContent = preg_replace('/<button type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"save\"((\r|\n|.)+?)>((\r|\n|.)+?)<\/button>/', '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">' . $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'][0] . '</button>', $strContent);
-            }
+            $strContent = preg_replace('/<button type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)<\/button>/', '', $strContent);
+            $strContent = preg_replace('/<button type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)<\/button>/', '', $strContent);
+            $strContent = preg_replace('/<button type=\"submit\" name=\"save\"((\r|\n|.)+?)>((\r|\n|.)+?)<\/button>/', '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">' . $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'][0] . '</button>', $strContent);
+
 
         }
 
@@ -914,18 +906,10 @@ class tl_gallery_creator_albums extends Backend
             // remove buttons
             if (Input::get('table') != 'tl_gallery_creator_pictures')
             {
-                if (version_compare(VERSION, '4.0', '<'))
-                {
-                    $strContent = preg_replace('/<input type=\"submit\" name=\"delete\"((\r|\n|.)+?)>/', '', $strContent);
-                    $strContent = preg_replace('/<input type=\"submit\" name=\"cut\"((\r|\n|.)+?)>/', '', $strContent);
-                    $strContent = preg_replace('/<input type=\"submit\" name=\"copy\"((\r|\n|.)+?)>/', '', $strContent);
-                }
-                else
-                {
-                    //$strContent = preg_replace('/<button type=\"submit\" name=\"delete\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                    //$strContent = preg_replace('/<button type=\"submit\" name=\"cut\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                    //$strContent = preg_replace('/<button type=\"submit\" name=\"copy\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                }
+
+                //$strContent = preg_replace('/<button type=\"submit\" name=\"delete\"((\r|\n|.)+?)<\/button>/', '', $strContent);
+                //$strContent = preg_replace('/<button type=\"submit\" name=\"cut\"((\r|\n|.)+?)<\/button>/', '', $strContent);
+                //$strContent = preg_replace('/<button type=\"submit\" name=\"copy\"((\r|\n|.)+?)<\/button>/', '', $strContent);
             }
         }
 
@@ -934,40 +918,20 @@ class tl_gallery_creator_albums extends Backend
             // form encode
             $strContent = str_replace('application/x-www-form-urlencoded', 'multipart/form-data', $strContent);
             // remove buttons
-            if (version_compare(VERSION, '4.0', '<'))
-            {
-                $strContent = preg_replace('/<input type=\"submit\" name=\"save\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"uploadNback\"((\r|\n|.)+?)>/', '', $strContent);
-            }
-            else
-            {
-                $strContent = preg_replace('/<button type=\"submit\" name=\"save\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"uploadNback\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-            }
+            $strContent = preg_replace('/<div class=\"split-button((\r|\n|.)+?)<\/div>/', '', $strContent);
+            $strContent = preg_replace('/<button type=\"submit\" name=\"save\"((\r|\n|.)+?)<\/button>/', '', $strContent);
         }
         if (Input::get('mode') == 'import_images')
         {
 
-            if (version_compare(VERSION, '4.0', '<'))
-            {
-                $strContent = preg_replace('/<input type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)>/', '', $strContent);
-                $strContent = preg_replace('/<input type=\"submit\" name=\"uploadNback\"((\r|\n|.)+?)>/', '', $strContent);
-            }
-            else
-            {
-                $strContent = preg_replace('/<button type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)<\/button>/', '', $strContent);
-                $strContent = preg_replace('/<button type=\"submit\" name=\"uploadNback\"((\r|\n|.)+?)<\/button>/', '', $strContent);
 
-                // Disable split-button
-                $strContent = preg_replace('/<div class="split-button((\r|\n|.)+?)<\/div>/', '', $strContent);
+            $strContent = preg_replace('/<button type=\"submit\" name=\"saveNclose\"((\r|\n|.)+?)<\/button>/', '', $strContent);
+            $strContent = preg_replace('/<button type=\"submit\" name=\"saveNcreate\"((\r|\n|.)+?)<\/button>/', '', $strContent);
+            $strContent = preg_replace('/<button type=\"submit\" name=\"uploadNback\"((\r|\n|.)+?)<\/button>/', '', $strContent);
 
-            }
+            // Disable split-button
+            $strContent = preg_replace('/<div class="split-button((\r|\n|.)+?)<\/div>/', '', $strContent);
+
 
         }
 
@@ -1101,12 +1065,12 @@ class tl_gallery_creator_albums extends Backend
             return;
         }
         // Call the uploader script
-        $arrUpload = \GalleryCreator\GcHelpers::fileupload($intAlbumId, $strName);
+        $arrUpload = \Markocupic\GalleryCreator\GcHelpers::fileupload($intAlbumId, $strName);
 
         foreach ($arrUpload as $strFileSrc)
         {
             // Add  new datarecords into tl_gallery_creator_pictures
-            \GalleryCreator\GcHelpers::createNewImage($objAlb->id, $strFileSrc);
+            \Markocupic\GalleryCreator\GcHelpers::createNewImage($objAlb->id, $strFileSrc);
         }
 
         // Do not exit script if html5_uploader is selected and Javascript is disabled
@@ -1148,7 +1112,7 @@ class tl_gallery_creator_albums extends Backend
             {
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserve_filename']['eval']['submitOnChange'] = false;
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
-                \GalleryCreator\GcHelpers::importFromFilesystem($intAlbumId, $strMultiSRC);
+                \Markocupic\GalleryCreator\GcHelpers::importFromFilesystem($intAlbumId, $strMultiSRC);
                 $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id=' . $intAlbumId . '&ref=' . TL_REFERER_ID . '&filesImported=true');
             }
         }

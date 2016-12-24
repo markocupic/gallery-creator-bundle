@@ -12,7 +12,7 @@
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GcHelpers;
+use Markocupic\GalleryCreator\GcHelpers;
 
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
@@ -99,7 +99,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
             'imagerotate' => array(
                 'label'           => &$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imagerotate'],
                 'href'            => 'mode=imagerotate',
-                'icon'            => 'system/modules/gallery_creator/assets/images/arrow_rotate_clockwise.png',
+                'icon'            => 'bundles/markocupicgallerycreator/images/arrow_rotate_clockwise.png',
                 'attributes'      => 'onclick="Backend.getScrollOffset();"',
                 'button_callback' => array('tl_gallery_creator_pictures', 'buttonCbRotateImage'),
             ),
@@ -455,7 +455,7 @@ class tl_gallery_creator_pictures extends Backend
             if (trim($arrRow['socialMediaSRC']) != "" or $lmSRC !== null)
             {
                 $type = trim($arrRow['localMediaSRC']) == "" ? ' embeded local-media: ' : ' embeded social media: ';
-                $iconSrc = 'system/modules/gallery_creator/assets/images/film.png';
+                $iconSrc = 'bundles/markocupicgallerycreator/images/film.png';
                 $movieIcon = Image::getHtml($iconSrc);
                 $hasMovie = sprintf('<div class="block">%s%s<a href="%s" data-lightbox="gc_album_%s">%s</a></div>', $movieIcon, $type, $src, Input::get('id'), $src);
             }

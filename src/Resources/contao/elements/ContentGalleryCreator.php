@@ -17,7 +17,7 @@ namespace Markocupic\GalleryCreator;
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GcHelpers;
+use Markocupic\GalleryCreator\GcHelpers;
 
 /**
  * Class ContentGalleryCreator
@@ -41,7 +41,7 @@ class ContentGalleryCreator extends \ContentElement
      *
      * @var string
      */
-    public $defaultThumb = 'system/modules/gallery_creator/assets/images/image_not_found.jpg';
+    public $defaultThumb = 'bundles/markocupicgallerycreator/images/image_not_found.jpg';
 
     /**
      * list_view, detail_view, single_image

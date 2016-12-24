@@ -21,7 +21,7 @@
         "php": ">=5.5.0",
         "contao/contao":">=4.3,<5",
         "contao-community-alliance/composer-plugin": "*" 
-    }
+    },
     "autoload": {
         "psr-4": {
             "Markocupic\\GalleryCreatorBundle\\": "src/"

@@ -1,6 +1,6 @@
 # Gallery Creator
 
-## Frontend Modul für Contao 3.
+## Frontend Modul für Contao 4.
 
 Mit dem Modul lassen sich Alben verwalten und erstellen. Das Modul ist sehr flexibel und bietet eine Albenübersicht und eine Detailansicht.
 

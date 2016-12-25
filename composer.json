@@ -39,14 +39,6 @@
       "src/Resources/contao/languages",
       "src/Resources/contao/templates"
     ]
-  },
-  "scripts": {
-    "post-install-cmd": [
-      "Markocupic\\GalleryCreatorBundle\\InstallConfig::postInstall"
-    ],
-    "post-update-cmd": [
-      "Markocupic\\GalleryCreatorBundle\\InstallConfig::postInstall"
-    ]
   }
 }
 

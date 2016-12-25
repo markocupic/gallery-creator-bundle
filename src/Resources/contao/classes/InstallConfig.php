@@ -16,6 +16,6 @@ class InstallConfig
      */
     public static function postInstall()
     {
-        mail('m.cupic@gmx.ch', 'Plugin installed successfully', '');
+        // still empty at the moment
     }
 }

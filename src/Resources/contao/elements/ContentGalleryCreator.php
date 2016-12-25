@@ -20,10 +20,10 @@ use Markocupic\GalleryCreatorBundle\GcHelpers;
 /**
  * Class ContentGalleryCreator
  *
- * Provide methods regarding gallery_creator albums.
- * @copyright  Marko Cupic 2016
+ * Provide methods regarding gallery-creator-bundle albums.
+ * @copyright  Marko Cupic 2017
  * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
- * @package    Gallery Creator
+ * @package    Gallery Creator Bundle
  */
 class ContentGalleryCreator extends \ContentElement
 {

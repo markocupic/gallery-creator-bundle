@@ -16,10 +16,9 @@ namespace Markocupic\GalleryCreatorBundle;
 /**
  * Class GcHelpers
  * Provide methods for using the gallery_creator extension
- *
- * @copyright  Marko Cupic 2015
+ * @copyright  Marko Cupic 2017
  * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
- * @package    Gallery Creator
+ * @package    Gallery Creator Bundle
  */
 class GcHelpers extends \System
 {

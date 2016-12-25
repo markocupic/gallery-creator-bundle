@@ -1,42 +1,53 @@
 {
-    "name":"markocupic/gallery-creator-bundle",
-    "keywords":["contao", "Gallery Creator", "gallery_creator gallery-creator-bundle", "Frontend", "Backend"],
-    "type": "contao-bundle",
-    "description": "Contao 4 Gallery Extension",
-    "license":"LGPL-3.0+",
-    "authors":[
-        {
-            "name":"Marko Cupic",
-            "email":"m.cupic@gmx.ch",
-            "homepage":"http://4ae-racing-team.ch",
-            "role":"Developer"
-        }
-    ],
-    "support":{
-        "issues":"https://github.com/markocupic/gallery-creator-bundle/issues",
-        "source":"https://github.com/markocupic/gallery-creator-bundle",
-        "forum":"https://community.contao.org/de/showthread.php?22634-gallery_creator"
-    },
-    "require":{
-        "php": ">=5.5.0",
-        "contao/contao":">=4.3,<5",
-        "contao-community-alliance/composer-plugin": "*" 
-    },
-    "autoload": {
-        "psr-4": {
-            "Markocupic\\GalleryCreatorBundle\\": "src/"
-        },
-        "classmap": [
-            "src/Resources/contao"
-        ],
-        "exclude-from-classmap": [
-            "src/Resources/contao/config",
-            "src/Resources/contao/dca",
-            "src/Resources/contao/docs",
-            "src/Resources/contao/languages",
-            "src/Resources/contao/templates"
-        ]
+  "name": "markocupic/gallery-creator-bundle",
+  "keywords": ["contao","Gallery Creator","album plugin", "gallery_creator gallery-creator-bundle"],
+  "type": "contao-bundle",
+  "description": "Contao 4 Gallery Extension",
+  "license": "LGPL-3.0+",
+  "authors": [
+    {
+      "name": "Marko Cupic",
+      "email": "m.cupic@gmx.ch",
+      "homepage": "https://4ae-racing-team.ch",
+      "role": "Developer"
     }
+  ],
+  "support": {
+    "issues": "https://github.com/markocupic/gallery-creator-bundle/issues",
+    "source": "https://github.com/markocupic/gallery-creator-bundle",
+    "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
+  },
+  "require": {
+    "php": ">=5.5.0",
+    "contao/contao": ">=4.3,<5",
+    "contao-community-alliance/composer-plugin": "*"
+  },
+  "conflict": {
+    "contao/core": "*",
+    "markocupic/gallery_creator": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Markocupic\\GalleryCreatorBundle\\": "src/"
+    },
+    "classmap": [
+      "src/Resources/contao"
+    ],
+    "exclude-from-classmap": [
+      "src/Resources/contao/config",
+      "src/Resources/contao/dca",
+      "src/Resources/contao/languages",
+      "src/Resources/contao/templates"
+    ]
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "Markocupic\\GalleryCreatorBundle\\InstallConfig::postInstall"
+    ],
+    "post-update-cmd": [
+      "Markocupic\\GalleryCreatorBundle\\InstallConfig::postInstall"
+    ]
+  }
 }
 
 

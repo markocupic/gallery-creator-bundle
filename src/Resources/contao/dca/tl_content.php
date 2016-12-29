@@ -296,7 +296,7 @@ class ce_gallery_creator extends Backend
         }
 
         $html = '
-<div class="clr">
+<div class="clr widget">
   <fieldset id="ctrl_gc_publish_albums" class="tl_checkbox_container">
         <legend>Folgende Alben im Frontend anzeigen</legend>
         <input type="hidden" name="gc_publish_albums" value="">

@@ -601,7 +601,7 @@ class ContentGalleryCreator extends \ContentElement
             $objPicture = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY ' . $sorting)
                 ->execute(1, \Input::get('albumId'));
 
-            $json = "";
+            $response = array();
 
             while ($objPicture->next())
             {
@@ -611,13 +611,14 @@ class ContentGalleryCreator extends \ContentElement
                     $href = $objFile->path;
                     $href = trim($objPicture->socialMediaSRC) != "" ? trim($objPicture->socialMediaSRC) : $href;
                     $href = trim($objPicture->localMediaSRC) != "" ? trim($objPicture->localMediaSRC) : $href;
-
-                    $json .= specialchars($href) . "###";
-                    $json .= specialchars($objPicture->comment) . "###";
-                    $json .= specialchars($objPicture->id) . " ***";
+                    $response[] = array(
+                        'href' => specialchars($href),
+                        'caption' => specialchars($objPicture->comment),
+                        'id' => $objPicture->id
+                    );
                 }
             }
-            echo json_encode(array('arrImage' => $json));
+            echo json_encode(array('src' => $response, 'success' => 'true'));
             exit;
         }
     }

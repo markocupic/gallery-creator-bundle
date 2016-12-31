@@ -1,45 +1,91 @@
-Contao standard edition
-=======================
+# Gallery Creator
 
-Welcome to the Contao standard edition, a fully-functional Contao 4 application
-that you can use as the skeleton for your new applications.
+## Frontend Modul für Contao >=4.3
+
+Mit dem Modul lassen sich Alben verwalten und erstellen. Das Modul ist sehr flexibel und bietet eine Albenübersicht und eine Detailansicht.
+
+## Installation über composer
+Folgenden Eintrag in composer.json machen: 
+```php
+{
+    ...
+    "require": {
+        ...
+        "markocupic/gallery-creator-bundle": "dev-master"
+    },
+    "repositories": [
+        ...
+        {
+            "type": "vcs",
+            "url": "/development/bundles/"
+        }
+    ],
+}
+```
+Folgenden Eintrag in app/AppKerne.php machen:
+```php
+class AppKernel extends Kernel
+{
+
+    public function registerBundles()
+    {
+        $bundles = [
+            ...
+            //other
+            new Markocupic\GalleryCreatorBundle\MarkocupicGalleryCreatorBundle(),
+        ];
+
+        ...
+
+        return $bundles;
+    }
+```
+Danach Erweiterung über Konsole mit "composer update" installieren.
+Mit "bin/console cache:clear --env=prod" den Cache leeren.
+
+Jetzt noch die Datenbank über das Installtool aktualisieren. Danach sollte Gallery Creator unter Contao 4 laufen.
+### Migration von gallery_creator nach gallery-creator-bundle
+Migration einer älteren gallery_creator Version für Contao 3.5 ist problemlos möglich.
+
+## "gc_generateFrontendTemplate"-Hook
+Mit dem "gc_generateFrontendTemplate"-Hook lässt sich die Frontend-Ausgabe anpassen.
+Der "gc_generateFrontendTemplate"-Hook wird vor der Aufbereitung des Gallery-Creator-Frontend-Templates ausgeführt. Er übergibt das Modul-Objekt und in der Detailansicht das aktuelle Album-Objekt. Als Rückgabewert wird das Template-Objekt erwartet.
 
 
-What's inside?
---------------
 
-The Contao standard edition is configured with the following defaults:
+```php
+<?php
+// config.php
+$GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'][] = array('MyGalleryCreatorClass', 'doSomething');
 
-  * Twig as template engine;
-  * Doctrine DBAL;
-  * Swiftmailer;
-  * Annotations enabled for everything.
+// MyGalleryCreatorClass.php
+class MyGalleryCreatorClass extends \System
+{
 
-It comes pre-configured with the following Symfony bundles:
+       /**
+        * Do some custom modifications
+        * @param Module $objModule
+        * @param null $objAlbum
+        * @return mixed
+        */
+       public function doSomething(\Module $objModule, $objAlbum=null)
+       {
+              global $objPage;
+              $objPage->pageTitle = 'Bildergalerie';
+              if($objAlbum !== null)
+              {
+                     // display the album name in the head section of your page (title tag)
+                     $objPage->pageTitle = specialchars($objAlbum->name);
+                     // display the album comment in the head section of your page (description tag)
+                     $objPage->description = specialchars(strip_tags($objAlbum->comment));
+                     // add the album name to the keywords in the head section of your page (keywords tag)
+                     $GLOBALS['TL_KEYWORDS'] .= ',' . specialchars($objAlbum->name) . ',' . specialchars($objAlbum->event_location);
+              }
+              return $objModule->Template;
+       }
+}
+```
 
-  * **FrameworkBundle** - The core Symfony framework bundle
-  * **SecurityBundle** - Integrates Symfony's security component
-  * **TwigBundle** - Adds support for the Twig templating engine
-  * **MonologBundle** - Adds support for Monolog, a logging library
-  * **SwiftmailerBundle** - Adds support for Swiftmailer
-  * **DoctrineBundle** - Adds support for the Doctrine ORM
-  * **KnpTimeBundle** - Adds support for textual dates
-  * **LexikMaintenanceBundle** - Allows to toggle maintenance mode
-  * **SensioFrameworkExtraBundle** - Adds various annotation capabilities
-  * **DebugBundle** (in dev/test env) - Adds the `dump()` function
-  * **WebProfilerBundle** (in dev/test env) - Adds the web debug toolbar
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
 
-It also comes pre-configured with the following Contao bundles:
+Viel Spass mit Gallery Creator!!!
 
-  * **ContaoCoreBundle** - The Contao core bundle
-  * **ContaoCalendarBundle** - The Contao calendar bundle
-  * **ContaoCommentsBundle** - The Contao comments bundle
-  * **ContaoFaqBundle** - The Contao FAQ bundle
-  * **ContaoListingBundle** - The Contao listing bundle
-  * **ContaoNewsBundle** - The Contao news bundle
-  * **ContaoNewsletterBundle** - The Contao newsletter bundle
-  * **ContaoInstallationBundle** - The Contao installation bundle
-
-Enjoy!

@@ -38,8 +38,12 @@ class AppKernel extends Kernel
 * Mit "bin/console cache:clear --env=prod" den Cache leeren.
 
 Jetzt noch die Datenbank über das Installtool aktualisieren. Danach sollte Gallery Creator unter Contao 4 laufen.
-### Migration von gallery_creator nach gallery-creator-bundle
+## Migration von gallery_creator nach gallery-creator-bundle
 Migration einer älteren gallery_creator Version für Contao 3.5 ist problemlos möglich.
+
+## Zusätzliche Templates
+Weitere Templates findest du unter: https://gist.github.com/markocupic
+* Nur Albenauflistung ohne Detailseite. Mit Klick auf Vorschau-Thumbnail öffnet sich Colorbox und zeigt den Inhalt des Albums. https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
 
 ## "gc_generateFrontendTemplate"-Hook
 Mit dem "gc_generateFrontendTemplate"-Hook lässt sich die Frontend-Ausgabe anpassen.

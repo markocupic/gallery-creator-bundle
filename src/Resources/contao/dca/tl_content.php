@@ -9,8 +9,7 @@
  */
 
 
-use Contao\GalleryCreatorAlbumsModel;
-use Contao\GalleryCreatorPicturesModel;
+
 use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
@@ -264,7 +263,7 @@ class ce_gallery_creator extends Backend
 
         $db = $this->Database->prepare('SELECT id, name FROM tl_gallery_creator_albums WHERE published=? ORDER BY ' . $str_sorting)->execute('1');
 
-        $arrOpt = array();
+        $arrOpt = [];
         while ($db->next()) {
             $arrOpt[$db->id] = '[ID ' . $db->id . '] ' . $db->name;
         }
@@ -284,7 +283,7 @@ class ce_gallery_creator extends Backend
 
             if(!\Input::post('gc_publish_all_albums'))
             {
-                $albums = array();
+                $albums = [];
                 if (\Input::post('gc_publish_albums')) {
                     foreach (deserialize(\Input::post('gc_publish_albums'),true) as $album) {
                         $albums[] = $album;
@@ -319,8 +318,8 @@ class ce_gallery_creator extends Backend
     {
         $dbContent = $this->Database->prepare('SELECT * FROM tl_content WHERE id=?')->execute($this->Input->get('id'));
 
-        $selectedAlbums = $dbContent->gc_publish_albums != '' ? deserialize($dbContent->gc_publish_albums) : array();
-        $level = \Markocupic\GalleryCreatorBundle\GcHelpers::getAlbumLevel($pid);
+        $selectedAlbums = $dbContent->gc_publish_albums != '' ? deserialize($dbContent->gc_publish_albums) : [];
+        $level = GcHelpers::getAlbumLevel($pid);
         $db = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY sorting')->execute($pid, 1);
         while ($db->next()) {
             $checked = in_array($db->id, $selectedAlbums) ? ' checked' : '';

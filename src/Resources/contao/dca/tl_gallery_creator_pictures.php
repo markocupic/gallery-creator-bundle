@@ -9,8 +9,6 @@
  */
 
 
-use Contao\GalleryCreatorAlbumsModel;
-use Contao\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
@@ -300,7 +298,7 @@ class tl_gallery_creator_pictures extends Backend
                 {
                     // Rotate image anticlockwise
                     $angle = 270;
-                    Markocupic\GalleryCreatorBundle\GcHelpers::imageRotate($objFile->path, $angle);
+                    GcHelpers::imageRotate($objFile->path, $angle);
                     Dbafs::addResource($objFile->path, true);
                     $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id=' . Input::get('id'));
                 }

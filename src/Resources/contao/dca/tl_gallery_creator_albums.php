@@ -8,8 +8,6 @@
  * @license LGPL-3.0+
  */
 
-use Contao\GalleryCreatorAlbumsModel;
-use Contao\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
@@ -725,7 +723,7 @@ class tl_gallery_creator_albums extends Backend
     public function inputFieldCbGenerateUploaderMarkup()
     {
 
-        return \Markocupic\GalleryCreatorBundle\GcHelpers::generateUploader($this->User->gc_be_uploader_template);
+        return GcHelpers::generateUploader($this->User->gc_be_uploader_template);
     }
 
     /**
@@ -758,7 +756,7 @@ class tl_gallery_creator_albums extends Backend
             {
                 if (Input::get('getAlbumIDS'))
                 {
-                    $arrIds = array();
+                    $arrIds = [];
                     $objDb = $this->Database->execute("SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()");
                     while ($objDb->next())
                     {
@@ -776,12 +774,12 @@ class tl_gallery_creator_albums extends Backend
                     if (Input::get('reviseTables') && $this->User->isAdmin)
                     {
                         // delete damaged datarecords
-                        \Markocupic\GalleryCreatorBundle\GcHelpers::reviseTables($albumId, true);
+                        GcHelpers::reviseTables($albumId, true);
                         $response = true;
                     }
                     else
                     {
-                        \Markocupic\GalleryCreatorBundle\GcHelpers::reviseTables($albumId, false);
+                        GcHelpers::reviseTables($albumId, false);
                         $response = true;
 
                     }
@@ -842,7 +840,7 @@ class tl_gallery_creator_albums extends Backend
         $href = sprintf("contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s", $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
-        $level = \Markocupic\GalleryCreatorBundle\GcHelpers::getAlbumLevel($row["pid"]);
+        $level = GcHelpers::getAlbumLevel($row["pid"]);
         $padding = $this->isNode($row["id"]) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:' . $padding . 'px;', $label);
 
@@ -1063,12 +1061,12 @@ class tl_gallery_creator_albums extends Backend
             return;
         }
         // Call the uploader script
-        $arrUpload = \Markocupic\GalleryCreatorBundle\GcHelpers::fileupload($intAlbumId, $strName);
+        $arrUpload = GcHelpers::fileupload($intAlbumId, $strName);
 
         foreach ($arrUpload as $strFileSrc)
         {
             // Add  new datarecords into tl_gallery_creator_pictures
-            \Markocupic\GalleryCreatorBundle\GcHelpers::createNewImage($objAlb->id, $strFileSrc);
+            GcHelpers::createNewImage($objAlb->id, $strFileSrc);
         }
 
         // Do not exit script if html5_uploader is selected and Javascript is disabled
@@ -1110,7 +1108,7 @@ class tl_gallery_creator_albums extends Backend
             {
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserve_filename']['eval']['submitOnChange'] = false;
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
-                \Markocupic\GalleryCreatorBundle\GcHelpers::importFromFilesystem($intAlbumId, $strMultiSRC);
+                GcHelpers::importFromFilesystem($intAlbumId, $strMultiSRC);
                 $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id=' . $intAlbumId . '&ref=' . TL_REFERER_ID . '&filesImported=true');
             }
         }
@@ -1217,7 +1215,7 @@ class tl_gallery_creator_albums extends Backend
         $html .= '<ul id="previewThumbList">';
 
         $objPicture = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=? ORDER BY sorting')->execute(Input::get('id'));
-        $arrData = array();
+        $arrData = [];
         while ($objPicture->next())
         {
             $arrData[] = array('uuid' => $objPicture->uuid, 'id' => $objPicture->id);
@@ -1377,8 +1375,8 @@ class tl_gallery_creator_albums extends Backend
             return '----';
         }
 
-        $files = array();
-        $auxDate = array();
+        $files = [];
+        $auxDate = [];
 
         while ($objPictures->next())
         {

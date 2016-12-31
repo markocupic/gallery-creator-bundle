@@ -196,7 +196,7 @@ class GcHelpers extends \System
 
         if ($blnIsError)
         {
-            return array();
+            return [];
         }
 
         // Adapt $_FILES if files are loaded up by jumploader (java applet)
@@ -508,7 +508,7 @@ class GcHelpers extends \System
 
         //Bild-Besitzer
         $objOwner = \Database::getInstance()->prepare('SELECT name FROM tl_user WHERE id=?')->execute($objPicture->owner);
-        $arrMeta = array();
+        $arrMeta = [];
         $objFileModel = \FilesModel::findByUuid($objPicture->uuid);
         if ($objFileModel == null)
         {
@@ -564,7 +564,7 @@ class GcHelpers extends \System
         {
             \System::log('Image "' . $strImageSrc . '" could not be processed: ' . $e->getMessage(), __METHOD__, TL_ERROR);
             $thumbSrc = '';
-            $picture = array('img' => array('src' => '', 'srcset' => ''), 'sources' => array());
+            $picture = array('img' => array('src' => '', 'srcset' => ''), 'sources' => []);
         }
 
         $picture['alt'] = $objPicture->title != '' ? specialchars($objPicture->title) : specialchars($arrMeta['title']);
@@ -738,7 +738,7 @@ class GcHelpers extends \System
 
         $strSorting = $objContentElement->gc_sorting . ' ' . $objContentElement->gc_sorting_direction;
         $objSubAlbums = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY ' . $strSorting)->execute($intAlbumId, '1');
-        $arrSubalbums = array();
+        $arrSubalbums = [];
         while ($objSubAlbums->next())
         {
             // If it is a content element only
@@ -858,7 +858,7 @@ class GcHelpers extends \System
     public static function importFromFilesystem($intAlbumId, $strMultiSRC)
     {
 
-        $images = array();
+        $images = [];
 
         $objFilesModel = \FilesModel::findMultipleByUuids(explode(',', $strMultiSRC));
         if ($objFilesModel === null)
@@ -918,9 +918,9 @@ class GcHelpers extends \System
         if (count($images))
         {
             $arrPictures = array(
-                'uuid'     => array(),
-                'path'     => array(),
-                'basename' => array(),
+                'uuid'     => [],
+                'path'     => [],
+                'basename' => [],
             );
 
             $objPictures = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=?')->execute($intAlbumId);
@@ -994,7 +994,7 @@ class GcHelpers extends \System
      */
     public static function reviseTables($albumId, $blnCleanDb = false)
     {
-        $_SESSION['GC_ERROR'] = array();
+        $_SESSION['GC_ERROR'] = [];
 
         //Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
         new \Folder(GALLERY_CREATOR_UPLOAD_PATH);
@@ -1106,7 +1106,7 @@ class GcHelpers extends \System
         $objCont = \Database::getInstance()->prepare('SELECT id, gc_publish_albums FROM tl_content WHERE type=?')->execute('gallery_creator');
         while ($objCont->next())
         {
-            $newArr = array();
+            $newArr = [];
             $arrAlbums = unserialize($objCont->gc_publish_albums);
             if (is_array($arrAlbums))
             {

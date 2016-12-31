@@ -15,7 +15,6 @@ namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 /**
  * Class ContentGalleryCreator
@@ -145,7 +144,7 @@ class ContentGalleryCreator extends \ContentElement
             $objAlbum = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE (SELECT COUNT(id) FROM tl_gallery_creator_pictures WHERE pid = ? AND published=?) > 0 AND id=? AND published=?')->execute($albumId, 1, $albumId, 1);
 
             // if the album doesn't exist
-            if (!$objAlbum->numRows && !\GalleryCreatorAlbumsModel::hasChildAlbums($objAlbum->id) && !$this->gc_hierarchicalOutput)
+            if (!$objAlbum->numRows && !GalleryCreatorAlbumsModel::hasChildAlbums($objAlbum->id) && !$this->gc_hierarchicalOutput)
             {
                 unset($this->arrSelectedAlbums[$key]);
                 continue;
@@ -176,7 +175,7 @@ class ContentGalleryCreator extends \ContentElement
         if (\Input::get('items'))
         {
 
-            $objAlbum = \GalleryCreatorAlbumsModel::findByAlias(\Input::get('items'));
+            $objAlbum = GalleryCreatorAlbumsModel::findByAlias(\Input::get('items'));
             if ($objAlbum !== null)
             {
                 $this->intAlbumId = $objAlbum->id;
@@ -204,7 +203,7 @@ class ContentGalleryCreator extends \ContentElement
             // Redirect to detailview if there is only one album
             if (count($this->arrSelectedAlbums) == 1 && $this->gc_redirectSingleAlb)
             {
-                $_SESSION['GcRedirectToAlbum'] = \GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias;
+                $_SESSION['GcRedirectToAlbum'] = GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias;
                 $this->reload();
             }
 
@@ -213,7 +212,7 @@ class ContentGalleryCreator extends \ContentElement
             {
                 foreach ($this->arrSelectedAlbums as $k => $albumId)
                 {
-                    $objAlbum = \GalleryCreatorAlbumsModel::findByPk($albumId);
+                    $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
                     if ($objAlbum->pid > 0)
                     {
                         unset($this->arrSelectedAlbums[$k]);
@@ -280,7 +279,7 @@ class ContentGalleryCreator extends \ContentElement
                 {
                     $limit = count($this->arrSelectedAlbums);
                 }
-                $arrAlbums = array();
+                $arrAlbums = [];
                 for ($i = $offset; $i < $offset + $limit; $i++)
                 {
                     if(isset($this->arrSelectedAlbums[$i]))
@@ -354,8 +353,8 @@ class ContentGalleryCreator extends \ContentElement
                 $objPictures = $objPictures->execute(1, $this->intAlbumId);
 
                 // build up $arrPictures
-                $arrPictures = array();
-                $auxBasename = array();
+                $arrPictures = [];
+                $auxBasename = [];
                 while ($objPictures->next())
                 {
                     $objFilesModel = \FilesModel::findByUuid($objPictures->uuid);
@@ -393,12 +392,12 @@ class ContentGalleryCreator extends \ContentElement
                 $this->initCounter($this->intAlbumId);
 
                 // Call gcGenerateFrontendTemplateHook
-                $objAlbum = \GalleryCreatorAlbumsModel::findByAlias($this->strAlbumalias);
+                $objAlbum = GalleryCreatorAlbumsModel::findByAlias($this->strAlbumalias);
                 $this->Template = $this->callGcGenerateFrontendTemplateHook($this, $objAlbum);
                 break;
 
             case 'single_image' :
-                $objAlbum = \GalleryCreatorAlbumsModel::findByAlias(\Input::get('items'));
+                $objAlbum = GalleryCreatorAlbumsModel::findByAlias(\Input::get('items'));
                 if ($objAlbum === null)
                 {
                     die('Invalid album alias: ' . \Input::get('items'));
@@ -427,7 +426,7 @@ class ContentGalleryCreator extends \ContentElement
                 $objPictures = $objPictures->execute('1', $this->intAlbumId);
 
                 // build up $arrPictures
-                $arrIDS = array();
+                $arrIDS = [];
                 $i = 0;
                 $currentIndex = null;
                 while ($objPictures->next())
@@ -440,7 +439,7 @@ class ContentGalleryCreator extends \ContentElement
                     $i++;
                 }
 
-                $arrPictures = array();
+                $arrPictures = [];
 
                 if (count($arrIDS))
                 {
@@ -539,7 +538,7 @@ class ContentGalleryCreator extends \ContentElement
 
         if (TL_MODE == 'FE')
         {
-            $objAlb = \GalleryCreatorAlbumsModel::findByAlias($strAlbumalias);
+            $objAlb = GalleryCreatorAlbumsModel::findByAlias($strAlbumalias);
             if ($objAlb !== null)
             {
 
@@ -601,7 +600,7 @@ class ContentGalleryCreator extends \ContentElement
             $objPicture = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY ' . $sorting)
                 ->execute(1, \Input::get('albumId'));
 
-            $response = array();
+            $response = [];
 
             while ($objPicture->next())
             {
@@ -656,14 +655,14 @@ class ContentGalleryCreator extends \ContentElement
             'path' => $thumbSRC
         );
 
-        $objAlb = \GalleryCreatorAlbumsModel::findByPk($intAlbumId);
+        $objAlb = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
         if ($objAlb->thumb !== null)
         {
-            $objPreviewThumb = \GalleryCreatorPicturesModel::findByPk($objAlb->thumb);
+            $objPreviewThumb = GalleryCreatorPicturesModel::findByPk($objAlb->thumb);
         }
         else
         {
-            $objPreviewThumb = \GalleryCreatorPicturesModel::findOneByPid($intAlbumId);
+            $objPreviewThumb = GalleryCreatorPicturesModel::findOneByPid($intAlbumId);
         }
 
         if ($objPreviewThumb !== null)
@@ -694,7 +693,7 @@ class ContentGalleryCreator extends \ContentElement
         global $objPage;
 
         // Load the current album from db
-        $objAlbum = \GalleryCreatorAlbumsModel::findByPk($intAlbumId);
+        $objAlbum = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
         if ($objAlbum === null)
         {
             return;
@@ -761,9 +760,9 @@ class ContentGalleryCreator extends \ContentElement
         $objPageModel = \PageModel::findByPk($objPage->id);
 
         //generiert den Link zum Parent-Album
-        if ($this->gc_hierarchicalOutput && \GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId))
+        if ($this->gc_hierarchicalOutput && GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId))
         {
-            $arrParentAlbum = \GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId);
+            $arrParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId);
             return $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . $arrParentAlbum["alias"]);
         }
 
@@ -792,7 +791,7 @@ class ContentGalleryCreator extends \ContentElement
         if (TL_MODE == 'FE')
         {
 
-            $objAlbum = \GalleryCreatorAlbumsModel::findByPk($intAlbumId);
+            $objAlbum = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
             if (strpos($objAlbum->visitors_details, $_SERVER['REMOTE_ADDR']))
             {
                 // return if the visitor is allready registered

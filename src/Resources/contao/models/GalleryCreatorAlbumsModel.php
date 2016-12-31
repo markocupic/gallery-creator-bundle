@@ -13,9 +13,6 @@
  */
 namespace Contao;
 
-use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GalleryCreatorBundle\GcHelpers;
-
 
 
 /**
@@ -61,7 +58,7 @@ class GalleryCreatorAlbumsModel extends \Model
     public static function getParentAlbums($AlbumId)
     {
 
-        $arrParentAlbums = array();
+        $arrParentAlbums = [];
         $objAlb = \GalleryCreatorAlbumsModel::findByPk($AlbumId);
         if ($objAlb !== null)
         {
@@ -92,7 +89,7 @@ class GalleryCreatorAlbumsModel extends \Model
         // get the iteration depth
         $iterationDepth = $iterationDepth === '' ? null : $iterationDepth;
 
-        $arrSubAlbums = array();
+        $arrSubAlbums = [];
         if ($strSorting == '')
         {
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY sorting';

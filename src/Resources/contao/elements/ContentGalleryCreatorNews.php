@@ -14,9 +14,6 @@
 namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
-use Contao\GalleryCreatorPicturesModel;
-use Markocupic\GalleryCreatorBundle\GcHelpers;
-
 
 /**
  * Class ContentGalleryCreatorNews
@@ -110,7 +107,7 @@ class ContentGalleryCreatorNews extends \ContentElement
     {
 
         // Get the album object
-        $objAlbum = \GalleryCreatorAlbumsModel::findByPk($this->intAlbumId);
+        $objAlbum = GalleryCreatorAlbumsModel::findByPk($this->intAlbumId);
 
         // Init the counter
         ContentGalleryCreator::initCounter($this->intAlbumId);
@@ -145,8 +142,8 @@ class ContentGalleryCreatorNews extends \ContentElement
         $objPictures = $objPictures->execute('1', $this->intAlbumId);
 
         // Build up $arrPictures
-        $arrPictures = array();
-        $auxBasename = array();
+        $arrPictures = [];
+        $auxBasename = [];
         while ($objPictures->next())
         {
             $objFilesModel = \FilesModel::findByUuid($objPictures->uuid);

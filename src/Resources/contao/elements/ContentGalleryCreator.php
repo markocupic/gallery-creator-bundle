@@ -15,6 +15,7 @@ namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
+use Symfony\Component\Form\Util\StringUtil;
 
 /**
  * Class ContentGalleryCreator
@@ -578,10 +579,11 @@ class ContentGalleryCreator extends \ContentElement
             exit;
         }
 
-        //Detailansicht nur mit Lightbox, für ce_gc_mediabox template
-        if (\Input::get('isAjax') && \Input::get('LightboxSlideshow') && \Input::get('albumId'))
+        // Send image-date from a certain album as JSON encoded array to the browser
+        // used f.ex. for the ce_gc_colorbox.html template --> https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
+        if (\Input::get('isAjax') && \Input::get('getPicturesByPid') && \Input::get('albumId'))
         {
-            //Authentifizierung bei vor Zugriff geschützten Alben, dh. der Benutzer bekommt, wenn nicht berechtigt, nur das Albumvorschaubild zu sehen.
+            // Do not send data if album is protected and the user has no access
             $objAlbum = $this->Database->prepare('SELECT alias FROM tl_gallery_creator_albums WHERE id=?')
                 ->execute(\Input::get('albumId'));
 
@@ -590,7 +592,7 @@ class ContentGalleryCreator extends \ContentElement
                 return false;
             }
 
-            // Init Album Visit Counter
+            // Init visit counter
             $this->initCounter(\Input::get('albumId'));
 
 
@@ -605,16 +607,17 @@ class ContentGalleryCreator extends \ContentElement
             while ($objPicture->next())
             {
                 $objFile = \FilesModel::findByUuid($objPicture->uuid);
-                if ($objFile !== null)
                 {
                     $href = $objFile->path;
                     $href = trim($objPicture->socialMediaSRC) != "" ? trim($objPicture->socialMediaSRC) : $href;
                     $href = trim($objPicture->localMediaSRC) != "" ? trim($objPicture->localMediaSRC) : $href;
-                    $response[] = array(
+                    $arrPicture = array(
                         'href' => specialchars($href),
                         'caption' => specialchars($objPicture->comment),
-                        'id' => $objPicture->id
+                        'id' => $objPicture->id,
+                        'uuid' => \StringUtil::binToUuid($objFile->uuid)
                     );
+                    $response[] = array_merge($objPicture->row(), $arrPicture);
                 }
             }
             echo json_encode(array('src' => $response, 'success' => 'true'));

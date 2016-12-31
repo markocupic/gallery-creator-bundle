@@ -571,9 +571,9 @@ class ContentGalleryCreator extends \ContentElement
     {
 
         //gibt ein Array mit allen Bildinformationen des Bildes mit der id imageId zurueck
-        if (\Input::get('isAjax') && \Input::get('getImage') && strlen(\Input::get('imageId')))
+        if (\Input::get('isAjax') && \Input::get('getImageByPk') && strlen(\Input::get('id')))
         {
-            $arrPicture = $this->getPictureInformationArray(\Input::get('imageId'), null, \Input::get('action'));
+            $arrPicture = $this->getPictureInformationArray(\Input::get('id'), null, \Input::get('action'));
 
             echo json_encode($arrPicture);
             exit;
@@ -581,7 +581,7 @@ class ContentGalleryCreator extends \ContentElement
 
         // Send image-date from a certain album as JSON encoded array to the browser
         // used f.ex. for the ce_gc_colorbox.html template --> https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
-        if (\Input::get('isAjax') && \Input::get('getPicturesByPid') && \Input::get('albumId'))
+        if (\Input::get('isAjax') && \Input::get('getImagesByPid') && \Input::get('pid'))
         {
             // Do not send data if album is protected and the user has no access
             $objAlbum = $this->Database->prepare('SELECT alias FROM tl_gallery_creator_albums WHERE id=?')
@@ -593,14 +593,14 @@ class ContentGalleryCreator extends \ContentElement
             }
 
             // Init visit counter
-            $this->initCounter(\Input::get('albumId'));
+            $this->initCounter(\Input::get('pid'));
 
 
             // sorting direction
             $sorting = $this->gc_picture_sorting . ' ' . $this->gc_picture_sorting_direction;
 
             $objPicture = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY ' . $sorting)
-                ->execute(1, \Input::get('albumId'));
+                ->execute(1, \Input::get('pid'));
 
             $response = [];
 

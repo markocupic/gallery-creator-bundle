@@ -11,16 +11,14 @@
 /**
  * Run in a custom namespace, so the class can be replaced
  */
-namespace Markocupic\GalleryCreatorBundle;
+namespace Contao;
 
-use Contao\Model;
-use Contao\Database;
 
 
 /**
  * Reads and writes tl_gallery_creator_albums
  */
-class GalleryCreatorAlbumsModel extends \Contao\Model
+class GalleryCreatorAlbumsModel extends \Model
 {
 
     /**
@@ -39,10 +37,9 @@ class GalleryCreatorAlbumsModel extends \Contao\Model
     public static function getParentAlbum($AlbumId)
     {
 
-
-        $objAlbPid = \Contao\Database::getInstance()->prepare('SELECT pid FROM tl_gallery_creator_albums WHERE id=?')
+        $objAlbPid = \Database::getInstance()->prepare('SELECT pid FROM tl_gallery_creator_albums WHERE id=?')
             ->execute($AlbumId);
-        $parentAlb = \Contao\Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
+        $parentAlb = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
             ->execute($objAlbPid->pid);
         if ($parentAlb->numRows == 0)
         {
@@ -62,13 +59,13 @@ class GalleryCreatorAlbumsModel extends \Contao\Model
     {
 
         $arrParentAlbums = [];
-        $objAlb = self::findByPk($AlbumId);
+        $objAlb = \GalleryCreatorAlbumsModel::findByPk($AlbumId);
         if ($objAlb !== null)
         {
             $pid = $objAlb->pid;
             while ($pid > 0)
             {
-                $parentAlb = self::findByPk($pid);
+                $parentAlb = \GalleryCreatorAlbumsModel::findByPk($pid);
                 if ($parentAlb !== null)
                 {
                     $arrParentAlbums[] = $parentAlb->id;
@@ -90,7 +87,7 @@ class GalleryCreatorAlbumsModel extends \Contao\Model
     {
 
         // get the iteration depth
-        $iterationDepth = $iterationDepth == '' ? null : $iterationDepth;
+        $iterationDepth = $iterationDepth === '' ? null : $iterationDepth;
 
         $arrSubAlbums = [];
         if ($strSorting == '')
@@ -100,7 +97,7 @@ class GalleryCreatorAlbumsModel extends \Contao\Model
         {
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY ' . $strSorting;
         }
-        $objAlb = \Contao\Database::getInstance()->prepare($strSql)->execute($parentId);
+        $objAlb = \Database::getInstance()->prepare($strSql)->execute($parentId);
         $depth = $iterationDepth !== null ? $iterationDepth - 1 : null;
 
 

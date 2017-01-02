@@ -12,15 +12,16 @@
 /**
  * Run in a custom namespace, so the class can be replaced
  */
-namespace Markocupic\GalleryCreatorBundle;
+namespace Contao;
 
-use Contao\Model;
+use Contao\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
 /**
  * Reads and writes tl_gallery_creator_pictures
  */
-class GalleryCreatorPicturesModel extends \Contao\Model
+class GalleryCreatorPicturesModel extends \Model
 {
 
        /**

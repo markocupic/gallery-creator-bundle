@@ -762,41 +762,6 @@ class GcHelpers extends \System
 	}
 
 	/**
-	 * @deprecated Use \GalleryCreatorAlbumsModel::getChildAlbums() instead
-	 * @param $parentId
-	 * @param string $strSorting
-	 * @param null $iterationDepth
-	 * @return array
-	 */
-	public static function getAllSubalbums($parentId, $strSorting = '', $iterationDepth = null)
-	{
-		return \GalleryCreatorAlbumsModel::getChildAlbums($parentId, $strSorting, $iterationDepth);
-	}
-
-	/**
-	 * @deprecated Use \GalleryCreatorAlbumsModel::getChildAlbums() instead
-	 * @param $parentId
-	 * @param string $strSorting
-	 * @param null $iterationDepth
-	 * @return array
-	 */
-	public static function getChildAlbums($parentId, $strSorting = '', $iterationDepth = null)
-	{
-		return \GalleryCreatorAlbumsModel::getChildAlbums($parentId, $strSorting, $iterationDepth);
-	}
-
-	/**
-	 * gibt ein Array mit allen Angaben des Parent-Albums zurueck
-	 * @deprecated Use \GalleryCreatorAlbumsModel::getParentAlbum($AlbumId) instead
-	 * @param integer
-	 * @return array
-	 */
-	public static function getParentAlbum($AlbumId)
-	{
-		return \GalleryCreatorAlbumsModel::getParentAlbum($AlbumId);
-	}
-
-	/**
 	 * @param string
 	 * @param integer
 	 * @return bool

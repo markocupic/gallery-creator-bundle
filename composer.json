@@ -18,7 +18,7 @@
     "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
   },
   "require": {
-    "contao/contao": ">=4.3,<5",
+    "contao/contao": ">=4.3,<5"
   },
   "conflict": {
     "contao/core": "*",
@@ -39,5 +39,3 @@
     ]
   }
 }
-
-

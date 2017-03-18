@@ -316,11 +316,13 @@ class ce_gallery_creator extends Backend
      */
     private function getSubalbumsAsUnorderedList($pid = 0)
     {
-        $dbContent = $this->Database->prepare('SELECT * FROM tl_content WHERE id=?')->execute($this->Input->get('id'));
+        $objContent = $this->Database->prepare('SELECT * FROM tl_content WHERE id=?')->execute($this->Input->get('id'));
+        $str_sorting = $objContent->gc_sorting == '' || $objContent->gc_sorting_direction == '' ? 'date DESC' : $objContent->gc_sorting . ' ' . $objContent->gc_sorting_direction;
 
-        $selectedAlbums = $dbContent->gc_publish_albums != '' ? deserialize($dbContent->gc_publish_albums) : [];
-        $level = GcHelpers::getAlbumLevel($pid);
-        $db = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY sorting')->execute($pid, 1);
+
+        $selectedAlbums = $objContent->gc_publish_albums != '' ? deserialize($objContent->gc_publish_albums) : array();
+        $level = \MCupic\GalleryCreator\GcHelpers::getAlbumLevel($pid);
+        $db = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY ' . $str_sorting)->execute($pid, 1);
         while ($db->next()) {
             $checked = in_array($db->id, $selectedAlbums) ? ' checked' : '';
             $list .= '<li class="album-list-item"><input type="checkbox" name="gc_publish_albums[]" class="album-control-field" id="albumControlField-' . $db->id . '" value="' . $db->id . '"' . $checked . '>' . $db->name;

@@ -28,10 +28,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             array('tl_gallery_creator_albums', 'onloadCbSetUpPalettes'),
             array('tl_gallery_creator_albums', 'onloadCbImportFromFilesystem'),
             array('tl_gallery_creator_albums', 'isAjaxRequest'),
-        ),
-        'onsubmit_callback' => array(
-            array('tl_gallery_creator_albums', 'onsubmitCbCheckFolderSettings'),
-
+            array('tl_gallery_creator_albums', 'onloadCbCheckFolderSettings'),
         ),
         'ondelete_callback' => array(
             array('tl_gallery_creator_albums', 'ondeleteCb'),
@@ -1002,10 +999,10 @@ class tl_gallery_creator_albums extends Backend
     }
 
     /**
-     * onload-callback
+     * onload_callback
      * checks availability of the upload-folder
      */
-    public function onsubmitCbCheckFolderSettings(Contao\DC_Table $dc)
+    public function onloadCbCheckFolderSettings(Contao\DC_Table $dc)
     {
         // create the upload directory if it doesn't already exists
         $objFolder = new Folder($this->uploadPath);

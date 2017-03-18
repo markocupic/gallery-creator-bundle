@@ -1008,7 +1008,8 @@ class tl_gallery_creator_albums extends Backend
     public function onsubmitCbCheckFolderSettings(Contao\DC_Table $dc)
     {
         // create the upload directory if it doesn't already exists
-        new Folder($this->uploadPath);
+        $objFolder = new Folder($this->uploadPath);
+        $objFolder->unprotect();
         Dbafs::addResource($this->uploadPath, false);
         if (!is_writable(TL_ROOT . '/' . $this->uploadPath))
         {
@@ -1469,6 +1470,7 @@ class tl_gallery_creator_albums extends Backend
         {
             // create the new folder and register it in tl_files
             $objFolder = new Folder ($this->uploadPath . '/' . $strAlias);
+            $objFolder->unprotect();
             $oFolder = Dbafs::addResource($objFolder->path, true);
             $objAlbum->assignedDir = $oFolder->uuid;
             $objAlbum->save();

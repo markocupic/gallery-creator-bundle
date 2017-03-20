@@ -321,7 +321,7 @@ class ce_gallery_creator extends Backend
 
 
         $selectedAlbums = $objContent->gc_publish_albums != '' ? deserialize($objContent->gc_publish_albums) : array();
-        $level = \MCupic\GalleryCreator\GcHelpers::getAlbumLevel($pid);
+        $level = GcHelpers::getAlbumLevel($pid);
         $db = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY ' . $str_sorting)->execute($pid, 1);
         while ($db->next()) {
             $checked = in_array($db->id, $selectedAlbums) ? ' checked' : '';

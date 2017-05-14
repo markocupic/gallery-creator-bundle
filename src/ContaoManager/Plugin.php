@@ -27,7 +27,8 @@ class Plugin implements BundlePluginInterface
     {
         return [
             BundleConfig::create('Markocupic\GalleryCreatorBundle\MarkocupicGalleryCreatorBundle')
-                ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle']),
+                ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle'])
+                ->setReplace(['gallery_creator']),
         ];
     }
 }

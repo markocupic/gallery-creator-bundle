@@ -29,7 +29,8 @@
       "Markocupic\\GalleryCreatorBundle\\": "src/"
     },
     "classmap": [
-      "src/Resources/contao"
+      "src/Resources/contao",
+      "src/ContaoManager"
     ],
     "exclude-from-classmap": [
       "src/Resources/contao/config",
@@ -37,5 +38,8 @@
       "src/Resources/contao/languages",
       "src/Resources/contao/templates"
     ]
+  },
+  "extra": {
+     "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
   }
 }

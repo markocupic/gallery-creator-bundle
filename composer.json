@@ -29,7 +29,7 @@
       "Markocupic\\GalleryCreatorBundle\\": "src/"
     },
     "classmap": [
-      "src/Resources/contao",
+      "src/Resources/contao"
     ],
     "exclude-from-classmap": [
       "src/Resources/contao/config",

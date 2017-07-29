@@ -16,7 +16,7 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
     <div class="fallback">
         <input type="file" name="<?= $this->strName ?>[]" multiple>
     </div>
-    <div class="dz-container">
+    <div class="dropzone">
         <div class="dz-default dz-message">
             <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
         </div>

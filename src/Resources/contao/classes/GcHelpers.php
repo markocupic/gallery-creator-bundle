@@ -325,7 +325,7 @@ class GcHelpers extends \System
 
 		// Create the template object
 		$objTemplate = new \BackendTemplate($uploader);
-
+        $objTemplate->maximumUploadSize = static::getMaximumUploadSize();
 
 		// MaxFileSize
 		$objTemplate->maxFileSize = $GLOBALS['TL_CONFIG']['maxFileSize'];
@@ -336,6 +336,33 @@ class GcHelpers extends \System
 		// Parse the jumloader view and return it
 		return $objTemplate->parse();
 	}
+
+    /**
+     * Return the maximum upload file size in bytes
+     *
+     * @return string
+     */
+    public static function getMaximumUploadSize()
+    {
+        // Get the upload_max_filesize from the php.ini
+        $upload_max_filesize = ini_get('upload_max_filesize');
+
+        // Convert the value to bytes
+        if (stripos($upload_max_filesize, 'K') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024);
+        }
+        elseif (stripos($upload_max_filesize, 'M') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024);
+        }
+        elseif (stripos($upload_max_filesize, 'G') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024 * 1024);
+        }
+
+        return min($upload_max_filesize, \Config::get('maxFileSize'));
+    }
 
 	/**
 	 * Returns the information-array about an album

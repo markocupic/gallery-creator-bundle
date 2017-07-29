@@ -39,6 +39,6 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
         });
 
     </script>
-    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->getMaximumUploadSize()), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
+    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maximumUploadSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
     <noscript>Javascript ist in Ihrem Browser deaktiviert.</noscript>
 </div>

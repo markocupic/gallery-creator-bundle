@@ -24,6 +24,7 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
     </div>
     <script>
         window.addEvent("domready", function () {
+            Dropzone.autoDiscover = false;
             new Dropzone("#tl_gallery_creator_albums", {
                 paramName: "<?= $this->strName ?>",
                 maxFilesize: <?= $intMaxSize ?>,

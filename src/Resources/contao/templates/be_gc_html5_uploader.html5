@@ -6,8 +6,8 @@ $intMaxSize = $this->maxFileSize / 1048576;
 $strAccepted = ".jpg,.jpeg,.png,.gif";
 
 // Add the scripts
-$GLOBALS['TL_CSS'][] = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
-$GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
+$GLOBALS['TL_CSS'][] = 'assets/dropzone/css/dropzone.min.css';
+$GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
 ?>
 
 <div class="long widget">
@@ -29,16 +29,16 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZO
                 maxFilesize: <?= $intMaxSize ?>,
                 acceptedFiles: "<?= $strAccepted ?>",
                 previewsContainer: ".dropzone-previews",
+                clickable: ".dropzone",
                 uploadMultiple: true
-            }).on("processing", function () {
-                    //$$(".dz-message").setStyle("padding", "12px 18px 0");
-                }).on("success", function (objFile, responseString, xhrProgressEvent) {
-                    // Add code here
-                });
+            }).on("success", function (objFile, responseString, xhrProgressEvent) {
+                // Add code here
+            }).on("addedfile", function() {
+                $$(".dz-message").setStyle("display", "none");
+            });
         });
 
     </script>
-    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maxFileSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
-
+    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->getMaximumUploadSize()), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
     <noscript>Javascript ist in Ihrem Browser deaktiviert.</noscript>
 </div>

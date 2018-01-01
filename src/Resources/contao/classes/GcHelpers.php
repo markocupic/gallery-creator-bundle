@@ -136,7 +136,7 @@ class GcHelpers extends \System
 
 
             // Check for a valid preview-thumb for the album
-            if ($objAlbumModel->thumb == "")
+            if (!$objAlbumModel->thumb)
             {
                 $objAlbumModel->thumb = $insertId;
                 $objAlbumModel->save();

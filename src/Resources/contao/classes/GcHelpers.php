@@ -27,16 +27,6 @@ use Patchwork\Utf8\Patchwork;
  */
 class GcHelpers extends \System
 {
-    // For debugging ajax
-    public static function email($content)
-    {
-        $objEmail = new \Contao\Email();
-        $objEmail->subject = 'test';
-        $objEmail->text = $content;
-        $objEmail->sendTo('m.cupic@gmx.ch');
-
-    }
-
 
     /**
      * @param $intAlbumId

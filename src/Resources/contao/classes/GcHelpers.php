@@ -101,6 +101,12 @@ class GcHelpers extends \System
         // Set uuid before model is saved the first time!!!
         $objPictureModel->uuid = $objFilesModel->uuid;
         $objPictureModel->save();
+
+        /**
+         * @error  Do not set uuid after model was saved the first time
+         */
+        //$objPictureModel->uuid = $objFilesModel->uuid;
+
         $insertId = $objPictureModel->id;
 
 

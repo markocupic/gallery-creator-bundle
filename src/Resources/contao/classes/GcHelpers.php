@@ -25,8 +25,18 @@ use Patchwork\Utf8\Patchwork;
  */
 class GcHelpers extends \System
 {
+    // For debugging ajax
+	public static function email($content)
+    {
+        $objEmail = new \Contao\Email();
+        $objEmail->subject = 'test';
+        $objEmail->text = $content;
+        $objEmail->sendTo('m.cupic@gmx.ch');
 
-	/**
+    }
+
+
+    /**
 	 * insert a new entry in tl_gallery_creator_pictures
 	 *
 	 * @param integer
@@ -37,12 +47,15 @@ class GcHelpers extends \System
 	 */
 	public static function createNewImage($intAlbumId, $strFilepath)
 	{
-		//get the file-object
+	    //get the file-object
 		$objFile = new \File($strFilepath);
 		if (!$objFile->isGdImage)
 		{
 			return false;
 		}
+
+        // Get files model
+        $objFilesModel = $objFile->getModel();
 
 		//get the album-object
 		$objAlbum = \GalleryCreatorAlbumsModel::findById($intAlbumId);
@@ -71,16 +84,18 @@ class GcHelpers extends \System
 
 		// Get the album object and the alias
 		$strAlbumAlias = $objAlbum->alias;
+
 		// Db insert
 		$objImg = new \GalleryCreatorPicturesModel();
 		$objImg->tstamp = time();
 		$objImg->pid = $objAlbum->id;
 		$objImg->externalFile = $blnExternalFile ? "1" : "";
-		$objImg->save();
+        $objImg->uuid = $objFilesModel->uuid;
+        $objImg->save();
+        $insertId = $objImg->id;
 
 
-		$insertId = $objImg->id;
-		// Get the next sorting index
+        // Get the next sorting index
 		$objImg_2 = \Database::getInstance()->prepare('SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid=?')->execute($objAlbum->id);
 		$sorting = $objImg_2->maximum;
 
@@ -106,16 +121,11 @@ class GcHelpers extends \System
 				$userId = $objAlbum->owner;
 			}
 
-			// Get the FilesModel
-			$objFileModel = \FilesModel::findByPath($objFile->path);
-
-			// Finally save the new image in tl_gallery_creator_pictures
-			$objImg->uuid = $objFileModel->uuid;
-			$objImg->owner = $userId;
+            // Finally save the new image in tl_gallery_creator_pictures
+            $objImg->owner = $userId;
 			$objImg->date = $objAlbum->date;
 			$objImg->sorting = $sorting;
 			$objImg->save();
-
 			\System::log('A new version of tl_gallery_creator_pictures ID ' . $insertId . ' has been created', __METHOD__, TL_GENERAL);
 
 			// Check for a valid preview-thumb for the album
@@ -1010,7 +1020,6 @@ class GcHelpers extends \System
 			$owner = "no-name";
 		}
 		$objAlbum->owners_name = $owner;
-		$objAlbum->save();
 
 		// Check for valid pid
 		if ($objAlbum->pid > 0)
@@ -1019,12 +1028,14 @@ class GcHelpers extends \System
 			if ($objParentAlb === null)
 			{
 				$objAlbum->pid = null;
-				$objAlbum->save();
 			}
 		}
 
+        $objAlbum->save();
 
-		if (\Database::getInstance()->fieldExists('path', 'tl_gallery_creator_pictures'))
+
+
+        if (\Database::getInstance()->fieldExists('path', 'tl_gallery_creator_pictures'))
 		{
 
 			// Datensaetzen ohne gültige uuid über den Feldinhalt path versuchen zu "retten"

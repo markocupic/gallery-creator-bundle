@@ -31,7 +31,7 @@ $GLOBALS['TL_LANG']['gallery_creator']['contains'] = "enthält";
 $GLOBALS['TL_LANG']['gallery_creator']['visitors'] = "Aufrufe";
 $GLOBALS['TL_LANG']['gallery_creator']['fe_authentification_error']['0'] = "Authentifizierungsfehler";
 $GLOBALS['TL_LANG']['gallery_creator']['fe_authentification_error']['1'] = "Der Zugriff auf dieses Album wurde verweigert. Bitte melden Sie sich als Frontend-User an oder überprüfen Sie Ihre Benutzerrechte.";
-$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] = "Soll das Album mit der ID %s gelöscht werden? \nAchtung! \nEs werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht!!!";
-$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'] = "Soll das Bild mit der ID %s gelöscht werden? \nAchtung! \nEs wird auch die Bilddatei aus dem Verzeichnis gelöscht!!!";
+$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] = "Soll das Album mit der ID %s gelöscht werden? \\r\\nAchtung! Es werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht!!!";
+$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'] = "Soll das Bild mit der ID %s gelöscht werden? \\r\\nAchtung! Es wird auch die Bilddatei aus dem Verzeichnis gelöscht!!!";
  
 ?>

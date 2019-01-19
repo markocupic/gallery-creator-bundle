@@ -88,7 +88,7 @@ class GcHelpers extends \System
         $objPictureModel->tstamp = time();
         $objPictureModel->pid = $objAlbumModel->id;
         $objPictureModel->externalFile = $blnExternalFile ? "1" : "";
-        // If contao version < 4.5.4: Set uuid before model is saved the first time!!!
+        // Set uuid before model is saved the first time!!!
         $objPictureModel->uuid = $objFilesModel->uuid;
         $objPictureModel->save();
 

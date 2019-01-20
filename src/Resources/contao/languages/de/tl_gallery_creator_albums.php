@@ -95,4 +95,4 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['messages']['revise_database'] 
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][0] = 'Dateitypen';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1] = 'Akzeptierte Dateiendungen: %s.';
 
-?>
+

@@ -54,7 +54,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
         ),
         'label'             => array(
             'fields'         => array('name'),
-            'format'         => '<span style="#padding-left#"><a href="#href#" title="#title#"><img src="#icon#"></span> #datum# <span style="color:#b3b3b3; padding-left:3px;">[%s] [#count_pics# images]</span></a>',
+            'format'         => '<span style="#padding-left#"><a href="#href#" title="#title#"><img src="#icon#"></span> %s <span style="color:#b3b3b3; padding-left:3px;">[#datum#] [#count_pics# images]</span></a>',
             'label_callback' => array('tl_gallery_creator_albums', 'labelCb'),
         ),
         'global_operations' => array(
@@ -72,6 +72,13 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             ),
         ),
         'operations'        => array(
+            'editheader' => array
+            (
+                'label'               => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'],
+                'href'                => 'act=edit',
+                'icon'                => 'header.svg',
+                'button_callback' => array('tl_gallery_creator_albums', 'buttonCbEditHeader'),
+            ),
             'edit'          => array(
                 'label'           => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['list_pictures'],
                 'href'            => 'table=tl_gallery_creator_pictures',
@@ -528,6 +535,23 @@ class tl_gallery_creator_albums extends Backend
     }
 
     /**
+     * Return the editheader-button
+     *
+     * @param array
+     * @param string
+     * @param string
+     * @param string
+     * @param string
+     * @param string
+     * @return string
+     */
+    public function buttonCbEditHeader($row, $href, $label, $title, $icon, $attributes)
+    {
+
+        return '<a href="' . $this->addToUrl($href . '&id=' . $row['id'], 1) . '" title="' . specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label) . '</a> ';
+    }
+
+    /**
      * Return the edit-button
      *
      * @param array
@@ -836,7 +860,7 @@ class tl_gallery_creator_albums extends Backend
 
         $mysql = $this->Database->prepare('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid=?')->execute($row['id']);
         $label = str_replace('#count_pics#', $mysql->countImg, $label);
-        $label = str_replace('#datum#', date('Y-m-d', $row['date']), $label);
+        $label = str_replace('#datum#', \Date::parse(\Config::get('dateFormat'), $row['date']), $label);
         $image = $row['published'] ? 'picture_edit.png' : 'picture_edit_1.png';
         $label = str_replace('#icon#', "bundles/markocupicgallerycreator/images/" . $image, $label);
         $href = sprintf("contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s", $row['id'], REQUEST_TOKEN, TL_REFERER_ID);

@@ -1,11 +1,11 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of Gallery Creator Bundle and an extension for the Contao CMS.
  *
- * Copyright (c) 2005-2017 Leo Feyer
+ * (c) Marko Cupic
  *
- * @license LGPL-3.0+
+ * @license MIT
  */
 
 /**
@@ -16,6 +16,7 @@ namespace Markocupic\GalleryCreatorBundle;
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
 use Symfony\Component\Form\Util\StringUtil;
+use Patchwork\Utf8;
 
 /**
  * Class ContentGalleryCreator
@@ -76,7 +77,7 @@ class ContentGalleryCreator extends \ContentElement
         if (TL_MODE == 'BE')
         {
             $objTemplate = new \BackendTemplate('be_wildcard');
-            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['CTE']['gallery_creator_ce'][0] . ' ###';
+            $objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['CTE']['gallery_creator_ce'][0]) . ' ###';
 
             $objTemplate->title = $this->headline;
 
@@ -106,7 +107,7 @@ class ContentGalleryCreator extends \ContentElement
 
 
         // set the item from the auto_item parameter
-        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item']))
+        if (\Config::get('useAutoItem') && isset($_GET['auto_item']))
         {
             \Input::setGet('items', \Input::get('auto_item'));
         }
@@ -475,7 +476,7 @@ class ContentGalleryCreator extends \ContentElement
                 }
                 // Get the page model
                 $objPageModel = \PageModel::findByPk($objPage->id);
-                $this->Template->returnHref = $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . \Input::get('items'), $objPage->language);
+                $this->Template->returnHref = $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items'), $objPage->language);
                 $this->Template->arrPictures = $arrPictures;
 
                 // generate other template variables
@@ -732,7 +733,7 @@ class ContentGalleryCreator extends \ContentElement
         //Das Event-Datum des Albums als unix-timestamp
         $this->Template->eventTstamp = $objAlbum->date;
         //Das Event-Datum des Albums formatiert
-        $this->Template->eventDate = \Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $objAlbum->date);
+        $this->Template->eventDate = \Date::parse(\Config::get('dateFormat'), $objAlbum->date);
         //Abstaende
         $this->Template->imagemargin = $this->viewMode == 'detail_view' ? $this->generateMargin(deserialize($this->gc_imagemargin_detailview), 'margin') : $this->generateMargin(deserialize($this->gc_imagemargin_albumlisting), 'margin');
         //Anzahl Spalten pro Reihe
@@ -766,7 +767,7 @@ class ContentGalleryCreator extends \ContentElement
         if ($this->gc_hierarchicalOutput && GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId))
         {
             $arrParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId);
-            return $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . $arrParentAlbum["alias"]);
+            return $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . $arrParentAlbum["alias"]);
         }
 
         //generiert den Link zur Startuebersicht unter Beruecksichtigung der pagination

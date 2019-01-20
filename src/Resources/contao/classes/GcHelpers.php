@@ -1,12 +1,11 @@
 <?php
 
-/**
- * Contao Open Source CMS
- * Copyright (C) 2005-2015 Leo Feyer
+/*
+ * This file is part of Gallery Creator Bundle and an extension for the Contao CMS.
  *
- * @package Gallery Creator
- * @link    http://www.contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * (c) Marko Cupic
+ *
+ * @license MIT
  */
 
 /**
@@ -376,7 +375,7 @@ class GcHelpers extends \System
         if (TL_MODE == 'FE')
         {
             // Generate the url as a formated string
-            $href = $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/%s' : '/items/%s'), $objPage->language);
+            $href = $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language);
             // Add albumAlias
             $href = sprintf($href, $objAlbum->alias);
         }
@@ -425,7 +424,7 @@ class GcHelpers extends \System
             'event_tstamp' => $objAlbum->date,
             'date' => $objAlbum->date,
             //[string] Event-Datum (formatiert)
-            'event_date' => \Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $objAlbum->date),
+            'event_date' => \Date::parse(\Config::get('dateFormat'), $objAlbum->date),
             //[string] Event-Location
             'event_location' => specialchars($objAlbum->event_location),
             //[string] Albumname
@@ -615,7 +614,7 @@ class GcHelpers extends \System
 
 
         // Exif
-        if ($GLOBALS['TL_CONFIG']['gc_read_exif'])
+        if (\Config::get('gc_read_exif'))
         {
             try
             {
@@ -685,7 +684,7 @@ class GcHelpers extends \System
             //[string] path to media (video, picture, sound...)
             'href' => $href,
             // single image url
-            'single_image_url' => $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . \Input::get('items') . '/img/' . $arrFile["filename"], $objPage->language),
+            'single_image_url' => $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items') . '/img/' . $arrFile["filename"], $objPage->language),
             //[string] path to the image,
             'image_src' => $arrFile["path"],
             //[string] path to the other selected media
@@ -928,7 +927,7 @@ class GcHelpers extends \System
                 }
 
                 \Input::setGet('importFromFilesystem', 'true');
-                if ($GLOBALS['TL_CONFIG']['gc_album_import_copy_files'])
+                if (\Config::get('gc_album_import_copy_files'))
                 {
 
                     $strSource = $image['path'];

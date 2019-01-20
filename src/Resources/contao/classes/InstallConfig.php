@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Marko
- * Date: 25.12.2016
- * Time: 20:17
+
+/*
+ * This file is part of Gallery Creator Bundle and an extension for the Contao CMS.
+ *
+ * (c) Marko Cupic
+ *
+ * @license MIT
  */
 
 namespace Markocupic\GalleryCreatorBundle;

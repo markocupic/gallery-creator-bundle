@@ -1,20 +1,17 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of Gallery Creator Bundle and an extension for the Contao CMS.
  *
- * Copyright (C) 2005-2015 Leo Feyer
+ * (c) Marko Cupic
  *
- * @package Gallery Creator
- * @link    http://www.contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license MIT
  */
 
 
 /**
  * error messages
  */
-
 $GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'] = 'The file "%s" doesn\'t exist on your server!';
 $GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. <br>Please clean up the database or check the existence of %s in the album with alias: %s!';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded!';
@@ -23,16 +20,10 @@ $GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'The file "%s" ist not readable!
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
 $GLOBALS['TL_LANG']['ERR']['accept_jpg'] = 'Gallery Creator only supports jpeg/jpg files.';
 
-/**
- * jumploader
- */
-$GLOBALS['TL_LANG']['ERR']['upploadSuccessful'] = 'File successfully uploaded to the server.';
-
 
 /**
  * frontend
  */
-
 $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] = 'back to general view';
 $GLOBALS['TL_LANG']['gallery_creator']['subalbums'] = 'subalbums';
 $GLOBALS['TL_LANG']['gallery_creator']['subalbums_of'] = 'Subalbums of';

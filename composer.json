@@ -1,14 +1,14 @@
 {
   "name": "markocupic/gallery-creator-bundle",
-  "keywords": ["contao","Gallery Creator","album plugin", "gallery_creator gallery-creator-bundle"],
+  "keywords": ["contao","Gallery Creator","album plugin","gallery_creator gallery-creator-bundle"],
   "type": "contao-bundle",
   "description": "Contao 4 Gallery Extension",
-  "license": "LGPL-3.0+",
+  "license": "MIT",
   "authors": [
     {
       "name": "Marko Cupic",
       "email": "m.cupic@gmx.ch",
-      "homepage": "https://4ae-racing-team.ch",
+      "homepage": "https://github.com/markocupic",
       "role": "Developer"
     }
   ],

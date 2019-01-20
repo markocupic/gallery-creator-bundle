@@ -1,11 +1,11 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of Gallery Creator Bundle and an extension for the Contao CMS.
  *
- * Copyright (c) 2005-2017 Leo Feyer
+ * (c) Marko Cupic
  *
- * @license LGPL-3.0+
+ * @license MIT
  */
 
 /**

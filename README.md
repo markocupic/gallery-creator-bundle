@@ -54,7 +54,7 @@ class MyGalleryCreatorClass extends \System
               return $objModule->Template;
        }
 }
-```
+``` 
 
 
 Viel Spass mit Gallery Creator!!!

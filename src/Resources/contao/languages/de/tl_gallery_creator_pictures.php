@@ -35,7 +35,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['sorting']['0'] = "Sortierrei
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename']['0'] = "Dateiname";
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path']['0'] = "Pfad";
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC']['0'] = "Alternativ zum Grossbild einen Film oder einen Sound von einer Social-Media-Plattform wiedergeben";
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC']['1'] = "Geben Sie den vollen Pfad zum Medium an: http://www.youtube.com/watch?v=kVdVTVR-j0Q";
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC']['1'] = "Geben Sie den vollen Pfad zum Medium an: https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&wmode=transparent";
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC']['0'] = "Video oder Sound aus dem Contao-File-System wiedergeben";
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cssID']['0'] = "CSS-ID/Klasse";
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cssID']['1'] = "Hier können Sie dem Bild eine ID und beliebig viele Klassen zuordnen.";

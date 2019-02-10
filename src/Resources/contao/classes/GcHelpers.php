@@ -418,6 +418,8 @@ class GcHelpers extends \System
             'owner' => $objAlbum->owner,
             //[string] Benutzername des Albumbesitzers
             'owners_name' => $objAlbum->owners_name,
+            //[string] Photographers names
+            'photographer' => $objAlbum->photographer,
             //[int] Zeitstempel der letzten Aenderung
             'tstamp' => $objAlbum->tstamp,
             //[int] Event-Unix-timestamp (unformatiert)
@@ -500,7 +502,7 @@ class GcHelpers extends \System
             $objFile = \FilesModel::findByUuid(\Config::get('gc_error404_thumb'));
             if ($objFile !== null)
             {
-                if (\Validator::isUuid(\Config::get('gc_error404_thumb')))
+                if (\Validator::isStringUuid(\Config::get('gc_error404_thumb')))
                 {
                     if (is_file(TL_ROOT . '/' . $objFile->path))
                     {
@@ -632,7 +634,7 @@ class GcHelpers extends \System
 
         // Video-integration
         $strMediaSrc = trim($objPicture->socialMediaSRC) != "" ? trim($objPicture->socialMediaSRC) : "";
-        if (\Validator::isUuid($objPicture->localMediaSRC))
+        if (\Validator::isBinaryUuid($objPicture->localMediaSRC))
         {
             // Get path of a local Media
             $objMovieFile = \FilesModel::findById($objPicture->localMediaSRC);
@@ -1029,7 +1031,7 @@ class GcHelpers extends \System
                             if (is_file(TL_ROOT . '/' . $objPictures->path))
                             {
                                 $objModel = \Dbafs::addResource($objPictures->path);
-                                if (\Validator::isUuid($objModel->uuid))
+                                if ($objModel !== null)
                                 {
                                     $objPictures->uuid = $objModel->uuid;
                                     $objPictures->save();

@@ -117,7 +117,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
     // Palettes
     'palettes'    => array(
         '__selector__'    => array('protected'),
-        'default'         => '{album_info},published,name,alias,description,keywords,assignedDir,album_info,owner,date,event_location,filePrefix,sortBy,comment,visitors;{album_preview_thumb_legend},thumb;{insert_article},insert_article_pre,insert_article_post;{protection:hide},protected',
+        'default'         => '{album_info},published,name,alias,description,keywords,assignedDir,album_info,owner,photographer,date,event_location,filePrefix,sortBy,comment,visitors;{album_preview_thumb_legend},thumb;{insert_article},insert_article_pre,insert_article_post;{protection:hide},protected',
         'restricted_user' => '{album_info},link_edit_images,album_info',
         'fileupload'      => '{upload_settings},preserve_filename,img_resolution,img_quality;{uploader_legend},uploader,fileupload',
         'import_images'   => '{upload_settings},preserve_filename,multiSRC',
@@ -171,6 +171,13 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             'default' => BackendUser::getInstance()->name,
             'eval'    => array('doNotShow' => true, 'tl_class' => 'w50 readonly'),
             'sql'     => "text NULL",
+        ),
+        'photographer'      => array(
+            'label'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval'      => array('mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false),
+            'sql'       => "varchar(255) NOT NULL default ''",
         ),
         'event_location'      => array(
             'label'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['event_location'],

@@ -211,7 +211,7 @@ class tl_gallery_creator_pictures extends Backend
             $src = trim($arrRow['socialMediaSRC']) != "" ? trim($arrRow['socialMediaSRC']) : $src;
 
             // local media (movies, etc.)
-            if (Validator::isUuid($arrRow['localMediaSRC']))
+            if (Validator::isBinaryUuid($arrRow['localMediaSRC']))
             {
                 $lmSRC = FilesModel::findByUuid($arrRow['localMediaSRC']);
                 if ($lmSRC !== null)

@@ -94,5 +94,5 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['custom'] = "Individuelle Reihe
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['messages']['revise_database'] = "Datenbank bereinigen: Beschädigte/ungültige/verwaiste Datenbankeinträge entfernen ";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][0] = 'Dateitypen';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1] = 'Akzeptierte Dateiendungen: %s.';
-
-
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'][0] = 'Fotografen-Namen';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'][1] = 'Bitte geben Sie den/die Namen des/der Fotografen an.';

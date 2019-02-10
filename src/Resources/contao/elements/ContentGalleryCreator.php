@@ -640,10 +640,10 @@ class ContentGalleryCreator extends \ContentElement
         // Check for an alternate thumbnail
         if (\Config::get('gc_error404_thumb') !== '')
         {
-            $objFile = \FilesModel::findByUuid(\Config::get('gc_error404_thumb'));
-            if ($objFile !== null)
+            if (\Validator::isStringUuid(\Config::get('gc_error404_thumb')))
             {
-                if (\Validator::isUuid(\Config::get('gc_error404_thumb')))
+                $objFile = \FilesModel::findByUuid(\StringUtil::uuidToBin(\Config::get('gc_error404_thumb')));
+                if ($objFile !== null)
                 {
                     if (is_file(TL_ROOT . '/' . $objFile->path))
                     {

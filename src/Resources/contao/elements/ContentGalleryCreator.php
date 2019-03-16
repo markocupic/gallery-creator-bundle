@@ -15,7 +15,7 @@ namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Symfony\Component\Form\Util\StringUtil;
+use Contao\StringUtil;
 use Patchwork\Utf8;
 
 /**
@@ -136,7 +136,7 @@ class ContentGalleryCreator extends \ContentElement
         else
         {
             // if only selected albums should be shown
-            $this->arrSelectedAlbums = deserialize($this->gc_publish_albums, true);
+            $this->arrSelectedAlbums = StringUtil::deserialize($this->gc_publish_albums, true);
         }
 
         // clean array from unpublished or empty or protected albums
@@ -550,7 +550,7 @@ class ContentGalleryCreator extends \ContentElement
                 }
 
                 $this->import('FrontendUser', 'User');
-                $groups = deserialize($objAlb->groups);
+                $groups = StringUtil::deserialize($objAlb->groups);
 
                 if (!FE_USER_LOGGED_IN || !is_array($groups) || count($groups) < 1 || !array_intersect($groups, $this->User->groups))
                 {
@@ -613,10 +613,11 @@ class ContentGalleryCreator extends \ContentElement
                     $href = trim($objPicture->socialMediaSRC) != "" ? trim($objPicture->socialMediaSRC) : $href;
                     $href = trim($objPicture->localMediaSRC) != "" ? trim($objPicture->localMediaSRC) : $href;
                     $arrPicture = array(
-                        'href' => specialchars($href),
-                        'caption' => specialchars($objPicture->comment),
+                        'href' => StringUtil::specialchars($href),
+                        'pid' => $objPicture->pid,
+                        'caption' => StringUtil::specialchars($objPicture->comment),
                         'id' => $objPicture->id,
-                        'uuid' => \StringUtil::binToUuid($objFile->uuid)
+                        'uuid' => StringUtil::binToUuid($objFile->uuid)
                     );
                     $response[] = array_merge($objPicture->row(), $arrPicture);
                 }
@@ -642,7 +643,7 @@ class ContentGalleryCreator extends \ContentElement
         {
             if (\Validator::isStringUuid(\Config::get('gc_error404_thumb')))
             {
-                $objFile = \FilesModel::findByUuid(\StringUtil::uuidToBin(\Config::get('gc_error404_thumb')));
+                $objFile = \FilesModel::findByUuid(StringUtil::uuidToBin(\Config::get('gc_error404_thumb')));
                 if ($objFile !== null)
                 {
                     if (is_file(TL_ROOT . '/' . $objFile->path))
@@ -725,7 +726,7 @@ class ContentGalleryCreator extends \ContentElement
         // Albumbesucher (Anzahl Klicks)
         $this->Template->visitors = $objAlbum->vistors;
         //Der Kommentar zum gewaehlten Album
-        $this->Template->albumComment = $objPage->outputFormat == 'xhtml' ? \StringUtil::toXhtml($objAlbum->comment) : \StringUtil::toHtml5($objAlbum->comment);
+        $this->Template->albumComment = $objPage->outputFormat == 'xhtml' ? StringUtil::toXhtml($objAlbum->comment) : StringUtil::toHtml5($objAlbum->comment);
         // In der Detailansicht kann optional ein Artikel vor dem Album hinzugefuegt werden
         $this->Template->insertArticlePre = $objAlbum->insert_article_pre ? sprintf('{{insert_article::%s}}', $objAlbum->insert_article_pre) : null;
         // In der Detailansicht kann optional ein Artikel nach dem Album hinzugefuegt werden
@@ -803,7 +804,7 @@ class ContentGalleryCreator extends \ContentElement
             }
 
 
-            $arrVisitors = deserialize($objAlbum->visitors_details, true);
+            $arrVisitors = StringUtil::deserialize($objAlbum->visitors_details, true);
             // keep visiors data in the db unless 50 other users have visited the album
             if (count($arrVisitors) == 50)
             {

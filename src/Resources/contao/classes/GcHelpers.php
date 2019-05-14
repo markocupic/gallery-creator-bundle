@@ -247,6 +247,7 @@ class GcHelpers extends \System
         if (\Input::post('img_resolution') > 1)
         {
             \Config::set('imageWidth', \Input::post('img_resolution'));
+            \Config::set('imageHeight', 999999999);
             \Config::set('jpgQuality', \Input::post('img_quality'));
         }
         else

@@ -1,13 +1,14 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (C) 2005-2015 Leo Feyer
  *
- * @license MIT
+ * @package Gallery Creator
+ * @link    http://www.contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
-
 
 
 /**

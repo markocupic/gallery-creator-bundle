@@ -1,11 +1,12 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
+ * Copyright (C) 2005-2015 Leo Feyer
  *
- * (c) Marko Cupic
- *
- * @license MIT
+ * @package Gallery Creator
+ * @link    http://www.contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
 /**
@@ -14,7 +15,6 @@
 
 namespace Markocupic\GalleryCreatorBundle;
 
-use Contao\FileUpload;
 use Patchwork\Utf8\Patchwork;
 
 
@@ -247,7 +247,6 @@ class GcHelpers extends \System
         if (\Input::post('img_resolution') > 1)
         {
             \Config::set('imageWidth', \Input::post('img_resolution'));
-            \Config::set('imageHeight', 999999999);
             \Config::set('jpgQuality', \Input::post('img_quality'));
         }
         else
@@ -338,15 +337,43 @@ class GcHelpers extends \System
 
         // Create the template object
         $objTemplate = new \BackendTemplate($uploader);
+        $objTemplate->maximumUploadSize = static::getMaximumUploadSize();
 
-        // Maximum uploaded size
-        $objTemplate->maxUploadedSize = FileUpload::getMaxUploadSize();
+        // MaxFileSize
+        $objTemplate->maxFileSize = $GLOBALS['TL_CONFIG']['maxFileSize'];
 
         // $_FILES['file']
         $objTemplate->strName = 'file';
 
         // Parse the jumloader view and return it
         return $objTemplate->parse();
+    }
+
+    /**
+     * Return the maximum upload file size in bytes
+     *
+     * @return string
+     */
+    public static function getMaximumUploadSize()
+    {
+        // Get the upload_max_filesize from the php.ini
+        $upload_max_filesize = ini_get('upload_max_filesize');
+
+        // Convert the value to bytes
+        if (stripos($upload_max_filesize, 'K') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024);
+        }
+        elseif (stripos($upload_max_filesize, 'M') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024);
+        }
+        elseif (stripos($upload_max_filesize, 'G') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024 * 1024);
+        }
+
+        return min($upload_max_filesize, \Config::get('maxFileSize'));
     }
 
     /**
@@ -376,7 +403,7 @@ class GcHelpers extends \System
         if (TL_MODE == 'FE')
         {
             // Generate the url as a formated string
-            $href = $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language);
+            $href = $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/%s' : '/items/%s'), $objPage->language);
             // Add albumAlias
             $href = sprintf($href, $objAlbum->alias);
         }
@@ -419,15 +446,13 @@ class GcHelpers extends \System
             'owner' => $objAlbum->owner,
             //[string] Benutzername des Albumbesitzers
             'owners_name' => $objAlbum->owners_name,
-            //[string] Photographers names
-            'photographer' => $objAlbum->photographer,
             //[int] Zeitstempel der letzten Aenderung
             'tstamp' => $objAlbum->tstamp,
             //[int] Event-Unix-timestamp (unformatiert)
             'event_tstamp' => $objAlbum->date,
             'date' => $objAlbum->date,
             //[string] Event-Datum (formatiert)
-            'event_date' => \Date::parse(\Config::get('dateFormat'), $objAlbum->date),
+            'event_date' => \Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $objAlbum->date),
             //[string] Event-Location
             'event_location' => specialchars($objAlbum->event_location),
             //[string] Albumname
@@ -503,7 +528,7 @@ class GcHelpers extends \System
             $objFile = \FilesModel::findByUuid(\Config::get('gc_error404_thumb'));
             if ($objFile !== null)
             {
-                if (\Validator::isStringUuid(\Config::get('gc_error404_thumb')))
+                if (\Validator::isUuid(\Config::get('gc_error404_thumb')))
                 {
                     if (is_file(TL_ROOT . '/' . $objFile->path))
                     {
@@ -617,7 +642,7 @@ class GcHelpers extends \System
 
 
         // Exif
-        if (\Config::get('gc_read_exif'))
+        if ($GLOBALS['TL_CONFIG']['gc_read_exif'])
         {
             try
             {
@@ -635,7 +660,7 @@ class GcHelpers extends \System
 
         // Video-integration
         $strMediaSrc = trim($objPicture->socialMediaSRC) != "" ? trim($objPicture->socialMediaSRC) : "";
-        if (\Validator::isBinaryUuid($objPicture->localMediaSRC))
+        if (\Validator::isUuid($objPicture->localMediaSRC))
         {
             // Get path of a local Media
             $objMovieFile = \FilesModel::findById($objPicture->localMediaSRC);
@@ -687,7 +712,7 @@ class GcHelpers extends \System
             //[string] path to media (video, picture, sound...)
             'href' => $href,
             // single image url
-            'single_image_url' => $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items') . '/img/' . $arrFile["filename"], $objPage->language),
+            'single_image_url' => $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . \Input::get('items') . '/img/' . $arrFile["filename"], $objPage->language),
             //[string] path to the image,
             'image_src' => $arrFile["path"],
             //[string] path to the other selected media
@@ -930,7 +955,7 @@ class GcHelpers extends \System
                 }
 
                 \Input::setGet('importFromFilesystem', 'true');
-                if (\Config::get('gc_album_import_copy_files'))
+                if ($GLOBALS['TL_CONFIG']['gc_album_import_copy_files'])
                 {
 
                     $strSource = $image['path'];
@@ -1032,7 +1057,7 @@ class GcHelpers extends \System
                             if (is_file(TL_ROOT . '/' . $objPictures->path))
                             {
                                 $objModel = \Dbafs::addResource($objPictures->path);
-                                if ($objModel !== null)
+                                if (\Validator::isUuid($objModel->uuid))
                                 {
                                     $objPictures->uuid = $objModel->uuid;
                                     $objPictures->save();

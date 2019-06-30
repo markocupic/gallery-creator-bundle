@@ -1,13 +1,14 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
- *
- * (c) Marko Cupic
- *
- * @license MIT
+/**
+ * Contao Open Source CMS
+ * 
+ * Copyright (C) 2005-2015 Leo Feyer
+ * 
+ * @package Gallery Creator
+ * @link    http://www.contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
-
 
 
 /**
@@ -35,7 +36,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['comment'] = array('Image-com
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['sorting'] = array('Sort sequence');
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename'] = array('Filename');
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path'] = array('Path');
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = array('Embed movies/sounds located on a social-media-plattform', 'Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&wmode=transparent');
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = array('Embed movies/sounds located on a social-media-plattform', 'Add the full path to the source:  http://www.youtube.com/watch?v=kVdVTVR-j0Q');
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC'] = array('Embed movies/sounds located on the contao-file-system');
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cssID'] = array('CSS ID/class', 'Here you can set an ID and one or more classes for this picture.');
 

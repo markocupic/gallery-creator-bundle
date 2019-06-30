@@ -1,4 +1,6 @@
 <?php
+// Maximum file size in MB
+$intMaxSize = $this->maxFileSize / 1048576;
 
 // String of accepted file extensions
 $strAccepted = ".jpg,.jpeg,.png,.gif";
@@ -25,14 +27,12 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
             Dropzone.autoDiscover = false;
             new Dropzone("#tl_gallery_creator_albums", {
                 paramName: "<?= $this->strName ?>",
-                maxFilesize: <?= round($this->maxUploadedSize / 1024 / 1024) ?>,
+                maxFilesize: <?= $intMaxSize ?>,
                 acceptedFiles: "<?= $strAccepted ?>",
                 previewsContainer: ".dropzone-previews",
                 clickable: ".dropzone",
-                timeout: 0,
-                dictFileTooBig: <?= json_encode($GLOBALS['TL_LANG']['tl_files']['dropzoneFileTooBig']) ?>,
-                dictInvalidFileType: <?= json_encode($GLOBALS['TL_LANG']['tl_files']['dropzoneInvalidType']) ?>
-        }).on("success", function (objFile, responseString, xhrProgressEvent) {
+                uploadMultiple: true
+            }).on("success", function (objFile, responseString, xhrProgressEvent) {
                 // Add code here
             }).on("addedfile", function() {
                 $$(".dz-message").setStyle("display", "none");
@@ -40,5 +40,6 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
         });
 
     </script>
-    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maxUploadedSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
+    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maximumUploadSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
+    <noscript>Javascript ist in Ihrem Browser deaktiviert.</noscript>
 </div>

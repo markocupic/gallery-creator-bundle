@@ -1,20 +1,21 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (c) 2005-2017 Leo Feyer
  *
- * @license MIT
+ * @license LGPL-3.0+
  */
-
 
 
 /**
  * Run in a custom namespace, so the class can be replaced
  */
-
 namespace Contao;
+
+use Contao\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 
 /**
@@ -23,10 +24,10 @@ namespace Contao;
 class GalleryCreatorPicturesModel extends \Model
 {
 
-    /**
-     * Table name
-     * @var string
-     */
-    protected static $strTable = 'tl_gallery_creator_pictures';
+       /**
+        * Table name
+        * @var string
+        */
+       protected static $strTable = 'tl_gallery_creator_pictures';
 
 }

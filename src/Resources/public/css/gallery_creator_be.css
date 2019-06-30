@@ -59,9 +59,9 @@ div.readonly input {
     position:relative;
 }
 .gc_check_tables .tl_status_box {
-    position:relative;
-    right:0;
-    top:5px;
+    position:absolute;
+    left:28px;
+    top:3px;
     font-size: 11px;
     color:green;
 }

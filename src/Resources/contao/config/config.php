@@ -1,17 +1,18 @@
 <?php
-
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (C) 2005-2015 Leo Feyer
  *
- * @license MIT
+ * @package Gallery Creator
+ * @link    http://www.contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
 /**
  * Define Constants
  */
-define('GALLERY_CREATOR_UPLOAD_PATH', \Config::get('uploadPath') . '/gallery_creator_albums');
+define('GALLERY_CREATOR_UPLOAD_PATH', $GLOBALS['TL_CONFIG']['uploadPath'] . '/gallery_creator_albums');
 
 /**
  * Front end content element
@@ -31,6 +32,7 @@ if (TL_MODE == 'BE' && Input::get('do') != 'news')
 }
 
 
+
 /**
  * Back end module
  */
@@ -38,12 +40,13 @@ if (TL_MODE == 'BE')
 {
 
     $GLOBALS['BE_MOD']['content']['gallery_creator'] = array(
-        'icon'   => 'bundles/markocupicgallerycreator/images/picture.png',
+        'icon' => 'bundles/markocupicgallerycreator/images/picture.png',
         'tables' => array(
             'tl_gallery_creator_albums',
             'tl_gallery_creator_pictures'
         )
     );
+
 
 
     // check tables script

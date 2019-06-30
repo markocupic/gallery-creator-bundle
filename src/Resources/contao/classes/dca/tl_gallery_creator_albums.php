@@ -50,7 +50,6 @@ class tl_gallery_creator_albums extends Backend
         {
             $this->redirect('contao/main.php?do=gallery_creator&clipboard=1');
         }
-
     }
 
     /**
@@ -66,7 +65,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbAddImages($row, $href, $label, $title, $icon, $attributes)
     {
-
         $href = $href . 'id=' . $row['id'] . '&act=edit&table=tl_gallery_creator_albums&mode=fileupload';
 
         return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . ' style="margin-right:5px">' . Image::getHtml($icon, $label) . '</a>';
@@ -85,7 +83,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
     {
-
         if (strlen(Input::get('tid')))
         {
             $this->toggleVisibility(Input::get('tid'), (Input::get('state') == 1));
@@ -123,7 +120,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function toggleVisibility($intId, $blnVisible)
     {
-
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($intId);
 
         // Check permissions to publish
@@ -173,7 +169,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbCutPicture($row, $href, $label, $title, $icon, $attributes)
     {
-
         // enable cutting albums to album-owners and admins only
         return (($this->User->id == $row['owner'] || $this->User->isAdmin || \Config::get('gc_disable_backend_edit_protection')) ? ' <a href="' . $this->addToUrl($href . '&id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label) . '</a> ' : ' ' . Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ');
     }
@@ -191,7 +186,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbDelete($row, $href, $label, $title, $icon, $attributes)
     {
-
         // enable deleting albums to album-owners and admins only
         return ($this->User->isAdmin || $this->User->id == $row['owner'] || \Config::get('gc_disable_backend_edit_protection')) ? '<a href="' . $this->addToUrl($href . '&id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label) . '</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
@@ -209,7 +203,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbEditHeader($row, $href, $label, $title, $icon, $attributes)
     {
-
         return '<a href="' . $this->addToUrl($href . '&id=' . $row['id'], 1) . '" title="' . specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label) . '</a> ';
     }
 
@@ -226,7 +219,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbEdit($row, $href, $label, $title, $icon, $attributes)
     {
-
         return '<a href="' . $this->addToUrl($href . '&id=' . $row['id'], 1) . '" title="' . specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label) . '</a> ';
     }
 
@@ -243,7 +235,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbImportImages($row, $href, $label, $title, $icon, $attributes)
     {
-
         $href = $href . 'id=' . $row['id'] . '&act=edit&table=tl_gallery_creator_albums&mode=import_images';
 
         return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label) . '</a>';
@@ -261,7 +252,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonCbPastePicture(\Contao\DataContainer $dc, $row, $table, $cr, $arrClipboard = false)
     {
-
         $disablePA = false;
         $disablePI = false;
         // Disable all buttons if there is a circular reference
@@ -287,7 +277,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function checkUserRole($albumId)
     {
-
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
         if ($this->User->isAdmin || \Config::get('gc_disable_backend_edit_protection'))
         {
@@ -304,7 +293,6 @@ class tl_gallery_creator_albums extends Backend
         $this->restrictedUser = false;
     }
 
-
     /**
      * return the album upload path
      *
@@ -312,7 +300,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public static function getUplaodPath()
     {
-
         return self::uploadPath;
     }
 
@@ -323,7 +310,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function inputFieldCbCleanDb()
     {
-
         $output = '
 <div class="widget revise_tables">
 <br><br>
@@ -342,7 +328,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function inputFieldCbGenerateAlbumInformations()
     {
-
         $objAlb = GalleryCreatorAlbumsModel::findByPk(Input::get('id'));
         $objUser = \Contao\UserModel::findByPk($objAlb->owner);
         $owner = $objUser === null ? 'no-name' : $objUser->name;
@@ -410,7 +395,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function inputFieldCbGenerateUploaderMarkup()
     {
-
         return GcHelpers::generateUploader($this->User->gc_be_uploader_template);
     }
 
@@ -419,7 +403,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function isAjaxRequest()
     {
-
         if (Input::get('isAjaxRequest'))
         {
             // change sorting value
@@ -469,7 +452,6 @@ class tl_gallery_creator_albums extends Backend
                     {
                         GcHelpers::reviseTables($albumId, false);
                         $response = true;
-
                     }
                     if ($response === true)
                     {
@@ -489,7 +471,6 @@ class tl_gallery_creator_albums extends Backend
                     unset($_SESSION['GC_ERROR']);
                     exit();
                 }
-
             }
         }
     }
@@ -501,7 +482,6 @@ class tl_gallery_creator_albums extends Backend
      */
     private function isNode($id)
     {
-
         $objAlbums = GalleryCreatorAlbumsModel::findByPid($id);
         if ($objAlbums !== null)
         {
@@ -519,7 +499,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function labelCb($row, $label)
     {
-
         $mysql = $this->Database->prepare('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid=?')->execute($row['id']);
         $label = str_replace('#count_pics#', $mysql->countImg, $label);
         $label = str_replace('#datum#', \Date::parse(\Config::get('dateFormat'), $row['date']), $label);
@@ -541,7 +520,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function loadCbGetUploader()
     {
-
         return $this->User->gc_be_uploader_template;
     }
 
@@ -551,7 +529,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function loadCbGetImageQuality()
     {
-
         return $this->User->gc_img_quality;
     }
 
@@ -561,7 +538,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function loadCbGetImageResolution()
     {
-
         return $this->User->gc_img_resolution;
     }
 
@@ -573,7 +549,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function buttonsCallback($arrButtons, $dc)
     {
-
         if (Input::get('mode') == 'revise_tables')
         {
             // remove buttons
@@ -708,7 +683,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function onloadCbFileupload()
     {
-
         if (Input::get('mode') != 'fileupload')
         {
             return;
@@ -760,9 +734,7 @@ class tl_gallery_creator_albums extends Backend
         {
             exit;
         }
-
     }
-
 
     /**
      * onload-callback
@@ -770,7 +742,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function onloadCbImportFromFilesystem()
     {
-
         if (Input::get('mode') != 'import_images')
         {
             return;
@@ -799,10 +770,7 @@ class tl_gallery_creator_albums extends Backend
             }
         }
         $this->redirect('contao/main.php?do=gallery_creator');
-
-
     }
-
 
     /**
      * onload-callback
@@ -810,7 +778,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function onloadCbSetUpPalettes()
     {
-
         // global_operations for admin only
         if (!$this->User->isAdmin)
         {
@@ -872,7 +839,6 @@ class tl_gallery_creator_albums extends Backend
         }
     }
 
-
     /**
      * Input field callback for the album preview thumb select
      * list each image of the album (and child-albums)
@@ -880,7 +846,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function inputFieldCbThumb()
     {
-
         $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('id'));
 
         // Save input
@@ -888,7 +853,14 @@ class tl_gallery_creator_albums extends Backend
         {
             if (Input::post('thumb') == intval(Input::post('thumb')))
             {
-                $objAlbum->thumb = Input::post('thumb');
+                if (!Input::post('thumb') > 0)
+                {
+                    $objAlbum->thumb = 0;
+                }
+                else
+                {
+                    $objAlbum->thumb = Input::post('thumb');
+                }
                 $objAlbum->save();
             }
         }
@@ -1040,7 +1012,6 @@ class tl_gallery_creator_albums extends Backend
         return '';
     }
 
-
     /**
      * sortBy  - save_callback
      * @param $varValue
@@ -1049,7 +1020,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function saveCbSortAlbum($varValue, \Contao\DataContainer $dc)
     {
-
         if ($varValue == '----')
         {
             return $varValue;
@@ -1161,12 +1131,10 @@ class tl_gallery_creator_albums extends Backend
             $objAlbum->save();
             // Important
             Input::setPost('assignedDir', \StringUtil::binToUuid($objAlbum->assignedDir));
-
         }
 
         return $strAlias;
     }
-
 
     /**
      * save_callback for the uploader
@@ -1174,7 +1142,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function saveCbSaveUploader($value)
     {
-
         $this->Database->prepare('UPDATE tl_user SET gc_be_uploader_template=? WHERE id=?')->execute($value, $this->User->id);
     }
 
@@ -1184,7 +1151,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function saveCbSaveImageQuality($value)
     {
-
         $this->Database->prepare('UPDATE tl_user SET gc_img_quality=? WHERE id=?')->execute($value, $this->User->id);
     }
 
@@ -1194,7 +1160,6 @@ class tl_gallery_creator_albums extends Backend
      */
     public function saveCbSaveImageResolution($value)
     {
-
         $this->Database->prepare('UPDATE tl_user SET gc_img_resolution=? WHERE id=?')->execute($value, $this->User->id);
     }
 }

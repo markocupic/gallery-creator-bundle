@@ -3,7 +3,7 @@
   "keywords": ["contao","Gallery Creator","album plugin","gallery_creator gallery-creator-bundle"],
   "type": "contao-bundle",
   "description": "Contao 4 Gallery Extension",
-  "license": "MIT",
+  "license": "LGPL-3.0+",
   "authors": [
     {
       "name": "Marko Cupic",

@@ -365,7 +365,7 @@ class GcHelpers extends \System
         $objAlbum = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')->execute($intAlbumId);
 
         // Anzahl Subalben ermitteln
-        $objSubAlbums = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE published=? AND pid=? GROUP BY ?')->execute('1', $intAlbumId, 'id');
+        $objSubAlbums = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE published=? AND pid=?')->execute('1', $intAlbumId);
 
         $objPics = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND published=?')->execute($objAlbum->id, '1');
 

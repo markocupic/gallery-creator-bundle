@@ -71,4 +71,3 @@ $GLOBALS['TL_LANG']['tl_content']['gc_sortingField']['tstamp'] = "&Auml;nderungs
 $GLOBALS['TL_LANG']['tl_content']['gc_sortingField']['alias'] = "Albumalias (alias)";
 $GLOBALS['TL_LANG']['tl_content']['gc_sortingField']['visitors'] = "Besucherzahl (visitors)";
 
-?>

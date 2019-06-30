@@ -1,3 +1,11 @@
+/*
+ * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+ *
+ * (c) Marko Cupic
+ *
+ * @license MIT
+ */
+
 // Dollar Safe Mode
 (function ($) {
     window.addEvent('domready', function () {

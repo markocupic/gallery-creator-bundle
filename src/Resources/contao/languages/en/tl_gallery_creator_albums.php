@@ -1,14 +1,13 @@
 <?php
 
-/**
- * Contao Open Source CMS
- * 
- * Copyright (C) 2005-2015 Leo Feyer
- * 
- * @package Gallery Creator
- * @link    http://www.contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+/*
+ * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+ *
+ * (c) Marko Cupic
+ *
+ * @license MIT
  */
+
 
 
 
@@ -38,6 +37,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['description'] = array('Meta pa
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['keywords'] = array('Meta keywords', 'Here you can enter a list of comma separated keywords. Keywords, however, are no longer relevant to most search engines (including Google).');
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['name'] = array('Albumname');
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owners_name'] = array('Albumowner');
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'] = array('Photographers names', 'Please add photographers names.');
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['comment'] = array('Album-comment');
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb'] = array('Select the thumbnail which represents the Album in the listview', 'Drag the items to re-order them.');
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected'] = array('Protect album');

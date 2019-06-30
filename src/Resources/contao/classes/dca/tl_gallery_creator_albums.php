@@ -851,18 +851,15 @@ class tl_gallery_creator_albums extends Backend
         // Save input
         if (Input::post('FORM_SUBMIT') == 'tl_gallery_creator_albums')
         {
-            if (Input::post('thumb') == intval(Input::post('thumb')))
+            if (GalleryCreatorPicturesModel::findByPk(Input::post('thumb')) === null)
             {
-                if (!Input::post('thumb') > 0)
-                {
-                    $objAlbum->thumb = 0;
-                }
-                else
-                {
-                    $objAlbum->thumb = Input::post('thumb');
-                }
-                $objAlbum->save();
+                $objAlbum->thumb = 0;
             }
+            else
+            {
+                $objAlbum->thumb = Input::post('thumb');
+            }
+            $objAlbum->save();
         }
 
         // Generate picture list

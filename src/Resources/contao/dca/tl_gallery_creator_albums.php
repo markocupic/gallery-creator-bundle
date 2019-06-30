@@ -1200,11 +1200,15 @@ class tl_gallery_creator_albums extends Backend
         // Save input
         if (Input::post('FORM_SUBMIT') == 'tl_gallery_creator_albums')
         {
-            if (Input::post('thumb') == intval(Input::post('thumb')))
-            {
-                $objAlbum->thumb = Input::post('thumb');
-                $objAlbum->save();
-            }
+           if (GalleryCreatorPicturesModel::findByPk(Input::post('thumb')) === null)
+           {
+               $objAlbum->thumb = 0;
+           }
+           else
+           {
+               $objAlbum->thumb = Input::post('thumb');
+           }
+           $objAlbum->save();
         }
 
         // Generate picture list
@@ -1318,7 +1322,7 @@ class tl_gallery_creator_albums extends Backend
                 'value'  => array($dc->id),
                 'order'  => 'sorting ASC',
             );
-            $objPicture = Contao\GalleryCreatorPicturesModel::findAll($arrOptions);
+            $objPicture = GalleryCreatorPicturesModel::findAll($arrOptions);
             if ($objPicture !== null)
             {
                 while ($objPicture->next())

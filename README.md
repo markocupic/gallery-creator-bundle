@@ -5,13 +5,41 @@
 Mit dem Modul lassen sich Alben verwalten und erstellen. Das Modul ist sehr flexibel und bietet eine Albenübersicht und eine Detailansicht.
 
 ## Installation über composer
+* Folgenden Eintrag in composer.json machen:
 ```php
-    require markocupic/gallery-creator-bundle
+{
+    ...
+    "require": {
+        ...
+        "markocupic/gallery-creator-bundle": "dev-master"
+    },
+    ...
+}
 ```
+* Folgenden Eintrag in app/AppKerne.php machen:
+```php
+class AppKernel extends Kernel
+{
+
+    public function registerBundles()
+    {
+        $bundles = [
+            ...
+            // Other
+            new Markocupic\GalleryCreatorBundle\MarkocupicGalleryCreatorBundle(),
+        ];
+
+        ...
+
+        return $bundles;
+    }
+```
+* Danach Erweiterung über Konsole mit "composer update" installieren.
+* Mit "bin/console cache:clear --env=prod" den Cache leeren.
 
 Jetzt noch die Datenbank über das Installtool aktualisieren. Danach sollte Gallery Creator unter Contao 4 laufen.
 ## Migration von gallery_creator nach gallery-creator-bundle
-Migration einer älteren gallery_creator Version für Contao 3.5 ist möglich.
+Migration einer älteren gallery_creator Version für Contao 3.5 ist problemlos möglich.
 
 ## Zusätzliche Templates
 Weitere Templates findest du unter: https://gist.github.com/markocupic
@@ -54,7 +82,7 @@ class MyGalleryCreatorClass extends \System
               return $objModule->Template;
        }
 }
-``` 
+```
 
 
 Viel Spass mit Gallery Creator!!!

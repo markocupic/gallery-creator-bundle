@@ -1,16 +1,17 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (c) 2005-2017 Leo Feyer
  *
- * @license MIT
+ * @license LGPL-3.0+
  */
 
 /**
  * Add fields to tl_user
  */
+
 $GLOBALS['TL_DCA']['tl_user']['fields']['gc_img_resolution'] = array(
     'sql' => "varchar(12) NOT NULL default 'no_scaling'"
 );

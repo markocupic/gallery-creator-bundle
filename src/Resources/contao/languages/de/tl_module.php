@@ -46,4 +46,4 @@ $GLOBALS['TL_LANG']['tl_module']['gc_fullsize']['1'] = "Großansicht des Bildes 
 $GLOBALS['TL_LANG']['tl_module']['gc_excludedAlbums']['0'] = "Ausgenommene Alben";
 $GLOBALS['TL_LANG']['tl_module']['gc_excludedAlbums']['1'] = "Diese Alben nicht anzeigen.";
  
-
+?>

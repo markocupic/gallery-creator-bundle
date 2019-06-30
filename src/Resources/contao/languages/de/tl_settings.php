@@ -24,4 +24,5 @@ $GLOBALS['TL_LANG']['tl_settings']['gc_read_exif']['0'] = "Exif Kameradaten ausl
 $GLOBALS['TL_LANG']['tl_settings']['gc_read_exif']['1'] = "Exif Kameradaten auslesen (Speicherintensiv!!!)";
 $GLOBALS['TL_LANG']['tl_settings']['gc_error404_thumb']['0'] = "Error 404 Thumbnail";
 $GLOBALS['TL_LANG']['tl_settings']['gc_error404_thumb']['1'] = "Bitte wählen Sie ein alternatives Thumbnail.";
-
+ 
+?>

@@ -23,3 +23,4 @@ $GLOBALS['TL_LANG']['CTE']['gallery_creator_ce']['1'] = "Gallery-Creator-Album a
 $GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news']['0'] = "Gallery-Creator-News-Inhaltselement";
 $GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news']['1'] = "Ein Gallery-Creator-Album als Inhaltselement einbinden.";
  
+?>

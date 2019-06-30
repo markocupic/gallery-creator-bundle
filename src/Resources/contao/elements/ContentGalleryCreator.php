@@ -1,11 +1,11 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (c) 2005-2017 Leo Feyer
  *
- * @license MIT
+ * @license LGPL-3.0+
  */
 
 /**
@@ -15,8 +15,7 @@ namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
 use Contao\GalleryCreatorPicturesModel;
-use Contao\StringUtil;
-use Patchwork\Utf8;
+use Symfony\Component\Form\Util\StringUtil;
 
 /**
  * Class ContentGalleryCreator
@@ -77,7 +76,7 @@ class ContentGalleryCreator extends \ContentElement
         if (TL_MODE == 'BE')
         {
             $objTemplate = new \BackendTemplate('be_wildcard');
-            $objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['CTE']['gallery_creator_ce'][0]) . ' ###';
+            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['CTE']['gallery_creator_ce'][0] . ' ###';
 
             $objTemplate->title = $this->headline;
 
@@ -107,7 +106,7 @@ class ContentGalleryCreator extends \ContentElement
 
 
         // set the item from the auto_item parameter
-        if (\Config::get('useAutoItem') && isset($_GET['auto_item']))
+        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item']))
         {
             \Input::setGet('items', \Input::get('auto_item'));
         }
@@ -136,7 +135,7 @@ class ContentGalleryCreator extends \ContentElement
         else
         {
             // if only selected albums should be shown
-            $this->arrSelectedAlbums = StringUtil::deserialize($this->gc_publish_albums, true);
+            $this->arrSelectedAlbums = deserialize($this->gc_publish_albums, true);
         }
 
         // clean array from unpublished or empty or protected albums
@@ -476,7 +475,7 @@ class ContentGalleryCreator extends \ContentElement
                 }
                 // Get the page model
                 $objPageModel = \PageModel::findByPk($objPage->id);
-                $this->Template->returnHref = $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items'), $objPage->language);
+                $this->Template->returnHref = $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . \Input::get('items'), $objPage->language);
                 $this->Template->arrPictures = $arrPictures;
 
                 // generate other template variables
@@ -550,7 +549,7 @@ class ContentGalleryCreator extends \ContentElement
                 }
 
                 $this->import('FrontendUser', 'User');
-                $groups = StringUtil::deserialize($objAlb->groups);
+                $groups = deserialize($objAlb->groups);
 
                 if (!FE_USER_LOGGED_IN || !is_array($groups) || count($groups) < 1 || !array_intersect($groups, $this->User->groups))
                 {
@@ -613,11 +612,10 @@ class ContentGalleryCreator extends \ContentElement
                     $href = trim($objPicture->socialMediaSRC) != "" ? trim($objPicture->socialMediaSRC) : $href;
                     $href = trim($objPicture->localMediaSRC) != "" ? trim($objPicture->localMediaSRC) : $href;
                     $arrPicture = array(
-                        'href' => StringUtil::specialchars($href),
-                        'pid' => $objPicture->pid,
-                        'caption' => StringUtil::specialchars($objPicture->comment),
+                        'href' => specialchars($href),
+                        'caption' => specialchars($objPicture->comment),
                         'id' => $objPicture->id,
-                        'uuid' => StringUtil::binToUuid($objFile->uuid)
+                        'uuid' => \StringUtil::binToUuid($objFile->uuid)
                     );
                     $response[] = array_merge($objPicture->row(), $arrPicture);
                 }
@@ -641,10 +639,10 @@ class ContentGalleryCreator extends \ContentElement
         // Check for an alternate thumbnail
         if (\Config::get('gc_error404_thumb') !== '')
         {
-            if (\Validator::isStringUuid(\Config::get('gc_error404_thumb')))
+            $objFile = \FilesModel::findByUuid(\Config::get('gc_error404_thumb'));
+            if ($objFile !== null)
             {
-                $objFile = \FilesModel::findByUuid(StringUtil::uuidToBin(\Config::get('gc_error404_thumb')));
-                if ($objFile !== null)
+                if (\Validator::isUuid(\Config::get('gc_error404_thumb')))
                 {
                     if (is_file(TL_ROOT . '/' . $objFile->path))
                     {
@@ -726,7 +724,7 @@ class ContentGalleryCreator extends \ContentElement
         // Albumbesucher (Anzahl Klicks)
         $this->Template->visitors = $objAlbum->vistors;
         //Der Kommentar zum gewaehlten Album
-        $this->Template->albumComment = $objPage->outputFormat == 'xhtml' ? StringUtil::toXhtml($objAlbum->comment) : StringUtil::toHtml5($objAlbum->comment);
+        $this->Template->albumComment = $objPage->outputFormat == 'xhtml' ? \StringUtil::toXhtml($objAlbum->comment) : \StringUtil::toHtml5($objAlbum->comment);
         // In der Detailansicht kann optional ein Artikel vor dem Album hinzugefuegt werden
         $this->Template->insertArticlePre = $objAlbum->insert_article_pre ? sprintf('{{insert_article::%s}}', $objAlbum->insert_article_pre) : null;
         // In der Detailansicht kann optional ein Artikel nach dem Album hinzugefuegt werden
@@ -734,7 +732,7 @@ class ContentGalleryCreator extends \ContentElement
         //Das Event-Datum des Albums als unix-timestamp
         $this->Template->eventTstamp = $objAlbum->date;
         //Das Event-Datum des Albums formatiert
-        $this->Template->eventDate = \Date::parse(\Config::get('dateFormat'), $objAlbum->date);
+        $this->Template->eventDate = \Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $objAlbum->date);
         //Abstaende
         $this->Template->imagemargin = $this->viewMode == 'detail_view' ? $this->generateMargin(deserialize($this->gc_imagemargin_detailview), 'margin') : $this->generateMargin(deserialize($this->gc_imagemargin_albumlisting), 'margin');
         //Anzahl Spalten pro Reihe
@@ -768,7 +766,7 @@ class ContentGalleryCreator extends \ContentElement
         if ($this->gc_hierarchicalOutput && GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId))
         {
             $arrParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId);
-            return $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . $arrParentAlbum["alias"]);
+            return $objPageModel->getFrontendUrl(($GLOBALS['TL_CONFIG']['useAutoItem'] ? '/' : '/items/') . $arrParentAlbum["alias"]);
         }
 
         //generiert den Link zur Startuebersicht unter Beruecksichtigung der pagination
@@ -804,7 +802,7 @@ class ContentGalleryCreator extends \ContentElement
             }
 
 
-            $arrVisitors = StringUtil::deserialize($objAlbum->visitors_details, true);
+            $arrVisitors = deserialize($objAlbum->visitors_details, true);
             // keep visiors data in the db unless 50 other users have visited the album
             if (count($arrVisitors) == 50)
             {

@@ -1,11 +1,11 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (c) 2005-2017 Leo Feyer
  *
- * @license MIT
+ * @license LGPL-3.0+
  */
 
 /**
@@ -14,8 +14,6 @@
 namespace Markocupic\GalleryCreatorBundle;
 
 use Contao\GalleryCreatorAlbumsModel;
-use Patchwork\Utf8;
-
 
 /**
  * Class ContentGalleryCreatorNews
@@ -48,8 +46,7 @@ class ContentGalleryCreatorNews extends \ContentElement
         if (TL_MODE == 'BE')
         {
             $objTemplate = new \BackendTemplate('be_wildcard');
-            Utf8::str
-            $objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news'][0]) . ' ###';
+            $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news'][0]) . ' ###';
             $objTemplate->title = $this->headline;
 
             // for module use only
@@ -225,7 +222,7 @@ class ContentGalleryCreatorNews extends \ContentElement
         // event date as unix timestamp
         $this->Template->eventTstamp = $objAlbum->date;
         // formated event date
-        $this->Template->eventDate = \Date::parse(\Config::get('dateFormat'), $objAlbum->date);
+        $this->Template->eventDate = \Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $objAlbum->date);
         // Margins
         $this->Template->imagemargin = $this->generateMargin(deserialize($this->gc_imagemargin_detailview), 'margin');
         // Cols per row
@@ -233,5 +230,7 @@ class ContentGalleryCreatorNews extends \ContentElement
 
         $this->Template->objElement = $this;
     }
+
+
 }
 

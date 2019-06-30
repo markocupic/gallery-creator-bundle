@@ -1,13 +1,12 @@
 <?php
 
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
+/**
+ * Contao Open Source CMS
  *
- * (c) Marko Cupic
+ * Copyright (c) 2005-2017 Leo Feyer
  *
- * @license MIT
+ * @license LGPL-3.0+
  */
-
 
 /**
  * Run in a custom namespace, so the class can be replaced
@@ -109,7 +108,7 @@ class GalleryCreatorAlbumsModel extends \Model
                 return $arrSubAlbums;
             }
             $arrSubAlbums[] = $objAlb->id;
-            $arrSubAlbums = array_merge($arrSubAlbums, static::getChildAlbums($objAlb->id, $strSorting, $depth));
+            $arrSubAlbums = array_merge($arrSubAlbums, self::getChildAlbums($objAlb->id, $strSorting, $depth));
         }
 
         return $arrSubAlbums;
@@ -121,7 +120,7 @@ class GalleryCreatorAlbumsModel extends \Model
      */
     public static function hasChildAlbums($id)
     {
-        $arrChilds = static::getChildAlbums($id);
+        $arrChilds = self::getChildAlbums($id);
         if (count($arrChilds) >= 1)
         {
             return true;

@@ -20,11 +20,7 @@ use Patchwork\Utf8;
 
 /**
  * Class ContentGalleryCreator
- *
- * Provide methods regarding gallery-creator-bundle albums.
- * @copyright  Marko Cupic 2017
- * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
- * @package    Gallery Creator Bundle
+ * @package Markocupic\GalleryCreatorBundle
  */
 class ContentGalleryCreator extends \ContentElement
 {

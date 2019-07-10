@@ -16,14 +16,9 @@ namespace Markocupic\GalleryCreatorBundle;
 use Contao\GalleryCreatorAlbumsModel;
 use Patchwork\Utf8;
 
-
 /**
  * Class ContentGalleryCreatorNews
- *
- * Provide methods regarding gallery_creator albums.
- * @copyright  Marko Cupic 2015
- * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
- * @package    Gallery Creator
+ * @package Markocupic\GalleryCreatorBundle
  */
 class ContentGalleryCreatorNews extends \ContentElement
 {

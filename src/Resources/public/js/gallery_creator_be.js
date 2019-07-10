@@ -1,9 +1,10 @@
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
- *
- * (c) Marko Cupic
- *
+/**
+ * Gallery Creator Bundle
+ * Provide methods for using the gallery_creator extension
+ * @copyright  Marko Cupic 2019
  * @license MIT
+ * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
+ * @package    Gallery Creator Bundle
  */
 
 (function ($) {

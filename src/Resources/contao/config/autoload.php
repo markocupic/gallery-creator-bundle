@@ -1,14 +1,12 @@
 <?php
-
 /**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2016 Leo Feyer
- *
- * @license LGPL-3.0+
+ * Gallery Creator Bundle
+ * Provide methods for using the gallery_creator extension
+ * @copyright  Marko Cupic 2019
+ * @license MIT
+ * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
+ * @package    Gallery Creator Bundle
  */
-
-
 
 
 

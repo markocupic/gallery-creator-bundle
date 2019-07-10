@@ -1,11 +1,11 @@
 <?php
-
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
- *
- * (c) Marko Cupic
- *
+/**
+ * Gallery Creator Bundle
+ * Provide methods for using the gallery_creator extension
+ * @copyright  Marko Cupic 2019
  * @license MIT
+ * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
+ * @package    Gallery Creator Bundle
  */
 
 
@@ -13,11 +13,6 @@ use Markocupic\GalleryCreatorBundle\GcHelpers;
 
 /**
  * Class ce_gallery_creator
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- *
- * @copyright  Marko Cupic
- * @author     Marko Cupic
  */
 class ce_gallery_creator extends Backend
 {

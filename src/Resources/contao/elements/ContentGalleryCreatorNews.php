@@ -1,11 +1,11 @@
 <?php
-
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
- *
- * (c) Marko Cupic
- *
+/**
+ * Gallery Creator Bundle
+ * Provide methods for using the gallery_creator extension
+ * @copyright  Marko Cupic 2019
  * @license MIT
+ * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
+ * @package    Gallery Creator Bundle
  */
 
 /**
@@ -48,7 +48,6 @@ class ContentGalleryCreatorNews extends \ContentElement
         if (TL_MODE == 'BE')
         {
             $objTemplate = new \BackendTemplate('be_wildcard');
-            Utf8::str
             $objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news'][0]) . ' ###';
             $objTemplate->title = $this->headline;
 

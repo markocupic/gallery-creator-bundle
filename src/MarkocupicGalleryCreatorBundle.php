@@ -1,11 +1,11 @@
 <?php
-
-/*
- * This file is part of Gallery Creator Bundle (extension for the Contao CMS).
- *
- * (c) Marko Cupic
- *
+/**
+ * Gallery Creator Bundle
+ * Provide methods for using the gallery_creator extension
+ * @copyright  Marko Cupic 2019
  * @license MIT
+ * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
+ * @package    Gallery Creator Bundle
  */
 
 
@@ -14,9 +14,8 @@ namespace Markocupic\GalleryCreatorBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Configures the gallery-creator-bundle.
- *
- * @author Marko Cupic <https://github.com/markocupic>
+ * Class MarkocupicGalleryCreatorBundle
+ * @package Markocupic\GalleryCreatorBundle
  */
 class MarkocupicGalleryCreatorBundle extends Bundle
 {

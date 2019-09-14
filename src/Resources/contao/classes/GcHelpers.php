@@ -372,7 +372,7 @@ class GcHelpers extends \System
         if (TL_MODE == 'FE')
         {
             // Generate the url as a formated string
-            $href = $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language);
+            $href = ampersand($objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language));
             // Add albumAlias
             $href = sprintf($href, $objAlbum->alias);
         }
@@ -683,7 +683,7 @@ class GcHelpers extends \System
             //[string] path to media (video, picture, sound...)
             'href' => $href,
             // single image url
-            'single_image_url' => $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items') . '/img/' . $arrFile["filename"], $objPage->language),
+            'single_image_url' => ampersand($objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items') . '/img/' . $arrFile["filename"], $objPage->language)),
             //[string] path to the image,
             'image_src' => $arrFile["path"],
             //[string] path to the other selected media

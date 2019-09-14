@@ -472,7 +472,7 @@ class ContentGalleryCreator extends \ContentElement
                 }
                 // Get the page model
                 $objPageModel = \PageModel::findByPk($objPage->id);
-                $this->Template->returnHref = $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items'), $objPage->language);
+                $this->Template->returnHref = ampersand($objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items'), $objPage->language));
                 $this->Template->arrPictures = $arrPictures;
 
                 // generate other template variables
@@ -764,14 +764,14 @@ class ContentGalleryCreator extends \ContentElement
         if ($this->gc_hierarchicalOutput && GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId))
         {
             $arrParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($intAlbumId);
-            return $objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . $arrParentAlbum["alias"]);
+            return ampersand($objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . $arrParentAlbum["alias"]));
         }
 
         //generiert den Link zur Startuebersicht unter Beruecksichtigung der pagination
         $url = $objPageModel->getFrontendUrl();
         $url .= isset($_SESSION['gallery_creator']['PAGINATION']) ? '?page=' . $_SESSION['gallery_creator']['PAGINATION'] : '';
 
-        return $url;
+        return ampersand($url);
     }
 
     /**

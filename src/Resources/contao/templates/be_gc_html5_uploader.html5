@@ -21,9 +21,10 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
         <div class="dropzone-previews"></div>
     </div>
     <script>
+        Dropzone.autoDiscover = false;
         window.addEvent("domready", function () {
-            Dropzone.autoDiscover = false;
             new Dropzone("#tl_gallery_creator_albums", {
+                url: window.location.href,
                 paramName: "<?= $this->strName ?>",
                 maxFilesize: <?= round($this->maxUploadedSize / 1024 / 1024) ?>,
                 acceptedFiles: "<?= $strAccepted ?>",
@@ -38,7 +39,7 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
                 $$(".dz-message").setStyle("display", "none");
             });
         });
-
     </script>
+
     <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], \System::getReadableSize($this->maxUploadedSize), \Config::get('gdMaxImgWidth') . 'x' . \Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
 </div>

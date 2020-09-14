@@ -638,7 +638,6 @@ class tl_gallery_creator_albums extends Backend
                     if ($oFolder !== null)
                     {
                         $folder = new Folder($oFolder->path, true);
-                        $folder->protect();
                         if ($folder->isEmpty())
                         {
                             $folder->delete();

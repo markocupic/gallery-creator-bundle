@@ -193,7 +193,7 @@ class ContentGalleryCreator extends ContentElement
         }
 
         //assigning the frontend template
-        $this->strTemplate = '' !== $this->gc_template ? $this->gc_template : $this->strTemplate;
+        $this->strTemplate = !empty($this->gc_template) ? $this->gc_template : $this->strTemplate;
         $this->Template = new FrontendTemplate($this->strTemplate);
 
         return parent::generate();
@@ -417,7 +417,7 @@ class ContentGalleryCreator extends ContentElement
                 if ($limit > 0) {
                     // Get the current page
                     $id = 'page_g'.$this->id;
-                    $page = null !== Input::get($id) ? \Input::get($id) : 1;
+                    $page = Input::get($id) ? \Input::get($id) : 1;
                     $offset = ($page - 1) * $limit;
 
                     // count albums

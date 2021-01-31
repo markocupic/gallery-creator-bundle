@@ -224,7 +224,7 @@ class GcHelper
         $intCount = \count($_FILES[$strName]['name']);
 
         for ($i = 0; $i < $intCount; ++$i) {
-            if (\strlen($_FILES[$strName]['name'][$i])) {
+            if (!empty($_FILES[$strName]['name'][$i])) {
                 // Generate unique filename
                 $_FILES[$strName]['name'][$i] = basename(self::generateUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
             }
@@ -614,11 +614,11 @@ class GcHelper
         $href = null;
 
         if (TL_MODE === 'FE' && $objContentElement->gc_fullsize) {
-            $href = '' !== $strMediaSrc ? $strMediaSrc : TL_FILES_URL.System::urlEncode($strImageSrc);
+            $href = !empty($strMediaSrc) ? $strMediaSrc : TL_FILES_URL.System::urlEncode($strImageSrc);
         }
 
         // CssID
-        $cssID = deserialize($objPicture->cssID, true);
+        $cssID = StringUtil::deserialize($objPicture->cssID, true);
 
         // Build the array
         $arrPicture = [

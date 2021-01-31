@@ -49,6 +49,8 @@ class GcHelper
      */
     public static function createNewImage($intAlbumId, string $strFilepath): bool
     {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
         //get the file-object
         $objFile = new File($strFilepath);
 
@@ -75,7 +77,7 @@ class GcHelper
         $assignedDir = null;
 
         if (null !== $objFolder) {
-            if (is_dir(TL_ROOT.'/'.$objFolder->path)) {
+            if (is_dir($projectDir.'/'.$objFolder->path)) {
                 $assignedDir = $objFolder->path;
             }
         }
@@ -114,7 +116,7 @@ class GcHelper
             $objFile->renameTo($newFilepath);
         }
 
-        if (is_file(TL_ROOT.'/'.$objFile->path)) {
+        if (is_file($projectDir.'/'.$objFile->path)) {
             // Get the userId
             $userId = '0';
 
@@ -162,12 +164,14 @@ class GcHelper
     }
 
     /**
-     * move uploaded file to the album directory.
+     * Move uploaded file to the album directory.
      *
      * @param $intAlbumId
      */
     public static function fileupload($intAlbumId, string $strName = 'file'): array
     {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
         $blnIsError = false;
 
         // Get the album object
@@ -181,7 +185,7 @@ class GcHelper
         // Check for a valid upload directory
         $objUploadDir = FilesModel::findByUuid($objAlb->assignedDir);
 
-        if (null === $objUploadDir || !is_dir(TL_ROOT.'/'.$objUploadDir->path)) {
+        if (null === $objUploadDir || !is_dir($projectDir.'/'.$objUploadDir->path)) {
             $blnIsError = true;
             Message::addError('No upload directory defined in the album settings!');
         }
@@ -249,7 +253,7 @@ class GcHelper
     }
 
     /**
-     * generate a unique filepath for a new picture.
+     * Generate a unique filepath for a new picture.
      *
      * @param $strFilename
      *
@@ -259,6 +263,8 @@ class GcHelper
      */
     public static function generateUniqueFilename(string $strFilename)
     {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
         $strFilename = strip_tags($strFilename);
         $strFilename = Utf8::toAscii($strFilename);
         $strFilename = str_replace('"', '', $strFilename);
@@ -279,7 +285,7 @@ class GcHelper
         do {
             ++$i;
 
-            if (!file_exists(TL_ROOT.'/'.$dirname.'/'.$basename.'.'.$extension)) {
+            if (!file_exists($projectDir.'/'.$dirname.'/'.$basename.'.'.$extension)) {
                 // Exit loop when filename is unique
                 return $dirname.'/'.$basename.'.'.$extension;
             }
@@ -303,7 +309,7 @@ class GcHelper
     }
 
     /**
-     * generate the jumploader applet.
+     * Generate the uploader.
      */
     public static function generateUploader(string $uploader = 'be_gc_html5_uploader'): string
     {
@@ -321,7 +327,7 @@ class GcHelper
     }
 
     /**
-     * Returns the information-array about an album.
+     * Returns the album information array.
      *
      * @param $intAlbumId
      * @param $objContentElement
@@ -329,6 +335,7 @@ class GcHelper
     public static function getAlbumInformationArray($intAlbumId, ContentElement $objContentElement): array
     {
         global $objPage;
+
         // Get the page model
         $objPageModel = PageModel::findByPk($objPage->id);
 
@@ -456,7 +463,7 @@ class GcHelper
     }
 
     /**
-     * Returns the information-array about an album.
+     * Returns the picture information array.
      *
      * @param null $intPictureId
      * @param $objContentElement
@@ -466,7 +473,10 @@ class GcHelper
         if ($intPictureId < 1) {
             return null;
         }
+
         global $objPage;
+
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         $hasCustomThumb = false;
 
@@ -477,7 +487,7 @@ class GcHelper
 
             if (null !== $objFile) {
                 if (Validator::isStringUuid(Config::get('gc_error404_thumb'))) {
-                    if (is_file(TL_ROOT.'/'.$objFile->path)) {
+                    if (is_file($projectDir.'/'.$objFile->path)) {
                         $defaultThumbSRC = $objFile->path;
                     }
                 }
@@ -512,7 +522,7 @@ class GcHelper
         } else {
             $strImageSrc = $objFileModel->path;
 
-            if (!is_file(TL_ROOT.'/'.$strImageSrc)) {
+            if (!is_file($projectDir.'/'.$strImageSrc)) {
                 // Fallback to the default thumb
                 $strImageSrc = $defaultThumbSRC;
             }
@@ -536,7 +546,7 @@ class GcHelper
                 $customThumbModel = FilesModel::findByUuid($objPicture->customThumb);
 
                 if (null !== $customThumbModel) {
-                    if (is_file(TL_ROOT.'/'.$customThumbModel->path)) {
+                    if (is_file($projectDir.'/'.$customThumbModel->path)) {
                         $objFileCustomThumb = new File($customThumbModel->path, true);
 
                         if ($objFileCustomThumb->isGdImage) {
@@ -564,7 +574,7 @@ class GcHelper
         $arrFile['thumb_height'] = $objFileThumb->height;
 
         // Get some image params
-        if (is_file(TL_ROOT.'/'.$strImageSrc)) {
+        if (is_file($projectDir.'/'.$strImageSrc)) {
             $objFileImage = new File($strImageSrc);
 
             if (!$objFileImage->isGdImage) {
@@ -737,13 +747,12 @@ class GcHelper
     }
 
     /**
+     * $imgPath - relative path to the filesource
+     * angle - the rotation angle is interpreted as the number of degrees to rotate the image anticlockwise.
+     * angle shall be 0,90,180,270.
+     *
      * @param string $angle
      * @param int
-     *
-     * @return bool
-     *              $imgPath - relative path to the filesource
-     *              angle - the rotation angle is interpreted as the number of degrees to rotate the image anticlockwise.
-     *              angle shall be 0,90,180,270
      */
     public static function imageRotate($imgPath, $angle): bool
     {
@@ -788,12 +797,14 @@ class GcHelper
     }
 
     /**
-     * @param int    $intAlbumId
-     * @param string $strMultiSRC
-     *                            Bilder aus Verzeichnis auf dem Server in Album einlesen
+     * Bilder aus Verzeichnis auf dem Server in Album einlesen.
+     *
+     * @param int $intAlbumId
      */
     public static function importFromFilesystem($intAlbumId, string $strMultiSRC): void
     {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
         $images = [];
 
         $objFilesModel = FilesModel::findMultipleByUuids(explode(',', $strMultiSRC));
@@ -804,7 +815,7 @@ class GcHelper
 
         while ($objFilesModel->next()) {
             // Continue if the file has been processed or does not exist
-            if (isset($images[$objFilesModel->path]) || !file_exists(TL_ROOT.'/'.$objFilesModel->path)) {
+            if (isset($images[$objFilesModel->path]) || !file_exists($projectDir.'/'.$objFilesModel->path)) {
                 continue;
             }
 
@@ -825,7 +836,7 @@ class GcHelper
 
                 while ($objSubfilesModel->next()) {
                     // Skip subfolders
-                    if ('folder' === $objSubfilesModel->type || !is_file(TL_ROOT.'/'.$objSubfilesModel->path)) {
+                    if ('folder' === $objSubfilesModel->type || !is_file($projectDir.'/'.$objSubfilesModel->path)) {
                         continue;
                     }
 
@@ -887,13 +898,13 @@ class GcHelper
                         throw new \Exception($errMsg);
                     }
 
-                    if (!is_dir(TL_ROOT.'/'.$objFolderModel->path)) {
+                    if (!is_dir($projectDir.'/'.$objFolderModel->path)) {
                         throw new \Exception($errMsg);
                     }
 
                     $strDestination = self::generateUniqueFilename($objFolderModel->path.'/'.basename($strSource));
 
-                    if (is_file(TL_ROOT.'/'.$strSource)) {
+                    if (is_file($projectDir.'/'.$strSource)) {
                         // Copy Image to the upload folder
                         $objFile = new File($strSource);
                         $objFile->copyTo($strDestination);
@@ -909,12 +920,14 @@ class GcHelper
     }
 
     /**
-     * revise tables.
+     * Revise tables.
      *
      * @param $albumId
      */
     public static function reviseTables($albumId, bool $blnCleanDb = false): void
     {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
         $_SESSION['GC_ERROR'] = [];
 
         // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
@@ -959,7 +972,7 @@ class GcHelper
 
                     if (null === $objFile) {
                         if ('' !== $objPictures->path) {
-                            if (is_file(TL_ROOT.'/'.$objPictures->path)) {
+                            if (is_file($projectDir.'/'.$objPictures->path)) {
                                 $objModel = Dbafs::addResource($objPictures->path);
 
                                 if (null !== $objModel) {
@@ -979,7 +992,7 @@ class GcHelper
                             $path = '' !== $objPictures->path ? $objPictures->path : 'unknown path';
                             $_SESSION['GC_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $path, $objAlbum->alias);
                         }
-                    } elseif (!is_file(TL_ROOT.'/'.$objFile->path)) {
+                    } elseif (!is_file($projectDir.'/'.$objFile->path)) {
                         // If file has an entry in Dbafs, but doesn't exist on the server anymore
                         if (false !== $blnCleanDb) {
                             $msg = 'Deleted Datarecord with ID '.$objPictures->id.'.';
@@ -1034,7 +1047,7 @@ class GcHelper
     }
 
     /**
-     * return the level of an album or subalbum (level_0, level_1, level_2,...).
+     * Return the level of an album or subalbum (level_0, level_1, level_2,...).
      *
      * @param int $pid
      */
@@ -1042,7 +1055,7 @@ class GcHelper
     {
         $level = 0;
 
-        if (0 === (int)$pid) {
+        if (0 === (int) $pid) {
             return $level;
         }
         $hasParent = true;

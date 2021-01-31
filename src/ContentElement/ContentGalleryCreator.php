@@ -159,7 +159,7 @@ class ContentGalleryCreator extends ContentElement
         }
 
         $this->viewMode = $this->viewMode ?: 'list_view';
-        $this->viewMode = !empty(\Input::get('img')) ? 'single_image' : $this->viewMode;
+        $this->viewMode = !empty(Input::get('img')) ? 'single_image' : $this->viewMode;
 
         if ('list_view' === $this->viewMode) {
             // Redirect to detailview if there is only one album

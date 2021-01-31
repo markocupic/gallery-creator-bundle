@@ -99,12 +99,6 @@ class GcHelper
         // Set uuid before model is saved the first time!!!
         $objPictureModel->uuid = $objFilesModel->uuid;
         $objPictureModel->save();
-
-        /**
-         * @error  Do not set uuid after model was saved the first time
-         */
-        //$objPictureModel->uuid = $objFilesModel->uuid;
-
         $insertId = $objPictureModel->id;
 
         // Get the next sorting index
@@ -886,15 +880,15 @@ class GcHelper
                     $errMsg = 'Aborted import process, because there is no upload folder assigned to the album with ID '.$objAlb->id.'.';
 
                     if (null === $objFolderModel) {
-                        die($errMsg);
+                        throw new \Exception($errMsg);
                     }
 
                     if ('folder' !== $objFolderModel->type) {
-                        die($errMsg);
+                        throw new \Exception($errMsg);
                     }
 
                     if (!is_dir(TL_ROOT.'/'.$objFolderModel->path)) {
-                        die($errMsg);
+                        throw new \Exception($errMsg);
                     }
 
                     $strDestination = self::generateUniqueFilename($objFolderModel->path.'/'.basename($strSource));
@@ -903,7 +897,7 @@ class GcHelper
                         // Copy Image to the upload folder
                         $objFile = new File($strSource);
                         $objFile->copyTo($strDestination);
-                        \Dbafs::addResource($strSource);
+                        Dbafs::addResource($strSource);
                     }
 
                     self::createNewImage($objAlb->id, $strDestination);
@@ -1048,7 +1042,7 @@ class GcHelper
     {
         $level = 0;
 
-        if ('0' === $pid) {
+        if (0 === (int)$pid) {
             return $level;
         }
         $hasParent = true;

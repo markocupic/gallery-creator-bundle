@@ -2,7 +2,6 @@
 /* CSS for the frontend-output */
 $GLOBALS['TL_CSS'][] = 'bundles/markocupicgallerycreator/css/gallery_creator_fe.css';
 ?>
-
 <?php if (!\Input::get('items')): ?>
 <!-- gallery_creator - album list -->
 <div class="<?= $this->class ?> gallery_creator block"<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>

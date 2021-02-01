@@ -11,6 +11,7 @@
  */
 
 use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorAlbums;
+use Contao\BackendUser;
 
 /**
  * Table tl_gallery_creator_albums

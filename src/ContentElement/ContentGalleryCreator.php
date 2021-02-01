@@ -228,14 +228,14 @@ class ContentGalleryCreator extends ContentElement
             }
 
             // Init visit counter
-            $this->initCounter(\Input::get('pid'));
+            $this->initCounter(Input::get('pid'));
 
             // sorting direction
             $sorting = $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
 
             $objPicture = Database::getInstance()
                 ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$sorting)
-                ->execute(1, \Input::get('pid'))
+                ->execute(1, Input::get('pid'))
             ;
 
             $response = [];

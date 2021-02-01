@@ -553,12 +553,12 @@ class ContentGalleryCreator extends ContentElement
                 }
 
                 $objPic = Database::getInstance()
-                    ->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND name LIKE '".\Input::get('img').".%'")
+                    ->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND name LIKE '".Input::get('img').".%'")
                     ->execute($objAlbum->id)
                 ;
 
                 if (!$objPic->numRows) {
-                    throw new \Exception(sprintf('File with filename "%s" does not exist in album with alias "%s".', \Input::get('img'), \Input::get('items')));
+                    throw new \Exception(sprintf('File with filename "%s" does not exist in album with alias "%s".', Input::get('img'), Input::get('items')));
                 }
 
                 $picId = $objPic->id;

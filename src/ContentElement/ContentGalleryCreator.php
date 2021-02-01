@@ -382,7 +382,7 @@ class ContentGalleryCreator extends ContentElement
                     'pid' => $intAlbumId,
                     'user_agent' => $_SERVER['HTTP_USER_AGENT'],
                     'tstamp' => time(),
-                    'url' => \Environment::get('request'),
+                    'url' => Environment::get('request'),
                 ],
             ];
 
@@ -546,7 +546,7 @@ class ContentGalleryCreator extends ContentElement
                 break;
 
             case 'single_image':
-                $objAlbum = GalleryCreatorAlbumsModel::findByAlias(\Input::get('items'));
+                $objAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
                 if (null === $objAlbum) {
                     throw new \Exception('Invalid album alias: '.Input::get('items'));

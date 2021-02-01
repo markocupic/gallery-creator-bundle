@@ -142,7 +142,7 @@ class ContentGalleryCreator extends ContentElement
         // Detail view:
         // Authenticate and get album alias and album id
         if (Input::get('items')) {
-            $objAlbum = GalleryCreatorAlbumsModel::findByAlias(\Input::get('items'));
+            $objAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
             if (null !== $objAlbum) {
                 $this->intAlbumId = $objAlbum->id;

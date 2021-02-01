@@ -16,7 +16,7 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
  * Extend default palette
  */
 PaletteManipulator::create()
-	->addLegend('gallery_creator_legend:hide', 'cron_legend', PaletteManipulator::POSITION_BEFORE)
+	->addLegend('gallery_creator_legend', 'cron_legend', PaletteManipulator::POSITION_BEFORE)
 	->addField(array('gc_error404_thumb', 'gc_disable_backend_edit_protection', 'gc_album_import_copy_files,gc_read_exif'), 'gallery_creator_legend', PaletteManipulator::POSITION_APPEND)
 	->applyToPalette('default', 'tl_settings')
 ;

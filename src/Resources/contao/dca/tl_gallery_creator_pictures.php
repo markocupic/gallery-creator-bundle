@@ -11,6 +11,7 @@
  */
 
 use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorPictures;
+use Contao\BackendUser;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 	'config'      => array(

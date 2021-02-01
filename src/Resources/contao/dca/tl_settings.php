@@ -10,10 +10,16 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
 /**
- * Add to palette
+ * Extend default palette
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{gallery_creator_legend:hide},gc_error404_thumb,gc_disable_backend_edit_protection,gc_album_import_copy_files,gc_read_exif';
+PaletteManipulator::create()
+	->addLegend('gallery_creator_legend:hide', 'cron_legend', PaletteManipulator::POSITION_BEFORE)
+	->addField(array('gc_error404_thumb', 'gc_disable_backend_edit_protection', 'gc_album_import_copy_files,gc_read_exif'), 'gallery_creator_legend', PaletteManipulator::POSITION_APPEND)
+	->applyToPalette('default', 'tl_settings')
+;
 
 /**
  * Add fields
@@ -30,6 +36,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_album_import_copy_files'] = arra
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_read_exif'] = array(
 	'inputType' => 'checkbox'
 );
+
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_error404_thumb'] = array(
 	'inputType' => 'fileTree',
 	'eval'      => array('fieldType' => 'radio', 'extensions' => 'jpg,jpeg,png,gif', 'filesOnly' => true, 'files' => true, 'mandatory' => false, 'tl_class' => 'clr')

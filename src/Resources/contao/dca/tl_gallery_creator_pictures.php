@@ -10,8 +10,8 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorPictures;
 use Contao\BackendUser;
+use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorPictures;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 	'config'      => array(

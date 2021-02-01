@@ -10,10 +10,6 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
-
 namespace Contao;
 
 /**
@@ -28,50 +24,47 @@ class GalleryCreatorAlbumsModel extends \Model
 	protected static $strTable = 'tl_gallery_creator_albums';
 
 	/**
-	 * gibt ein Array mit allen Angaben des Parent-Albums zurueck
-	 *
-	 * @param  integer $AlbumId
-	 * @return array
+	 * @param $AlbumId
+	 * @return |null
 	 */
-	public static function getParentAlbum($AlbumId)
+	public static function getParentAlbum($AlbumId): ?array
 	{
-		$objAlbPid = \Database::getInstance()->prepare('SELECT pid FROM tl_gallery_creator_albums WHERE id=?')
-			->execute($AlbumId);
-		$parentAlb = \Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
-			->execute($objAlbPid->pid);
-
-		if ($parentAlb->numRows == 0)
+		if (null === ($objAlbum = static::findByPk($AlbumId)))
 		{
 			return null;
 		}
-		$arrParentAlbum = $parentAlb->fetchAllAssoc();
 
-		return $arrParentAlbum[0];
+		if (null === ($objParentAlbum = $objAlbum->getRelated('pid')))
+		{
+			return null;
+		}
+
+		return $objParentAlbum->row();
 	}
 
 	/**
-	 * Get the parent album trail as an array
 	 * @param $AlbumId
-	 * @return array
+	 * @return array|null
 	 */
-	public static function getParentAlbums($AlbumId)
+	public static function getParentAlbums($AlbumId): ?array
 	{
 		$arrParentAlbums = array();
-		$objAlb = \GalleryCreatorAlbumsModel::findByPk($AlbumId);
 
-		if ($objAlb !== null)
+		if (null === ($objAlb = static::findByPk($AlbumId)))
 		{
-			$pid = $objAlb->pid;
+			return null;
+		}
 
-			while ($pid > 0)
+		$pid = $objAlb->pid;
+
+		while ($pid > 0)
+		{
+			$parentAlb = static::findByPk($pid);
+
+			if ($parentAlb !== null)
 			{
-				$parentAlb = \GalleryCreatorAlbumsModel::findByPk($pid);
-
-				if ($parentAlb !== null)
-				{
-					$arrParentAlbums[] = $parentAlb->id;
-					$pid = $parentAlb->pid;
-				}
+				$arrParentAlbums[] = $parentAlb->id;
+				$pid = $parentAlb->pid;
 			}
 		}
 
@@ -84,7 +77,7 @@ class GalleryCreatorAlbumsModel extends \Model
 	 * @param  null   $iterationDepth
 	 * @return array
 	 */
-	public static function getChildAlbums($parentId, $strSorting = '', $iterationDepth = null)
+	public static function getChildAlbums($parentId, $strSorting = '', $iterationDepth = null): array
 	{
 		// get the iteration depth
 		$iterationDepth = $iterationDepth === '' ? null : $iterationDepth;
@@ -99,7 +92,11 @@ class GalleryCreatorAlbumsModel extends \Model
 		{
 			$strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY ' . $strSorting;
 		}
-		$objAlb = \Database::getInstance()->prepare($strSql)->execute($parentId);
+
+		$objAlb = Database::getInstance()
+			->prepare($strSql)
+			->execute($parentId);
+
 		$depth = $iterationDepth !== null ? $iterationDepth - 1 : null;
 
 		while ($objAlb->next())
@@ -119,7 +116,7 @@ class GalleryCreatorAlbumsModel extends \Model
 	 * @param $id
 	 * @return bool
 	 */
-	public static function hasChildAlbums($id)
+	public static function hasChildAlbums($id): bool
 	{
 		$arrChilds = static::getChildAlbums($id);
 

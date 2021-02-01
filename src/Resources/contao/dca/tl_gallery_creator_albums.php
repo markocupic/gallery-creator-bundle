@@ -10,8 +10,8 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorAlbums;
 use Contao\BackendUser;
+use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorAlbums;
 
 /**
  * Table tl_gallery_creator_albums

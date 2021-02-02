@@ -20,6 +20,7 @@ namespace Markocupic\GalleryCreatorBundle\ContentElement;
 
 use Contao\BackendTemplate;
 use Contao\Config;
+use Contao\ContentElement;
 use Contao\Date;
 use Contao\FilesModel;
 use Contao\FrontendTemplate;
@@ -33,9 +34,9 @@ use Patchwork\Utf8;
 /**
  * Class ContentGalleryCreatorNews.
  */
-class ContentGalleryCreatorNews extends \ContentElement
+class ContentGalleryCreatorNews extends ContentElement
 {
-    protected $strTemplate = 'ce_gc_news_default';
+    protected $strTemplate = 'ce_gallery_creator_news';
 
     protected $intAlbumId;
 

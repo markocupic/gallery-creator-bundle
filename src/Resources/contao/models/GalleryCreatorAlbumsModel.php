@@ -23,52 +23,14 @@ class GalleryCreatorAlbumsModel extends \Model
 	 */
 	protected static $strTable = 'tl_gallery_creator_albums';
 
-	/**
-	 * @param $AlbumId
-	 * @return |null
-	 */
-	public static function getParentAlbum($AlbumId): ?array
+    /**
+     * @param GalleryCreatorAlbumsModel $objAlbum
+     * @return GalleryCreatorAlbumsModel|null
+     */
+	public static function getParentAlbum(GalleryCreatorAlbumsModel $objAlbum): ?GalleryCreatorAlbumsModel
 	{
-		if (null === ($objAlbum = static::findByPk($AlbumId)))
-		{
-			return null;
-		}
+		return $objAlbum->getRelated('pid');
 
-		if (null === ($objParentAlbum = $objAlbum->getRelated('pid')))
-		{
-			return null;
-		}
-
-		return $objParentAlbum->row();
-	}
-
-	/**
-	 * @param $AlbumId
-	 * @return array|null
-	 */
-	public static function getParentAlbums($AlbumId): ?array
-	{
-		$arrParentAlbums = array();
-
-		if (null === ($objAlb = static::findByPk($AlbumId)))
-		{
-			return null;
-		}
-
-		$pid = $objAlb->pid;
-
-		while ($pid > 0)
-		{
-			$parentAlb = static::findByPk($pid);
-
-			if ($parentAlb !== null)
-			{
-				$arrParentAlbums[] = $parentAlb->id;
-				$pid = $parentAlb->pid;
-			}
-		}
-
-		return $arrParentAlbums;
 	}
 
 	/**

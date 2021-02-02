@@ -22,18 +22,17 @@ Config::set('galleryCreatorUploadPath', Config::get('uploadPath') . '/gallery_cr
 /**
  * Front end content element
  */
-ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce_news' => ContentGalleryCreatorNews::class)));
-ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce' => ContentGalleryCreator::class)));
+ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, array('gallery_creator_elements' => array('gallery_creator_ce_news' => ContentGalleryCreatorNews::class)));
 
 // Show news ce_element in the news-module only
 if (TL_MODE === 'BE' && Input::get('do') === 'news')
 {
-	unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce']);
+	unset($GLOBALS['TL_CTE']['gallery_creator_elements']['gallery_creator']);
 }
 
 if (TL_MODE === 'BE' && Input::get('do') !== 'news')
 {
-	unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce_news']);
+	unset($GLOBALS['TL_CTE']['gallery_creator_elements']['gallery_creator_ce_news']);
 }
 
 /**

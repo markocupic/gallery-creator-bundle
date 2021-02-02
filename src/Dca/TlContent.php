@@ -30,7 +30,7 @@ class TlContent extends Backend
      */
     public function getGalleryCreatorTemplates(): array
     {
-        return $this->getTemplateGroup('ce_gc');
+        return $this->getTemplateGroup('ce_gallery_creator');
     }
 
     /**
@@ -112,7 +112,7 @@ class TlContent extends Backend
         ;
 
         if ($objContent->gc_publish_all_albums) {
-            $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce'] = str_replace('gc_publish_albums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce']);
+            $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator'] = str_replace('gc_publish_albums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator']);
         }
     }
 

@@ -1,0 +1,7 @@
+services:
+
+    Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController:
+        tags:
+            - { name: contao.content_element, category: gallery_creator_elements, template: ce_gallery_creator, type: gallery_creator }
+            - { name: container.service_subscriber }
+        public: true

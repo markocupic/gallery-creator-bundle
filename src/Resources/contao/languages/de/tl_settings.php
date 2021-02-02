@@ -22,6 +22,6 @@ $GLOBALS['TL_LANG']['tl_settings']['gc_album_import_copy_files']['0'] = "Beim Im
 $GLOBALS['TL_LANG']['tl_settings']['gc_album_import_copy_files']['1'] = "Wenn diese Einstellung gewählt wird, erstellt contao beim Importieren von Bildern in ein Album automatisch eine Kopie im Verzeichnis \"tl_files/gallery_creator_albums\".";
 $GLOBALS['TL_LANG']['tl_settings']['gc_read_exif']['0'] = "Exif Kameradaten auslesen";
 $GLOBALS['TL_LANG']['tl_settings']['gc_read_exif']['1'] = "Exif Kameradaten auslesen (Speicherintensiv!!!)";
-$GLOBALS['TL_LANG']['tl_settings']['gc_error404_thumb']['0'] = "Error 404 Thumbnail";
-$GLOBALS['TL_LANG']['tl_settings']['gc_error404_thumb']['1'] = "Bitte wählen Sie ein alternatives Thumbnail.";
+$GLOBALS['TL_LANG']['tl_settings']['gc_albumFallbackThumb']['0'] = "Error 404 Thumbnail";
+$GLOBALS['TL_LANG']['tl_settings']['gc_albumFallbackThumb']['1'] = "Bitte wählen Sie ein alternatives Thumbnail.";
 

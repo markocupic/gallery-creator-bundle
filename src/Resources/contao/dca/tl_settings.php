@@ -17,7 +17,7 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
  */
 PaletteManipulator::create()
 	->addLegend('gallery_creator_legend', 'cron_legend', PaletteManipulator::POSITION_BEFORE)
-	->addField(array('gc_error404_thumb', 'gc_disable_backend_edit_protection', 'gc_album_import_copy_files,gc_read_exif'), 'gallery_creator_legend', PaletteManipulator::POSITION_APPEND)
+	->addField(array('gc_albumFallbackThumb', 'gc_disable_backend_edit_protection', 'gc_album_import_copy_files,gc_read_exif'), 'gallery_creator_legend', PaletteManipulator::POSITION_APPEND)
 	->applyToPalette('default', 'tl_settings')
 ;
 
@@ -37,7 +37,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_read_exif'] = array(
 	'inputType' => 'checkbox'
 );
 
-$GLOBALS['TL_DCA']['tl_settings']['fields']['gc_error404_thumb'] = array(
+$GLOBALS['TL_DCA']['tl_settings']['fields']['gc_albumFallbackThumb'] = array(
 	'inputType' => 'fileTree',
 	'eval'      => array('fieldType' => 'radio', 'extensions' => 'jpg,jpeg,png,gif', 'filesOnly' => true, 'files' => true, 'mandatory' => false, 'tl_class' => 'clr')
 );

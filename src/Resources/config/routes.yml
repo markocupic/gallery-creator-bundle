@@ -1,0 +1,4 @@
+# config/routes.yml
+markocupic_gallery_creator.controller:
+    resource: ../../../src/Controller
+    type: annotation

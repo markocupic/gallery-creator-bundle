@@ -427,7 +427,7 @@ class GalleryCreatorController extends AbstractContentElementController
      * Ajax responses
      * @return false|string
      */
-    protected function generateAjax():
+    protected function generateAjax()
     {
         //gibt ein Array mit allen Bildinformationen des Bildes mit der id imageId zurueck
         if (Input::get('isAjax') && Input::get('getImageByPk') && !empty(Input::get('id'))) {

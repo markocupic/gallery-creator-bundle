@@ -30,7 +30,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator'] = 'name,type,hea
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
 
-$GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce_news'] = 'name,type,headline;
+$GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_news'] = 'name,type,headline;
 {album_listing_legend},gc_publish_single_album;
 {pagination_legend},gc_ThumbsPerPage,gc_PaginationNumberOfLinks;
 {picture_listing_legend},gc_rows,gc_fullsize,gc_picture_sorting,gc_picture_sorting_direction,gc_size_detailview,gc_imagemargin_detailview;

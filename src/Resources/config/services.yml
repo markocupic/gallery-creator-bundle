@@ -5,3 +5,9 @@ services:
             - { name: contao.content_element, category: gallery_creator_elements, template: ce_gallery_creator, type: gallery_creator }
             - { name: container.service_subscriber }
         public: true
+
+    Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController:
+        tags:
+            - { name: contao.content_element, category: gallery_creator_elements, template: ce_gallery_creator_news, type: gallery_creator_news }
+            - { name: container.service_subscriber }
+        public: true

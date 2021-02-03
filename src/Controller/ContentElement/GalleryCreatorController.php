@@ -25,11 +25,13 @@ use Contao\Environment;
 use Contao\FilesModel;
 use Contao\FrontendUser;
 use Contao\GalleryCreatorAlbumsModel;
+use Contao\GalleryCreatorPicturesModel;
 use Contao\Input;
 use Contao\PageError404;
 use Contao\PageModel;
 use Contao\Pagination;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Template;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Symfony\Component\HttpFoundation\Request;
@@ -216,7 +218,11 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 for ($i = $offset; $i < $offset + $limit; ++$i) {
                     if (isset($this->arrSelectedAlbums[$i])) {
-                        $arrAlbums[] = GcHelper::getAlbumInformationArray($this->arrSelectedAlbums[$i], $this->model);
+                        $objAlbum = GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[$i]);
+
+                        if (null !== $objAlbum) {
+                            $arrAlbums[] = GcHelper::getAlbumInformationArray($objAlbum, $this->model);
+                        }
                     }
                 }
 
@@ -239,7 +245,7 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 // generate the subalbum array
                 if ($this->model->gc_hierarchicalOutput) {
-                    $arrSubalbums = GcHelper::getSubalbumsInformationArray($this->intAlbumId, $this->model);
+                    $arrSubalbums = GcHelper::getSubalbumsInformationArray($objAlbum, $this->model);
                     $template->subalbums = \count($arrSubalbums) ? $arrSubalbums : null;
                 }
 
@@ -300,7 +306,10 @@ class GalleryCreatorController extends AbstractContentElementController
                         $basename = $objFilesModel->name;
                     }
                     $auxBasename[] = $basename;
-                    $arrPictures[$objPictures->id] = GcHelper::getPictureInformationArray($objPictures->id, $this->model);
+
+                    if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($objPictures->id))) {
+                        $arrPictures[$objPictures->id] = GcHelper::getPictureInformationArray($objPicturesModel, $this->model);
+                    }
                 }
 
                 // sort by basename
@@ -321,7 +330,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->getAlbumTemplateVars($objAlbum, $template);
 
                 // init the counter
-                $this->initCounter($objAlbum);
+                GcHelper::initCounter($objAlbum);
 
                 // Call gcGenerateFrontendTemplateHook
                 $template = $this->callGcGenerateFrontendTemplateHook($this, $template, $objAlbum);
@@ -375,10 +384,17 @@ class GalleryCreatorController extends AbstractContentElementController
                 $arrPictures = [];
 
                 if (\count($arrIDS)) {
-                    // store $arrPictures in the template variable
-                    $arrPictures['prev'] = GcHelper::getPictureInformationArray($arrIDS[$currentIndex - 1], $this->model);
-                    $arrPictures['current'] = GcHelper::getPictureInformationArray($arrIDS[$currentIndex], $this->model);
-                    $arrPictures['next'] = GcHelper::getPictureInformationArray($arrIDS[$currentIndex + 1], $this->model);
+                    if (null !== ($objPicturePrev = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex - 1]))) {
+                        $arrPictures['prev'] = GcHelper::getPictureInformationArray($objPicturePrev, $this->model);
+                    }
+
+                    if (null !== ($objPictureCurrent = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex]))) {
+                        $arrPictures['current'] = GcHelper::getPictureInformationArray($objPictureCurrent, $this->model);
+                    }
+
+                    if (null !== ($objPictureNext = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex + 1]))) {
+                        $arrPictures['next'] = GcHelper::getPictureInformationArray($objPictureNext, $this->model);
+                    }
 
                     // add navigation href's to the template
                     $template->prevHref = $arrPictures['prev']['single_image_url'];
@@ -410,7 +426,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->getAlbumTemplateVars($objAlbum, $template);
 
                 // init the counter
-                $this->initCounter($objAlbum);
+                GcHelper::initCounter($objAlbum);
 
                 // Call gcGenerateFrontendTemplateHook
                 $template = $this->callGcGenerateFrontendTemplateHook($this, $template, $objAlbum);
@@ -422,18 +438,20 @@ class GalleryCreatorController extends AbstractContentElementController
         return $template->getResponse();
     }
 
-
     /**
-     * Ajax responses
+     * Ajax responses.
+     *
      * @return false|string
      */
     protected function generateAjax()
     {
         //gibt ein Array mit allen Bildinformationen des Bildes mit der id imageId zurueck
         if (Input::get('isAjax') && Input::get('getImageByPk') && !empty(Input::get('id'))) {
-            $arrPicture = GcHelper::getPictureInformationArray(Input::get('id'), $this->model);
+            if (null !== ($objPicture = GalleryCreatorPicturesModel::findByPk(Input::get('id')))) {
+                $arrPicture = GcHelper::getPictureInformationArray(Input::get('id'), $this->model);
+                echo json_encode($arrPicture);
+            }
 
-            echo json_encode($arrPicture);
             exit;
         }
 
@@ -451,7 +469,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
 
             // Init visit counter
-            $this->initCounter($objAlbum);
+            GcHelper::initCounter($objAlbum);
 
             // sorting direction
             $sorting = $this->model->gc_picture_sorting.' '.$this->model->gc_picture_sorting_direction;
@@ -506,44 +524,6 @@ class GalleryCreatorController extends AbstractContentElementController
         return ampersand($url);
     }
 
-    protected static function initCounter(GalleryCreatorAlbumsModel $objAlbum): void
-    {
-        if (preg_match('/bot|sp[iy]der|crawler|lib(?:cur|www)|search|archive/i', $_SERVER['HTTP_USER_AGENT'])) {
-            // do not count spiders/bots
-            return;
-        }
-
-        if (TL_MODE === 'FE') {
-            $arrVisitors = StringUtil::deserialize($objAlbum->visitors_details, true);
-
-            if (\in_array(md5((string) $_SERVER['REMOTE_ADDR']), $arrVisitors, true)) {
-                // return if the visitor is already registered
-                return;
-            }
-
-            // keep visiors data in the db unless 50 other users have visited the album
-            if (50 === \count($arrVisitors)) {
-                // slice the last position
-                $arrVisitors = \array_slice($arrVisitors, 0, \count($arrVisitors) - 1);
-            }
-
-            //build up the array
-            $newVisitor = md5((string) $_SERVER['REMOTE_ADDR']);
-
-            if (!empty($arrVisitors)) {
-                // insert the element to the beginning of the array
-                array_unshift($arrVisitors, $newVisitor);
-            } else {
-                $arrVisitors[] = $newVisitor;
-            }
-
-            // update database
-            $objAlbum->visitors = ++$objAlbum->visitors;
-            $objAlbum->visitors_details = serialize($arrVisitors);
-            $objAlbum->save();
-        }
-    }
-
     /**
      * return a sorted array with all album ID's.
      *
@@ -562,11 +542,13 @@ class GalleryCreatorController extends AbstractContentElementController
 
     protected function callGcGenerateFrontendTemplateHook(self $objModule, Template $template, GalleryCreatorAlbumsModel $objAlbum = null): Template
     {
+        /** @var System $systemAdapter */
+        $systemAdapter = $this->get('contao.framework')->getAdapter(System::class);
+
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
             foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
-                $this->import($callback[0]);
-                $template = $this->$callback[0]->$callback[1]($objModule, $objAlbum);
+                $template = $systemAdapter->importStatic($callback[0])->{$callback[1]}($objModule, $objAlbum);
             }
         }
 

@@ -43,12 +43,9 @@ use Patchwork\Utf8;
 class GcHelper
 {
     /**
-     * @param $intAlbumId
-     * @param $strFilepath
-     *
      * @throws \Exception
      */
-    public static function createNewImage($intAlbumId, string $strFilepath): bool
+    public static function createNewImage(GalleryCreatorAlbumsModel $objAlbum, string $strFilepath): bool
     {
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
@@ -66,15 +63,8 @@ class GcHelper
             throw new \Exception('Aborted Script, because there is no file model.');
         }
 
-        // Get the album-object
-        $objAlbumModel = GalleryCreatorAlbumsModel::findById($intAlbumId);
-
-        if (null === $objAlbumModel) {
-            throw new \Exception('Aborted Script, because there is no album model with ID '.$intAlbumId.'.');
-        }
-
         // Get the assigned album directory
-        $objFolder = FilesModel::findByUuid($objAlbumModel->assignedDir);
+        $objFolder = FilesModel::findByUuid($objAlbum->assignedDir);
         $assignedDir = null;
 
         if (null !== $objFolder) {
@@ -84,7 +74,7 @@ class GcHelper
         }
 
         if (null === $assignedDir) {
-            throw new \Exception('Aborted Script, because there is no upload directory assigned to the Album with ID '.$intAlbumId);
+            throw new \Exception('Aborted Script, because there is no upload directory assigned to the Album with ID '.$objAlbum->id);
         }
 
         // Check if the file ist stored in the album-directory or if it is stored in an external directory
@@ -97,7 +87,7 @@ class GcHelper
         // Db insert
         $objPictureModel = new GalleryCreatorPicturesModel();
         $objPictureModel->tstamp = time();
-        $objPictureModel->pid = $objAlbumModel->id;
+        $objPictureModel->pid = $objAlbum->id;
         $objPictureModel->externalFile = $blnExternalFile ? '1' : '';
         // Set uuid before model is saved the first time!!!
         $objPictureModel->uuid = $objFilesModel->uuid;
@@ -107,13 +97,13 @@ class GcHelper
         // Get the next sorting index
         $objImg = Database::getInstance()
             ->prepare('SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid=?')
-            ->execute($objAlbumModel->id)
+            ->execute($objAlbum->id)
         ;
         $sorting = $objImg->maximum;
 
         // If filename should be generated
-        if (!$objAlbumModel->preserve_filename && false === $blnExternalFile) {
-            $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $objAlbumModel->id, $insertId, $objFile->extension);
+        if (!$objAlbum->preserve_filename && false === $blnExternalFile) {
+            $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $objAlbum->id, $insertId, $objFile->extension);
             $objFile->renameTo($newFilepath);
         }
 
@@ -127,20 +117,20 @@ class GcHelper
 
             // The album-owner is automaticaly the image owner, if the image was uploaded by a frontend user
             if (TL_MODE === 'FE') {
-                $userId = $objAlbumModel->owner;
+                $userId = $objAlbum->owner;
             }
 
             // Finally save the new image in tl_gallery_creator_pictures
             $objPictureModel->owner = $userId;
-            $objPictureModel->date = $objAlbumModel->date;
+            $objPictureModel->date = $objAlbum->date;
             $objPictureModel->sorting = $sorting;
             $objPictureModel->save();
             System::log('A new version of tl_gallery_creator_pictures ID '.$insertId.' has been created', __METHOD__, TL_GENERAL);
 
             // Check for a valid preview-thumb for the album
-            if (!$objAlbumModel->thumb) {
-                $objAlbumModel->thumb = $insertId;
-                $objAlbumModel->save();
+            if (!$objAlbum->thumb) {
+                $objAlbum->thumb = $insertId;
+                $objAlbum->save();
             }
 
             // GalleryCreatorImagePostInsert - HOOK
@@ -167,24 +157,16 @@ class GcHelper
     /**
      * Move uploaded file to the album directory.
      *
-     * @param $intAlbumId
+     * @throws \Exception
      */
-    public static function fileupload($intAlbumId, string $strName = 'file'): array
+    public static function fileupload(GalleryCreatorAlbumsModel $objAlbum, string $strName = 'file'): array
     {
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-
         $blnIsError = false;
 
-        // Get the album object
-        $objAlb = GalleryCreatorAlbumsModel::findById($intAlbumId);
-
-        if (null === $objAlb) {
-            $blnIsError = true;
-            Message::addError('Album with ID '.$intAlbumId.' does not exist.');
-        }
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         // Check for a valid upload directory
-        $objUploadDir = FilesModel::findByUuid($objAlb->assignedDir);
+        $objUploadDir = FilesModel::findByUuid($objAlbum->assignedDir);
 
         if (null === $objUploadDir || !is_dir($projectDir.'/'.$objUploadDir->path)) {
             $blnIsError = true;
@@ -329,26 +311,18 @@ class GcHelper
 
     /**
      * Returns the album information array.
-     *
-     * @param $intAlbumId
-     * @param $objContentModel
      */
-    public static function getAlbumInformationArray($intAlbumId, ContentModel $objContentModel): array
+    public static function getAlbumInformationArray(GalleryCreatorAlbumsModel $objAlbum, ContentModel $objContentModel): array
     {
         global $objPage;
 
         // Get the page model
         $objPageModel = PageModel::findByPk($objPage->id);
 
-        $objAlbum = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
-            ->execute($intAlbumId)
-        ;
-
         // Anzahl Subalben ermitteln
         $objSubAlbums = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE published=? AND pid=?')
-            ->execute('1', $intAlbumId)
+            ->execute('1', $objAlbum->id)
         ;
 
         $objPics = Database::getInstance()
@@ -368,7 +342,7 @@ class GcHelper
             $href = sprintf($href, $objAlbum->alias);
         }
 
-        $arrPreviewThumb = static::getAlbumPreviewThumb($objAlbum->id);
+        $arrPreviewThumb = static::getAlbumPreviewThumb($objAlbum);
         $strImageSrc = $arrPreviewThumb['path'];
 
         // Generate the thumbnails and the picture element
@@ -453,28 +427,20 @@ class GcHelper
             'cssClass' => trim($strCSSClass),
         ];
 
-        // Fuegt dem Array weitere Eintraege hinzu, falls tl_gallery_creator_albums erweitert wurde
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
-
-        if (null !== $objAlbum) {
-            $arrAlbum = array_merge($objAlbum->row(), $arrAlbum);
-        }
+        $arrAlbum = array_merge($objAlbum->row(), $arrAlbum);
 
         return $arrAlbum;
     }
 
+
+
     /**
      * Returns the picture information array.
      *
-     * @param null $intPictureId
-     * @param $objContentModel
+     * @throws \Exception
      */
-    public static function getPictureInformationArray($intPictureId, ContentModel $objContentModel): ?array
+    public static function getPictureInformationArray(GalleryCreatorPicturesModel $objPicture, ContentModel $objContentModel): ?array
     {
-        if ($intPictureId < 1) {
-            return null;
-        }
-
         global $objPage;
 
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
@@ -497,18 +463,6 @@ class GcHelper
 
         // Get the page model
         $objPageModel = PageModel::findByPk($objPage->id);
-
-        $objPicture = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE id=?')
-            ->execute($intPictureId)
-        ;
-
-        // Alle Informationen zum Album in ein array packen
-        $objAlbum = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
-            ->execute($objPicture->pid)
-        ;
-        $arrAlbumInfo = $objAlbum->fetchAssoc();
 
         // Bild-Besitzer
         $objOwner = Database::getInstance()
@@ -538,6 +492,9 @@ class GcHelper
 
         // Get thumb dimensions
         $arrSize = unserialize($objContentModel->gc_size_detailview);
+
+        // Get parent album
+        $objAlbum = $objPicture->getRelated('pid');
 
         // Generate the thumbnails and the picture element
         try {
@@ -692,7 +649,7 @@ class GcHelper
             //[array] Array mit exif metatags
             'exif' => $exif,
             //[array] Array mit allen Albuminformation (albumname, owners_name...)
-            'albuminfo' => $arrAlbumInfo,
+            'albuminfo' => $objAlbum ? $objAlbum->row() : null,
             //[array] Array mit Bildinfos aus den meta-Angaben der Datei, gespeichert in tl_files.meta
             'metaData' => $arrMeta,
             //[string] css-ID des Bildcontainers
@@ -717,16 +674,13 @@ class GcHelper
 
     /**
      * Returns the information-array about all subalbums ofd a certain parent album.
-     *
-     * @param $intAlbumId
-     * @param $objContentModel
      */
-    public static function getSubalbumsInformationArray($intAlbumId, ContentModel $objContentModel): array
+    public static function getSubalbumsInformationArray(GalleryCreatorAlbumsModel $objAlbum, ContentModel $objContentModel): array
     {
         $strSorting = $objContentModel->gc_sorting.' '.$objContentModel->gc_sorting_direction;
         $objSubAlbums = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
-            ->execute($intAlbumId, '1')
+            ->execute($objAlbum->id, '1')
         ;
         $arrSubalbums = [];
 
@@ -739,9 +693,12 @@ class GcHelper
                     }
                 }
             }
+            $objSubAlbum = GalleryCreatorAlbumsModel::findByPk($objSubAlbums->id);
 
-            $arrSubalbum = self::getAlbumInformationArray($objSubAlbums->id, $objContentModel);
-            array_push($arrSubalbums, $arrSubalbum);
+            if (null !== $objSubAlbum) {
+                $arrSubalbum = self::getAlbumInformationArray($objSubAlbum, $objContentModel);
+                array_push($arrSubalbums, $arrSubalbum);
+            }
         }
 
         return $arrSubalbums;
@@ -749,15 +706,11 @@ class GcHelper
 
     /**
      * Returns the path to the preview-thumbnail of an album.
-     *
-     * @param $intAlbumId
-     *
-     * @return array
      */
-    public static function getAlbumPreviewThumb($intAlbumId)
+    public static function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $objAlbum): array
     {
-        $thumbSRC = System::getContainer()
-            ->getParameter('markocupic.gallery_creator_bundle.album_fallback_thumb');
+        $thumbSRC = System::getContainer()->getParameter('markocupic.gallery_creator_bundle.album_fallback_thumb');
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         // Check for an alternate thumbnail
         if ('' !== Config::get('gc_albumFallbackThumb')) {
@@ -765,7 +718,7 @@ class GcHelper
                 $objFile = FilesModel::findByUuid(StringUtil::uuidToBin(Config::get('gc_albumFallbackThumb')));
 
                 if (null !== $objFile) {
-                    if (is_file(TL_ROOT.'/'.$objFile->path)) {
+                    if (is_file($projectDir.'/'.$objFile->path)) {
                         $thumbSRC = $objFile->path;
                     }
                 }
@@ -778,19 +731,17 @@ class GcHelper
             'path' => $thumbSRC,
         ];
 
-        $objAlb = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
-
-        if (null !== $objAlb->thumb) {
-            $objPreviewThumb = GalleryCreatorPicturesModel::findByPk($objAlb->thumb);
+        if (null !== $objAlbum->thumb) {
+            $objPreviewThumb = GalleryCreatorPicturesModel::findByPk($objAlbum->thumb);
         } else {
-            $objPreviewThumb = GalleryCreatorPicturesModel::findOneByPid($intAlbumId);
+            $objPreviewThumb = GalleryCreatorPicturesModel::findOneByPid($objAlbum->id);
         }
 
         if (null !== $objPreviewThumb) {
             $oFile = FilesModel::findByUuid($objPreviewThumb->uuid);
 
             if (null !== $oFile) {
-                if (is_file(TL_ROOT.'/'.$oFile->path)) {
+                if (is_file($projectDir.'/'.$oFile->path)) {
                     $arrThumb = [
                         'name' => basename($oFile->path),
                         'path' => $oFile->path,
@@ -801,6 +752,45 @@ class GcHelper
 
         return $arrThumb;
     }
+
+    public static function initCounter(GalleryCreatorAlbumsModel $objAlbum): void
+    {
+        if (preg_match('/bot|sp[iy]der|crawler|lib(?:cur|www)|search|archive/i', $_SERVER['HTTP_USER_AGENT'])) {
+            // do not count spiders/bots
+            return;
+        }
+
+        if (TL_MODE === 'FE') {
+            $arrVisitors = StringUtil::deserialize($objAlbum->visitors_details, true);
+
+            if (\in_array(md5((string) $_SERVER['REMOTE_ADDR']), $arrVisitors, true)) {
+                // return if the visitor is already registered
+                return;
+            }
+
+            // keep visiors data in the db unless 50 other users have visited the album
+            if (50 === \count($arrVisitors)) {
+                // slice the last position
+                $arrVisitors = \array_slice($arrVisitors, 0, \count($arrVisitors) - 1);
+            }
+
+            //build up the array
+            $newVisitor = md5((string) $_SERVER['REMOTE_ADDR']);
+
+            if (!empty($arrVisitors)) {
+                // insert the element to the beginning of the array
+                array_unshift($arrVisitors, $newVisitor);
+            } else {
+                $arrVisitors[] = $newVisitor;
+            }
+
+            // update database
+            $objAlbum->visitors = ++$objAlbum->visitors;
+            $objAlbum->visitors_details = serialize($arrVisitors);
+            $objAlbum->save();
+        }
+    }
+
 
     /**
      * $imgPath - relative path to the filesource
@@ -855,17 +845,15 @@ class GcHelper
     /**
      * Bilder aus Verzeichnis auf dem Server in Album einlesen.
      *
-     * @param int $intAlbumId
+     * @throws \Exception
      */
-    public static function importFromFilesystem($intAlbumId, string $strMultiSRC): void
+    public static function importFromFilesystem(GalleryCreatorAlbumsModel $objAlbum, array $arrMultiSRC): void
     {
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         $images = [];
 
-        $objFilesModel = FilesModel::findMultipleByUuids(explode(',', $strMultiSRC));
-
-        if (null === $objFilesModel) {
+        if (null === ($objFilesModel = FilesModel::findMultipleByUuids($arrMultiSRC))) {
             return;
         }
 
@@ -914,7 +902,7 @@ class GcHelper
 
             $objPictures = Database::getInstance()
                 ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=?')
-                ->execute($intAlbumId)
+                ->execute($objAlbum->id)
             ;
 
             $arrPictures['uuid'] = $objPictures->fetchEach('uuid');
@@ -923,8 +911,6 @@ class GcHelper
             foreach ($arrPictures['path'] as $path) {
                 $arrPictures['basename'][] = basename($path);
             }
-
-            $objAlb = GalleryCreatorAlbumsModel::findById($intAlbumId);
 
             foreach ($images as $image) {
                 // Prevent duplicate entries
@@ -943,8 +929,8 @@ class GcHelper
                     $strSource = $image['path'];
 
                     // Get the album upload directory
-                    $objFolderModel = FilesModel::findByUuid($objAlb->assignedDir);
-                    $errMsg = 'Aborted import process, because there is no upload folder assigned to the album with ID '.$objAlb->id.'.';
+                    $objFolderModel = FilesModel::findByUuid($objAlbum->assignedDir);
+                    $errMsg = 'Aborted import process, because there is no upload folder assigned to the album with ID '.$objAlbum->id.'.';
 
                     if (null === $objFolderModel) {
                         throw new \Exception($errMsg);
@@ -967,9 +953,9 @@ class GcHelper
                         Dbafs::addResource($strSource);
                     }
 
-                    self::createNewImage($objAlb->id, $strDestination);
+                    self::createNewImage($objAlbum, $strDestination);
                 } else {
-                    self::createNewImage($objAlb->id, $image['path']);
+                    self::createNewImage($objAlbum, $image['path']);
                 }
             }
         }
@@ -978,9 +964,9 @@ class GcHelper
     /**
      * Revise tables.
      *
-     * @param $albumId
+     * @throws \Exception
      */
-    public static function reviseTables($albumId, bool $blnCleanDb = false): void
+    public static function reviseTables(GalleryCreatorAlbumsModel $objAlbum, bool $blnCleanDb = false): void
     {
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
@@ -988,13 +974,6 @@ class GcHelper
 
         // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
         new Folder(Config::get('galleryCreatorUploadPath'));
-
-        // Get album model
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
-
-        if (null === $objAlbum) {
-            return;
-        }
 
         // Check for valid album owner
         $objUser = UserModel::findByPk($objAlbum->owner);

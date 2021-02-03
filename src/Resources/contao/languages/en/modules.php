@@ -22,4 +22,4 @@ $GLOBALS['TL_LANG']['MOD']['gallery_creator'] = array('Gallery Creator', 'Create
  */
 $GLOBALS['TL_LANG']['CTE']['gallery_creator_elements'] = 'Gallery Creator';
 $GLOBALS['TL_LANG']['CTE']['gallery_creator'] = array('Gallery-Creator-Content-Element','Present gallery_creator albums as a frontend content element.');
-$GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news'] = array('Gallery-Creator-News-Content-Element','Present gallery_creator albums as a frontend content element.');
+$GLOBALS['TL_LANG']['CTE']['gallery_creator_news'] = array('Gallery-Creator-News-Content-Element','Present gallery_creator albums as a frontend content element.');

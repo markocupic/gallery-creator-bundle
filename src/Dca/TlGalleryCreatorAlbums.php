@@ -436,36 +436,23 @@ class TlGalleryCreatorAlbums extends Backend
             // revise table in the backend
             if (Input::get('checkTables')) {
                 if (Input::get('getAlbumIDS')) {
-                    $arrIds = [];
                     $objDb = Database::getInstance()
                         ->execute('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()')
                     ;
 
-                    while ($objDb->next()) {
-                        $arrIds[] = $objDb->id;
-                    }
-
-                    echo json_encode(['albumIDS' => $arrIds]);
+                    echo json_encode(['albumIDS' => $objDb->fetchEach('id')]);
                     exit();
                 }
 
                 if (Input::get('albumId')) {
-                    $albumId = Input::get('albumId');
-
-                    if (Input::get('reviseTables') && $this->User->isAdmin) {
+                    $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
+                    if (Input::get('reviseTables') && $objAlbum !== null) {
                         // delete damaged datarecords
-                        GcHelper::reviseTables($albumId, true);
-                        $response = true;
-                    } else {
-                        GcHelper::reviseTables($albumId, false);
-                        $response = true;
-                    }
-
-                    if (true === $response) {
+                        $isAdmin = $this->User->isAdmin ? true : false;
+                        GcHelper::reviseTables($objAlbum, $isAdmin);
                         if (\is_array($_SESSION['GC_ERROR'])) {
                             if (\count($_SESSION['GC_ERROR']) > 0) {
                                 $strError = implode('***', $_SESSION['GC_ERROR']);
-
                                 if ('' !== $strError) {
                                     echo json_encode(['errors' => $strError]);
                                 }
@@ -494,6 +481,9 @@ class TlGalleryCreatorAlbums extends Backend
             ->prepare('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid=?')
             ->execute($row['id'])
         ;
+
+        $objAlbum = GalleryCreatorAlbumsModel::findByPk($row['id']);
+
         $label = str_replace('#count_pics#', $mysql->countImg, $label);
         $label = str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
         $image = $row['published'] ? 'picture_edit.png' : 'picture_edit_1.png';
@@ -502,7 +492,7 @@ class TlGalleryCreatorAlbums extends Backend
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
         $level = GcHelper::getAlbumLevel($row['pid']);
-        $padding = $this->isNode($row['id']) ? 3 * $level : 20 + (3 * $level);
+        $padding = $this->isNode($objAlbum) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:'.$padding.'px;', $label);
 
         return $label;
@@ -689,16 +679,16 @@ class TlGalleryCreatorAlbums extends Backend
 
         // Get the album object
         $blnNoAlbum = false;
-        $objAlb = GalleryCreatorAlbumsModel::findById($intAlbumId);
+        $objAlbum = GalleryCreatorAlbumsModel::findById($intAlbumId);
 
-        if (null === $objAlb) {
+        if (null === $objAlbum) {
             Message::addError('Album with ID '.$intAlbumId.' does not exist.');
             $blnNoAlbum = true;
         }
 
         // Check for a valid upload directory
         $blnNoUploadDir = false;
-        $objUploadDir = FilesModel::findByUuid($objAlb->assignedDir);
+        $objUploadDir = FilesModel::findByUuid($objAlbum->assignedDir);
 
         if (null === $objUploadDir || !is_dir($this->projectDir.'/'.$objUploadDir->path)) {
             Message::addError('No upload directory defined in the album settings!');
@@ -710,11 +700,11 @@ class TlGalleryCreatorAlbums extends Backend
             return;
         }
         // Call the uploader script
-        $arrUpload = GcHelper::fileupload($intAlbumId, $strName);
+        $arrUpload = GcHelper::fileupload($objAlbum, $strName);
 
         foreach ($arrUpload as $strFileSrc) {
             // Add  new datarecords into tl_gallery_creator_pictures
-            GcHelper::createNewImage($objAlb->id, $strFileSrc);
+            GcHelper::createNewImage($objAlbum, $strFileSrc);
         }
 
         // Do not exit script if html5_uploader is selected and Javascript is disabled
@@ -738,21 +728,19 @@ class TlGalleryCreatorAlbums extends Backend
         if (!$this->Input->post('FORM_SUBMIT')) {
             return;
         }
-        $intAlbumId = Input::get('id');
 
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
-
-        if (null !== $objAlbum) {
+        if (null !== ($objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('id')))) {
             $objAlbum->preserve_filename = Input::post('preserve_filename');
             $objAlbum->save();
-            // comma separated list with folder uuid's => 10585872-5f1f-11e3-858a-0025900957c8,105e9de0-5f1f-11e3-858a-0025900957c8,105e9dd6-5f1f-11e3-858a-0025900957c8
-            $strMultiSRC = $this->Input->post('multiSRC');
 
-            if (\strlen(trim($strMultiSRC))) {
+            // comma separated list with folder uuid's => 10585872-5f1f-11e3-858a-0025900957c8,105e9de0-5f1f-11e3-858a-0025900957c8,105e9dd6-5f1f-11e3-858a-0025900957c8
+            $arrMultiSRC = explode(',', (string) $this->Input->post('multiSRC'));
+
+            if (!empty($arrMultiSRC)) {
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserve_filename']['eval']['submitOnChange'] = false;
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
-                GcHelper::importFromFilesystem($intAlbumId, $strMultiSRC);
-                $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$intAlbumId.'&ref='.TL_REFERER_ID.'&filesImported=true');
+                GcHelper::importFromFilesystem($objAlbum, $arrMultiSRC);
+                $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$objAlbum->id.'&ref='.TL_REFERER_ID.'&filesImported=true');
             }
         }
         $this->redirect('contao/main.php?do=gallery_creator');
@@ -1156,13 +1144,12 @@ class TlGalleryCreatorAlbums extends Backend
     }
 
     /**
-     * check if album has subalbums.
+     * Check if album has subalbums.
      *
-     * @param int $id
-     *
+     * @param GalleryCreatorAlbumsModel $objAlbum
      * @return bool
      */
-    private function isNode($id)
+    private function isNode(GalleryCreatorAlbumsModel $objAlbum): bool
     {
         $objAlbums = GalleryCreatorAlbumsModel::findByPid($id);
 

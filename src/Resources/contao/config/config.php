@@ -10,30 +10,14 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-use Contao\ArrayUtil;
 use Contao\Config;
 use Contao\Input;
-use Markocupic\GalleryCreatorBundle\ContentElement\ContentGalleryCreator;
-use Markocupic\GalleryCreatorBundle\ContentElement\ContentGalleryCreatorNews;
+use Markocupic\GalleryCreatorBundle\Listener\ContaoHook\InitializeSystem;
 
 // Define upload path
 Config::set('galleryCreatorUploadPath', Config::get('uploadPath') . '/gallery_creator_albums');
 
-/**
- * Front end content element
- */
-ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, array('gallery_creator_elements' => array('gallery_creator_ce_news' => ContentGalleryCreatorNews::class)));
 
-// Show news ce_element in the news-module only
-if (TL_MODE === 'BE' && Input::get('do') === 'news')
-{
-	unset($GLOBALS['TL_CTE']['gallery_creator_elements']['gallery_creator']);
-}
-
-if (TL_MODE === 'BE' && Input::get('do') !== 'news')
-{
-	unset($GLOBALS['TL_CTE']['gallery_creator_elements']['gallery_creator_ce_news']);
-}
 
 /**
  * Back end module
@@ -63,3 +47,8 @@ if (TL_MODE === 'BE')
 	$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be.js';
 	$GLOBALS['TL_CSS'][] = 'bundles/markocupicgallerycreator/css/gallery_creator_be.css';
 }
+
+/**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['initializeSystem'][] = [InitializeSystem::class, 'setContentElements'];

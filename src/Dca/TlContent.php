@@ -30,7 +30,14 @@ class TlContent extends Backend
      */
     public function getGalleryCreatorTemplates(): array
     {
+
+        // Show news ce_element in the news-module only
+        if ('news' === Input::get('do')) {
+            return $this->getTemplateGroup('ce_gallery_creator_news');
+        }
+
         return $this->getTemplateGroup('ce_gallery_creator');
+
     }
 
     /**

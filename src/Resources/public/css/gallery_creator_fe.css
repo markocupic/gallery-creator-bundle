@@ -1,118 +1,38 @@
-
-
-/* close commented backslash hack */
 /* Reset Margin & Padding */
-.ce_gallery_creator_ce ul,
-.ce_gallery_creator_ce ul.list_albums > li,
-.ce_gallery_creator_ce ul.album_preview li
-{
-	margin:0;
-	padding:0;
-	list-style-type:none;
-    display:block
+.ce_gallery_creator ul,
+.ce_gallery_creator ul.list_view > li,
+.ce_gallery_creator ul.detail_view > li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
 }
-
 
 /* General Settings */
-.ce_gallery_creator_ce li.inline
-{
-	display:inline;
-}
-
-.ce_gallery_creator_ce li.block
-{
-	display:block;
-}
-
-.ce_gallery_creator_ce .backLink
-{
-       display:block;
-}
-
- 
-/* list albums */
-.ce_gallery_creator_ce .list_albums .tstamp p
-{
-       margin-bottom: 2px !important;
-}
-
-.ce_gallery_creator_ce .list_albums .col_1
-{
-       float:left;
-       clear:left;
-}
-
-.ce_gallery_creator_ce .list_albums .col_2
-{
-       float:left;
-       width:350px;
-	margin-left:30px;
-}
-
-
-.ce_gallery_creator_ce .list_albums .level_1
-{
-	width:100%;
-    padding:0;
-}
-
-/** Clearfix **/
-.ce_gallery_creator_ce .clearfix:before,
-.ce_gallery_creator_ce .clearfix:after {
-    content: " ";
-    display: table;
-}
-
-.ce_gallery_creator_ce .clearfix:after {
-    clear: both;
-}
-
-.ce_gallery_creator_ce .clearfix {
-    *zoom: 1;
-}
-
-
-
-/* album preview */
-.gallery_container {
-    display:block;
-    clear:both;
-}
-
-ul.album_preview:after {
-    visibility: hidden;
-    display: block;
-    font-size: 0;
-    content: " ";
-    clear: both;
-    height: 0;
-}
-
-ul.album_preview {
-    display: inline-block;
-}
-
-/* start commented backslash hack \*/
-* html ul.album_preview {
-    height: 1%;
-}
-
-ul.album_preview {
+.ce_gallery_creator .backLink {
     display: block;
 }
 
-.ce_gallery_creator_ce .albumComment
-{
-       margin-top:1em;
+/* list view */
+.ce_gallery_creator ul.list_view > li {
+    display: flex;
 }
 
-.ce_gallery_creator_ce .album_preview li
-{
-	float:left;
+.ce_gallery_creator ul.list_view > li > div.col_2 {
+    margin-left: 2rem;
 }
 
-.ce_gallery_creator_ce .album_preview .col_first
-{
-       clear:both;
+/* detail view */
+.ce_gallery_creator ul.detail_view {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.ce_gallery_creator ul.detail_view > li {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.ce_gallery_creator .albumComment {
+    margin-top: 1rem;
 }
 

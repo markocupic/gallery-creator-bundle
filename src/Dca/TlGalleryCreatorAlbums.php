@@ -353,10 +353,10 @@ class TlGalleryCreatorAlbums extends Backend
         // check User Role
         $this->checkUserRole(Input::get('id'));
 
-        if (false === $this->restrictedUser) {
+        if (!$this->restrictedUser) {
             return '
 <div class="widget long album_infos">
-<br /><br />
+<p>&nbsp;</p>
 <table cellpadding="0" cellspacing="0" width="100%" summary="">
 	<tr class="odd">
 		<td style="width:25%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id'][0].': </strong></td>
@@ -368,7 +368,8 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         return '
-<div class="album_infos">
+<div class="widget long album_infos">
+<p>&nbsp;</p>
 <table cellpadding="0" cellspacing="0" width="100%" summary="">
 	<tr class="odd">
 		<td style="width:25%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id'][0].': </strong></td>
@@ -446,13 +447,16 @@ class TlGalleryCreatorAlbums extends Backend
 
                 if (Input::get('albumId')) {
                     $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
-                    if (Input::get('reviseTables') && $objAlbum !== null) {
+
+                    if (Input::get('reviseTables') && null !== $objAlbum) {
                         // delete damaged datarecords
                         $isAdmin = $this->User->isAdmin ? true : false;
                         GcHelper::reviseTables($objAlbum, $isAdmin);
+
                         if (\is_array($_SESSION['GC_ERROR'])) {
                             if (\count($_SESSION['GC_ERROR']) > 0) {
                                 $strError = implode('***', $_SESSION['GC_ERROR']);
+
                                 if ('' !== $strError) {
                                     echo json_encode(['errors' => $strError]);
                                 }
@@ -1145,9 +1149,6 @@ class TlGalleryCreatorAlbums extends Backend
 
     /**
      * Check if album has subalbums.
-     *
-     * @param GalleryCreatorAlbumsModel $objAlbum
-     * @return bool
      */
     private function isNode(GalleryCreatorAlbumsModel $objAlbum): bool
     {

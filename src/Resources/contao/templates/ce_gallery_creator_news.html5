@@ -11,11 +11,11 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
 <?php $this->block('content'); ?>
 
 <?php if ($this->insertArticlePre):?>
-<!-- articleBoxPre-->
-<div id="articleBoxPre" class="block">
+<!-- article box pre -->
+<div class="article_box_pre block">
 <?= $this->insertArticlePre ?>
 </div>
-<!-- end articleBoxPre-->
+<!-- end article box pre -->
 <?php endif; ?>
 
 <?php if ($this->headline): ?>
@@ -35,33 +35,35 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
 <?= $this->pagination ?>
 <?php $col=0; ?>
 <?php if ($this->arrPictures): ?>
-<div class="gallery_container block">
-  <ul class="album_preview clearfix">
-  <?php foreach ($this->arrPictures as $Picture): ?>
-      <li class="col_<?= $col ?><?= ($col == 0 ? ' col_first' : '') ?><?= ($col == $this->colsPerRow - 1 ? ' col_last' : '') ?>">
-                <figure<?= (strlen($Picture['cssID']) ? ' id="' . $Picture['cssID'] . '"' : '') ?> class="image_container<?= strlen($Picture['cssClass']) ? ' ' . $Picture['cssClass'] : '' ?>"<?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
-  <?php if ($Picture['href']): ?>
-                       <a href="<?= $Picture['href'] ?>" <?= $Picture['lightbox'] ?> title="<?= $Picture['comment'] ? $Picture['comment'] : ($Picture['title'] ? $Picture['title'] : $Picture['filename']); ?>">
-  <?php endif; ?>
-              <?php $this->insert('picture_default', $Picture['picture']); ?>
-  <?php if ($Picture['href'] != ''): ?>
-                       </a>
-  <?php endif; ?>
-                </figure>
-         </li>
+<ul class="detail_view">
+
+<?php foreach ($this->arrPictures as $Picture): ?>
+  <li class="col_<?= $col ?><?= ($col == 0 ? ' col_first' : '') ?><?= ($col == $this->colsPerRow - 1 ? ' col_last' : '') ?>">
+    <figure<?= (strlen($Picture['cssID']) ? ' id="' . $Picture['cssID'] . '"' : '') ?> class="image_container<?= strlen($Picture['cssClass']) ? ' ' . $Picture['cssClass'] : '' ?>"<?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
+      <?php if ($Picture['href']): ?>
+      <a href="<?= $Picture['href'] ?>" <?= $Picture['lightbox'] ?> title="<?= $Picture['comment'] ? $Picture['comment'] : ($Picture['title'] ? $Picture['title'] : $Picture['filename']); ?>">
+      <?php endif; ?>
+
+        <?php $this->insert('picture_default', $Picture['picture']); ?>
+      <?php if ($Picture['href'] != ''): ?>
+      </a>
+      <?php endif; ?>
+    </figure>
+  </li>
+
   <?php $col++;?>
   <?php if ($col == $this->colsPerRow) $col=0; ?>
   <?php endforeach;?>
-  </ul>
-</div>
+
+</ul>
 <?php endif;?>
 
 <?php if ($this->insertArticlePost):?>
-<!-- articleBoxPre-->
-<div id="articleBoxPost" class="block">
+<!-- article box post -->
+<div class="article_box_post">
 <?= $this->insertArticlePost ?>
 </div>
-<!-- end articleBoxPost-->
+<!-- end article box post -->
 <?php endif; ?>
 
 <?php $this->endblock(); ?>

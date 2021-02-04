@@ -1,12 +1,9 @@
 <!-- ce_gallery_creator - list view -->
 <?= $this->pagination ?>
 
-<ul class="list_albums">
+<ul class="list_view">
 	<?php foreach ($this->arrAlbums as $Album): ?>
-	<li class="level_1 <?= $Album['cssClass'] ?> clearfix block"<?= $this->imagemargin ? 'style="'.$this->imagemargin.'"' : '' ?>>
-		<div class="tstamp block">
-			<p>[<?= $Album['event_date'] ?>]</p>
-		</div>
+	<li class="level_1 <?= $Album['cssClass'] ?>"<?= $this->imagemargin ? 'style="'.$this->imagemargin.'"' : '' ?>>
 
 		<div class="col_1">
 			<figure class="image_container" onmouseover="<?= $Album['thumbMouseover'] ?>">
@@ -25,6 +22,8 @@
 			</a>
 			<?php endif; ?>
 
+			<p class="time">[<?= $Album['event_date'] ?>]</p>
+
 			<?php if (!empty($Album['photographer'])): ?>
 			<p class="photographer"><?= $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] ?>: <?= $Album['photographer'] ?></p>
 			<?php endif; ?>
@@ -42,6 +41,7 @@
 			<div class="album_comment"><?= $Album['comment'] ?></div>
 			<?php endif; ?>
 		</div>
+
 	</li>
 	<?php endforeach; ?>
 </ul>

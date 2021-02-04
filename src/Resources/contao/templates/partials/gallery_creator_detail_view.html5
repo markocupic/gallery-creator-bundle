@@ -1,11 +1,11 @@
 <!-- ce_gallery_creator - detail view -->
 
 <?php if ($this->insertArticlePre):?>
-<!-- articleBoxPre-->
-<div id="articleBoxPre" class="block">
+<!-- article box pre -->
+<div class="article_box_pre block">
 	<?= $this->insertArticlePre ?>
 </div>
-<!-- end articleBoxPre-->
+<!-- end article box pre -->
 <?php endif; ?>
 
 <?php if ($this->headline): ?>
@@ -13,7 +13,7 @@
 <?php endif; ?>
 
 <?php if ($this->backLink): ?>
-<div class="backLink"><a href="<?= $this->backLink ?>" title="zurück"><?= $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] ?></a></div>
+<div class="backLink"><a href="<?= $this->backLink ?>" title="<?= $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] ?>"><?= $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] ?></a></div>
 <?php endif; ?>
 
 <?php if ($this->Albumname): ?>
@@ -24,26 +24,33 @@
 <div class="subalbums">
 	<h3><?= $GLOBALS['TL_LANG']['gallery_creator']['subalbums_of'] ?>: <?= $this->Albumname ?></h3>
 
-	<ul class="list_albums">
+	<ul class="list_view">
 		<?php foreach ($this->subalbums as $Subalbum): ?>
 		<li class="level_1 <?= $Subalbum['cssClass'] ?> clearfix block"<?= $this->imagemargin ? 'style="'.$this->imagemargin.'"' : '' ?>>
-
-			<div class="tstamp block"><p>[<?= $Subalbum['event_date'] ?>]</p></div>
-
 			<div class="col_1">
 				<figure class="image_container" onmouseover="<?=  $Subalbum['thumbMouseover'] ?>">
 					<?php if ($Subalbum['href']): ?>
 					<a href="<?= $Subalbum['href'] ?>" title="<?= $Subalbum['title'] ?>">
-						<?php endif; ?>
-						<?php $this->insert('picture_default', $Subalbum['picture']); ?>
-						<?php if ($Subalbum['href']): ?>
+					<?php endif; ?>
+
+					<?php $this->insert('picture_default', $Subalbum['picture']); ?>
+
+					<?php if ($Subalbum['href']): ?>
 					</a>
 					<?php endif; ?>
 				</figure>
 			</div>
 
 			<div class="col_2">
+				<?php if ($Subalbum['href']): ?>
+				<a href="<?= $Subalbum['href'] ?>" title="<?= $Subalbum['title'] ?>">
+				<?php endif; ?>
 				<h2><?= $Subalbum['name'] ?></h2>
+				<?php if ($Subalbum['href']): ?>
+				</a>
+				<?php endif; ?>
+
+				<p class="time">[<?= $Subalbum['event_date'] ?>]</p>
 
 				<?php if ($Subalbum['count']): ?>
 				<p class="count_pics"><?= $Subalbum['count'] ?> <?= $GLOBALS['TL_LANG']['gallery_creator']['pictures'] ?></p>
@@ -62,6 +69,7 @@
 		<?php endforeach; ?>
 	</ul>
 </div>
+<hr>
 <?php endif; ?>
 
 <?php if ($this->albumComment): ?>
@@ -74,10 +82,10 @@
 
 <?php $col=0; ?>
 <?php if ($this->arrPictures): ?>
-<div id="galleryContainer" class="block">
-	<ul class="album_preview">
+	<ul class="detail_view">
 		<?php foreach ($this->arrPictures as $Picture): ?>
 		<li class="col_<?= $col ?><?= ($col == 0 ? ' col_first' : '') ?><?= ($col == $this->colsPerRow - 1 ? ' col_last' : '') ?>">
+
 			<figure<?= (strlen($Picture['cssID']) ? ' id="' . $Picture['cssID'] . '"' : '') ?> class="image_container<?= strlen($Picture['cssClass']) ? ' ' . $Picture['cssClass'] : '' ?>"<?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
 
 				<?php if ($Picture['href']): ?>
@@ -91,20 +99,20 @@
 				<?php endif; ?>
 
 			</figure>
+
 		</li>
 		<?php $col++;?>
 		<?php if ($col == $this->colsPerRow) $col=0; ?>
 		<?php endforeach;?>
 	</ul>
-</div>
 <?php endif;?>
 
 <?php if ($this->insertArticlePost):?>
-<!-- articleBoxPre-->
-<div id="articleBoxPost" class="block">
+<!-- article box post -->
+<div class="article_box_post">
 	<?= $this->insertArticlePost ?>
 </div>
-<!-- end articleBoxPost-->
+<!-- end article box post -->
 <?php endif; ?>
 
 <?php if($this->gc_fullsize): ?>

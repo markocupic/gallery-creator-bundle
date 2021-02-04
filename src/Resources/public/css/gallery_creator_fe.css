@@ -32,6 +32,10 @@
     margin-bottom: 0.5rem;
 }
 
+.ce_gallery_creator ul.detail_view > li > figure {
+    margin: 0;
+}
+
 .ce_gallery_creator .albumComment {
     margin-top: 1rem;
 }

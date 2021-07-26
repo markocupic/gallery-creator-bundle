@@ -1,10 +1,26 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+        bind:
+            #$bagName: '%resource_booking_bundle.session.attribute_bag_name%'
+
+    _instanceof:
+        Symfony\Bundle\FrameworkBundle\Controller\AbstractController:
+            calls:
+                - [ setContainer, [ '@service_container' ] ]
+
+    Markocupic\GalleryCreatorBundle\:
+        resource: ../../
+        exclude: ../../{DependencyInjection,Resources,Model}
 
     Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController:
         tags:
-            - { name: contao.content_element, category: gallery_creator_elements, template: ce_gallery_creator, type: gallery_creator }
             - { name: container.service_subscriber }
         public: true
+        calls:
+            - [ setContainer, [ '@Psr\Container\ContainerInterface' ] ]
 
     Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController:
         tags:

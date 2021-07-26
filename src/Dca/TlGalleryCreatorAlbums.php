@@ -25,8 +25,8 @@ use Contao\DC_Table;
 use Contao\File;
 use Contao\FilesModel;
 use Contao\Folder;
-use Contao\GalleryCreatorAlbumsModel;
-use Contao\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Contao\Image;
 use Contao\Input;
 use Contao\Message;
@@ -35,6 +35,7 @@ use Contao\System;
 use Contao\UserModel;
 use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
+use Transliterator;
 
 /**
  * Class TlGalleryCreatorAlbums.

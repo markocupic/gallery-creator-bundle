@@ -24,9 +24,6 @@
     "psr-4": {
       "Markocupic\\GalleryCreatorBundle\\": "src/"
     },
-    "classmap": [
-      "src/Resources/contao"
-    ],
     "exclude-from-classmap": [
       "src/Resources/contao/config",
       "src/Resources/contao/dca",

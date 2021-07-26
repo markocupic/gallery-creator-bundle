@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Gallery Creator Bundle.
  *
@@ -10,12 +12,15 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-namespace Contao;
+namespace Markocupic\GalleryCreatorBundle\Model;
+
+use Contao\Database;
+use Contao\Model;
 
 /**
  * Reads and writes tl_gallery_creator_albums
  */
-class GalleryCreatorAlbumsModel extends \Model
+class GalleryCreatorAlbumsModel extends Model
 {
 	/**
 	 * Table name

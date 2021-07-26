@@ -24,8 +24,8 @@ use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
 use Contao\FrontendUser;
-use Contao\GalleryCreatorAlbumsModel;
-use Contao\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Contao\Input;
 use Contao\PageError404;
 use Contao\PageModel;
@@ -36,12 +36,15 @@ use Contao\Template;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 
 /**
- * Class GalleryCreatorController.
+ * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements")
  */
 class GalleryCreatorController extends AbstractContentElementController
 {
+    public const TYPE = 'gallery_creator';
+
     private $viewMode;
 
     private $intAlbumId;

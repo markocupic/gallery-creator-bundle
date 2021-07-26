@@ -8,10 +8,6 @@
 <!-- end article box pre -->
 <?php endif; ?>
 
-<?php if ($this->headline): ?>
-<<?= $this->hl ?>><?= $this->headline ?></<?= $this->hl ?>>
-<?php endif; ?>
-
 <?php if ($this->backLink): ?>
 <div class="backLink"><a href="<?= $this->backLink ?>" title="<?= $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] ?>"><?= $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] ?></a></div>
 <?php endif; ?>

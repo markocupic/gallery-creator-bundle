@@ -12,7 +12,7 @@
 
 use Contao\System;
 use Markocupic\GalleryCreatorBundle\Dca\TlContent;
-
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
 /**
  * Add palettes to tl_content
  */
@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array(
 	'onloadCbSetUpPalettes',
 );
 
-$GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator'] = 'name,type,headline;
+$GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gc_hierarchicalOutput,gc_publish_all_albums,gc_publish_albums,gc_redirectSingleAlb;
 {pagination_legend},gc_AlbumsPerPage,gc_ThumbsPerPage,gc_PaginationNumberOfLinks;
 {album_listing_legend},gc_sorting,gc_sorting_direction,gc_size_albumlisting,gc_imagemargin_albumlisting;

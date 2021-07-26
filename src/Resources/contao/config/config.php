@@ -13,6 +13,8 @@
 use Contao\Config;
 use Contao\Input;
 use Markocupic\GalleryCreatorBundle\Listener\ContaoHook\InitializeSystem;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 
 // Define upload path
 Config::set('galleryCreatorUploadPath', Config::get('uploadPath') . '/gallery_creator_albums');
@@ -48,7 +50,9 @@ if (TL_MODE === 'BE')
 	$GLOBALS['TL_CSS'][] = 'bundles/markocupicgallerycreator/css/gallery_creator_be.css';
 }
 
-/**
- * Hooks
- */
+// Register contao models
+$GLOBALS['TL_MODELS']['tl_gallery_creator_albums'] = GalleryCreatorAlbumsModel::class;
+$GLOBALS['TL_MODELS']['tl_gallery_creator_pictures'] = GalleryCreatorPicturesModel::class;
+
+// Hooks
 $GLOBALS['TL_HOOKS']['initializeSystem'][] = [InitializeSystem::class, 'setContentElements'];

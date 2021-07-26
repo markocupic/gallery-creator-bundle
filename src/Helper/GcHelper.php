@@ -220,13 +220,11 @@ class GcHelper
      * Generate a unique filepath
      * for a new picture.
      *
-     * @param $strFilename
-     *
      * @throws \Exception
      *
-     * @return bool|string
+     * @return false|string
      */
-    public static function generateUniqueFilename(string $strFilename)
+    public static function generateUniqueFilename(string $strFilename): string
     {
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
@@ -261,18 +259,16 @@ class GcHelper
                 $filename = $basename;
             }
 
+            // Add an integer with a leading zero to the filename -> filename0001.jpg
             $suffix = str_pad((string) $i, 4, '0', STR_PAD_LEFT);
-            // Add integer with a leading zero to the filename -> filename0001.jpg
 
             $basename = $filename.'_'.$suffix;
 
-            // Break after 100 loops and generate random filename
-            if (100 === $i) {
+            // Break after 1000 loops and generate random filename
+            if (1000 === $i) {
                 return $dirname.'/'.md5($basename.microtime()).'.'.$extension;
             }
         } while (false === $isUnique);
-
-        return false;
     }
 
     /**
@@ -321,6 +317,7 @@ class GcHelper
         if (TL_MODE === 'FE') {
             // Generate the url as a formatted string
             $href = StringUtil::ampersand($objPageModel->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language));
+
             // Add albumAlias
             $href = sprintf($href, $objAlbum->alias);
         }
@@ -439,6 +436,7 @@ class GcHelper
 
             // Meta
             $arrMeta = Frontend::getMetaData($objFileModel->meta, $objPage->language);
+
             // Use the file name as title if none is given
             if (empty($arrMeta['title'])) {
                 $arrMeta['title'] = StringUtil::specialchars($objFileModel->name);
@@ -597,7 +595,7 @@ class GcHelper
     }
 
     /**
-     * Returns the information-array about all subalbums ofd a certain parent album.
+     * Returns the information-array about all subalbums of a certain parent album.
      */
     public static function getSubalbumsInformationArray(GalleryCreatorAlbumsModel $objAlbum, ContentModel $objContentModel): array
     {
@@ -939,7 +937,7 @@ class GcHelper
                         }
 
                         if (false !== $blnCleanDb) {
-                            $msg = ' Deleted datarecord with ID '.$objPictures->id.'.';
+                            $msg = ' Deleted data record with ID '.$objPictures->id.'.';
                             $_SESSION['GC_ERROR'][] = $msg;
                             $objPictures->delete();
                         } else {
@@ -950,7 +948,7 @@ class GcHelper
                     } elseif (!is_file($projectDir.'/'.$objFile->path)) {
                         // If file has an entry in Dbafs, but doesn't exist on the server anymore
                         if (false !== $blnCleanDb) {
-                            $msg = 'Deleted datarecord with ID '.$objPictures->id.'.';
+                            $msg = 'Deleted data record with ID '.$objPictures->id.'.';
                             $_SESSION['GC_ERROR'][] = $msg;
                             $objPictures->delete();
                         } else {

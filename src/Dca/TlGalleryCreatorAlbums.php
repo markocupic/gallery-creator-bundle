@@ -65,7 +65,7 @@ class TlGalleryCreatorAlbums extends Backend
         ];
 
         if ('copyAll' === $_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode']) {
-            $this->redirect('contao/main.php?do=gallery_creator&clipboard=1');
+            $this->redirect('contao?do=gallery_creator&clipboard=1');
         }
     }
 
@@ -144,7 +144,7 @@ class TlGalleryCreatorAlbums extends Backend
         // Check permissions to publish
         if (!$this->User->isAdmin && $objAlbum->owner !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
             $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            $this->redirect('contao?act=error');
         }
 
         $objVersions = new Versions('tl_gallery_creator_albums', $intId);
@@ -450,7 +450,7 @@ class TlGalleryCreatorAlbums extends Backend
                     $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
 
                     if (Input::get('reviseTables') && null !== $objAlbum) {
-                        // delete damaged datarecords
+                        // delete damaged data records
                         $isAdmin = $this->User->isAdmin ? true : false;
                         GcHelper::reviseTables($objAlbum, $isAdmin);
 
@@ -493,10 +493,10 @@ class TlGalleryCreatorAlbums extends Backend
         $label = str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
         $image = $row['published'] ? 'picture_edit.png' : 'picture_edit_1.png';
         $label = str_replace('#icon#', 'bundles/markocupicgallerycreator/images/'.$image, $label);
-        $href = sprintf('contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
+        $href = sprintf('contao?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
-        $level = GcHelper::getAlbumLevel((int)$row['pid']);
+        $level = GcHelper::getAlbumLevel((int) $row['pid']);
         $padding = $this->isNode($objAlbum) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:'.$padding.'px;', $label);
 
@@ -591,7 +591,7 @@ class TlGalleryCreatorAlbums extends Backend
 
             if ($this->restrictedUser) {
                 $this->log('Datensatz mit ID '.Input::get('id').' wurde von einem nicht authorisierten Benutzer versucht aus tl_gallery_creator_albums zu loeschen.', __METHOD__, TL_ERROR);
-                $this->redirect('contao/main.php?do=error');
+                $this->redirect('contao?do=error');
             }
             // also delete the child element
             $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums(Input::get('id'));
@@ -708,7 +708,7 @@ class TlGalleryCreatorAlbums extends Backend
         $arrUpload = GcHelper::fileupload($objAlbum, $strName);
 
         foreach ($arrUpload as $strFileSrc) {
-            // Add  new datarecords into tl_gallery_creator_pictures
+            // Add  new data records into tl_gallery_creator_pictures
             GcHelper::createNewImage($objAlbum, $strFileSrc);
         }
 
@@ -745,10 +745,10 @@ class TlGalleryCreatorAlbums extends Backend
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserve_filename']['eval']['submitOnChange'] = false;
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
                 GcHelper::importFromFilesystem($objAlbum, $arrMultiSRC);
-                $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$objAlbum->id.'&ref='.TL_REFERER_ID.'&filesImported=true');
+                $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$objAlbum->id.'&ref='.TL_REFERER_ID.'&filesImported=true');
             }
         }
-        $this->redirect('contao/main.php?do=gallery_creator');
+        $this->redirect('contao?do=gallery_creator');
     }
 
     /**

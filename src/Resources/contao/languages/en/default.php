@@ -1,13 +1,14 @@
 <?php
-/**
- * Gallery Creator Bundle
- * Provide methods for using the gallery_creator extension
- * @copyright  Marko Cupic 2019
- * @license MIT
- * @author     Marko Cupic, Oberkirch, Switzerland ->  mailto: m.cupic@gmx.ch
- * @package    Gallery Creator Bundle
- */
 
+/*
+ * This file is part of Gallery Creator Bundle.
+ *
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * @license GPL-3.0-or-later
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/gallery-creator-bundle
+ */
 
 /**
  * error messages
@@ -20,7 +21,6 @@ $GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'The file "%s" ist not readable!
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
 $GLOBALS['TL_LANG']['ERR']['accept_jpg'] = 'Gallery Creator only supports jpeg/jpg files.';
 
-
 /**
  * frontend
  */
@@ -30,9 +30,8 @@ $GLOBALS['TL_LANG']['gallery_creator']['subalbums_of'] = 'Subalbums of';
 $GLOBALS['TL_LANG']['gallery_creator']['pictures'] = 'pictures';
 $GLOBALS['TL_LANG']['gallery_creator']['contains'] = 'contains';
 $GLOBALS['TL_LANG']['gallery_creator']['visitors'] = 'visitors';
-$GLOBALS['TL_LANG']['gallery_creator']['fe_authentification_error'] = array('Authentification error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.');
+$GLOBALS['TL_LANG']['gallery_creator']['fe_authentification_error'] = ['Authentification error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
 $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] = 'Photographers name';
-
 
 /**
  * Miscelaneous

@@ -40,12 +40,18 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 class TlGalleryCreatorPictures extends Backend
 {
     /**
-     * bool
-     * bei eingeschränkten Usern wird der Wert auf true gesetzt.
+     * @var bool
      */
     public $restrictedUser = false;
+
+    /**
+     * @var string
+     */
     private $uploadPath;
 
+    /**
+     * @var string
+     */
     private $projectDir;
 
     public function __construct()
@@ -56,14 +62,13 @@ class TlGalleryCreatorPictures extends Backend
 
         $this->import('BackendUser', 'User');
 
-        //relativer Pfad zum Upload-Dir fuer safe-mode-hack
         $this->uploadPath = Config::get('galleryCreatorUploadPath');
 
         // set the referer when redirecting from import files from the filesystem
         if (Input::get('filesImported')) {
             $this->import('Session');
             $session = $this->Session->get('referer');
-            $session[TL_REFERER_ID]['current'] = 'contao/main.php?do=gallery_creator';
+            $session[TL_REFERER_ID]['current'] = 'contao?do=gallery_creator';
             $this->Session->set('referer', $session);
         }
 
@@ -78,18 +83,18 @@ class TlGalleryCreatorPictures extends Backend
                     $angle = 270;
                     GcHelper::imageRotate($objFile->path, $angle);
                     Dbafs::addResource($objFile->path, true);
-                    $this->redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id='.Input::get('id'));
+                    $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.Input::get('id'));
                 }
                 break;
 
             default:
                 break;
-        }//end switch
+        }
 
         switch (Input::get('act')) {
             case 'create':
-                //Neue Bilder können ausschliesslich über einen Bildupload realisiert werden
-                $this->Redirect('contao/main.php?do=gallery_creator&table=tl_gallery_creator_pictures&id='.Input::get('pid'));
+                // New images can only be implemented via an image upload
+                $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.Input::get('pid'));
                 break;
 
             case 'select':
@@ -104,9 +109,9 @@ class TlGalleryCreatorPictures extends Backend
 
             default:
                 break;
-        } //end switch
+        }
 
-        // get the source album when cuting pictures from one album to an other
+        // Get the source album when copy & pasting pictures from one album into an other
         if ('paste' === Input::get('act') && 'cut' === Input::get('mode')) {
             $objPicture = GalleryCreatorPicturesModel::findByPk(Input::get('id'));
 
@@ -125,10 +130,8 @@ class TlGalleryCreatorPictures extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
-    public function buttonCbDeletePicture($row, $href, $label, $title, $icon, $attributes)
+    public function buttonCbDeletePicture($row, $href, $label, $title, $icon, $attributes): string
     {
         $objImg = Database::getInstance()
             ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
@@ -147,10 +150,8 @@ class TlGalleryCreatorPictures extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
-    public function buttonCbEditImage($row, $href, $label, $title, $icon, $attributes)
+    public function buttonCbEditImage($row, $href, $label, $title, $icon, $attributes): string
     {
         $objImg = Database::getInstance()
             ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
@@ -195,7 +196,6 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * child-record-callback.
      *
      * @param array $arrRow
      *
@@ -205,22 +205,23 @@ class TlGalleryCreatorPictures extends Backend
     {
         $key = $arrRow['published'] ? 'published' : 'unpublished';
 
-        //nächste Zeile nötig, da be_breadcrumb sonst bei "mehrere bearbeiten" hier einen Fehler produziert
         $oFile = FilesModel::findByUuid($arrRow['uuid']);
 
-        if (!is_file(TL_ROOT.'/'.$oFile->path)) {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
+        if (!is_file($projectDir.'/'.$oFile->path)) {
             return '';
         }
 
         $objFile = new File($oFile->path);
 
         if ($objFile->isGdImage) {
-            //if dataset contains a link to movie file...
+            // If data record contains a link to a movie file...
             $hasMovie = null;
             $src = $objFile->path;
             $src = '' !== trim($arrRow['socialMediaSRC']) ? trim($arrRow['socialMediaSRC']) : $src;
 
-            // local media (movies, etc.)
+            // Local media (movies, etc.)
             if (Validator::isBinaryUuid($arrRow['localMediaSRC'])) {
                 $lmSRC = FilesModel::findByUuid($arrRow['localMediaSRC']);
 
@@ -237,12 +238,13 @@ class TlGalleryCreatorPictures extends Backend
             }
             $blnShowThumb = false;
             $src = '';
-            //generate icon/thumbnail
+
+            // Generate icon/thumbnail
             if (Config::get('thumbnails') && null !== $oFile) {
                 $src = Image::get($oFile->path, '100', '', 'center_center');
                 $blnShowThumb = true;
             }
-            //return html
+
             $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'], basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
             $return .= $hasMovie;
             $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
@@ -255,7 +257,7 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * move images in the filesystem, when cutting/pasting images from one album into another.
+     * Move images in the filesystem too, when cutting/pasting images from one album into another.
      */
     public function onCutCb(DC_Table $dc): void
     {
@@ -307,6 +309,7 @@ class TlGalleryCreatorPictures extends Backend
 
         if ($strDestination !== $objFile->path) {
             $oFile = new File($objFile->path);
+
             // Move file to the target folder
             if ($oFile->renameTo($strDestination)) {
                 $objPictureToMove->path = $strDestination;
@@ -318,10 +321,8 @@ class TlGalleryCreatorPictures extends Backend
     /**
      * input-field-callback generate image
      * Returns the html-img-tag.
-     *
-     * @return string
      */
-    public function inputFieldCbGenerateImage(DataContainer $dc)
+    public function inputFieldCbGenerateImage(DataContainer $dc): string
     {
         $objImg = GalleryCreatorPicturesModel::findByPk($dc->id);
         $oFile = FilesModel::findByUuid($objImg->uuid);
@@ -331,10 +332,10 @@ class TlGalleryCreatorPictures extends Backend
             $basename = basename($oFile->path);
 
             return '
-                     <div class="long widget" style="height:auto;">
-                         <h3><label for="ctrl_picture">'.$basename.'</label></h3>
-                         <img src="'.Image::get($src, '380', '', 'proportional').'" style="max-width:100%; max-height:300px;">
-                     </div>
+                 <div class="long widget" style="height:auto;">
+                     <h3><label for="ctrl_picture">'.$basename.'</label></h3>
+                     <img src="'.Image::get($src, '380', '', 'proportional').'" style="max-width:100%; max-height:300px;">
+                 </div>
 		             ';
         }
 
@@ -342,12 +343,11 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * input-field-callback generate image information
+     * input-field-callback
+     * generate image information
      * Returns the html-table-tag containing some picture informations.
-     *
-     * @return string
      */
-    public function inputFieldCbGenerateImageInformation(DataContainer $dc)
+    public function inputFieldCbGenerateImageInformation(DataContainer $dc): string
     {
         $objImg = GalleryCreatorPicturesModel::findByPk($dc->id);
         $objUser = UserModel::findByPk($objImg->owner);
@@ -362,7 +362,6 @@ class TlGalleryCreatorPictures extends Backend
 					<td style="width:20%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['pid'][0].': </strong></td>
 					<td>'.$objImg->id.'</td>
 				</tr>
-
 
 				<tr>
 					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path'][0].': </strong></td>
@@ -411,12 +410,7 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * Parse Backend Template Hook.
-     *
-     * @param string $buttons
-     * @param string $dc
-     *
-     * @return string
+     * Edit button callback.
      */
     public function editButtonsCallback(array $buttons, DataContainer $dc): array
     {
@@ -428,7 +422,7 @@ class TlGalleryCreatorPictures extends Backend
 
     /**
      * ondelete-callback
-     * prevents deleting images by unauthorised users.
+     * Do not allow deleting images by unauthorised users.
      */
     public function ondeleteCb(DC_Table $dc): void
     {
@@ -436,24 +430,23 @@ class TlGalleryCreatorPictures extends Backend
         $pid = $objImg->pid;
 
         if ((int) $objImg->owner === (int) $this->User->id || $this->User->isAdmin || Config::get('gc_disable_backend_edit_protection')) {
-            // Datensatz löschen
+            // Delete data record
             $uuid = $objImg->uuid;
 
             $objImg->delete();
 
-            //Nur Bilder innerhalb des gallery_creator_albums und wenn sie nicht in einem anderen Datensatz noch Verwendung finden, werden vom Server geloescht
-
-            // Prüfen, ob das Bild noch mit einem anderen Datensatz verknüpft ist
+            // Only images within the gallery_creator_album directory
+            // and if they are not used in another data set will be deleted from the server
             $objPictureModel = GalleryCreatorPicturesModel::findByUuid($uuid);
 
             if (null === $objPictureModel) {
-                // Wenn nein darf gelöscht werden...
+                // Delete if all ok
                 $oFile = FilesModel::findByUuid($uuid);
 
                 $objAlbum = GalleryCreatorAlbumsModel::findByPk($pid);
                 $oFolder = FilesModel::findByUuid($objAlbum->assignedDir);
 
-                // Bild nur löschen, wenn es im Verzeichnis liegt, das dem Album zugewiesen ist
+                // Only delete an image if it is in the directory assigned to the album
                 if (null !== $oFile && strstr($oFile->path, $oFolder->path)) {
                     // delete file from filesystem
                     $file = new File($oFile->path, true);
@@ -461,9 +454,8 @@ class TlGalleryCreatorPictures extends Backend
                 }
             }
         } elseif (!$this->User->isAdmin && $objImg->owner !== $this->User->id) {
-            $this->log('Datensatz mit ID '.$dc->id.' wurde vom  Benutzer mit ID '.$this->User->id.' versucht aus tl_gallery_creator_pictures zu loeschen.', __METHOD__, TL_ERROR);
             Message::addError('No permission to delete picture with ID '.$dc->id.'.');
-            $this->redirect('contao/main.php?do=error');
+            $this->redirect('contao');
         }
     }
 
@@ -474,14 +466,16 @@ class TlGalleryCreatorPictures extends Backend
      *
      * @return string
      */
-    public function onloadCbCheckPermission()
+    public function onloadCbCheckPermission(): void
     {
-        // admin hat keine Einschraenkungen
+        $this->restrictedUser = false;
+
+        // Admin has no restrictions
         if ($this->User->isAdmin) {
             return;
         }
 
-        //Nur der Ersteller hat keine Einschraenkungen
+        // Only the creator has no restrictions
 
         if ('edit' === Input::get('act')) {
             $objUser = Database::getInstance()
@@ -562,10 +556,10 @@ class TlGalleryCreatorPictures extends Backend
     public function toggleVisibility($intId, $blnVisible): void
     {
         $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
-        // Check permissions to publish
+        // Check if is allowed to toggle visibility
         if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
             $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            $this->redirect('contao?act=error');
         }
 
         $objVersions = new Versions('tl_gallery_creator_pictures', $intId);

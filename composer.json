@@ -18,7 +18,8 @@
     "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
   },
   "require": {
-    "contao/core-bundle": "^4.9"
+    "contao/core-bundle": "^4.9",
+    "jaybizzle/crawler-detect": "^1.2"
   },
   "autoload": {
     "psr-4": {

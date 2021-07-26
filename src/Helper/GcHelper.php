@@ -555,11 +555,11 @@ class GcHelper
             'comment' => !empty($objPicture->comment) ? StringUtil::specialchars(StringUtil::toHtml5($objPicture->comment)) : StringUtil::specialchars($arrMeta['caption']),
             'caption' => !empty($objPicture->comment) ? StringUtil::specialchars(StringUtil::toHtml5($objPicture->comment)) : StringUtil::specialchars($arrMeta['caption']),
             // [string] path to media (video, picture, sound...)
-            'href' => $href,
+            'href' => rawurlencode($href),
             // single image url
             'single_image_url' => StringUtil::ampersand($objPageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$arrFile['filename'], $objPage->language)),
             // [string] path to the other selected media
-            'media_src' => $strMediaSrc,
+            'media_src' => rawurlencode($strMediaSrc),
             // [string] Thumbnailquelle
             'thumb_src' => isset($thumbSrc) ? TL_FILES_URL.$thumbSrc : '',
             // [array] Thumbnail-Ausmasse Array $arrSize[Breite, Hoehe, Methode]

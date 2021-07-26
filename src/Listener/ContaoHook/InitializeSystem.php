@@ -21,7 +21,7 @@ use Contao\Input;
  */
 class InitializeSystem
 {
-    public function setContentElements()
+    public function setContentElements(): void
     {
         // Show news ce_element in the news-module only
         if (TL_MODE === 'BE' && 'news' === Input::get('do')) {

@@ -23,16 +23,15 @@ use Contao\Database;
 use Contao\Date;
 use Contao\FilesModel;
 use Contao\FrontendUser;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Contao\Input;
 use Contao\PageModel;
 use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
-use Contao\Validator;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -199,7 +198,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $template->arrAlbumdata = $objAlbum->row();
 
         // Albumname
-        $template->Albumname = $objAlbum->name;
+        $template->albumname = $objAlbum->name;
         // Album visitors
         $template->visitors = $objAlbum->vistors;
         // Album caption
@@ -214,9 +213,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $template->eventDate = Date::parse(Config::get('dateFormat'), $objAlbum->date);
         // Margins
         $template->imagemargin = Controller::generateMargin(StringUtil::deserialize($this->model->gc_imagemargin_detailview), 'margin');
-        // Cols per row
-        $template->colsPerRow = empty($this->model->gc_rows) ? 4 : $this->model->gc_rows;
-
+        // Content model
         $template->objElement = $this->model;
     }
 }

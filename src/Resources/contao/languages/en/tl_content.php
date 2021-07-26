@@ -22,7 +22,6 @@ $GLOBALS['TL_LANG']['tl_content']['picture_listing_legend'] = 'Picture listing l
 
 
 //Fields
-$GLOBALS['TL_LANG']['tl_content']['gc_rows'] = array('Thumbnails per row', 'Select the number of thumbnails per row. (0=As much as possible)');
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums'] = array('Publish these albums only', 'Selected albums will be displayed in the frontend.');
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_single_album'] = array('Publish this album', 'The selected album will be displayed in the frontend.');
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_all_albums'] = array('Publish all given albums in the frontend');

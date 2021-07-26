@@ -17,8 +17,6 @@
  
 $GLOBALS['TL_LANG']['tl_module']['thumb_legend'] = "Thumbnail instellingen";
 $GLOBALS['TL_LANG']['tl_module']['image_legend'] = "Overige instellingen";
-$GLOBALS['TL_LANG']['tl_module']['gc_rows']['0'] = "Thumbnails per rij";
-$GLOBALS['TL_LANG']['tl_module']['gc_rows']['1'] = "Kies het aantal thumbnails per rij (0=zoveel als mogelijk).";
 $GLOBALS['TL_LANG']['tl_module']['gc_template']['0'] = "Galerij template";
 $GLOBALS['TL_LANG']['tl_module']['gc_template']['1'] = "Kies een galerij template";
 $GLOBALS['TL_LANG']['tl_module']['gc_activateThumbSlider']['0'] = "Activeer Ajax Thumb Slider";

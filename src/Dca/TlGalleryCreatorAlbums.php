@@ -25,8 +25,6 @@ use Contao\DC_Table;
 use Contao\File;
 use Contao\FilesModel;
 use Contao\Folder;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Contao\Image;
 use Contao\Input;
 use Contao\Message;
@@ -35,6 +33,8 @@ use Contao\System;
 use Contao\UserModel;
 use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Transliterator;
 
 /**
@@ -496,7 +496,7 @@ class TlGalleryCreatorAlbums extends Backend
         $href = sprintf('contao/main.php?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
-        $level = GcHelper::getAlbumLevel($row['pid']);
+        $level = GcHelper::getAlbumLevel((int)$row['pid']);
         $padding = $this->isNode($objAlbum) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:'.$padding.'px;', $label);
 

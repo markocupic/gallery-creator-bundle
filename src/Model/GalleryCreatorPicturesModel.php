@@ -14,17 +14,17 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Model;
 
-use Contao\Database;
 use Contao\Model;
 
 /**
- * Reads and writes tl_gallery_creator_pictures
+ * Reads and writes tl_gallery_creator_pictures.
  */
 class GalleryCreatorPicturesModel extends Model
 {
-	/**
-	 * Table name
-	 * @var string
-	 */
-	protected static $strTable = 'tl_gallery_creator_pictures';
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected static $strTable = 'tl_gallery_creator_pictures';
 }

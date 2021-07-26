@@ -30,14 +30,12 @@ class TlContent extends Backend
      */
     public function getGalleryCreatorTemplates(): array
     {
-
         // Show news ce_element in the news-module only
         if ('news' === Input::get('do')) {
             return $this->getTemplateGroup('ce_gallery_creator_news');
         }
 
         return $this->getTemplateGroup('ce_gallery_creator');
-
     }
 
     /**
@@ -137,7 +135,7 @@ class TlContent extends Backend
         $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gc_sorting_direction) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
 
         $selectedAlbums = '' !== $objContent->gc_publish_albums ? StringUtil::deserialize($objContent->gc_publish_albums) : [];
-        $level = GcHelper::getAlbumLevel($pid);
+        $level = GcHelper::getAlbumLevel((int) $pid);
         $db = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)
             ->execute($pid, 1)

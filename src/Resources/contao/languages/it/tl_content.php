@@ -19,8 +19,6 @@ $GLOBALS['TL_LANG']['tl_content']['miscellaneous_legend'] = "Altri settaggi";
 $GLOBALS['TL_LANG']['tl_content']['sorting_legend'] = "Opzioni di ordinamento lista album";
 $GLOBALS['TL_LANG']['tl_content']['picture_sorting_legend'] = "Opzioni di ordinamento immagini";
 $GLOBALS['TL_LANG']['tl_content']['thumb_legend'] = "Impostazioni miniature";
-$GLOBALS['TL_LANG']['tl_content']['gc_rows']['0'] = "Miniature per riga";
-$GLOBALS['TL_LANG']['tl_content']['gc_rows']['1'] = "Seleziona il numero di miniature per riga.(0=Quante più possibili)";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums']['0'] = "Pubblica questi album";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums']['1'] = "L'album selezionato verrà mostrato nel frontend.";
 $GLOBALS['TL_LANG']['tl_content']['gc_template']['0'] = "Template galleria";

@@ -20,8 +20,7 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
- * Class MarkocupicGalleryCreatorExtension
- * @package Markocupic\GalleryCreatorBundle\DependencyInjection
+ * Class MarkocupicGalleryCreatorExtension.
  */
 class MarkocupicGalleryCreatorExtension extends Extension
 {

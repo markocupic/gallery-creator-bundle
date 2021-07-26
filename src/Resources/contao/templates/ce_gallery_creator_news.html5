@@ -22,8 +22,8 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
 <<?= $this->hl ?>><?= $this->headline ?></<?= $this->hl ?>>
 <?php endif; ?>
 
-<?php if ($this->Albumname): ?>
-<h2><?= $this->Albumname ?></h2>
+<?php if ($this->albumname): ?>
+<h2><?= $this->albumname ?></h2>
 <?php endif; ?>
 
 <?php if ($this->albumComment): ?>

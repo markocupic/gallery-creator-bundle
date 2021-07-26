@@ -23,8 +23,6 @@ use Contao\Dbafs;
 use Contao\DC_Table;
 use Contao\File;
 use Contao\FilesModel;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Contao\Image;
 use Contao\Input;
 use Contao\Message;
@@ -33,6 +31,8 @@ use Contao\UserModel;
 use Contao\Validator;
 use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 
 /**
  * Class tl_gallery_creator_pictures.
@@ -380,7 +380,7 @@ class TlGalleryCreatorPictures extends Backend
 					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['date'][0].': </strong></td>
 					<td>'.Date::parse('Y-m-d', $objImg->date).'</td>
 					</tr>
-					
+
 					<tr class="odd">
 						<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['owner'][0].': </strong></td>
 						<td>'.(empty($objUser->name) ? "Couldn't find username with ID ".$objImg->owner.' in the db.' : $objUser->name).'</td>
@@ -395,7 +395,7 @@ class TlGalleryCreatorPictures extends Backend
 					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['video_href_social'][0].': </strong></td>
 					<td>'.trim($objImg->video_href_social) ?: '-'.'</td>
 					</tr>
-					
+
 					<tr>
 					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['video_id'][0].': </strong></td>
 					<td>'.('' !== trim($objImg->video_href_local) ? trim($objImg->video_href_local) : '-').'</td>

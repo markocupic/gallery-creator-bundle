@@ -19,8 +19,6 @@ $GLOBALS['TL_LANG']['tl_module']['pagination_legend'] = "Pagination Einstellunge
 $GLOBALS['TL_LANG']['tl_module']['thumb_legend'] = "Thumbnail-Einstellungen";
 $GLOBALS['TL_LANG']['tl_module']['image_legend'] = "Allgemeine Einstellungen";
 $GLOBALS['TL_LANG']['tl_module']['excluded_albums_legend'] = "Ausgenommene Alben";
-$GLOBALS['TL_LANG']['tl_module']['gc_rows']['0'] = "Vorschaubilder pro Reihe";
-$GLOBALS['TL_LANG']['tl_module']['gc_rows']['1'] = "Wählen Sie die Anzahl Vorschaubilder pro Reihe aus. (0=So viele wie möglich)";
 $GLOBALS['TL_LANG']['tl_module']['gc_template']['0'] = "Galerietemplate";
 $GLOBALS['TL_LANG']['tl_module']['gc_template']['1'] = "Hier können Sie das Galerietemplate auswählen.";
 $GLOBALS['TL_LANG']['tl_module']['gc_activateThumbSlider']['0'] = "Ajax-Thumb-Slider aktivieren";

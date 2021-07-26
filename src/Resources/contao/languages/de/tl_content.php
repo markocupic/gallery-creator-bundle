@@ -19,8 +19,6 @@ $GLOBALS['TL_LANG']['tl_content']['pagination_legend'] = "Pagination Einstellung
 $GLOBALS['TL_LANG']['tl_content']['miscellaneous_legend'] = "Allgemeine Einstellungen";
 $GLOBALS['TL_LANG']['tl_content']['album_listing_legend'] = "Einstellungen für die Albenauflistung";
 $GLOBALS['TL_LANG']['tl_content']['picture_listing_legend'] = "Einstellungen für die Bildauflistung (Detailansicht)";
-$GLOBALS['TL_LANG']['tl_content']['gc_rows']['0'] = "Vorschaubilder pro Reihe";
-$GLOBALS['TL_LANG']['tl_content']['gc_rows']['1'] = "Wählen Sie die Anzahl Vorschaubilder pro Reihe aus. (0=So viele wie möglich)";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums']['0'] = "Lediglich folgende Alben im Frontend anzeigen";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums']['1'] = "Ausgewählte Alben werden im Frontend angezeigt.";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_single_album']['0'] = "Album auswählen";

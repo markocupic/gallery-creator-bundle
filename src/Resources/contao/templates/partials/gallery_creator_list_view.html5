@@ -1,9 +1,9 @@
-<!-- ce_gallery_creator - list view -->
+<!-- ce_gallery_creator.html5 - list view -->
 <?= $this->pagination ?>
 
 <ul class="list_view">
 	<?php foreach ($this->arrAlbums as $Album): ?>
-	<li class="level_1 <?= $Album['cssClass'] ?>"<?= $this->imagemargin ? 'style="'.$this->imagemargin.'"' : '' ?>>
+	<li<?php if($Album['cssClass']): ?> class="<?= $Album['cssClass'] ?>"<?php endif; ?><?= $this->imagemargin ? 'style="'.$this->imagemargin.'"' : '' ?>>
 
 		<div class="col_1">
 			<figure class="image_container" onmouseover="<?= $Album['thumbMouseover'] ?>">

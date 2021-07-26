@@ -18,8 +18,6 @@
 $GLOBALS['TL_LANG']['tl_content']['miscellaneous_legend'] = "Diverse instellingen";
 $GLOBALS['TL_LANG']['tl_content']['picture_sorting_legend'] = "Sorteer opties";
 $GLOBALS['TL_LANG']['tl_content']['thumb_legend'] = "Thumbnail instellingen";
-$GLOBALS['TL_LANG']['tl_content']['gc_rows']['0'] = "Thumbnails per rij";
-$GLOBALS['TL_LANG']['tl_content']['gc_rows']['1'] = "Kies het aantal thumbnails per rij (0=zoveel als mogelijk).";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums']['0'] = "Publiceer deze albums";
 $GLOBALS['TL_LANG']['tl_content']['gc_publish_albums']['1'] = "Geselecteerde albums worden weergegeven in het frontend.";
 $GLOBALS['TL_LANG']['tl_content']['gc_template']['0'] = "Galerij template";

@@ -18,80 +18,69 @@ use Contao\Database;
 use Contao\Model;
 
 /**
- * Reads and writes tl_gallery_creator_albums
+ * Reads and writes tl_gallery_creator_albums.
  */
 class GalleryCreatorAlbumsModel extends Model
 {
-	/**
-	 * Table name
-	 * @var string
-	 */
-	protected static $strTable = 'tl_gallery_creator_albums';
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected static $strTable = 'tl_gallery_creator_albums';
+
+    public static function getParentAlbum(self $objAlbum): ?self
+    {
+        return $objAlbum->getRelated('pid');
+    }
 
     /**
-     * @param GalleryCreatorAlbumsModel $objAlbum
-     * @return GalleryCreatorAlbumsModel|null
+     * @param $parentId
+     * @param string $strSorting
+     * @param null   $iterationDepth
      */
-	public static function getParentAlbum(GalleryCreatorAlbumsModel $objAlbum): ?GalleryCreatorAlbumsModel
-	{
-		return $objAlbum->getRelated('pid');
+    public static function getChildAlbums($parentId, $strSorting = '', $iterationDepth = null): array
+    {
+        // get the iteration depth
+        $iterationDepth = '' === $iterationDepth ? null : $iterationDepth;
 
-	}
+        $arrSubAlbums = [];
 
-	/**
-	 * @param $parentId
-	 * @param  string $strSorting
-	 * @param  null   $iterationDepth
-	 * @return array
-	 */
-	public static function getChildAlbums($parentId, $strSorting = '', $iterationDepth = null): array
-	{
-		// get the iteration depth
-		$iterationDepth = $iterationDepth === '' ? null : $iterationDepth;
+        if ('' === $strSorting) {
+            $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY sorting';
+        } else {
+            $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY '.$strSorting;
+        }
 
-		$arrSubAlbums = array();
+        $objAlb = Database::getInstance()
+            ->prepare($strSql)
+            ->execute($parentId)
+        ;
 
-		if ($strSorting == '')
-		{
-			$strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY sorting';
-		}
-		else
-		{
-			$strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY ' . $strSorting;
-		}
+        $depth = null !== $iterationDepth ? $iterationDepth - 1 : null;
 
-		$objAlb = Database::getInstance()
-			->prepare($strSql)
-			->execute($parentId);
+        while ($objAlb->next()) {
+            if ($depth < 0 && null !== $iterationDepth) {
+                return $arrSubAlbums;
+            }
+            $arrSubAlbums[] = $objAlb->id;
+            $arrSubAlbums = array_merge($arrSubAlbums, static::getChildAlbums($objAlb->id, $strSorting, $depth));
+        }
 
-		$depth = $iterationDepth !== null ? $iterationDepth - 1 : null;
+        return $arrSubAlbums;
+    }
 
-		while ($objAlb->next())
-		{
-			if ($depth < 0 && $iterationDepth !== null)
-			{
-				return $arrSubAlbums;
-			}
-			$arrSubAlbums[] = $objAlb->id;
-			$arrSubAlbums = array_merge($arrSubAlbums, static::getChildAlbums($objAlb->id, $strSorting, $depth));
-		}
+    /**
+     * @param $id
+     */
+    public static function hasChildAlbums($id): bool
+    {
+        $arrChilds = static::getChildAlbums($id);
 
-		return $arrSubAlbums;
-	}
+        if (\count($arrChilds) >= 1) {
+            return true;
+        }
 
-	/**
-	 * @param $id
-	 * @return bool
-	 */
-	public static function hasChildAlbums($id): bool
-	{
-		$arrChilds = static::getChildAlbums($id);
-
-		if (\count($arrChilds) >= 1)
-		{
-			return true;
-		}
-
-		return false;
-	}
+        return false;
+    }
 }

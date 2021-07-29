@@ -57,8 +57,8 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'] = ['Accepted f
  * Buttons
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'] = ['revise tables'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['revise_tables']['0'] = "Revise tables";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['revise_tables']['1'] = "Remove orphaned/incorrect entries";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['revise_database']['0'] = "Revise tables";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['revise_database']['1'] = "Remove orphaned/incorrect entries";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn']['0'] = "Datenbank bereinigen";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new'] = ['new album', 'Create a new album.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['list_pictures'] = ['list pictures', 'List pictures of album with ID %s.'];

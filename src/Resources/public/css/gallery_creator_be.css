@@ -1,7 +1,7 @@
 *.clear {
     clear: both;
 }
-.icon_revise_tables {
+.icon_revise_database {
     margin-left: 20px;
     padding: 2px 0 3px 22px;
     background: url("../images/database_gear.png") no-repeat left center;
@@ -66,25 +66,25 @@ div.readonly input {
     color:green;
 }
 
-.gc_revise_tables .tl_status_box {
+.gc_revise_database .tl_status_box {
     font-size: 13px;
     color:green;
     padding-left: 20px;
 }
 
-.gc_revise_tables label[for=revise_tables]{
+.gc_revise_database label[for=revise_database]{
     font-size:13px;
     color:blue;
     line-height:13px;
     margin:3px;
 }
-.gc_revise_tables input[name=revise_tables]{
+.gc_revise_database input[name=revise_database]{
     height:13px;
     vertical-align:bottom;
     margin:0;
 }
 
-.gc_revise_tables .gc_message {
+.gc_revise_database .gc_message {
     min-height:100px;
 }
 

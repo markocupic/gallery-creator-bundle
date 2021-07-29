@@ -27,7 +27,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			array(TlGalleryCreatorAlbums::class, 'onloadCbFileupload'),
 			array(TlGalleryCreatorAlbums::class, 'onloadCbSetUpPalettes'),
 			array(TlGalleryCreatorAlbums::class, 'onloadCbImportFromFilesystem'),
-			array(TlGalleryCreatorAlbums::class, 'isAjaxRequest'),
+			array(TlGalleryCreatorAlbums::class, 'handleAjaxRequests'),
 			array(TlGalleryCreatorAlbums::class, 'onloadCbCheckFolderSettings'),
 		),
 		'ondelete_callback' => array(
@@ -63,9 +63,9 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 				'class'      => 'header_edit_all',
 				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
 			),
-			'revise_tables' => array(
+			'revise_database' => array(
 				'href'       => 'href is set in $this->setUpPalettes',
-				'class'      => 'icon_revise_tables',
+				'class'      => 'icon_revise_database',
 				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
 			),
 		),
@@ -116,7 +116,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 		'restricted_user' => '{album_info},link_edit_images,album_info',
 		'fileupload'      => '{upload_settings},preserve_filename,img_resolution,img_quality;{uploader_legend},uploader,fileupload',
 		'import_images'   => '{upload_settings},preserve_filename,multiSRC',
-		'revise_tables'   => '{maintenance},revise_tables',
+		'revise_database'   => '{maintenance},revise_database',
 	),
 	// Subpalettes
 	'subpalettes' => array(
@@ -284,7 +284,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'eval'      => array('doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'),
 			'sql'       => "int(10) unsigned NOT NULL default '0'",
 		),
-		'revise_tables'       => array(
+		'revise_database'       => array(
 			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbCleanDb'),
 			'eval'                 => array('doNotShow' => true),
 		),

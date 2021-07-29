@@ -19,8 +19,6 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 // Define upload path
 Config::set('galleryCreatorUploadPath', Config::get('uploadPath') . '/gallery_creator_albums');
 
-
-
 /**
  * Back end module
  */
@@ -35,15 +33,15 @@ $GLOBALS['BE_MOD']['content']['gallery_creator'] = array(
 if (TL_MODE === 'BE')
 {
 	// Check tables script
-	if (count($_GET) <= 2 && Input::get('do') === 'gallery_creator' && Input::get('mode') !== 'revise_tables')
+	if (count($_GET) <= 2 && Input::get('do') === 'gallery_creator' && Input::get('mode') !== 'revise_database')
 	{
 		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_check_tables.js';
 	}
 
 	// Revise table script
-	if (Input::get('do') === 'gallery_creator' && Input::get('mode') === 'revise_tables')
+	if (Input::get('do') === 'gallery_creator' && Input::get('mode') === 'revise_database')
 	{
-		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_tables.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_database.js';
 	}
 
 	$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be.js';
@@ -55,4 +53,4 @@ $GLOBALS['TL_MODELS']['tl_gallery_creator_albums'] = GalleryCreatorAlbumsModel::
 $GLOBALS['TL_MODELS']['tl_gallery_creator_pictures'] = GalleryCreatorPicturesModel::class;
 
 // Hooks
-$GLOBALS['TL_HOOKS']['initializeSystem'][] = [InitializeSystem::class, 'setContentElements'];
+$GLOBALS['TL_HOOKS']['initializeSystem'][] = array(InitializeSystem::class, 'setContentElements');

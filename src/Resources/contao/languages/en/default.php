@@ -34,7 +34,7 @@ $GLOBALS['TL_LANG']['gallery_creator']['fe_authentification_error'] = ['Authenti
 $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] = 'Photographers name';
 
 /**
- * Miscelaneous
+ * Backend
  */
 $GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] = "Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!";
 $GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'] = "Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too!!!";

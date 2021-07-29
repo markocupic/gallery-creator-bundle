@@ -1,0 +1,58 @@
+<div class="widget long preview_thumb">
+    <h3><label for="ctrl_thumb">{{ trans.album_thumb }}</label></h3>
+    <p style="margin-top:.5rem">{{ trans.drag_items_hint }}</p>
+
+    <div>
+        {% if has_album_thumbs %}
+            <ul id="previewThumbList" style="display:flex;flex-wrap:wrap">
+                {% for thumb in album_thumbs %}
+                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename }}">
+                        <input type="radio" name="thumb" value="{{ thumb.id }}"{{ thumb.attr_checked }}>
+                        {{ thumb.image|raw }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if has_sub_album_thumbs %}
+            <h3>{{ trans.sub_albums }}</h3>
+            <ul id="previewThumbListSub" style="display:flex;flex-wrap:wrap">
+                {% for thumb in sub_album_thumbs %}
+                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename }}">
+                        <input type="radio" name="thumb" value="{{ thumb.id }}"{{ thumb.attr_checked }}>
+                        {{ thumb.image|raw }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    window.addEvent("domready", function () {
+        $$(".preview_thumb input").addEvent("click", function () {
+            $$(".preview_thumb li").removeClass("checked");
+            this.getParent("li").addClass("checked");
+        });
+
+        /** sort album with drag and drop */
+        new Sortables("#previewThumbList", {
+            onComplete: function () {
+                var ids = [];
+                $$("#previewThumbList > li").each(function (el) {
+                    ids.push(el.getProperty("data-id"));
+                });
+                // ajax request
+                if (ids.length > 0) {
+                    var myRequest = new Request({
+                        url: document.URL + "&isAjaxRequest=true&pictureSorting=" + ids.join(),
+                        method: "get"
+                    });
+                    // fire request (resort album)
+                    myRequest.send();
+                }
+            }
+        });
+    });
+</script>

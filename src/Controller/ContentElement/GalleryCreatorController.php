@@ -225,7 +225,6 @@ class GalleryCreatorController extends AbstractContentElementController
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
     {
-
         switch ($this->viewMode) {
             case 'list_view':
 
@@ -563,7 +562,7 @@ class GalleryCreatorController extends AbstractContentElementController
         return array_map('intval', $objAlbums->fetchEach('id'));
     }
 
-    protected function callGcGenerateFrontendTemplateHook(self $objModule, Template $template, GalleryCreatorAlbumsModel $objAlbum = null): Template
+    protected function callGcGenerateFrontendTemplateHook(self $objModule, Template $template, ?GalleryCreatorAlbumsModel $objAlbum = null): Template
     {
         /** @var System $systemAdapter */
         $systemAdapter = $this->get('contao.framework')->getAdapter(System::class);
@@ -571,7 +570,7 @@ class GalleryCreatorController extends AbstractContentElementController
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
             foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
-                $template = $systemAdapter->importStatic($callback[0])->{$callback[1]}($objModule, $objAlbum);
+                $template = $systemAdapter->importStatic($callback[0])->{$callback[1]}($objModule, $template, $objAlbum);
             }
         }
 

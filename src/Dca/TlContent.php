@@ -18,7 +18,9 @@ use Contao\Backend;
 use Contao\Database;
 use Contao\Input;
 use Contao\StringUtil;
+use Contao\System;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class TlContent.
@@ -39,9 +41,7 @@ class TlContent extends Backend
     }
 
     /**
-     * options_callback optionsCallbackListAlbums.
-     *
-     * @return string
+     * Return array containing album ids.
      */
     public function optionsCallbackListAlbums(): array
     {
@@ -67,7 +67,7 @@ class TlContent extends Backend
     }
 
     /**
-     * input_field_callback inputFieldCallbackListAlbums.
+     * Return the album selector form field.
      */
     public function inputFieldCallbackListAlbums(): string
     {
@@ -89,27 +89,27 @@ class TlContent extends Backend
             }
         }
 
-        $html = '
-<div class="clr widget">
-  <fieldset id="ctrl_gc_publish_albums" class="tl_checkbox_container">
-        <legend>Folgende Alben im Frontend anzeigen</legend>
-        <input type="hidden" name="gc_publish_albums" value="">
-        <input type="checkbox" id="check_all_gc_publish_albums" class="tl_checkbox" onclick="Backend.toggleCheckboxGroup(this,\'ctrl_gc_publish_albums\')"> <label for="check_all_gc_publish_albums" style="color:#a6a6a6"><em>Alle ausw&auml;hlen</em></label>
-        <br><br>
-        %s
-        <p class="tl_help tl_tip" title="">Ausgewählte Alben werden im Frontend angezeigt.</p>
-    </fieldset>
-</div>';
+        $translator = System::getContainer()->get('translator');
+        $twig = System::getContainer()->get('twig');
 
-        return sprintf($html, $this->getSubalbumsAsUnorderedList(0));
+        return (new Response(
+            $twig->render(
+                '@MarkocupicGalleryCreator/Backend/album_selector_form_field.html.twig',
+                [
+                    'list' => $this->getSubalbumsAsUnorderedList(0),
+                    'trans' => [
+                        'trans.gc_publish_albums.0' => $translator->trans('tl_content.gc_publish_albums.0', [], 'contao_default'),
+                        'trans.gc_publish_albums.1' => $translator->trans('tl_content.gc_publish_albums.1', [], 'contao_default'),
+                    ],
+                ]
+            )
+        ))->getContent();
     }
 
     /**
-     * onload_callback onloadCbSetUpPalettes.
-     *
-     * @return string
+     * Set up palette
      */
-    public function onloadCbSetUpPalettes()
+    public function onloadCbSetUpPalettes(): void
     {
         $objContent = Database::getInstance()
             ->prepare('SELECT gc_publish_all_albums FROM tl_content WHERE id=?')
@@ -121,30 +121,30 @@ class TlContent extends Backend
         }
     }
 
-    /**
-     * @param int $pid
-     *
-     * @return string
-     */
-    private function getSubalbumsAsUnorderedList($pid = 0)
+    private function getSubalbumsAsUnorderedList(int $pid = 0): string
     {
         $objContent = Database::getInstance()
             ->prepare('SELECT * FROM tl_content WHERE id=?')
             ->execute($this->Input->get('id'))
         ;
+
         $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gc_sorting_direction) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
 
         $selectedAlbums = '' !== $objContent->gc_publish_albums ? StringUtil::deserialize($objContent->gc_publish_albums) : [];
+
         $level = GcHelper::getAlbumLevel((int) $pid);
+
         $db = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)
             ->execute($pid, 1)
         ;
 
+        $list = '';
+
         while ($db->next()) {
             $checked = \in_array($db->id, $selectedAlbums, false) ? ' checked' : '';
             $list .= '<li class="album-list-item"><input type="checkbox" name="gc_publish_albums[]" class="album-control-field" id="albumControlField-'.$db->id.'" value="'.$db->id.'"'.$checked.'>'.$db->name;
-            $list .= $this->getSubalbumsAsUnorderedList($db->id);
+            $list .= $this->getSubalbumsAsUnorderedList((int) $db->id);
             $list .= '</li>';
         }
 

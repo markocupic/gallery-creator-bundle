@@ -20,12 +20,12 @@ use Contao\Database;
 use Contao\DataContainer;
 use Contao\Date;
 use Contao\Dbafs;
-use Contao\DC_Table;
 use Contao\File;
 use Contao\FilesModel;
 use Contao\Image;
 use Contao\Input;
 use Contao\Message;
+use Contao\StringUtil;
 use Contao\System;
 use Contao\UserModel;
 use Contao\Validator;
@@ -33,6 +33,7 @@ use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class tl_gallery_creator_pictures.
@@ -64,7 +65,7 @@ class TlGalleryCreatorPictures extends Backend
 
         $this->uploadPath = Config::get('galleryCreatorUploadPath');
 
-        // set the referer when redirecting from import files from the filesystem
+        // Set the correct referer when redirecting from "import files from the filesystem"
         if (Input::get('filesImported')) {
             $this->import('Session');
             $session = $this->Session->get('referer');
@@ -99,7 +100,7 @@ class TlGalleryCreatorPictures extends Backend
 
             case 'select':
                 if (!$this->User->isAdmin) {
-                    // only list pictures where user is owner
+                    // Only list pictures where user is owner
                     if (!Config::get('gc_disable_backend_edit_protection')) {
                         $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner=?', $this->User->id]];
                     }
@@ -142,7 +143,7 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * Return the edit-image-button.
+     * Return the edit image button.
      *
      * @param array  $row
      * @param string $href
@@ -158,11 +159,11 @@ class TlGalleryCreatorPictures extends Backend
             ->execute($row['id'])
         ;
 
-        return $this->User->isAdmin || (int) $this->User->id === (int) $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
+        return $this->User->isAdmin || (int) $this->User->id === (int) $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
     }
 
     /**
-     * Return the cut-image-button.
+     * Return the cut image button.
      *
      * @param array  $row
      * @param string $href
@@ -170,12 +171,10 @@ class TlGalleryCreatorPictures extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
-    public function buttonCbCutImage($row, $href, $label, $title, $icon, $attributes)
+    public function buttonCbCutImage($row, $href, $label, $title, $icon, $attributes): string
     {
-        return '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
+        return '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
     }
 
     /**
@@ -192,16 +191,13 @@ class TlGalleryCreatorPictures extends Backend
      */
     public function buttonCbRotateImage($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&imgId='.$row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml($icon, $label);
+        return $this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&imgId='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml($icon, $label);
     }
 
     /**
-     *
-     * @param array $arrRow
-     *
-     * @return string
+     * Child record callback.
      */
-    public function childRecordCb($arrRow)
+    public function childRecordCb(array $arrRow): string
     {
         $key = $arrRow['published'] ? 'published' : 'unpublished';
 
@@ -236,6 +232,7 @@ class TlGalleryCreatorPictures extends Backend
                 $movieIcon = Image::getHtml($iconSrc);
                 $hasMovie = sprintf('<div class="block">%s%s<a href="%s" data-lightbox="gc_album_%s">%s</a></div>', $movieIcon, $type, $src, Input::get('id'), $src);
             }
+
             $blnShowThumb = false;
             $src = '';
 
@@ -259,7 +256,7 @@ class TlGalleryCreatorPictures extends Backend
     /**
      * Move images in the filesystem too, when cutting/pasting images from one album into another.
      */
-    public function onCutCb(DC_Table $dc): void
+    public function onCutCb(DataContainer $dc): void
     {
         if (!isset($_SESSION['gallery_creator']['SOURCE_ALBUM_ID'])) {
             return;
@@ -319,7 +316,7 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * input-field-callback generate image
+     * Input field callback generate image
      * Returns the html-img-tag.
      */
     public function inputFieldCbGenerateImage(DataContainer $dc): string
@@ -343,70 +340,46 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * input-field-callback
-     * generate image information
-     * Returns the html-table-tag containing some picture informations.
+     * Generate image information html
+     * Returns the html table that contains some picture information.
      */
     public function inputFieldCbGenerateImageInformation(DataContainer $dc): string
     {
-        $objImg = GalleryCreatorPicturesModel::findByPk($dc->id);
-        $objUser = UserModel::findByPk($objImg->owner);
-        $oFile = FilesModel::findByUuid($objImg->uuid);
+        $objImage = GalleryCreatorPicturesModel::findByPk($dc->id);
+        $objUser = UserModel::findByPk($objImage->owner);
+        $objFile = FilesModel::findByUuid($objImage->uuid);
+        $objSocial = FilesModel::findByUuid($objImage->socialMediaSRC);
+        $objLocal = FilesModel::findByUuid($objImage->localMediaSRC);
 
-        $output = '
-			<div class="long widget album_infos">
-			<br><br>
-			<table cellpadding="0" cellspacing="0" width="100%" summary="">
+        $objImage->video_href_social = $objSocial ? $objSocial->path : '';
+        $objImage->video_href_social = $objLocal ? $objLocal->path : '';
+        $objImage->path = $objFile->path;
+        $objImage->filename = basename((string) $objFile->path);
+        $objImage->date_formatted = Date::parse('Y-m-d', $objImage->date);
+        $objImage->owner_name = '' === $objUser->name ? '---' : $objUser->name;
 
-				<tr class="odd">
-					<td style="width:20%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['pid'][0].': </strong></td>
-					<td>'.$objImg->id.'</td>
-				</tr>
+        $translator = System::getContainer()->get('translator');
+        $twig = System::getContainer()->get('twig');
 
-				<tr>
-					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path'][0].': </strong></td>
-					<td>'.$oFile->path.'</td>
-				</tr>
-
-				<tr class="odd">
-					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename'][0].': </strong></td>
-					<td>'.basename($oFile->path).'</td>
-				</tr>';
-
-        if ($this->restrictedUser) {
-            $output .= '' !== '
-					<tr>
-					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['date'][0].': </strong></td>
-					<td>'.Date::parse('Y-m-d', $objImg->date).'</td>
-					</tr>
-
-					<tr class="odd">
-						<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['owner'][0].': </strong></td>
-						<td>'.(empty($objUser->name) ? "Couldn't find username with ID ".$objImg->owner.' in the db.' : $objUser->name).'</td>
-					</tr>
-
-					<tr>
-					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['title'][0].': </strong></td>
-					<td>'.$objImg->title.'</td>
-					</tr>
-
-					<tr class="odd">
-					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['video_href_social'][0].': </strong></td>
-					<td>'.trim($objImg->video_href_social) ?: '-'.'</td>
-					</tr>
-
-					<tr>
-					<td><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['video_id'][0].': </strong></td>
-					<td>'.('' !== trim($objImg->video_href_local) ? trim($objImg->video_href_local) : '-').'</td>
-					</tr>';
-        }
-
-        $output .= '
-			</table>
-			</div>
-		';
-
-        return $output;
+        return (new Response(
+            $twig->render(
+                '@MarkocupicGalleryCreator/Backend/image_information.html.twig',
+                [
+                    'picture' => $objImage,
+                    'trans' => [
+                        'picture_id' => $translator->trans('tl_gallery_creator_pictures.id.0', [], 'contao_default'),
+                        'picture_info' => $translator->trans('tl_gallery_creator_pictures.imageInfo.0', [], 'contao_default'),
+                        'picture_path' => $translator->trans('tl_gallery_creator_pictures.path.0', [], 'contao_default'),
+                        'picture_filename' => $translator->trans('tl_gallery_creator_pictures.filename.0', [], 'contao_default'),
+                        'picture_date' => $translator->trans('tl_gallery_creator_pictures.date.0', [], 'contao_default'),
+                        'picture_owner' => $translator->trans('tl_gallery_creator_pictures.owner.0', [], 'contao_default'),
+                        'picture_title' => $translator->trans('tl_gallery_creator_pictures.title.0', [], 'contao_default'),
+                        'picture_video_href_social' => $translator->trans('tl_gallery_creator_pictures.socialMediaSRC.0', [], 'contao_default'),
+                        'picture_video_href_local' => $translator->trans('tl_gallery_creator_pictures.localMediaSRC.0', [], 'contao_default'),
+                    ],
+                ]
+            )
+        ))->getContent();
     }
 
     /**
@@ -421,10 +394,10 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * ondelete-callback
+     * On delete callback
      * Do not allow deleting images by unauthorised users.
      */
-    public function ondeleteCb(DC_Table $dc): void
+    public function ondeleteCb(DataContainer $dc): void
     {
         $objImg = GalleryCreatorPicturesModel::findByPk($dc->id);
         $pid = $objImg->pid;
@@ -459,18 +432,12 @@ class TlGalleryCreatorPictures extends Backend
         }
     }
 
-    /**
-     * child-record-callback.
-     *
-     * @param array
-     *
-     * @return string
-     */
+
     public function onloadCbCheckPermission(): void
     {
         $this->restrictedUser = false;
 
-        // Admin has no restrictions
+        // Admin have no restrictions
         if ($this->User->isAdmin) {
             return;
         }
@@ -494,9 +461,8 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * onload-callback
-     * set up the palette
-     * prevents deleting images by unauthorised users.
+     * Set up the palette
+     * Prevent deleting images by unauthorised users.
      */
     public function onloadCbSetUpPalettes(): void
     {
@@ -519,10 +485,8 @@ class TlGalleryCreatorPictures extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
-    public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
+    public function toggleIcon($row, $href, $label, $title, $icon, $attributes): string
     {
         if (!empty(Input::get('tid'))) {
             $this->toggleVisibility(Input::get('tid'), 1 === (int) Input::get('state'));
@@ -548,7 +512,7 @@ class TlGalleryCreatorPictures extends Backend
     }
 
     /**
-     * toggle visibility of a certain image.
+     * Toggle visibility
      *
      * @param int  $intId
      * @param bool $blnVisible
@@ -556,7 +520,8 @@ class TlGalleryCreatorPictures extends Backend
     public function toggleVisibility($intId, $blnVisible): void
     {
         $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
-        // Check if is allowed to toggle visibility
+
+        // Check if user is allowed to toggle visibility
         if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
             $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
             $this->redirect('contao?act=error');

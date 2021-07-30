@@ -106,8 +106,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 	// Palettes
 	'palettes'    => array(
 		'__selector__'    => array('addCustomThumb'),
-		'default'         => 'published,picture,owner,date,image_info,addCustomThumb,title,comment;{media_integration:hide},socialMediaSRC,localMediaSRC;{expert_legend:hide},cssID',
-		'restricted_user' => 'image_info,picture',
+		'default'         => 'published,picture,owner,date,imageInfo,addCustomThumb,title,comment;{media_integration:hide},socialMediaSRC,localMediaSRC;{expert_legend:hide},cssID',
+		'restricted_user' => 'imageInfo,picture',
 	),
 	// Subpalettes
 	'subpalettes' => array('addCustomThumb' => 'customThumb'),
@@ -136,7 +136,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 			'eval'      => array('isBoolean' => true, 'submitOnChange' => true, 'tl_class' => 'long'),
 			'sql'       => "char(1) NOT NULL default '1'",
 		),
-		'image_info'     => array(
+		'imageInfo'     => array(
 			'input_field_callback' => array(TlGalleryCreatorPictures::class, 'inputFieldCbGenerateImageInformation'),
 			'eval'                 => array('tl_class' => 'clr'),
 		),

@@ -1,0 +1,41 @@
+<div class="long widget album_infos">
+    <h3><label for="ctrl_thumb">{{ trans.picture_info }}</label></h3>
+    <table cellpadding="0" cellspacing="0" width="100%" summary="">
+        <tr class="odd">
+            <td style="width:20%"><strong>{{ trans.picture_id }}: </strong></td>
+            <td>{{ picture.id }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.picture_path }}: </strong></td>
+            <td>{{ picture.path }}</td>
+        </tr>
+        <tr class="odd">
+            <td><strong>{{ trans.picture_filename }}: </strong></td>
+            <td>{{ picture.filename }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.picture_date }}: </strong></td>
+            <td>{{ picture.date_formatted }}</td>
+        </tr>
+        <tr class="odd">
+            <td><strong>{{ trans.picture_owner }}: </strong></td>
+            <td>{{ picture.owner_name }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.picture_title }}: </strong></td>
+            <td>{{ picture.title }}</td>
+        </tr>
+        {% if picture.video_href_social %}
+        <tr class="odd">
+            <td><strong>{{ trans.picture_video_href_social }}: </strong></td>
+            <td>{{ picture.video_href_social }}</td>
+        </tr>
+        {% endif %}
+        {% if picture.video_href_local %}
+        <tr class="even">
+            <td><strong>{{ trans.picture_video_href_local }}: </strong></td>
+            <td>{{ picture.video_href_local }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>

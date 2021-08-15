@@ -19,6 +19,7 @@
   },
   "require": {
     "contao/core-bundle": "^4.9",
+    "codefog/contao-haste": "^4.20",
     "jaybizzle/crawler-detect": "^1.2"
   },
   "autoload": {

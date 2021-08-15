@@ -26,11 +26,11 @@
       <figure class="image_container" onmouseover="<?= $Subalbum['thumbMouseover'] ?>">
         <?php if ($Subalbum['href']): ?>
         <a href="<?= $Subalbum['href'] ?>" title="<?= $Subalbum['title'] ?>">
-          <?php endif; ?>
+        <?php endif; ?>
 
           <?php $this->insert('picture_default', $Subalbum['picture']); ?>
 
-          <?php if ($Subalbum['href']): ?>
+        <?php if ($Subalbum['href']): ?>
         </a>
         <?php endif; ?>
       </figure>

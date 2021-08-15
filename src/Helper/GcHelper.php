@@ -146,9 +146,9 @@ class GcHelper
         }
 
         if (true === $blnExternalFile) {
-            $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath);
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath));
         } else {
-            $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath);
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath));
         }
         System::log('Unable to create the new image in: '.$strFilepath.'!', __METHOD__, TL_ERROR);
 
@@ -887,8 +887,8 @@ class GcHelper
     public static function reviseTables(GalleryCreatorAlbumsModel $objAlbum, bool $blnCleanDb = false): void
     {
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-
-        $_SESSION['GC_ERROR'] = [];
+        $session= System::getContainer()->get('session');
+        $session->set('gc_error', []);
 
         // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
         new Folder(Config::get('galleryCreatorUploadPath'));
@@ -936,24 +936,33 @@ class GcHelper
                             }
                         }
 
+                        $arrError = $session->get('gc_error');
+
                         if (false !== $blnCleanDb) {
-                            $msg = ' Deleted data record with ID '.$objPictures->id.'.';
-                            $_SESSION['GC_ERROR'][] = $msg;
+                            $arrError[] = ' Deleted data record with ID '.$objPictures->id.'.';
                             $objPictures->delete();
                         } else {
                             // Show the error-message
                             $path = '' !== $objPictures->path ? $objPictures->path : 'unknown path';
-                            $_SESSION['GC_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $path, $objAlbum->alias);
+                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $path, $objAlbum->alias);
                         }
+
+                        $session->set('gc_error', $arrError);
+
                     } elseif (!is_file($projectDir.'/'.$objFile->path)) {
+
+                        $arrError = $session->get('gc_error');
+
                         // If file has an entry in Dbafs, but doesn't exist on the server anymore
                         if (false !== $blnCleanDb) {
-                            $msg = 'Deleted data record with ID '.$objPictures->id.'.';
-                            $_SESSION['GC_ERROR'][] = $msg;
+                            $arrError[] = 'Deleted data record with ID '.$objPictures->id.'.';
                             $objPictures->delete();
                         } else {
-                            $_SESSION['GC_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $objFile->path, $objAlbum->alias);
+                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $objFile->path, $objAlbum->alias);
                         }
+
+                        $session->set('gc_error', $arrError);
+
                     } else {
                         // Pfadangaben mit tl_files.path abgleichen (Redundanz)
                         if ($objPictures->path !== $objFile->path) {

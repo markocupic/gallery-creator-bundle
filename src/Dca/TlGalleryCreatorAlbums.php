@@ -34,7 +34,9 @@ use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Transliterator;
 
 /**
@@ -42,19 +44,35 @@ use Transliterator;
  */
 class TlGalleryCreatorAlbums extends Backend
 {
+    /**
+     * @var RequestStack $requestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var string
+     */
+    private $projectDir;
+
+    /**
+     * @var null|Session
+     */
+    private $session = null;
+
     private $restrictedUser = false;
 
     private $uploadPath;
 
-    private $projectDir;
 
-    public function __construct()
+    public function __construct(RequestStack $requestStack, string $projectDir)
     {
         parent::__construct();
-        $this->import('BackendUser', 'User');
 
-        // TL_ROOT
-        $this->projectDir = System::getContainer()->getParameter('kernel.project_dir');
+        $this->requestStack = $requestStack;
+        $this->projectDir = $projectDir;
+        $this->session= $requestStack->getCurrentRequest()->getSession();
+
+        $this->import('BackendUser', 'User');
 
         // Path to the gallery_creator upload-directory
         $this->uploadPath = Config::get('galleryCreatorUploadPath');
@@ -65,9 +83,13 @@ class TlGalleryCreatorAlbums extends Backend
             'parseBackendTemplate',
         ];
 
-        if ('copyAll' === $_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode']) {
-            $this->redirect('contao?do=gallery_creator&clipboard=1');
+        $bag = $this->session->getBag('contao_backend');
+        if(isset($bag['CLIPBOARD']['tl_gallery_creator_albums']['mode'])){
+            if ('copyAll' === $bag['CLIPBOARD']['tl_gallery_creator_albums']['mode']) {
+                $this->redirect('contao?do=gallery_creator&clipboard=1');
+            }
         }
+
     }
 
     /**
@@ -79,8 +101,6 @@ class TlGalleryCreatorAlbums extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
     public function buttonCbAddImages($row, $href, $label, $title, $icon, $attributes): string
     {
@@ -200,8 +220,6 @@ class TlGalleryCreatorAlbums extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
     public function buttonCbDelete($row, $href, $label, $title, $icon, $attributes): string
     {
@@ -218,8 +236,6 @@ class TlGalleryCreatorAlbums extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
     public function buttonCbEditHeader($row, $href, $label, $title, $icon, $attributes): string
     {
@@ -252,8 +268,6 @@ class TlGalleryCreatorAlbums extends Backend
      * @param string $title
      * @param string $icon
      * @param string $attributes
-     *
-     * @return string
      */
     public function buttonCbImportImages($row, $href, $label, $title, $icon, $attributes): string
     {
@@ -269,18 +283,18 @@ class TlGalleryCreatorAlbums extends Backend
      * @param $table
      * @param $cr
      * @param bool $arrClipboard
-     *
-     * @return string
      */
     public function buttonCbPastePicture(DataContainer $dc, $row, $table, $cr, $arrClipboard = false): string
     {
         $disablePA = false;
         $disablePI = false;
+
         // Disable all buttons if there is a circular reference
         if ($this->User->isAdmin && false !== $arrClipboard && ('cut' === $arrClipboard['mode'] && (1 === (int) $cr || (int) $arrClipboard['id'] === (int) $row['id']) || 'cutAll' === $arrClipboard['mode'] && (1 === (int) $cr || \in_array($row['id'], $arrClipboard['id'], false)))) {
             $disablePA = true;
             $disablePI = true;
         }
+
         // Return the buttons
         $imagePasteAfter = Image::getHtml('pasteafter.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id']), 'class="blink"');
         $imagePasteInto = Image::getHtml('pasteinto.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id']), 'class="blink"');
@@ -426,13 +440,14 @@ class TlGalleryCreatorAlbums extends Backend
                     $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
 
                     if (Input::get('reviseTables') && null !== $objAlbum) {
+
                         // Delete damaged data records
                         $isAdmin = $this->User->isAdmin ? true : false;
                         GcHelper::reviseTables($objAlbum, $isAdmin);
 
-                        if (\is_array($_SESSION['GC_ERROR'])) {
-                            if (\count($_SESSION['GC_ERROR']) > 0) {
-                                $strError = implode('***', $_SESSION['GC_ERROR']);
+                        if ($this->session->has('gc_error') && \is_array($this->session->get('gc_error'))) {
+                            if (!empty($this->session->get('gc_error'))) {
+                                $strError = implode('***', $this->session->get('gc_error'));
 
                                 if ('' !== $strError) {
                                     echo (new JsonResponse(['errors' => $strError]))->getContent();
@@ -441,7 +456,7 @@ class TlGalleryCreatorAlbums extends Backend
                             }
                         }
                     }
-                    unset($_SESSION['GC_ERROR']);
+                    $this->session->remove('gc_error');
                 }
             }
             echo (new Response('', Response::HTTP_NO_CONTENT))->getContent();
@@ -626,7 +641,7 @@ class TlGalleryCreatorAlbums extends Backend
         $translator = System::getContainer()->get('translator');
 
         if (!is_writable($this->projectDir.'/'.$this->uploadPath)) {
-            $_SESSION['TL_ERROR'][] = $translator->trans('ERR.dirNotWriteable', [$this->uploadPath], 'contao_default');
+            Message::addError($translator->trans('ERR.dirNotWriteable', [$this->uploadPath], 'contao_default'));
         }
     }
 

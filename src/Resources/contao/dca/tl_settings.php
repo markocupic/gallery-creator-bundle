@@ -25,19 +25,19 @@ PaletteManipulator::create()
  * Add fields
  */
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_disable_backend_edit_protection'] = array(
+	'eval'      => array('fieldType' => 'checkbox', 'tl_class' => 'clr'),
 	'inputType' => 'checkbox',
-	'eval'      => array('fieldType' => 'checkbox', 'tl_class' => 'clr')
 );
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_album_import_copy_files'] = array(
-	'inputType' => 'checkbox'
+	'inputType' => 'checkbox',
 );
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_read_exif'] = array(
-	'inputType' => 'checkbox'
+	'inputType' => 'checkbox',
 );
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_albumFallbackThumb'] = array(
+	'eval'      => array('fieldType' => 'radio', 'extensions' => 'jpg,jpeg,png,gif', 'filesOnly' => true, 'files' => true, 'mandatory' => false, 'tl_class' => 'clr'),
 	'inputType' => 'fileTree',
-	'eval'      => array('fieldType' => 'radio', 'extensions' => 'jpg,jpeg,png,gif', 'filesOnly' => true, 'files' => true, 'mandatory' => false, 'tl_class' => 'clr')
 );

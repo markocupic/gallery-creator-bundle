@@ -4,7 +4,7 @@ services:
         autoconfigure: true
         public: true
         bind:
-            #$bagName: '%resource_booking_bundle.session.attribute_bag_name%'
+            $projectDir: '%kernel.project_dir%'
 
     _instanceof:
         Symfony\Bundle\FrameworkBundle\Controller\AbstractController:

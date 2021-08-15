@@ -33,11 +33,13 @@ use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
+use Haste\Util\Url;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Security;
 
 /**
@@ -73,6 +75,11 @@ class GalleryCreatorController extends AbstractContentElementController
     private $pageModel;
 
     /**
+     * @var null Session
+     */
+    private $session = null;
+
+    /**
      * @var MemberModel
      */
     private $user;
@@ -88,18 +95,20 @@ class GalleryCreatorController extends AbstractContentElementController
     {
         $this->model = $model;
         $this->pageModel = $pageModel;
+        $this->session = $request->getSession();
 
-        // Unset the Session
-        unset($_SESSION['gallery_creator']['CURRENT_ALBUM']);
+        // Unset session entries
+        $this->session->remove('gc_current_album');
 
-        if ($_SESSION['GcRedirectToAlbum']) {
-            Input::setGet('items', $_SESSION['GcRedirectToAlbum']);
-            unset($_SESSION['GcRedirectToAlbum']);
+        // Get items url param from session
+        if ($this->session->has('gc_redirect_to_album')) {
+            Input::setGet('items', $this->session->get('gc_redirect_to_album'));
+            $this->session->remove('gc_redirect_to_album');
         }
 
         // Handle ajax requests
         if (TL_MODE === 'FE' && Environment::get('isAjaxRequest')) {
-            $this->generateAjax();
+            $this->handleAjax();
         }
 
         // Set the item from the auto_item parameter
@@ -113,11 +122,11 @@ class GalleryCreatorController extends AbstractContentElementController
 
         // Remove or store the pagination variable "page" in the current session
         if (!Input::get('items')) {
-            unset($_SESSION['gallery_creator']['PAGINATION']);
+            $this->session->remove('gc_pagination');
         }
 
         if (Input::get('page') && 'detail_view' !== $this->viewMode) {
-            $_SESSION['gallery_creator']['PAGINATION'] = Input::get('page');
+            $this->session->set('gc_pagination', Input::get('page'));
         }
 
         if ($this->model->gc_publish_all_albums) {
@@ -181,7 +190,7 @@ class GalleryCreatorController extends AbstractContentElementController
         if ('list_view' === $this->viewMode) {
             // Redirect to detail view if there is only one album
             if (1 === \count($this->arrSelectedAlbums) && $this->model->gc_redirectSingleAlb) {
-                $_SESSION['GcRedirectToAlbum'] = GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias;
+                $this->session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
                 Controller::reload();
             }
 
@@ -473,7 +482,7 @@ class GalleryCreatorController extends AbstractContentElementController
      *
      * @return false|string
      */
-    protected function generateAjax()
+    protected function handleAjax()
     {
         // Returns an array with all data to certain picture
         if (Input::get('isAjax') && Input::get('getImageByPk') && !empty(Input::get('id'))) {
@@ -486,7 +495,8 @@ class GalleryCreatorController extends AbstractContentElementController
         }
 
         // Send image-date from a certain album as JSON encoded array to the browser
-        // used f.ex. for the ce_gc_colorbox.html template --> https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
+        // used f.ex. for the ce_gc_colorbox.html template
+        // --> https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
         if (Input::get('isAjax') && Input::get('getImagesByPid') && Input::get('pid')) {
             // Do not send data if album is protected and the user has no access
             $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
@@ -544,9 +554,12 @@ class GalleryCreatorController extends AbstractContentElementController
         if ($this->model->gc_hierarchicalOutput && null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($objAlbum))) {
             return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
         }
+
         // Generates the link to the startup overview taking into account the pagination
         $url = $this->pageModel->getFrontendUrl();
-        $url .= isset($_SESSION['gallery_creator']['PAGINATION']) ? '?page_g='.$_SESSION['gallery_creator']['PAGINATION'] : '';
+        if($this->session->has('gc_pagination')) {
+            $url = Url::addQueryString('page_g=' . $this->session->get('gc_pagination'), $url);
+        }
 
         return StringUtil::ampersand($url);
     }
@@ -591,7 +604,7 @@ class GalleryCreatorController extends AbstractContentElementController
         // Store all album-data in the array
         $template->arrAlbumdata = $objAlbum->row();
         // Store the data of the current album in the session
-        $_SESSION['gallery_creator']['CURRENT_ALBUM'] = $template->arrAlbumdata;
+        $this->session->set('gc_current_album', $objAlbum->row());
         // Back link
         $template->backLink = $this->generateBackLink($objAlbum);
         // The superordinate album name for the picture

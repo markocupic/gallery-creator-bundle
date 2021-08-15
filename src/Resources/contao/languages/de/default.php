@@ -11,7 +11,7 @@
  */
 
 $GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'] = "Die Datei \"%s\" wurde nicht auf dem Server gefunden!";
-$GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'] = "Der Datenbankeintrag mit ID %s in \"tl_gallery_creator_pictures\" verweist auf eine nicht vorhandene Datei. <br>Bitte räumen Sie die Datenbank auf oder überprüfen Sie die Existenz der Datei %s im Album mit dem Alias: %s!";
+$GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'] = "Der Datenbankeintrag zum Bild mit ID %s in \"tl_gallery_creator_pictures\" verweist auf eine nicht vorhandene Datei. Bitte bereinigen Sie die Datenbank oder überprüfen Sie die Existenz der Datei \"%s\" im Album mit dem Album-Alias: \"%s\".";
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = "Die Datei \"%s\" konnte nicht hochgeladen werden!";
 $GLOBALS['TL_LANG']['ERR']['fileDontExist'] = "Die Datei \"%s\" existiert nicht!";
 $GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = "Die Datei \"%s\" ist nicht lesbar! Zugriffsrechte müssen überprüft werden.";

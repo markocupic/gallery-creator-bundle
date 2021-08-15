@@ -41,7 +41,7 @@ if (TL_MODE === 'BE')
 	// Revise table script
 	if (Input::get('do') === 'gallery_creator' && Input::get('mode') === 'revise_database')
 	{
-		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_database.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_tables.js';
 	}
 
 	$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be.js';

@@ -34,6 +34,7 @@ use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -45,7 +46,7 @@ use Transliterator;
 class TlGalleryCreatorAlbums extends Backend
 {
     /**
-     * @var RequestStack $requestStack
+     * @var RequestStack
      */
     private $requestStack;
 
@@ -55,14 +56,19 @@ class TlGalleryCreatorAlbums extends Backend
     private $projectDir;
 
     /**
-     * @var null|Session
+     * @var Session|null
      */
-    private $session = null;
+    private $session;
 
+    /**
+     * @var bool
+     */
     private $restrictedUser = false;
 
+    /**
+     * @var string|null
+     */
     private $uploadPath;
-
 
     public function __construct(RequestStack $requestStack, string $projectDir)
     {
@@ -70,7 +76,7 @@ class TlGalleryCreatorAlbums extends Backend
 
         $this->requestStack = $requestStack;
         $this->projectDir = $projectDir;
-        $this->session= $requestStack->getCurrentRequest()->getSession();
+        $this->session = $requestStack->getCurrentRequest()->getSession();
 
         $this->import('BackendUser', 'User');
 
@@ -84,12 +90,12 @@ class TlGalleryCreatorAlbums extends Backend
         ];
 
         $bag = $this->session->getBag('contao_backend');
-        if(isset($bag['CLIPBOARD']['tl_gallery_creator_albums']['mode'])){
+
+        if (isset($bag['CLIPBOARD']['tl_gallery_creator_albums']['mode'])) {
             if ('copyAll' === $bag['CLIPBOARD']['tl_gallery_creator_albums']['mode']) {
                 $this->redirect('contao?do=gallery_creator&clipboard=1');
             }
         }
-
     }
 
     /**
@@ -351,7 +357,10 @@ class TlGalleryCreatorAlbums extends Backend
                 '@MarkocupicGalleryCreator/Backend/revise_database.html.twig',
                 [
                     'trans' => [
-                        'albums_messages_revise_database' => $translator->trans('tl_gallery_creator_albums.revise_database.0', [], 'contao_default'),
+                        'albums_messages_revise_database' => [
+                            $translator->trans('tl_gallery_creator_albums.revise_database.0', [], 'contao_default'),
+                            $translator->trans('tl_gallery_creator_albums.revise_database.1', [], 'contao_default'),
+                        ]
                     ],
                 ]
             )
@@ -432,30 +441,30 @@ class TlGalleryCreatorAlbums extends Backend
                         ->execute('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()')
                     ;
 
-                    echo (new JsonResponse(['albumIDS' => $objDb->fetchEach('id')]))->getContent();
+                    echo (new JsonResponse(['ids' => $objDb->fetchEach('id')]))->getContent();
                     exit();
                 }
 
                 if (Input::get('albumId')) {
                     $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
+                    if (null !== $objAlbum){
+                        if (Input::get('checkTables') || Input::get('reviseTables')) {
+                            // Delete damaged data records
+                            $cleanDb = $this->User->isAdmin && Input::get('reviseTables') ? true : false;
+                            GcHelper::reviseTables($objAlbum, $cleanDb);
 
-                    if (Input::get('reviseTables') && null !== $objAlbum) {
+                            if ($this->session->has('gc_error') && \is_array($this->session->get('gc_error'))) {
+                                if (!empty($this->session->get('gc_error'))) {
+                                    $arrErrors = $this->session->get('gc_error');
 
-                        // Delete damaged data records
-                        $isAdmin = $this->User->isAdmin ? true : false;
-                        GcHelper::reviseTables($objAlbum, $isAdmin);
-
-                        if ($this->session->has('gc_error') && \is_array($this->session->get('gc_error'))) {
-                            if (!empty($this->session->get('gc_error'))) {
-                                $strError = implode('***', $this->session->get('gc_error'));
-
-                                if ('' !== $strError) {
-                                    echo (new JsonResponse(['errors' => $strError]))->getContent();
-                                    exit();
+                                    if (!empty($arrErrors)) {
+                                        echo (new JsonResponse(['errors' => $arrErrors]))->getContent();
+                                        exit();
+                                    }
                                 }
                             }
                         }
-                    }
+                }
                     $this->session->remove('gc_error');
                 }
             }
@@ -742,7 +751,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function onloadCbSetUpPalettes(): void
     {
-        $dca = $GLOBALS['TL_DCA']['tl_gallery_creator_albums'];
+        $dca = &$GLOBALS['TL_DCA']['tl_gallery_creator_albums'];
 
         // Permit global operations to admin only
         if (!$this->User->isAdmin) {
@@ -783,7 +792,7 @@ class TlGalleryCreatorAlbums extends Backend
                 ->execute()
             ;
 
-            if ($objAlb->next()) {
+            if ($objAlb->numRows) {
                 $dca['list']['global_operations']['revise_database']['href'] = 'act=edit&table&mode=revise_database&id='.$objAlb->id;
             } else {
                 unset($dca['list']['global_operations']['revise_database']);

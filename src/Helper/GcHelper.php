@@ -887,7 +887,7 @@ class GcHelper
     public static function reviseTables(GalleryCreatorAlbumsModel $objAlbum, bool $blnCleanDb = false): void
     {
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-        $session= System::getContainer()->get('session');
+        $session = System::getContainer()->get('session');
         $session->set('gc_error', []);
 
         // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
@@ -916,7 +916,7 @@ class GcHelper
 
         if (Database::getInstance()->fieldExists('path', 'tl_gallery_creator_pictures')) {
             // Try to identify entries with no uuid via path
-            $objPictures = GalleryCreatorPicturesModel::findByPidfindByPid($objAlbum->id);
+            $objPictures = GalleryCreatorPicturesModel::findByPid($objAlbum->id);
 
             if (null !== $objPictures) {
                 while ($objPictures->next()) {
@@ -939,7 +939,7 @@ class GcHelper
                         $arrError = $session->get('gc_error');
 
                         if (false !== $blnCleanDb) {
-                            $arrError[] = ' Deleted data record with ID '.$objPictures->id.'.';
+                            $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $objPictures->id, $objAlbum->name);
                             $objPictures->delete();
                         } else {
                             // Show the error-message
@@ -948,21 +948,18 @@ class GcHelper
                         }
 
                         $session->set('gc_error', $arrError);
-
                     } elseif (!is_file($projectDir.'/'.$objFile->path)) {
-
                         $arrError = $session->get('gc_error');
 
                         // If file has an entry in Dbafs, but doesn't exist on the server anymore
                         if (false !== $blnCleanDb) {
-                            $arrError[] = 'Deleted data record with ID '.$objPictures->id.'.';
+                            $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $objPictures->id, $objAlbum->name);
                             $objPictures->delete();
                         } else {
                             $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $objFile->path, $objAlbum->alias);
                         }
 
                         $session->set('gc_error', $arrError);
-
                     } else {
                         // Pfadangaben mit tl_files.path abgleichen (Redundanz)
                         if ($objPictures->path !== $objFile->path) {

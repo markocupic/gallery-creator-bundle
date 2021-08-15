@@ -12,13 +12,13 @@
     background: url("../images/image_add.png") no-repeat left center;
 }
 .album_infos td {
-    padding: 4px;
+    padding: .5rem;
 }
 .album_infos tr.odd > td {
-    background-color: #cccccc;
+    background-color: #f3f3f5;
 }
 div.readonly input {
-    background-color: #cccccc;
+    background-color: #f3f3f5;
 }
 #tl_gallery_creator_albums .preview_thumb li {
     height: 60px;
@@ -67,24 +67,10 @@ div.readonly input {
 }
 
 .gc_revise_database .tl_status_box {
+    margin-top: 20px;
     font-size: 13px;
     color:green;
     padding-left: 20px;
 }
 
-.gc_revise_database label[for=revise_database]{
-    font-size:13px;
-    color:blue;
-    line-height:13px;
-    margin:3px;
-}
-.gc_revise_database input[name=revise_database]{
-    height:13px;
-    vertical-align:bottom;
-    margin:0;
-}
-
-.gc_revise_database .gc_message {
-    min-height:100px;
-}
 

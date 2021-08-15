@@ -66,7 +66,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'revise_database' => array(
 				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
 				'class'      => 'icon_revise_database',
-				'href'       => 'href is set in $this->setUpPalettes',
+				// href is set in TlGalleryCreatorAlbums::onloadCbSetUpPalettes
+				'href'       => '',
 			),
 		),
 		'operations'        => array(

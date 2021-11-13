@@ -41,7 +41,6 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce_news'] = 'name,
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_rows'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_content']['gc_rows'],
     'exclude'   => true,
-    'default'   => '4',
     'inputType' => 'select',
     'options'   => range(0, 30),
     'eval'      => array('tl_class' => 'clr'),
@@ -60,7 +59,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_template'] = array(
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_hierarchicalOutput'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_content']['gc_hierarchicalOutput'],
     'exclude'   => true,
-    'default'   => false,
     'inputType' => 'checkbox',
     'eval'      => array('submitOnChange' => true, 'tl_class' => 'clr'),
     'sql'       => "char(1) NOT NULL default ''",
@@ -71,10 +69,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_sorting'] = array(
     'exclude'   => true,
     'options'   => explode(',', 'date,sorting,id,tstamp,name,alias,comment,visitors'),
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gc_sortingField'],
-    'default'   => 'date',
     'inputType' => 'select',
     'eval'      => array('tl_class' => 'w50', 'submitOnChange' => true),
-    'sql'       => "varchar(64) NOT NULL default ''",
+    'sql'       => "varchar(64) NOT NULL default 'date'",
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_sorting_direction'] = array(
@@ -82,10 +79,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_sorting_direction'] = array(
     'exclude'   => true,
     'options'   => explode(',', 'DESC,ASC'),
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gc_sortingDirection'],
-    'default'   => 'DESC',
     'inputType' => 'select',
     'eval'      => array('tl_class' => 'w50', 'submitOnChange' => true),
-    'sql'       => "varchar(64) NOT NULL default ''",
+    'sql'       => "varchar(64) NOT NULL default 'DESC'",
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_picture_sorting'] = array(
@@ -93,10 +89,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_picture_sorting'] = array(
     'exclude'   => true,
     'options'   => explode(',', 'sorting,id,date,name,owner,comment,title'),
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gc_sortingField'],
-    'default'   => 'date',
     'inputType' => 'select',
     'eval'      => array('tl_class' => 'w50', 'submitOnChange' => false),
-    'sql'       => "varchar(64) NOT NULL default ''",
+    'sql'       => "varchar(64) NOT NULL default 'date'",
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_picture_sorting_direction'] = array(
@@ -104,10 +99,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_picture_sorting_direction'] = arr
     'exclude'   => true,
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gc_sortingDirection'],
     'options'   => explode(',', 'DESC,ASC'),
-    'default'   => 'DESC',
     'inputType' => 'select',
     'eval'      => array('tl_class' => 'w50', 'submitOnChange' => false),
-    'sql'       => "varchar(64) NOT NULL default ''",
+    'sql'       => "varchar(64) NOT NULL default 'DESC'",
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_redirectSingleAlb'] = array(
@@ -182,7 +176,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_fullsize'] = array(
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_ThumbsPerPage'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_content']['gc_ThumbsPerPage'],
-    'default'   => 0,
     'exclude'   => true,
     'inputType' => 'text',
     'eval'      => array('rgxp' => 'digit', 'tl_class' => 'clr'),

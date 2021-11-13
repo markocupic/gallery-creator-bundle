@@ -241,7 +241,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
         // save value in tl_user
         'uploader'            => array(
             'label'         => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'],
-            'default'       => 'be_gc_jumploader',
             'inputType'     => 'select',
             'load_callback' => array(array('tl_gallery_creator_albums', 'loadCbGetUploader')),
             'save_callback' => array(array('tl_gallery_creator_albums', 'saveCbSaveUploader')),
@@ -252,7 +251,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
         // save value in tl_user
         'img_resolution'      => array(
             'label'         => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_resolution'],
-            'default'       => '600',
             'inputType'     => 'select',
             'load_callback' => array(array('tl_gallery_creator_albums', 'loadCbGetImageResolution')),
             'save_callback' => array(array('tl_gallery_creator_albums', 'saveCbSaveImageResolution')),
@@ -264,7 +262,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
         // save value in tl_user
         'img_quality'         => array(
             'label'         => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_quality'],
-            'default'       => '100',
             'inputType'     => 'select',
             'load_callback' => array(array('tl_gallery_creator_albums', 'loadCbGetImageQuality')),
             'save_callback' => array(array('tl_gallery_creator_albums', 'saveCbSaveImageQuality')),
@@ -275,9 +272,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
         'preserve_filename'   => array(
             'label'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserve_filename'],
             'inputType' => 'checkbox',
-            'default'   => true,
             'eval'      => array('doNotShow' => true, 'submitOnChange' => true),
-            'sql'       => "char(1) NOT NULL default ''",
+            'sql'       => "char(1) NOT NULL default '1'",
         ),
         'multiSRC'            => array(
             'label'     => &$GLOBALS['TL_LANG']['tl_content']['multiSRC'],
@@ -332,7 +328,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             'exclude'       => true,
             'save_callback' => array(array('tl_gallery_creator_albums', 'saveCbSortAlbum')),
             'inputType'     => 'select',
-            'default'       => 'custom',
             'options'       => array('----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'),
             'reference'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
             'eval'          => array('chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'),

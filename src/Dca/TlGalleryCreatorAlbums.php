@@ -410,7 +410,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function inputFieldCbGenerateUploaderMarkup()
     {
-        return GcHelper::generateUploader($this->User->gc_be_uploader_template);
+        return GcHelper::generateUploader($this->User->gcBeUploaderTemplate);
     }
 
     /**
@@ -512,7 +512,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function loadCbGetUploader()
     {
-        return $this->User->gc_be_uploader_template;
+        return $this->User->gcBeUploaderTemplate;
     }
 
     /**
@@ -522,7 +522,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function loadCbGetImageQuality()
     {
-        return $this->User->gc_img_quality;
+        return $this->User->gcImageQuality;
     }
 
     /**
@@ -530,7 +530,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function loadCbGetImageResolution(): string
     {
-        return $this->User->gc_img_resolution;
+        return $this->User->gcImageResolution;
     }
 
     /**
@@ -768,7 +768,7 @@ class TlGalleryCreatorAlbums extends Backend
 
         // Create the file uploader palette
         if ('fileupload' === Input::get('mode')) {
-            if ('no_scaling' === $this->User->gc_img_resolution) {
+            if ('no_scaling' === $this->User->gcImageResolution) {
                 $dca['palettes']['fileupload'] = str_replace(',img_quality', '', $dca['palettes']['fileupload']);
             }
 
@@ -1110,7 +1110,7 @@ class TlGalleryCreatorAlbums extends Backend
     public function saveCbSaveUploader(string $strTemplate): void
     {
         Database::getInstance()
-            ->prepare('UPDATE tl_user SET gc_be_uploader_template=? WHERE id=?')
+            ->prepare('UPDATE tl_user SET gcBeUploaderTemplate=? WHERE id=?')
             ->execute($strTemplate, $this->User->id)
         ;
     }
@@ -1123,7 +1123,7 @@ class TlGalleryCreatorAlbums extends Backend
     public function saveCbSaveImageQuality($value): void
     {
         Database::getInstance()
-            ->prepare('UPDATE tl_user SET gc_img_quality=? WHERE id=?')
+            ->prepare('UPDATE tl_user SET gcImageQuality=? WHERE id=?')
             ->execute($value, $this->User->id)
         ;
     }
@@ -1136,7 +1136,7 @@ class TlGalleryCreatorAlbums extends Backend
     public function saveCbSaveImageResolution($value): void
     {
         Database::getInstance()
-            ->prepare('UPDATE tl_user SET gc_img_resolution=? WHERE id=?')
+            ->prepare('UPDATE tl_user SET gcImageResolution=? WHERE id=?')
             ->execute($value, $this->User->id)
         ;
     }

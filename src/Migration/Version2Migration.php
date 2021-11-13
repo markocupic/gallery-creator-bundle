@@ -111,6 +111,7 @@ class Version2Migration extends AbstractMigration
     private function getAlterationData(): array
     {
         return [
+            // tl_content
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
@@ -236,6 +237,28 @@ class Version2Migration extends AbstractMigration
                 'old' => 'gc_publish_all_albums',
                 'new' => 'gcPublishAllAlbums',
                 'sql' => 'char(1)',
+            ],
+            // tl_user
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_user',
+                'old' => 'gc_img_resolution',
+                'new' => 'gcImageResolution',
+                'sql' => 'varchar(12)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_user',
+                'old' => 'gc_img_quality',
+                'new' => 'gcImageQuality',
+                'sql' => 'smallint(3)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_user',
+                'old' => 'gc_be_uploader_template',
+                'new' => 'gcBeUploaderTemplate',
+                'sql' => 'varchar(64)',
             ],
         ];
     }

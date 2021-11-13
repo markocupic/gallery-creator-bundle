@@ -13,14 +13,14 @@
 /**
  * Add fields to tl_user
  */
-$GLOBALS['TL_DCA']['tl_user']['fields']['gc_img_resolution'] = array(
+$GLOBALS['TL_DCA']['tl_user']['fields']['gcImageResolution'] = array(
 	'sql' => "varchar(12) NOT NULL default 'no_scaling'",
 );
 
-$GLOBALS['TL_DCA']['tl_user']['fields']['gc_img_quality'] = array(
+$GLOBALS['TL_DCA']['tl_user']['fields']['gcImageQuality'] = array(
 	'sql' => "smallint(3) unsigned NOT NULL default '100'",
 );
 
-$GLOBALS['TL_DCA']['tl_user']['fields']['gc_be_uploader_template'] = array(
-	'sql' => "varchar(32) NOT NULL default 'be_gc_html5_uploader'",
+$GLOBALS['TL_DCA']['tl_user']['fields']['gcBeUploaderTemplate'] = array(
+	'sql' => "varchar(64) NOT NULL default 'be_gc_html5_uploader'",
 );

@@ -10,7 +10,7 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['album_info'] = "Informazioni sull'album";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['albumInfo'] = "Informazioni sull'album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protection'] = "Proteggi album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['upload_settings'] = "Impostazioni immagine";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id']['0'] = "ID album";
@@ -20,17 +20,17 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['published']['0'] = "Pubblica l
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['date']['0'] = "Data di creazione";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owner']['0'] = "Proprietario album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['name']['0'] = "Nome album";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owners_name']['0'] = "Proprietario album";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['ownersName']['0'] = "Proprietario album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['comment']['0'] = "Commento album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb']['0'] = "Miniatura anteprima";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb']['1'] = "Quale immagine dev'essere mostrata nell'anteprima dell'album?";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected']['0'] = "Proteggi album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups']['0'] = "Gruppi frontend autorizzati";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_resolution']['0'] = "Larghezza immagine";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_resolution']['1'] = "Durante il processo di caricamento la risoluzione dell'immagine verrà scalata al valore selezionato.";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_quality']['0'] = "Qualità / compressione immagine";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserve_filename']['0'] = "Mantieni il nome file originale";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserve_filename']['1'] = "In caso contrario il nome file sarà generato automaticamente.";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution']['0'] = "Larghezza immagine";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution']['1'] = "Durante il processo di caricamento la risoluzione dell'immagine verrà scalata al valore selezionato.";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality']['0'] = "Qualità / compressione immagine";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename']['0'] = "Mantieni il nome file originale";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename']['1'] = "In caso contrario il nome file sarà generato automaticamente.";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new']['0'] = "Nuovo album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new']['1'] = "Crea un nuovo album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit']['0'] = "Modifica album";

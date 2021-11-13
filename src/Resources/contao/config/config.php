@@ -33,13 +33,13 @@ $GLOBALS['BE_MOD']['content']['gallery_creator'] = array(
 if (TL_MODE === 'BE')
 {
 	// Check tables script
-	if (count($_GET) <= 2 && Input::get('do') === 'gallery_creator' && Input::get('mode') !== 'revise_database')
+	if (count($_GET) <= 2 && Input::get('do') === 'gallery_creator' && Input::get('mode') !== 'reviseDatabase')
 	{
 		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_check_tables.js';
 	}
 
 	// Revise table script
-	if (Input::get('do') === 'gallery_creator' && Input::get('mode') === 'revise_database')
+	if (Input::get('do') === 'gallery_creator' && Input::get('mode') === 'reviseDatabase')
 	{
 		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_tables.js';
 	}

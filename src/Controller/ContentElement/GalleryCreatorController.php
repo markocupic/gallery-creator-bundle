@@ -635,9 +635,9 @@ class GalleryCreatorController extends AbstractContentElementController
         // Album comment/description
         $template->albumComment = StringUtil::toHtml5($objAlbum->comment);
         // In the detail view, an article can optionally be added in front of the album
-        $template->insertArticlePre = $objAlbum->insert_article_pre ? sprintf('{{insert_article::%s}}', $objAlbum->insert_article_pre) : null;
+        $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // In the detail view, an article can optionally be added right after the album
-        $template->insertArticlePost = $objAlbum->insert_article_post ? sprintf('{{insert_article::%s}}', $objAlbum->insert_article_post) : null;
+        $template->insertArticlePost = $objAlbum->insertArticlePost ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePost) : null;
         // The event date as a unix timestamp
         $template->eventTstamp = $objAlbum->date;
         // The event date as a formatted date

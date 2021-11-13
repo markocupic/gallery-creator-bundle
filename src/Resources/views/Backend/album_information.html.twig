@@ -4,7 +4,7 @@
         <table cellpadding="0" cellspacing="0" width="100%" summary="">
             <tr class="odd">
                 <td style="width:25%"><strong>{{ trans.album_id }}: </strong></td>
-                <td>{{ album.id }}</td>
+                <td>{{ model.id }}</td>
             </tr>
         </table>
     </div>
@@ -14,27 +14,27 @@
         <table cellpadding="0" cellspacing="0" width="100%" summary="">
             <tr class="odd">
                 <td style="width:25%"><strong>{{ trans.album_id }}: </strong></td>
-                <td>{{ album.id }}</td>
+                <td>{{ model.id }}</td>
             </tr>
             <tr class="even">
                 <td><strong>{{ trans.album_date }}: </strong></td>
-                <td>{{ album.date_formatted }}</td>
+                <td>{{ model.date_formatted }}</td>
             </tr>
             <tr class="odd">
                 <td><strong>{{ trans.album_owners_name }}: </strong></td>
-                <td>{{ album.owners_name }}</td>
+                <td>{{ model.ownersName }}</td>
             </tr>
             <tr class="even">
                 <td><strong>{{ trans.album_name }}: </strong></td>
-                <td>{{ album.name }}</td>
+                <td>{{ model.name }}</td>
             </tr>
             <tr class="odd">
                 <td><strong>{{ trans.album_comment|raw }}: </strong></td>
-                <td>{{ album.comment }}</td>
+                <td>{{ model.comment }}</td>
             </tr>
             <tr class="even">
                 <td><strong>{{ trans.album_thumb }}: </strong></td>
-                <td>{{ album.thumb }}</td>
+                <td>{{ model.thumb }}</td>
             </tr>
         </table>
     </div>

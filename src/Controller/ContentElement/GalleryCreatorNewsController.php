@@ -204,9 +204,9 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         // Album caption
         $template->albumComment = StringUtil::toHtml5($objAlbum->comment);
         // Insert article pre
-        $template->insertArticlePre = $objAlbum->insert_article_pre ? sprintf('{{insert_article::%s}}', $objAlbum->insert_article_pre) : null;
+        $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // Insert article after
-        $template->insertArticlePost = $objAlbum->insert_article_post ? sprintf('{{insert_article::%s}}', $objAlbum->insert_article_post) : null;
+        $template->insertArticlePost = $objAlbum->insertArticlePost ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePost) : null;
         // event date as unix timestamp
         $template->eventTstamp = $objAlbum->date;
         // formated event date

@@ -384,7 +384,7 @@ class TlGalleryCreatorPictures extends Backend
             $twig->render(
                 '@MarkocupicGalleryCreator/Backend/image_information.html.twig',
                 [
-                    'picture' => $objImage,
+                    'model' => $objImage->row(),
                     'trans' => [
                         'picture_id' => $translator->trans('tl_gallery_creator_pictures.id.0', [], 'contao_default'),
                         'picture_info' => $translator->trans('tl_gallery_creator_pictures.imageInfo.0', [], 'contao_default'),

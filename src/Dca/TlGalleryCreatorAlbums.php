@@ -357,9 +357,9 @@ class TlGalleryCreatorAlbums extends Backend
                 '@MarkocupicGalleryCreator/Backend/revise_database.html.twig',
                 [
                     'trans' => [
-                        'albums_messages_revise_database' => [
-                            $translator->trans('tl_gallery_creator_albums.revise_database.0', [], 'contao_default'),
-                            $translator->trans('tl_gallery_creator_albums.revise_database.1', [], 'contao_default'),
+                        'albums_messages_reviseDatabase' => [
+                            $translator->trans('tl_gallery_creator_albums.reviseDatabase.0', [], 'contao_default'),
+                            $translator->trans('tl_gallery_creator_albums.reviseDatabase.1', [], 'contao_default'),
                         ],
                     ],
                 ]
@@ -374,8 +374,7 @@ class TlGalleryCreatorAlbums extends Backend
     {
         $objAlb = GalleryCreatorAlbumsModel::findByPk(Input::get('id'));
         $objUser = UserModel::findByPk($objAlb->owner);
-
-        $objAlb->owners_name = null !== $objUser ? $objUser->name : 'no-name';
+         $objAlb->ownersName = null !== $objUser ? $objUser->name : 'no-name';
         $objAlb->date_formatted = Date::parse('Y-m-d', $objAlb->date);
 
         // Check User Role
@@ -389,7 +388,7 @@ class TlGalleryCreatorAlbums extends Backend
                 '@MarkocupicGalleryCreator/Backend/album_information.html.twig',
                 [
                     'restricted' => $this->restrictedUser,
-                    'album' => $objAlb,
+                    'model' => $objAlb->row(),
                     'trans' => [
                         'album_id' => $translator->trans('tl_gallery_creator_albums.id.0', [], 'contao_default'),
                         'album_name' => $translator->trans('tl_gallery_creator_albums.name.0', [], 'contao_default'),
@@ -538,7 +537,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function buttonsCallback(array $arrButtons, DataContainer $dc): array
     {
-        if ('revise_database' === Input::get('mode')) {
+        if ('reviseDatabase' === Input::get('mode')) {
             // Remove buttons
             unset($arrButtons['saveNcreate'], $arrButtons['saveNclose']);
 
@@ -728,14 +727,14 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         if (null !== ($objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('id')))) {
-            $objAlbum->preserve_filename = Input::post('preserve_filename');
+            $objAlbum->preserveFilename = Input::post('preserveFilename');
             $objAlbum->save();
 
             // Comma separated list with folder uuid's => 10585872-5f1f-11e3-858a-0025900957c8,105e9de0-5f1f-11e3-858a-0025900957c8,105e9dd6-5f1f-11e3-858a-0025900957c8
             $arrMultiSRC = explode(',', (string) $this->Input->post('multiSRC'));
 
             if (!empty($arrMultiSRC)) {
-                $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserve_filename']['eval']['submitOnChange'] = false;
+                $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserveFilename']['eval']['submitOnChange'] = false;
 
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
                 GcHelper::importFromFilesystem($objAlbum, $arrMultiSRC);
@@ -758,18 +757,18 @@ class TlGalleryCreatorAlbums extends Backend
         if (!$this->User->isAdmin) {
             unset(
                 $dca['list']['global_operations']['all'],
-                $dca['list']['global_operations']['revise_database']
+                $dca['list']['global_operations']['reviseDatabase']
             );
         }
 
         // For security reasons give only readonly rights to these fields
         $dca['fields']['id']['eval']['style'] = '" readonly="readonly';
-        $dca['fields']['owners_name']['eval']['style'] = '" readonly="readonly';
+        $dca['fields']['ownersName']['eval']['style'] = '" readonly="readonly';
 
         // Create the file uploader palette
         if ('fileupload' === Input::get('mode')) {
             if ('no_scaling' === $this->User->gcImageResolution) {
-                $dca['palettes']['fileupload'] = str_replace(',img_quality', '', $dca['palettes']['fileupload']);
+                $dca['palettes']['fileupload'] = str_replace(',imageQuality', '', $dca['palettes']['fileupload']);
             }
 
             $dca['palettes']['default'] = $dca['palettes']['fileupload'];
@@ -780,7 +779,7 @@ class TlGalleryCreatorAlbums extends Backend
         // Create the *import_images* palette
         if ('import_images' === Input::get('mode')) {
             $dca['palettes']['default'] = $dca['palettes']['import_images'];
-            $dca['fields']['preserve_filename']['eval']['submitOnChange'] = false;
+            $dca['fields']['preserveFilename']['eval']['submitOnChange'] = false;
 
             return;
         }
@@ -794,13 +793,13 @@ class TlGalleryCreatorAlbums extends Backend
             ;
 
             if ($objAlb->numRows) {
-                $dca['list']['global_operations']['revise_database']['href'] = 'act=edit&table&mode=revise_database&id='.$objAlb->id;
+                $dca['list']['global_operations']['reviseDatabase']['href'] = 'act=edit&table&mode=reviseDatabase&id='.$objAlb->id;
             } else {
-                unset($dca['list']['global_operations']['revise_database']);
+                unset($dca['list']['global_operations']['reviseDatabase']);
             }
 
-            if ('revise_database' === Input::get('mode')) {
-                $dca['palettes']['default'] = $dca['palettes']['revise_database'];
+            if ('reviseDatabase' === Input::get('mode')) {
+                $dca['palettes']['default'] = $dca['palettes']['reviseDatabase'];
 
                 return;
             }

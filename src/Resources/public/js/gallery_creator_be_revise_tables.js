@@ -63,11 +63,11 @@
          */
         initialize: function () {
             let self = this;
-            document.id('main').addClass('gc_revise_database');
+            document.id('main').addClass('gcReviseDatabase');
 
             self.button = document.id('reviseTableBtn');
-            self.checkbox = $$('input[name=revise_database]')[0];
-            self.labelCheckbox = $$('label[for=revise_database]')[0];
+            self.checkbox = $$('input[name=reviseDatabase]')[0];
+            self.labelCheckbox = $$('label[for=reviseDatabase]')[0];
 
             self.messageBox = new Element('div#messageBox');
             self.messageBox.addClass('gc_message');

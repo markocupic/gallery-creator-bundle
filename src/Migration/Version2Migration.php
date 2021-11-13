@@ -91,7 +91,7 @@ class Version2Migration extends AbstractMigration
                         $this->connection->query($strQuery);
 
                         $arrMessage[] = sprintf(
-                            'Rename field %s.%s to %s.%s. ',
+                            'Rename column %s.%s to %s.%s. ',
                             $strTable,
                             $arrAlteration['old'],
                             $strTable,
@@ -259,6 +259,63 @@ class Version2Migration extends AbstractMigration
                 'old' => 'gc_be_uploader_template',
                 'new' => 'gcBeUploaderTemplate',
                 'sql' => 'varchar(64)',
+            ],
+            // tl_gallery_creator_albums
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'owners_name',
+                'new' => 'ownersName',
+                'sql' => 'TEXT',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'event_location',
+                'new' => 'eventLocation',
+                'sql' => 'varchar(255)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'img_resolution',
+                'new' => 'imageResolution',
+                'sql' => 'smallint(5)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'img_quality',
+                'new' => 'imageQuality',
+                'sql' => 'smallint(3)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'preserve_filename',
+                'new' => 'preserveFilename',
+                'sql' => 'char(1)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'insert_article_pre',
+                'new' => 'insertArticlePre',
+                'sql' => 'int(10)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'insert_article_post',
+                'new' => 'insertArticlePost',
+                'sql' => 'int(10)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'visitors_details',
+                'new' => 'visitorsDetails',
+                'sql' => 'blob',
             ],
         ];
     }

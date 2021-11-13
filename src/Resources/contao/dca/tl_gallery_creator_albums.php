@@ -63,9 +63,9 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 				'class'      => 'header_edit_all',
 				'href'       => 'act=select',
 			),
-			'revise_database' => array(
+			'reviseDatabase' => array(
 				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-				'class'      => 'icon_revise_database',
+				'class'      => 'icon_reviseDatabase',
 				// href is set in TlGalleryCreatorAlbums::onloadCbSetUpPalettes
 				'href'       => '',
 			),
@@ -113,11 +113,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 	// Palettes
 	'palettes'    => array(
 		'__selector__'    => array('protected'),
-		'default'         => '{album_info},published,name,alias,description,keywords,assignedDir,album_info,owner,photographer,date,event_location,filePrefix,sortBy,comment,visitors;{album_preview_thumb_legend},thumb;{insert_article},insert_article_pre,insert_article_post;{protection:hide},protected',
-		'fileupload'      => '{upload_settings},preserve_filename,img_resolution,img_quality;{uploader_legend},uploader,fileupload',
-		'import_images'   => '{upload_settings},preserve_filename,multiSRC',
-		'restricted_user' => '{album_info},link_edit_images,album_info',
-		'revise_database'   => '{maintenance},revise_database',
+		'default'         => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,comment,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
+		'fileupload'      => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},uploader,fileupload',
+		'import_images'   => '{upload_settings},preserveFilename,multiSRC',
+		'restricted_user' => '{albumInfo},link_edit_images,albumInfo',
+		'reviseDatabase'   => '{maintenance},reviseDatabase',
 	),
 	// Subpalettes
 	'subpalettes' => array(
@@ -158,7 +158,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'inputType' => 'fileTree',
 			'sql'       => "blob NULL",
 		),
-		'owners_name'         => array(
+		'ownersName'         => array(
 			'default' => BackendUser::getInstance()->name,
 			'eval'    => array('doNotShow' => true, 'tl_class' => 'w50 readonly'),
 			'sql'     => "text NULL",
@@ -169,7 +169,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'inputType' => 'text',
 			'sql'       => "varchar(255) NOT NULL default ''",
 		),
-		'event_location'      => array(
+		'eventLocation'      => array(
 			'eval'      => array('mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false),
 			'exclude'   => true,
 			'inputType' => 'text',
@@ -204,6 +204,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'eval'      => array('tl_class' => 'clr long', 'style' => 'height:7em;', 'allowHtml' => false, 'submitOnChange' => false, 'wrap' => 'soft'),
 			'exclude'   => true,
 			'inputType' => 'textarea',
+            'search'    => true,
 			'sql'       => "text NULL",
 		),
 		'thumb'               => array(
@@ -216,7 +217,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'eval'                 => array('doNotShow' => true),
 			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateUploaderMarkup'),
 		),
-		'album_info'          => array(
+		'albumInfo'          => array(
 			'eval'                 => array('doNotShow' => true),
 			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateAlbumInformations'),
 		),
@@ -230,7 +231,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'sql'           => "varchar(32) NOT NULL default 'be_gc_html5_uploader'",
 		),
 		// save value in tl_user
-		'img_resolution'      => array(
+		'imageResolution'      => array(
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
 			'inputType'     => 'select',
 			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetImageResolution')),
@@ -240,7 +241,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'sql'           => "smallint(5) unsigned NOT NULL default '600'",
 		),
 		// save value in tl_user
-		'img_quality'         => array(
+		'imageQuality'         => array(
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
 			'inputType'     => 'select',
 			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetImageQuality')),
@@ -248,7 +249,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageQuality')),
 			'sql'           => "smallint(3) unsigned NOT NULL default '100'",
 		),
-		'preserve_filename'   => array(
+		'preserveFilename'   => array(
 			'eval'      => array('doNotShow' => true, 'submitOnChange' => true),
 			'inputType' => 'checkbox',
 			'sql'       => "char(1) NOT NULL default '1'",
@@ -271,21 +272,21 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'inputType'  => 'checkbox',
 			'sql'        => "blob NULL",
 		),
-		'insert_article_pre'  => array(
+		'insertArticlePre'  => array(
 			'eval'      => array('doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'),
 			'inputType' => 'text',
 			'sql'       => "int(10) unsigned NOT NULL default '0'",
 		),
-		'insert_article_post' => array(
+		'insertArticlePost' => array(
 			'eval'      => array('doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'),
 			'inputType' => 'text',
 			'sql'       => "int(10) unsigned NOT NULL default '0'",
 		),
-		'revise_database'       => array(
+		'reviseDatabase'       => array(
 			'eval'                 => array('doNotShow' => true),
 			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbCleanDb'),
 		),
-		'visitors_details'    => array(
+		'visitorsDetails'    => array(
 			'inputType' => 'textarea',
 			'sql'       => "blob NULL",
 		),

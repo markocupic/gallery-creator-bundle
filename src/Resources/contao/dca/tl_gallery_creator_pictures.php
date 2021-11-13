@@ -44,7 +44,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 		'sorting'           => array(
 			'child_record_callback' => array(TlGalleryCreatorPictures::class, 'childRecordCb'),
 			'fields'                => array('sorting'),
-			'headerFields'          => array('id', 'date', 'owners_name', 'name', 'comment', 'thumb'),
+			'headerFields'          => array('id', 'date', 'ownersName', 'name', 'comment', 'thumb'),
 			'mode'                  => 4,
 			'panelLayout'           => 'filter;search,limit',
 		),

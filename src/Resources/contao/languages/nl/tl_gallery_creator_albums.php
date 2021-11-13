@@ -10,7 +10,7 @@
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['album_info'] = "Album informatie";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['albumInfo'] = "Album informatie";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protection'] = "Bescherm album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['upload_settings'] = "Beeldinstellingen";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'] = "Java-uploader";
@@ -21,18 +21,18 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['published']['0'] = "Publiceer 
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['date']['0'] = "Aanmaakdatum";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owner']['0'] = "Eigenaar album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['name']['0'] = "Naam album";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owners_name']['0'] = "Eigenaar album";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['ownersName']['0'] = "Eigenaar album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['comment']['0'] = "Opmerkingen album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb']['0'] = "Preview thumbnail";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb']['1'] = "De thumbnail die in de album preview wordt weergegeven.";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected']['0'] = "Bescherm album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups']['0'] = "Toon dit album alleen aan bepaalde gebruikersgroepen.";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_resolution']['0'] = "Afbeeldingsbreedte";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_resolution']['1'] = "Tijdens het uploaden wordt de afbeelding geschaald naar deze waarde.";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_quality']['0'] = "Beeldkwaliteit/compressie";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_quality']['1'] = "Tijdens het uploaden wordt de afbeelding gecomprimeerd (100=beste kwaliteit/laagste compressie).";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserve_filename']['0'] = "Behoud de bestandsnaam";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserve_filename']['1'] = "Anders wordt de bestandsnaam automatisch gegenereerd.";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution']['0'] = "Afbeeldingsbreedte";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution']['1'] = "Tijdens het uploaden wordt de afbeelding geschaald naar deze waarde.";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality']['0'] = "Beeldkwaliteit/compressie";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality']['1'] = "Tijdens het uploaden wordt de afbeelding gecomprimeerd (100=beste kwaliteit/laagste compressie).";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename']['0'] = "Behoud de bestandsnaam";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename']['1'] = "Anders wordt de bestandsnaam automatisch gegenereerd.";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new']['0'] = "Nieuw album";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new']['1'] = "Maak een nieuw album.";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit']['0'] = "Bewerk album";

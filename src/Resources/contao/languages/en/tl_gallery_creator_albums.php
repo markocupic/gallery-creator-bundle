@@ -13,7 +13,7 @@
 /**
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['album_info'] = 'albuminformations';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['albumInfo'] = 'albuminformations';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protection'] = 'protect album';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['upload_settings'] = 'image settings';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insert_article'] = 'insert articles before or after the album';
@@ -29,25 +29,25 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['alias'] = ['Albumalias', 'The 
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['published'] = ['Publish Album'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['date'] = ['Date of creation'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owner'] = ['Albumowner'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['event_location'] = ['Event-location'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['eventLocation'] = ['Event-location'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['description'] = ['Meta page description', 'Here you can enter a short description of the page which will be evaluated by search engines like Google or Yahoo. Search engines usually indicate between 150 and 300 characters.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['keywords'] = ['Meta keywords', 'Here you can enter a list of comma separated keywords. Keywords, however, are no longer relevant to most search engines (including Google).'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['name'] = ['Albumname'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owners_name'] = ['Albumowner'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['ownersName'] = ['Albumowner'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'] = ['Photographers names', 'Please add photographers names.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['comment'] = ['Album-comment'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb'] = ['Select the thumbnail which represents the Album in the listview', 'Drag the items to re-order them.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected'] = ['Protect album'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups'] = ['Allowed frontend-groups'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insert_article_pre'] = ['Insert article optionally before the album', 'Insert the id of the article that you optionally like have displayed in the detail view.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insert_article_post'] = ['Insert article optionally after the album', 'Insert the id of the article that you optionally like have displayed in the detail view.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insertArticlePre'] = ['Insert article optionally before the album', 'Insert the id of the article that you optionally like have displayed in the detail view.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insertArticlePost'] = ['Insert article optionally after the album', 'Insert the id of the article that you optionally like have displayed in the detail view.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['fileupload'] = ['File Upload', 'Browse your local computer and select the files you want to upload to the server.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'] = ['Uploader', 'Please choose the uploader.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_resolution'] = ['Image width', 'During the upload process the image resolution will be scaled to the selected value.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['img_quality'] = ['Image quality/compression', 'During the upload process the image will be compressed. (100 = best quality)'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserve_filename'] = ['Preserve the original filename', 'Otherwise the filename will be automatically generated.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'] = ['Image width', 'During the upload process the image resolution will be scaled to the selected value.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'] = ['Image quality/compression', 'During the upload process the image will be compressed. (100 = best quality)'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'] = ['Preserve the original filename', 'Otherwise the filename will be automatically generated.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitors'] = ['Number of visitors'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitors_details'] = ['Visitors details (ip, browser type, etc.)'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitorsDetails'] = ['Visitors details (ip, browser type, etc.)'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['sortBy'] = ['Re-order images by', 'Please choose the sort order.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['assignedDir'] = ['Assigned directory', 'New images will be uploaded to this directory.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['filePrefix'] = ['Rename all pictures using a file prefix', 'Enter a valid file prefix to rename all pictures of this album (e.g. "me-in-paris-2012").'];
@@ -57,8 +57,8 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'] = ['Accepted f
  * Buttons
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'] = ['revise tables'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['revise_database']['0'] = "Revise tables";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['revise_database']['1'] = "Remove orphaned/incorrect entries";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase']['0'] = "Revise tables";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase']['1'] = "Remove orphaned/incorrect entries";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn']['0'] = "Datenbank bereinigen";
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new'] = ['new album', 'Create a new album.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['list_pictures'] = ['list pictures', 'List pictures of album with ID %s.'];
@@ -84,4 +84,4 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['custom'] = 'Custom order';
 /**
  * Messages
  */
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['messages']['revise_database'] = 'Revise tables: Clean the database from damaged/invalid/orphaned entries';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['messages']['reviseDatabase'] = 'Revise tables: Clean the database from damaged/invalid/orphaned entries';

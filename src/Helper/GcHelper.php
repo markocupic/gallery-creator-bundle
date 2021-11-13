@@ -103,7 +103,7 @@ class GcHelper
         $sorting = $objImg->maximum;
 
         // If filename should be generated
-        if (!$objAlbum->preserve_filename && false === $blnExternalFile) {
+        if (!$objAlbum->preserveFilename && false === $blnExternalFile) {
             $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $objAlbum->id, $insertId, $objFile->extension);
             $objFile->renameTo($newFilepath);
         }
@@ -195,10 +195,10 @@ class GcHelper
         }
 
         // Resize image if feature is enabled
-        if (Input::post('img_resolution') > 1) {
-            Config::set('imageWidth', Input::post('img_resolution'));
+        if (Input::post('imageResolution') > 1) {
+            Config::set('imageWidth', Input::post('imageResolution'));
             Config::set('imageHeight', 999999999);
-            Config::set('jpgQuality', Input::post('img_quality'));
+            Config::set('jpgQuality', Input::post('imageQuality'));
         } else {
             Config::set('maxImageWidth', 999999999);
         }
@@ -349,7 +349,7 @@ class GcHelper
             // [string] event date formatted
             'event_date' => Date::parse(Config::get('dateFormat'), $objAlbum->date),
             // [string] Event-Location
-            'event_location' => StringUtil::specialchars($objAlbum->event_location),
+            'eventLocation' => StringUtil::specialchars($objAlbum->eventLocation),
             // [string] albumname
             'name' => StringUtil::specialchars($objAlbum->name),
             // [string] album caption
@@ -534,7 +534,7 @@ class GcHelper
         // Build the array
         $arrPicture = [
             //Name des Erstellers
-            'owners_name' => $objOwner->name,
+            'ownersName' => $objOwner->name,
             // [string] name (basename/filename of the file)
             'name' => StringUtil::specialchars($arrFile['basename']),
             // [string] filename without extension
@@ -576,7 +576,7 @@ class GcHelper
             'lightbox' => 'data-lightbox="lb'.$objPicture->pid.'"',
             // [array] Array mit exif metatags
             'exif' => $exif,
-            // [array] Array mit allen Albuminformation (albumname, owners_name...)
+            // [array] Array mit allen Albuminformation (albumname, ownersName...)
             'albuminfo' => $objAlbum ? $objAlbum->row() : null,
             // [array] Array mit Bildinfos aus den meta-Angaben der Datei, gespeichert in tl_files.meta
             'metaData' => $arrMeta,
@@ -684,7 +684,7 @@ class GcHelper
             return;
         }
 
-        $arrVisitors = StringUtil::deserialize($objAlbum->visitors_details, true);
+        $arrVisitors = StringUtil::deserialize($objAlbum->visitorsDetails, true);
 
         if (\in_array(md5((string) $_SERVER['REMOTE_ADDR']), $arrVisitors, true)) {
             // Return if the visitor is already registered
@@ -709,7 +709,7 @@ class GcHelper
 
         // Update database
         $objAlbum->visitors = ++$objAlbum->visitors;
-        $objAlbum->visitors_details = serialize($arrVisitors);
+        $objAlbum->visitorsDetails = serialize($arrVisitors);
         $objAlbum->save();
     }
 
@@ -901,7 +901,7 @@ class GcHelper
         } else {
             $owner = 'no-name';
         }
-        $objAlbum->owners_name = $owner;
+        $objAlbum->ownersName = $owner;
 
         // Check for valid pid
         if ($objAlbum->pid > 0) {

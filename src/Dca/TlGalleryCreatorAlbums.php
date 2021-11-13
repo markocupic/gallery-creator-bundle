@@ -360,7 +360,7 @@ class TlGalleryCreatorAlbums extends Backend
                         'albums_messages_revise_database' => [
                             $translator->trans('tl_gallery_creator_albums.revise_database.0', [], 'contao_default'),
                             $translator->trans('tl_gallery_creator_albums.revise_database.1', [], 'contao_default'),
-                        ]
+                        ],
                     ],
                 ]
             )
@@ -447,7 +447,8 @@ class TlGalleryCreatorAlbums extends Backend
 
                 if (Input::get('albumId')) {
                     $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
-                    if (null !== $objAlbum){
+
+                    if (null !== $objAlbum) {
                         if (Input::get('checkTables') || Input::get('reviseTables')) {
                             // Delete damaged data records
                             $cleanDb = $this->User->isAdmin && Input::get('reviseTables') ? true : false;
@@ -464,7 +465,7 @@ class TlGalleryCreatorAlbums extends Backend
                                 }
                             }
                         }
-                }
+                    }
                     $this->session->remove('gc_error');
                 }
             }

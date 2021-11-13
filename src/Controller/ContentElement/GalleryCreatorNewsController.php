@@ -51,13 +51,13 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $this->model = $model;
         $this->pageModel = $pageModel;
 
-        if (!$this->model->gc_publish_single_album) {
+        if (!$this->model->gcPublishSingleAlbum) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
         $objAlbum = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=? AND published=?')
-            ->execute($this->model->gc_publish_single_album, '1')
+            ->execute($this->model->gcPublishSingleAlbum, '1')
         ;
 
         // if the album doesn't exist
@@ -105,7 +105,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         GcHelper::initCounter($objAlbum);
 
         // Pagination settings
-        $limit = $this->model->gc_ThumbsPerPage;
+        $limit = $this->model->gcThumbsPerPage;
 
         if ($limit > 0) {
             $page = Input::get('page') ?: 1;
@@ -119,13 +119,13 @@ class GalleryCreatorNewsController extends AbstractContentElementController
             $itemsTotal = $objPictures->numRows;
 
             // Create the pagination menu
-            $numberOfLinks = $this->model->gc_PaginationNumberOfLinks < 1 ? 7 : $this->model->gc_PaginationNumberOfLinks;
+            $numberOfLinks = $this->model->gcPaginationNumberOfLinks < 1 ? 7 : $this->model->gcPaginationNumberOfLinks;
             $objPagination = new Pagination($itemsTotal, $limit, $numberOfLinks);
             $template->pagination = $objPagination->generate("\n ");
         }
 
         // Picture sorting
-        $str_sorting = empty($this->model->gc_picture_sorting) || empty($this->model->gc_picture_sorting_direction) ? 'sorting ASC' : $this->model->gc_picture_sorting.' '.$this->model->gc_picture_sorting_direction;
+        $str_sorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
 
         // Sort by name is done below
         $str_sorting = str_replace('name', 'id', $str_sorting);
@@ -157,8 +157,8 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         }
 
         // Sort by basename
-        if ('name' === $this->model->gc_picture_sorting) {
-            if ('ASC' === $this->model->gc_picture_sorting_direction) {
+        if ('name' === $this->model->gcPictureSorting) {
+            if ('ASC' === $this->model->gcPictureSortingDirection) {
                 array_multisort($arrPictures, SORT_STRING, $auxBasename, SORT_ASC);
             } else {
                 array_multisort($arrPictures, SORT_STRING, $auxBasename, SORT_DESC);
@@ -212,7 +212,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         // formated event date
         $template->eventDate = Date::parse(Config::get('dateFormat'), $objAlbum->date);
         // Margins
-        $template->imagemargin = Controller::generateMargin(StringUtil::deserialize($this->model->gc_imagemargin_detailview), 'margin');
+        $template->imagemargin = Controller::generateMargin(StringUtil::deserialize($this->model->gcImageMarginDetailView), 'margin');
         // Content model
         $template->objElement = $this->model;
     }

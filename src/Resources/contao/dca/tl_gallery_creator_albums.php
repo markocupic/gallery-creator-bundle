@@ -222,7 +222,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 		),
 		// save value in tl_user
 		'uploader'            => array(
-			'default'       => 'be_gc_jumploader',
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'clr', 'submitOnChange' => true),
 			'inputType'     => 'select',
 			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetUploader')),
@@ -232,7 +231,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 		),
 		// save value in tl_user
 		'img_resolution'      => array(
-			'default'       => '600',
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
 			'inputType'     => 'select',
 			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetImageResolution')),
@@ -243,7 +241,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 		),
 		// save value in tl_user
 		'img_quality'         => array(
-			'default'       => '100',
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
 			'inputType'     => 'select',
 			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetImageQuality')),
@@ -252,10 +249,9 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'sql'           => "smallint(3) unsigned NOT NULL default '100'",
 		),
 		'preserve_filename'   => array(
-			'default'   => true,
 			'eval'      => array('doNotShow' => true, 'submitOnChange' => true),
 			'inputType' => 'checkbox',
-			'sql'       => "char(1) NOT NULL default ''",
+			'sql'       => "char(1) NOT NULL default '1'",
 		),
 		'multiSRC'            => array(
 			'eval'      => array('doNotShow' => true, 'multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true),
@@ -299,7 +295,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'sql'       => "int(10) unsigned NOT NULL default '0'",
 		),
 		'sortBy'              => array(
-			'default'       => 'custom',
 			'eval'          => array('chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'),
 			'exclude'       => true,
 			'inputType'     => 'select',

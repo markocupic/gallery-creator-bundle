@@ -11,8 +11,8 @@
 (function ($) {
   window.addEvent('domready', function () {
 
-    if (document.id('check_all_gc_publish_albums') !== null) {
-      $('check_all_gc_publish_albums').addEvent('click', function () {
+    if (document.id('CheckAllGcPublishAlbums') !== null) {
+      $('CheckAllGcPublishAlbums').addEvent('click', function () {
         if (this.checked) {
           $$('.album-control-field').each(function (el) {
             el.checked = true;

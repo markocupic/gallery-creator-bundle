@@ -21,14 +21,14 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 		'enableVersioning'  => true,
 		'dataContainer'     => 'Table',
 		'onload_callback'   => array(
-			array(				TlGalleryCreatorPictures::class,				'onloadCbCheckPermission'			),
-			array(				TlGalleryCreatorPictures::class,				'onloadCbSetUpPalettes'			),
+			array(TlGalleryCreatorPictures::class,				'onloadCbCheckPermission'),
+			array(TlGalleryCreatorPictures::class,				'onloadCbSetUpPalettes'),
 		),
 		'ondelete_callback' => array(
-			array(				TlGalleryCreatorPictures::class,				'ondeleteCb'			),
+			array(TlGalleryCreatorPictures::class,				'ondeleteCb'),
 		),
 		'oncut_callback'    => array(
-			array(				TlGalleryCreatorPictures::class,				'oncutCb'			),
+			array(TlGalleryCreatorPictures::class,				'oncutCb'),
 		),
 		'sql'               => array(
 			'keys' => array(
@@ -109,8 +109,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 			'sql'        => "int(10) unsigned NOT NULL default '0'",
 		),
 		'path'           => array(
-		    'sql' => "varchar(255) NOT NULL default ''",
-        ),
+			'sql' => "varchar(255) NOT NULL default ''",
+		),
 		'uuid'           => array(
 			'sql' => "binary(16) NULL",
 		),
@@ -140,8 +140,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 		),
 		//activate subpalette
 		'externalFile'   => array(
-		    'sql' => "char(1) NOT NULL default ''"
-        ),
+			'sql' => "char(1) NOT NULL default ''"
+		),
 		'comment'        => array(
 			'cols'      => 20,
 			'eval'      => array('decodeEntities' => true, 'tl_class' => 'clr'),

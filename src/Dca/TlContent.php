@@ -46,11 +46,11 @@ class TlContent extends Backend
     public function optionsCallbackListAlbums(): array
     {
         $objContent = Database::getInstance()
-            ->prepare('SELECT gc_sorting, gc_sorting_direction FROM tl_content WHERE id=?')
+            ->prepare('SELECT gc_sorting, gcSortingDirection FROM tl_content WHERE id=?')
             ->execute(Input::get('id'))
         ;
 
-        $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gc_sorting_direction) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
+        $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gcSortingDirection;
 
         $db = Database::getInstance()
             ->prepare('SELECT id, name FROM tl_gallery_creator_albums WHERE published=? ORDER BY '.$str_sorting)
@@ -72,15 +72,15 @@ class TlContent extends Backend
     public function inputFieldCallbackListAlbums(): string
     {
         if ('tl_content' === Input::post('FORM_SUBMIT')) {
-            if (!Input::post('gc_publish_all_albums')) {
+            if (!Input::post('gcPublishAllAlbums')) {
                 $albums = [];
 
-                if (Input::post('gc_publish_albums')) {
-                    foreach (StringUtil::deserialize(Input::post('gc_publish_albums'), true) as $album) {
+                if (Input::post('gcPublishAlbums')) {
+                    foreach (StringUtil::deserialize(Input::post('gcPublishAlbums'), true) as $album) {
                         $albums[] = $album;
                     }
                 }
-                $set = ['gc_publish_albums' => serialize($albums)];
+                $set = ['gcPublishAlbums' => serialize($albums)];
                 Database::getInstance()
                     ->prepare('UPDATE tl_content %s WHERE id=? ')
                     ->set($set)
@@ -98,8 +98,8 @@ class TlContent extends Backend
                 [
                     'list' => $this->getSubalbumsAsUnorderedList(0),
                     'trans' => [
-                        'trans.gc_publish_albums.0' => $translator->trans('tl_content.gc_publish_albums.0', [], 'contao_default'),
-                        'trans.gc_publish_albums.1' => $translator->trans('tl_content.gc_publish_albums.1', [], 'contao_default'),
+                        'trans.gcPublishAlbums.0' => $translator->trans('tl_content.gcPublishAlbums.0', [], 'contao_default'),
+                        'trans.gcPublishAlbums.1' => $translator->trans('tl_content.gcPublishAlbums.1', [], 'contao_default'),
                     ],
                 ]
             )
@@ -107,17 +107,17 @@ class TlContent extends Backend
     }
 
     /**
-     * Set up palette
+     * Set up palette.
      */
     public function onloadCbSetUpPalettes(): void
     {
         $objContent = Database::getInstance()
-            ->prepare('SELECT gc_publish_all_albums FROM tl_content WHERE id=?')
+            ->prepare('SELECT gcPublishAllAlbums FROM tl_content WHERE id=?')
             ->execute(Input::get('id'))
         ;
 
-        if ($objContent->gc_publish_all_albums) {
-            $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator'] = str_replace('gc_publish_albums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator']);
+        if ($objContent->gcPublishAllAlbums) {
+            $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator'] = str_replace('gcPublishAlbums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator']);
         }
     }
 
@@ -128,9 +128,9 @@ class TlContent extends Backend
             ->execute($this->Input->get('id'))
         ;
 
-        $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gc_sorting_direction) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
+        $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gcSortingDirection;
 
-        $selectedAlbums = '' !== $objContent->gc_publish_albums ? StringUtil::deserialize($objContent->gc_publish_albums) : [];
+        $selectedAlbums = '' !== $objContent->gcPublishAlbums ? StringUtil::deserialize($objContent->gcPublishAlbums) : [];
 
         $level = GcHelper::getAlbumLevel((int) $pid);
 
@@ -143,7 +143,7 @@ class TlContent extends Backend
 
         while ($db->next()) {
             $checked = \in_array($db->id, $selectedAlbums, false) ? ' checked' : '';
-            $list .= '<li class="album-list-item"><input type="checkbox" name="gc_publish_albums[]" class="album-control-field" id="albumControlField-'.$db->id.'" value="'.$db->id.'"'.$checked.'>'.$db->name;
+            $list .= '<li class="album-list-item"><input type="checkbox" name="gcPublishAlbums[]" class="album-control-field" id="albumControlField-'.$db->id.'" value="'.$db->id.'"'.$checked.'>'.$db->name;
             $list .= $this->getSubalbumsAsUnorderedList((int) $db->id);
             $list .= '</li>';
         }

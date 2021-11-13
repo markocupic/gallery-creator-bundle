@@ -310,7 +310,7 @@ class GcHelper
             ->execute($objAlbum->id, '1')
         ;
 
-        $arrSize = unserialize($objContentModel->gc_size_albumlisting);
+        $arrSize = unserialize($objContentModel->gcSizeAlbumListing);
 
         $href = null;
 
@@ -358,7 +358,7 @@ class GcHelper
             // [string] Link zur Detailansicht
             'href' => $href,
             // [string] Inhalt fuer das title Attribut
-            'title' => $objAlbum->name.' ['.($objPics->numRows ? $objPics->numRows.' '.$GLOBALS['TL_LANG']['gallery_creator']['pictures'] : '').($objContentModel->gc_hierarchicalOutput && $objSubAlbums->numRows > 0 ? ' '.$GLOBALS['TL_LANG']['gallery_creator']['contains'].' '.$objSubAlbums->numRows.'  '.$GLOBALS['TL_LANG']['gallery_creator']['subalbums'].']' : ']'),
+            'title' => $objAlbum->name.' ['.($objPics->numRows ? $objPics->numRows.' '.$GLOBALS['TL_LANG']['gallery_creator']['pictures'] : '').($objContentModel->gcHierarchicalOutput && $objSubAlbums->numRows > 0 ? ' '.$GLOBALS['TL_LANG']['gallery_creator']['contains'].' '.$objSubAlbums->numRows.'  '.$GLOBALS['TL_LANG']['gallery_creator']['subalbums'].']' : ']'),
             // [int] Anzahl Bilder im Album
             'count' => (int) $objPics->numRows,
             // [int] Anzahl Unteralben
@@ -444,7 +444,7 @@ class GcHelper
         }
 
         // Get thumb dimensions
-        $arrSize = unserialize($objContentModel->gc_size_detailview);
+        $arrSize = unserialize($objContentModel->gcSizeDetailView);
 
         // Get parent album
         $objAlbum = $objPicture->getRelated('pid');
@@ -524,7 +524,7 @@ class GcHelper
         }
         $href = null;
 
-        if (TL_MODE === 'FE' && $objContentModel->gc_fullsize) {
+        if (TL_MODE === 'FE' && $objContentModel->gcFullsize) {
             $href = !empty($strMediaSrc) ? $strMediaSrc : TL_FILES_URL.System::urlEncode($strImageSrc);
         }
 
@@ -599,7 +599,7 @@ class GcHelper
      */
     public static function getSubalbumsInformationArray(GalleryCreatorAlbumsModel $objAlbum, ContentModel $objContentModel): array
     {
-        $strSorting = $objContentModel->gc_sorting.' '.$objContentModel->gc_sorting_direction;
+        $strSorting = $objContentModel->gc_sorting.' '.$objContentModel->gcSortingDirection;
         $objSubAlbums = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
             ->execute($objAlbum->id, '1')
@@ -608,9 +608,9 @@ class GcHelper
 
         while ($objSubAlbums->next()) {
             // If it is a content element only
-            if ('' !== $objContentModel->gc_publish_albums) {
-                if (!$objContentModel->gc_publish_all_albums) {
-                    if (!\in_array($objSubAlbums->id, StringUtil::deserialize($objContentModel->gc_publish_albums), false)) {
+            if ('' !== $objContentModel->gcPublishAlbums) {
+                if (!$objContentModel->gcPublishAllAlbums) {
+                    if (!\in_array($objSubAlbums->id, StringUtil::deserialize($objContentModel->gcPublishAlbums), false)) {
                         continue;
                     }
                 }
@@ -972,7 +972,7 @@ class GcHelper
         }
 
         /**
-         * Ensures that there are no orphaned AlbumId's in the gc_publish_albums field in tl_content.
+         * Ensures that there are no orphaned AlbumId's in the gcPublishAlbums field in tl_content.
          * Checks whether the albums defined in the content element still exist.
          * If not, these are removed from the array.
          */
@@ -983,7 +983,7 @@ class GcHelper
 
         while ($objCont->next()) {
             $newArr = [];
-            $arrAlbums = unserialize($objCont->gc_publish_albums);
+            $arrAlbums = unserialize($objCont->gcPublishAlbums);
 
             if (\is_array($arrAlbums)) {
                 foreach ($arrAlbums as $AlbumID) {
@@ -999,7 +999,7 @@ class GcHelper
                 }
             }
             Database::getInstance()
-                ->prepare('UPDATE tl_content SET gc_publish_albums=? WHERE id=?')
+                ->prepare('UPDATE tl_content SET gcPublishAlbums=? WHERE id=?')
                 ->execute(serialize($newArr), $objCont->id)
             ;
         }

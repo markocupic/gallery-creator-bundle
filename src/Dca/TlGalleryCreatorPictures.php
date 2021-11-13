@@ -43,7 +43,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class TlGalleryCreatorPictures extends Backend
 {
     /**
-     * @var RequestStack $requestStack
+     * @var bool
+     */
+    public $restrictedUser = false;
+    /**
+     * @var RequestStack
      */
     private $requestStack;
 
@@ -53,22 +57,14 @@ class TlGalleryCreatorPictures extends Backend
     private $projectDir;
 
     /**
-     * @var null|Session
+     * @var Session|null
      */
-    private $session = null;
-
-
-    /**
-     * @var bool
-     */
-    public $restrictedUser = false;
+    private $session;
 
     /**
      * @var string
      */
     private $uploadPath;
-
-
 
     public function __construct(RequestStack $requestStack, string $projectDir)
     {

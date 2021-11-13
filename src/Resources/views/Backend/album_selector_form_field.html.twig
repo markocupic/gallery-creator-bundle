@@ -1,10 +1,10 @@
 <div class="clr widget">
-    <fieldset id="ctrl_gc_publish_albums" class="tl_checkbox_container">
-        <legend>{{ trans.gc_publish_albums.0 }}</legend>
-        <input type="hidden" name="gc_publish_albums" value="">
-        <input type="checkbox" id="check_all_gc_publish_albums" class="tl_checkbox" onclick="Backend.toggleCheckboxGroup(this,\'ctrl_gc_publish_albums\')"> <label for="check_all_gc_publish_albums" style="color:#a6a6a6"><em>Alle ausw&auml;hlen</em></label>
+    <fieldset id="ctrl_gcPublishAlbums" class="tl_checkbox_container">
+        <legend>{{ trans.gcPublishAlbums.0 }}</legend>
+        <input type="hidden" name="gcPublishAlbums" value="">
+        <input type="checkbox" id="CheckAllGcPublishAlbums" class="tl_checkbox" onclick="Backend.toggleCheckboxGroup(this,\'ctrl_gcPublishAlbums\')"> <label for="CheckAllGcPublishAlbums" style="color:#a6a6a6"><em>Alle ausw&auml;hlen</em></label>
         <br><br>
         {{ list|raw }}
-        <p class="tl_help tl_tip">{{ trans.gc_publish_albums.1 }}</p>
+        <p class="tl_help tl_tip">{{ trans.gcPublishAlbums.1 }}</p>
     </fieldset>
 </div>

@@ -46,11 +46,11 @@ class TlContent extends Backend
     public function optionsCallbackListAlbums(): array
     {
         $objContent = Database::getInstance()
-            ->prepare('SELECT gc_sorting, gcSortingDirection FROM tl_content WHERE id=?')
+            ->prepare('SELECT gcSorting, gcSortingDirection FROM tl_content WHERE id=?')
             ->execute(Input::get('id'))
         ;
 
-        $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gcSortingDirection;
+        $str_sorting = empty($objContent->gcSorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gcSorting.' '.$objContent->gcSortingDirection;
 
         $db = Database::getInstance()
             ->prepare('SELECT id, name FROM tl_gallery_creator_albums WHERE published=? ORDER BY '.$str_sorting)
@@ -128,7 +128,7 @@ class TlContent extends Backend
             ->execute($this->Input->get('id'))
         ;
 
-        $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gcSortingDirection;
+        $str_sorting = empty($objContent->gcSorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gcSorting.' '.$objContent->gcSortingDirection;
 
         $selectedAlbums = '' !== $objContent->gcPublishAlbums ? StringUtil::deserialize($objContent->gcPublishAlbums) : [];
 

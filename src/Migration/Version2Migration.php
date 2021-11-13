@@ -125,19 +125,17 @@ class Version2Migration extends AbstractMigration
                 'new' => 'gcHierarchicalOutput',
                 'sql' => 'char(1)',
             ],
-            /* Not done yet
-             * [
-             * 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-             * 'table' => 'tl_content',
-             * 'old' => 'gc_sorting',
-             * 'new' => 'gcSorting',
-             * 'sql' => 'char(64)',
-             * ],
-             */
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
-                'old' => 'gc_sorting_direction',
+                'old' => 'gc_sorting',
+                'new' => 'gcSorting',
+                'sql' => 'char(64)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_content',
+                'old' => 'gcSorting_direction',
                 'new' => 'gcSortingDirection',
                 'sql' => 'char(64)',
             ],

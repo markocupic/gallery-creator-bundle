@@ -25,8 +25,8 @@ $GLOBALS['TL_LANG']['tl_content']['gcAlbumsPerPage']['0'] = "Onderdelen per pagi
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumsPerPage']['1'] = "Aantal onderdelen op een pagina in de albumlijst (0=alles weergeven/geen paginering).";
 $GLOBALS['TL_LANG']['tl_content']['gcThumbsPerPage']['0'] = "Thumbnails per pagina";
 $GLOBALS['TL_LANG']['tl_content']['gcThumbsPerPage']['1'] = "Aantal thumbnails per pagina in de detailweergave (0=alles weergeven/geen paginering). ";
-$GLOBALS['TL_LANG']['tl_content']['gc_sorting']['0'] = "Sorteren";
-$GLOBALS['TL_LANG']['tl_content']['gc_sorting']['1'] = "Volgens welk veld moet de galerij gesorteerd worden?";
+$GLOBALS['TL_LANG']['tl_content']['gcSorting']['0'] = "Sorteren";
+$GLOBALS['TL_LANG']['tl_content']['gcSorting']['1'] = "Volgens welk veld moet de galerij gesorteerd worden?";
 $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['0'] = "Sorteervolgorde";
 $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['1'] = "DESC: aflopend (descending), ASC: oplopend (ascending)";
 $GLOBALS['TL_LANG']['tl_content']['gcSizeDetailView']['0'] = "Detailweergave: thumbnail breedte en hoogte";

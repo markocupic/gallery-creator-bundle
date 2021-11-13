@@ -587,7 +587,7 @@ class GalleryCreatorController extends AbstractContentElementController
 
     protected function listAllAlbums(int $pid = 0): array
     {
-        $strSorting = empty($this->model->gc_sorting) || empty($this->model->gcSortingDirection) ? 'date DESC' : $this->model->gc_sorting.' '.$this->model->gcSortingDirection;
+        $strSorting = empty($this->model->gcSorting) || empty($this->model->gcSortingDirection) ? 'date DESC' : $this->model->gcSorting.' '.$this->model->gcSortingDirection;
         $objAlbums = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
             ->execute($pid, 1)

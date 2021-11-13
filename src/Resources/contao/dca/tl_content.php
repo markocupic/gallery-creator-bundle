@@ -25,7 +25,7 @@ $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array(
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gcHierarchicalOutput,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage,gcPaginationNumberOfLinks;
-{album_listing_legend},gc_sorting,gcSortingDirection,gcSizeAlbumListing,gcImageMarginAlbumListing;
+{album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing,gcImageMarginAlbumListing;
 {picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView,gcImageMarginDetailView;
 {template_legend:hide},gcTemplate;
 {protected_legend:hide},protected;
@@ -57,7 +57,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcHierarchicalOutput'] = array(
 	'sql'       => "char(1) NOT NULL default ''",
 );
 
-$GLOBALS['TL_DCA']['tl_content']['fields']['gc_sorting'] = array(
+$GLOBALS['TL_DCA']['tl_content']['fields']['gcSorting'] = array(
 	'eval'      => array('tl_class' => 'w50', 'submitOnChange' => true),
 	'exclude'   => true,
 	'inputType' => 'select',

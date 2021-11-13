@@ -599,7 +599,7 @@ class GcHelper
      */
     public static function getSubalbumsInformationArray(GalleryCreatorAlbumsModel $objAlbum, ContentModel $objContentModel): array
     {
-        $strSorting = $objContentModel->gc_sorting.' '.$objContentModel->gcSortingDirection;
+        $strSorting = $objContentModel->gcSorting.' '.$objContentModel->gcSortingDirection;
         $objSubAlbums = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
             ->execute($objAlbum->id, '1')

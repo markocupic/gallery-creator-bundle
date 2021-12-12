@@ -12,14 +12,14 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-namespace Markocupic\GalleryCreatorBundle\Migration;
+namespace Markocupic\GalleryCreatorBundle\Migration\Version200;
 
 use Contao\CoreBundle\Migration\AbstractMigration;
 use Contao\CoreBundle\Migration\MigrationResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
-class Version2Migration extends AbstractMigration
+class Version200Migration extends AbstractMigration
 {
     private const ALTERATION_TYPE_RENAME_COLUMN = 'alteration_type_rename_column';
 
@@ -28,9 +28,19 @@ class Version2Migration extends AbstractMigration
      */
     private $connection;
 
+    /**
+     * @var array<string>
+     */
+    private $resultMessages = [];
+
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+    }
+
+    public function getName(): string
+    {
+        return 'Gallery Creator Bundle 2.0.0 Update';
     }
 
     public function shouldRun(): bool
@@ -64,8 +74,7 @@ class Version2Migration extends AbstractMigration
      */
     public function run(): MigrationResult
     {
-        $arrMessage = [];
-        $arrMessage = ['Run Gallery Creator version 2 migration script: '];
+        $this->resultMessages = [];
 
         $schemaManager = $this->connection->getSchemaManager();
         $arrAlterations = $this->getAlterationData();
@@ -90,7 +99,7 @@ class Version2Migration extends AbstractMigration
                         );
                         $this->connection->query($strQuery);
 
-                        $arrMessage[] = sprintf(
+                        $this->resultMessages[] = sprintf(
                             'Rename column %s.%s to %s.%s. ',
                             $strTable,
                             $arrAlteration['old'],
@@ -102,10 +111,8 @@ class Version2Migration extends AbstractMigration
             }
         }
 
-        return new MigrationResult(
-            true,
-            implode(' ', $arrMessage)
-        );
+        return $this->createResult(true, $this->resultMessages ? implode("\n", $this->resultMessages) : null);
+
     }
 
     private function getAlterationData(): array

@@ -23,6 +23,9 @@
     "codefog/contao-haste": "^4.20",
     "jaybizzle/crawler-detect": "^1.2"
   },
+  "require-dev": {
+    "contao/easy-coding-standard": "^3.0"
+  },
   "autoload": {
     "psr-4": {
       "Markocupic\\GalleryCreatorBundle\\": "src/"

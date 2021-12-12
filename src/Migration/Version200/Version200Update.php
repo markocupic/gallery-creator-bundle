@@ -19,7 +19,7 @@ use Contao\CoreBundle\Migration\MigrationResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
-class Version200Migration extends AbstractMigration
+class Version200Update extends AbstractMigration
 {
     private const ALTERATION_TYPE_RENAME_COLUMN = 'alteration_type_rename_column';
 
@@ -34,8 +34,7 @@ class Version200Migration extends AbstractMigration
     private $resultMessages = [];
 
     public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    {$this->connection = $connection;
     }
 
     public function getName(): string
@@ -112,7 +111,6 @@ class Version200Migration extends AbstractMigration
         }
 
         return $this->createResult(true, $this->resultMessages ? implode("\n", $this->resultMessages) : null);
-
     }
 
     private function getAlterationData(): array

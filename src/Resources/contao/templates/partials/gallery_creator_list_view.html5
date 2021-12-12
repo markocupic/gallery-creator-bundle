@@ -1,4 +1,5 @@
 <!-- ce_gallery_creator.html5 - list view -->
+<!-- indexer::stop -->
 <?= $this->pagination ?>
 
 <ul class="list_view">
@@ -45,3 +46,4 @@
 	</li>
 	<?php endforeach; ?>
 </ul>
+<!-- indexer::continue -->

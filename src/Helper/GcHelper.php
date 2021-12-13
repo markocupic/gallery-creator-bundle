@@ -322,7 +322,7 @@ class GcHelper
                 $picture['title'] = StringUtil::specialchars($objAlbum->name);
 
                 if ($thumbSrc !== $objAlbumPic->path) {
-                    new File(rawurldecode($thumbSrc));
+                    new File($thumbSrc);
                 }
             } catch (\Exception $e) {
                 System::log('Image "'.$objAlbumPic->path.'" could not be processed: '.$e->getMessage(), __METHOD__, TL_ERROR);
@@ -595,20 +595,14 @@ class GcHelper
     /**
      * Returns the album preview thumbnail.
      */
-    public static function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $objAlbum): ?GalleryCreatorPicturesModel
+    public static function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $objAlbum): ?FilesModel
     {
-        if (null !== $objAlbum->thumb) {
-            $pictureModel = GalleryCreatorPicturesModel::findByPk($objAlbum->thumb);
-        } else {
+        if (null === ($pictureModel = GalleryCreatorPicturesModel::findByPk($objAlbum->thumb))) {
             $pictureModel = GalleryCreatorPicturesModel::findOneByPid($objAlbum->id);
         }
 
-        if (null !== $pictureModel) {
-            $filesModel = FilesModel::findByUuid($pictureModel->uuid);
-
-            if (null !== $filesModel) {
-                return $pictureModel;
-            }
+        if (null !== $pictureModel && null !== ($filesModel = FilesModel::findByUuid($pictureModel->uuid))) {
+            return $filesModel;
         }
 
         return null;

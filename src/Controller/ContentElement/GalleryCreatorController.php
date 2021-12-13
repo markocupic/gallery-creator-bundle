@@ -51,6 +51,11 @@ class GalleryCreatorController extends AbstractContentElementController
     public const TYPE = 'gallery_creator';
 
     /**
+     * @var ContaoFramework
+     */
+    private $framework;
+
+    /**
      * @var Security
      */
     private $security;
@@ -100,14 +105,15 @@ class GalleryCreatorController extends AbstractContentElementController
      */
     private $user;
 
-    public function __construct(Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher)
+    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher)
     {
+        $this->framework = $framework;
         $this->security = $security;
         $this->requestStack = $requestStack;
         $this->scopeMatcher = $scopeMatcher;
     }
 
-    public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, ?PageModel $pageModel = null): Response
+    public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {
         $this->model = $model;
         $this->pageModel = $pageModel;
@@ -241,13 +247,7 @@ class GalleryCreatorController extends AbstractContentElementController
         return parent::__invoke($request, $this->model, $section, $classes, $pageModel);
     }
 
-    public static function getSubscribedServices(): array
-    {
-        $services = parent::getSubscribedServices();
-        $services['contao.framework'] = ContaoFramework::class;
 
-        return $services;
-    }
 
     /**
      * @throws \Exception
@@ -339,13 +339,13 @@ class GalleryCreatorController extends AbstractContentElementController
                 }
 
                 // picture sorting
-                $str_sorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
+                $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
 
                 // sort by name is done below
-                $str_sorting = str_replace('name', 'id', $str_sorting);
+                $strSorting = str_replace('name', 'id', $strSorting);
 
                 $objPictures = Database::getInstance()
-                    ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
+                    ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$strSorting)
                 ;
 
                 if ($limit > 0) {
@@ -421,9 +421,9 @@ class GalleryCreatorController extends AbstractContentElementController
                 }
 
                 // picture sorting
-                $str_sorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
+                $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
                 $objPictures = Database::getInstance()
-                    ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
+                    ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$strSorting)
                     ->execute('1', $this->intAlbumId)
                 ;
 
@@ -596,10 +596,10 @@ class GalleryCreatorController extends AbstractContentElementController
         return array_map('intval', $objAlbums->fetchEach('id'));
     }
 
-    protected function callGcGenerateFrontendTemplateHook(self $objModule, Template $template, ?GalleryCreatorAlbumsModel $objAlbum = null): Template
+    protected function callGcGenerateFrontendTemplateHook(self $objModule, Template $template, GalleryCreatorAlbumsModel $objAlbum = null): Template
     {
         /** @var System $systemAdapter */
-        $systemAdapter = $this->get('contao.framework')->getAdapter(System::class);
+        $systemAdapter = $this->framework->getAdapter(System::class);
 
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {

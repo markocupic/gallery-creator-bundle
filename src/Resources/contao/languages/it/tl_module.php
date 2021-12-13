@@ -12,6 +12,4 @@
 
 $GLOBALS['TL_LANG']['tl_module']['thumb_legend'] = "Impostazioni miniatura";
 $GLOBALS['TL_LANG']['tl_module']['image_legend'] = "Impostazioni varie";
-$GLOBALS['TL_LANG']['tl_module']['gcTemplate']['0'] = "Template gallery";
-$GLOBALS['TL_LANG']['tl_module']['gcTemplate']['1'] = "Seleziona un template gallery personalizzato";
 

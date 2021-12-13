@@ -30,7 +30,6 @@ use Contao\Frontend;
 use Contao\Image;
 use Contao\Input;
 use Contao\Message;
-use Contao\PageModel;
 use Contao\Picture;
 use Contao\StringUtil;
 use Contao\System;
@@ -241,13 +240,8 @@ class GcHelper
         $basename = basename($strFilename, '.'.$extension);
         $dirname = \dirname($strFilename);
 
-        // If file exists, append an integer with leading zeros to it -> filename0001.jpg
-        $i = 0;
-        $isUnique = false;
-
-        do {
-            ++$i;
-
+        // If file already exists, append an integer with leading zeros to it -> filename0001.jpg
+        for ($i = 0; $i < 1000; ++$i) {
             if (!file_exists($projectDir.'/'.$dirname.'/'.$basename.'.'.$extension)) {
                 // Exit loop when filename is unique
                 return $dirname.'/'.$basename.'.'.$extension;
@@ -263,12 +257,10 @@ class GcHelper
             $suffix = str_pad((string) $i, 4, '0', STR_PAD_LEFT);
 
             $basename = $filename.'_'.$suffix;
+        }
 
-            // Break after 1000 loops and generate random filename
-            if (1000 === $i) {
-                return $dirname.'/'.md5($basename.microtime()).'.'.$extension;
-            }
-        } while (false === $isUnique);
+        // Generate random path
+        return $dirname.'/'.md5($basename.microtime()).'.'.$extension;
     }
 
     /**
@@ -296,9 +288,6 @@ class GcHelper
     {
         global $objPage;
 
-        // Get the page model
-        $objPageModel = PageModel::findByPk($objPage->id);
-
         // Anzahl Subalben ermitteln
         $objSubAlbums = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE published=? AND pid=?')
@@ -316,29 +305,29 @@ class GcHelper
 
         if (TL_MODE === 'FE') {
             // Generate the url as a formatted string
-            $href = StringUtil::ampersand($objPageModel->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language));
+            $href = StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language));
 
             // Add albumAlias
             $href = sprintf($href, $objAlbum->alias);
         }
 
-        $arrPreviewThumb = static::getAlbumPreviewThumb($objAlbum);
-        $strImageSrc = $arrPreviewThumb['path'];
+        $objAlbumPic = static::getAlbumPreviewThumb($objAlbum);
 
-        // Generate the thumbnails and the picture element
-        try {
-            $thumbSrc = Image::create($strImageSrc, $arrSize)->executeResize()->getResizedPath();
-            $picture = Picture::create($strImageSrc, $arrSize)->getTemplateData();
+        if (null !== $objAlbumPic) {
+            // Generate the thumbnails and the picture element
+            try {
+                $thumbSrc = Image::create($objAlbumPic->path, $arrSize)->executeResize()->getResizedPath();
+                $picture = Picture::create($objAlbumPic->path, $arrSize)->getTemplateData();
+                $picture['alt'] = StringUtil::specialchars($objAlbum->name);
+                $picture['title'] = StringUtil::specialchars($objAlbum->name);
 
-            if ($thumbSrc !== $strImageSrc) {
-                new File(rawurldecode($thumbSrc));
+                if ($thumbSrc !== $objAlbumPic->path) {
+                    new File(rawurldecode($thumbSrc));
+                }
+            } catch (\Exception $e) {
+                System::log('Image "'.$objAlbumPic->path.'" could not be processed: '.$e->getMessage(), __METHOD__, TL_ERROR);
             }
-        } catch (\Exception $e) {
-            System::log('Image "'.$strImageSrc.'" could not be processed: '.$e->getMessage(), __METHOD__, TL_ERROR);
         }
-
-        $picture['alt'] = StringUtil::specialchars($objAlbum->name);
-        $picture['title'] = StringUtil::specialchars($objAlbum->name);
 
         // CSS class
         $arrCssClasses = [];
@@ -364,17 +353,15 @@ class GcHelper
             // [int] Anzahl Unteralben
             'count_subalbums' => \count(GalleryCreatorAlbumsModel::getChildAlbums($objAlbum->id)),
             // [string] alt Attribut fuer das Vorschaubild
-            'alt' => $arrPreviewThumb['name'],
+            'alt' => StringUtil::specialchars($objAlbum->name),
             // [string] Pfad zum Originalbild
-            'src' => TL_FILES_URL.$arrPreviewThumb['path'],
+            'src' => $objAlbumPic ? TL_FILES_URL.$objAlbumPic->path : null,
             // [string] Pfad zum Thumbnail
-            'thumb_src' => TL_FILES_URL.Image::get($arrPreviewThumb['path'], $arrSize[0], $arrSize[1], $arrSize[2]),
+            'thumb_src' => $objAlbumPic ? TL_FILES_URL.Image::get($objAlbumPic->path, $arrSize[0], $arrSize[1], $arrSize[2]) : null,
             // [string] css-Classname
             'class' => 'thumb',
             // [array] thumbnail size
             'size' => $arrSize,
-            // [string] javascript
-            'thumbMouseover' => $objContentModel->gc_activateThumbSlider ? 'objGalleryCreator.initThumbSlide(this,'.$objAlbum->id.','.$objPics->numRows.');' : '',
             // [array] picture
             'picture' => $picture,
             // [string] cssClass
@@ -399,23 +386,6 @@ class GcHelper
 
         $hasCustomThumb = false;
 
-        $defaultThumbSRC = $objContentModel->defaultThumb;
-
-        if (!empty(Config::get('gc_albumFallbackThumb'))) {
-            $objFile = FilesModel::findByUuid(Config::get('gc_albumFallbackThumb'));
-
-            if (null !== $objFile) {
-                if (Validator::isStringUuid(Config::get('gc_albumFallbackThumb'))) {
-                    if (is_file($projectDir.'/'.$objFile->path)) {
-                        $defaultThumbSRC = $objFile->path;
-                    }
-                }
-            }
-        }
-
-        // Get the page model
-        $objPageModel = PageModel::findByPk($objPage->id);
-
         // Bild-Besitzer
         $objOwner = Database::getInstance()
             ->prepare('SELECT * FROM tl_user WHERE id=?')
@@ -425,13 +395,13 @@ class GcHelper
         $objFileModel = FilesModel::findByUuid($objPicture->uuid);
 
         if (null === $objFileModel) {
-            $strImageSrc = $defaultThumbSRC;
+            $strImageSrc = '';
         } else {
             $strImageSrc = $objFileModel->path;
 
             if (!is_file($projectDir.'/'.$strImageSrc)) {
                 // Fallback to the default thumb
-                $strImageSrc = $defaultThumbSRC;
+                $strImageSrc = '';
             }
 
             // Meta
@@ -439,7 +409,7 @@ class GcHelper
 
             // Use the file name as title if none is given
             if (empty($arrMeta['title'])) {
-                $arrMeta['title'] = StringUtil::specialchars($objFileModel->name);
+                $arrMeta['title'] = $objFileModel->name;
             }
         }
 
@@ -453,17 +423,13 @@ class GcHelper
         try {
             $thumbSrc = Image::create($strImageSrc, $arrSize)->executeResize()->getResizedPath();
             // Overwrite $thumbSrc if there is a valid custom thumb
-            if ($objPicture->addCustomThumb && !empty($objPicture->customThumb)) {
-                $customThumbModel = FilesModel::findByUuid($objPicture->customThumb);
+            if ($objPicture->addCustomThumb && null !== ($customThumbModel = FilesModel::findByUuid($objPicture->customThumb))) {
+                if (is_file($projectDir.'/'.$customThumbModel->path)) {
+                    $objFileCustomThumb = new File($customThumbModel->path);
 
-                if (null !== $customThumbModel) {
-                    if (is_file($projectDir.'/'.$customThumbModel->path)) {
-                        $objFileCustomThumb = new File($customThumbModel->path);
-
-                        if ($objFileCustomThumb->isGdImage) {
-                            $thumbSrc = Image::create($objFileCustomThumb->path, $arrSize)->executeResize()->getResizedPath();
-                            $hasCustomThumb = true;
-                        }
+                    if ($objFileCustomThumb->isGdImage) {
+                        $thumbSrc = Image::create($objFileCustomThumb->path, $arrSize)->executeResize()->getResizedPath();
+                        $hasCustomThumb = true;
                     }
                 }
             }
@@ -477,8 +443,7 @@ class GcHelper
 
         $picture['alt'] = '' !== $objPicture->title ? StringUtil::specialchars($objPicture->title) : StringUtil::specialchars($arrMeta['title']);
         $picture['title'] = '' !== $objPicture->comment ? StringUtil::specialchars(StringUtil::toHtml5($objPicture->comment)) : StringUtil::specialchars($arrMeta['caption']);
-
-        $objFileThumb = new File(rawurldecode($thumbSrc));
+        $objFileThumb = new File($thumbSrc);
         $arrSize[0] = $objFileThumb->width;
         $arrSize[1] = $objFileThumb->height;
         $arrFile['thumb_width'] = $objFileThumb->width;
@@ -515,7 +480,7 @@ class GcHelper
         }
 
         // Video-integration
-        $strMediaSrc = !empty(trim((string) $objPicture->socialMediaSRC)) ? trim((string) $objPicture->socialMediaSRC) : '';
+        $strMediaSrc = !empty(trim((string) $objPicture->socialMediaSRC)) ? trim((string) $objPicture->socialMediaSRC) : null;
 
         if (Validator::isBinaryUuid($objPicture->localMediaSRC)) {
             // Get path of a local Media
@@ -525,7 +490,8 @@ class GcHelper
         $href = null;
 
         if (TL_MODE === 'FE' && $objContentModel->gcFullsize) {
-            $href = !empty($strMediaSrc) ? $strMediaSrc : TL_FILES_URL.System::urlEncode($strImageSrc);
+            $href = $strMediaSrc ?? $strImageSrc;
+            $href = TL_FILES_URL.$href;
         }
 
         // CssID
@@ -536,7 +502,7 @@ class GcHelper
             //Name des Erstellers
             'ownersName' => $objOwner->name,
             // [string] name (basename/filename of the file)
-            'name' => StringUtil::specialchars($arrFile['basename']),
+            'name' => $arrFile['basename'],
             // [string] filename without extension
             'filename' => $arrFile['filename'],
             // uuid of the image
@@ -555,11 +521,11 @@ class GcHelper
             'comment' => !empty($objPicture->comment) ? StringUtil::specialchars(StringUtil::toHtml5($objPicture->comment)) : StringUtil::specialchars($arrMeta['caption']),
             'caption' => !empty($objPicture->comment) ? StringUtil::specialchars(StringUtil::toHtml5($objPicture->comment)) : StringUtil::specialchars($arrMeta['caption']),
             // [string] path to media (video, picture, sound...)
-            'href' => rawurlencode($href),
+            'href' => $href,
             // single image url
-            'single_image_url' => StringUtil::ampersand($objPageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$arrFile['filename'], $objPage->language)),
+            'single_image_url' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$arrFile['filename'], $objPage->language)),
             // [string] path to the other selected media
-            'media_src' => rawurlencode($strMediaSrc),
+            'media_src' => $strMediaSrc ?? null,
             // [string] Thumbnailquelle
             'thumb_src' => isset($thumbSrc) ? TL_FILES_URL.$thumbSrc : '',
             // [array] Thumbnail-Ausmasse Array $arrSize[Breite, Hoehe, Methode]
@@ -627,52 +593,25 @@ class GcHelper
     }
 
     /**
-     * Returns the path to the preview-thumbnail of an album.
+     * Returns the album preview thumbnail.
      */
-    public static function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $objAlbum): array
+    public static function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $objAlbum): ?GalleryCreatorPicturesModel
     {
-        $thumbSRC = System::getContainer()->getParameter('markocupic.gallery_creator_bundle.album_fallback_thumb');
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-
-        // Check for an alternate thumbnail
-        if ('' !== Config::get('gc_albumFallbackThumb')) {
-            if (Validator::isStringUuid(Config::get('gc_albumFallbackThumb'))) {
-                $objFile = FilesModel::findByUuid(StringUtil::uuidToBin(Config::get('gc_albumFallbackThumb')));
-
-                if (null !== $objFile) {
-                    if (is_file($projectDir.'/'.$objFile->path)) {
-                        $thumbSRC = $objFile->path;
-                    }
-                }
-            }
-        }
-
-        // Predefine thumb
-        $arrThumb = [
-            'name' => basename($thumbSRC),
-            'path' => $thumbSRC,
-        ];
-
         if (null !== $objAlbum->thumb) {
-            $objPreviewThumb = GalleryCreatorPicturesModel::findByPk($objAlbum->thumb);
+            $pictureModel = GalleryCreatorPicturesModel::findByPk($objAlbum->thumb);
         } else {
-            $objPreviewThumb = GalleryCreatorPicturesModel::findOneByPid($objAlbum->id);
+            $pictureModel = GalleryCreatorPicturesModel::findOneByPid($objAlbum->id);
         }
 
-        if (null !== $objPreviewThumb) {
-            $oFile = FilesModel::findByUuid($objPreviewThumb->uuid);
+        if (null !== $pictureModel) {
+            $filesModel = FilesModel::findByUuid($pictureModel->uuid);
 
-            if (null !== $oFile) {
-                if (is_file($projectDir.'/'.$oFile->path)) {
-                    $arrThumb = [
-                        'name' => basename($oFile->path),
-                        'path' => $oFile->path,
-                    ];
-                }
+            if (null !== $filesModel) {
+                return $pictureModel;
             }
         }
 
-        return $arrThumb;
+        return null;
     }
 
     public static function initCounter(GalleryCreatorAlbumsModel $objAlbum): void

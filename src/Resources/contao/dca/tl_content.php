@@ -27,7 +27,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = '
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage,gcPaginationNumberOfLinks;
 {album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing,gcImageMarginAlbumListing;
 {picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView,gcImageMarginDetailView;
-{template_legend:hide},gcTemplate;
+{template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
 
@@ -35,21 +35,13 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_news'] = 'name,typ
 {album_listing_legend},gcPublishSingleAlbum;
 {pagination_legend},gcThumbsPerPage,gcPaginationNumberOfLinks;
 {picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView,gcImageMarginDetailView;
-{template_legend:hide},gcTemplate;
+{template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
 
 /**
  * Add fields to tl_content
  */
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcTemplate'] = array(
-	'eval'             => array('tl_class' => 'clr'),
-	'exclude'          => true,
-	'inputType'        => 'select',
-	'options_callback' => array(TlContent::class, 'getGalleryCreatorTemplates'),
-	'sql'              => "varchar(64) NOT NULL default ''",
-);
-
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcHierarchicalOutput'] = array(
 	'eval'      => array('submitOnChange' => true, 'tl_class' => 'clr'),
 	'exclude'   => true,

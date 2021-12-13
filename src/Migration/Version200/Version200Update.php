@@ -34,7 +34,8 @@ class Version200Update extends AbstractMigration
     private $resultMessages = [];
 
     public function __construct(Connection $connection)
-    {$this->connection = $connection;
+    {
+        $this->connection = $connection;
     }
 
     public function getName(): string
@@ -116,14 +117,6 @@ class Version200Update extends AbstractMigration
     private function getAlterationData(): array
     {
         return [
-            // tl_content
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
-                'old' => 'gc_template',
-                'new' => 'gcTemplate',
-                'sql' => 'varchar(64)',
-            ],
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',

@@ -456,8 +456,8 @@ class GalleryCreatorController extends AbstractContentElementController
                     }
 
                     // Add previous and next links to the template
-                    $template->prevHref = $arrPictures['prev']['single_image_url'];
-                    $template->nextHref = $arrPictures['next']['single_image_url'];
+                    $template->prevHref = $arrPictures['prev']['singleImageUrl'];
+                    $template->nextHref = $arrPictures['next']['singleImageUrl'];
 
                     if (0 === $currentIndex) {
                         $arrPictures['prev'] = null;
@@ -547,7 +547,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $arrPicture = [
                     'href' => StringUtil::specialchars($href),
                     'pid' => $objPicture->pid,
-                    'caption' => StringUtil::specialchars($objPicture->comment),
+                    'caption' => StringUtil::specialchars($objPicture->caption),
                     'id' => $objPicture->id,
                     'uuid' => StringUtil::binToUuid($objFile->uuid),
                 ];
@@ -632,8 +632,8 @@ class GalleryCreatorController extends AbstractContentElementController
         $template->albumname = $objAlbum->name;
         // Count album visitors
         $template->visitors = $objAlbum->vistors;
-        // Album comment/description
-        $template->albumComment = StringUtil::toHtml5($objAlbum->comment);
+        // Album caption/description
+        $template->albumCaption = StringUtil::toHtml5($objAlbum->caption);
         // In the detail view, an article can optionally be added in front of the album
         $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // In the detail view, an article can optionally be added right after the album

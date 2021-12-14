@@ -94,11 +94,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 				'button_callback' => array(TlGalleryCreatorAlbums::class, 'toggleIcon'),
 				'icon'            => 'visible.gif',
 			),
-			'upload_images' => array(
+			'uploadImages' => array(
 				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbAddImages'),
 				'icon'            => 'bundles/markocupicgallerycreator/images/image_add.png',
 			),
-			'import_images' => array(
+			'importImages' => array(
 				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbImportImages'),
 				'icon'            => 'bundles/markocupicgallerycreator/images/folder_picture.png',
 			),
@@ -112,12 +112,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 	),
 	// Palettes
 	'palettes'    => array(
-		'__selector__'    => array('protected'),
-		'default'         => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,comment,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
-		'fileupload'      => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},uploader,fileupload',
-		'import_images'   => '{upload_settings},preserveFilename,multiSRC',
-		'restricted_user' => '{albumInfo},link_edit_images,albumInfo',
-		'reviseDatabase'   => '{maintenance},reviseDatabase',
+		'__selector__'      => array('protected'),
+		'default'           => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
+		'fileupload'        => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},uploader,fileupload',
+		'importImages'      => '{upload_settings},preserveFilename,multiSRC',
+		'restrictedUser'    => '{albumInfo},link_edit_images,albumInfo',
+		'reviseDatabase'    => '{maintenance},reviseDatabase',
 	),
 	// Subpalettes
 	'subpalettes' => array(
@@ -200,11 +200,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'search'    => true,
 			'sql'       => "text NULL",
 		),
-		'comment'             => array(
-			'eval'      => array('tl_class' => 'clr long', 'style' => 'height:7em;', 'allowHtml' => false, 'submitOnChange' => false, 'wrap' => 'soft'),
+		'caption'             => array(
+			'eval'      => array('tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'),
 			'exclude'   => true,
 			'inputType' => 'textarea',
-            'search'    => true,
+			'search'    => true,
 			'sql'       => "text NULL",
 		),
 		'thumb'               => array(

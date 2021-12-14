@@ -202,7 +202,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         // Album visitors
         $template->visitors = $objAlbum->vistors;
         // Album caption
-        $template->albumComment = StringUtil::toHtml5($objAlbum->comment);
+        $template->albumCaption = StringUtil::toHtml5($objAlbum->caption);
         // Insert article pre
         $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // Insert article after

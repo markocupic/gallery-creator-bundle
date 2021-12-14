@@ -36,4 +36,3 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_album_import_copy_files'] = arra
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gc_read_exif'] = array(
 	'inputType' => 'checkbox',
 );
-

@@ -44,7 +44,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 		'sorting'           => array(
 			'child_record_callback' => array(TlGalleryCreatorPictures::class, 'childRecordCb'),
 			'fields'                => array('sorting'),
-			'headerFields'          => array('id', 'date', 'ownersName', 'name', 'comment', 'thumb'),
+			'headerFields'          => array('id', 'date', 'ownersName', 'name', 'caption', 'thumb'),
 			'mode'                  => 4,
 			'panelLayout'           => 'filter;search,limit',
 		),
@@ -94,8 +94,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 	// Palettes
 	'palettes'    => array(
 		'__selector__'    => array('addCustomThumb'),
-		'default'         => 'published,picture,owner,date,imageInfo,addCustomThumb,title,comment;{media_integration:hide},socialMediaSRC,localMediaSRC;{expert_legend:hide},cssID',
-		'restricted_user' => 'imageInfo,picture',
+		'default'         => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC;{expert_legend:hide},cssID',
+		'restrictedUser' => 'imageInfo,picture',
 	),
 	// Subpalettes
 	'subpalettes' => array('addCustomThumb' => 'customThumb'),
@@ -142,7 +142,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = array(
 		'externalFile'   => array(
 			'sql' => "char(1) NOT NULL default ''"
 		),
-		'comment'        => array(
+		'caption'        => array(
 			'cols'      => 20,
 			'eval'      => array('decodeEntities' => true, 'tl_class' => 'clr'),
 			'exclude'   => true,

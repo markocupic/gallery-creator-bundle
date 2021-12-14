@@ -23,7 +23,7 @@
 			</a>
 			<?php endif; ?>
 
-			<p class="time">[<?= $Album['event_date'] ?>]</p>
+			<p class="time">[<?= $Album['eventDate'] ?>]</p>
 
 			<?php if (!empty($Album['photographer'])): ?>
 			<p class="photographer"><?= $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] ?>: <?= $Album['photographer'] ?></p>
@@ -34,12 +34,12 @@
 			<p class="visitors"><?= $Album['visitors'] ?> <?= $GLOBALS['TL_LANG']['gallery_creator']['visitors'] ?></p>
 			<?php endif; ?>
 
-			<?php if ($Album['count_subalbums']): ?>
-			<p class="count_pics"><?= $Album['count_subalbums'] ?> <?= $GLOBALS['TL_LANG']['gallery_creator']['subalbums'] ?></p>
+			<?php if ($Album['countSubalbums']): ?>
+			<p class="count_pics"><?= $Album['countSubalbums'] ?> <?= $GLOBALS['TL_LANG']['gallery_creator']['subalbums'] ?></p>
 			<?php endif; ?>
 
-			<?php if ($Album['comment']): ?>
-			<div class="album_comment"><?= $Album['comment'] ?></div>
+			<?php if ($Album['caption']): ?>
+			<div class="album_caption"><?= $Album['caption'] ?></div>
 			<?php endif; ?>
 		</div>
 

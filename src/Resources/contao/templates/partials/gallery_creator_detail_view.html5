@@ -41,19 +41,19 @@
       <h2><?= $Subalbum['name'] ?></h2>
       <?php if ($Subalbum['href']): ?></a><?php endif; ?>
 
-      <p class="time"><?= $Subalbum['event_date'] ?></p>
+      <p class="time"><?= $Subalbum['eventDate'] ?></p>
 
       <?php if ($Subalbum['count']): ?>
       <p class="count_pics"><?= $Subalbum['count'] ?> <?= $this->trans('gallery_creator.pictures',[]) ?></p>
       <p class="visitors"><?= $Subalbum['visitors'] ?> <?= $this->trans('gallery_creator.visitors',[]) ?></p>
       <?php endif; ?>
 
-      <?php if ($Subalbum['count_subalbums']): ?>
-      <p class="count_pics"><?= $Subalbum['count_subalbums'] ?> <?= $this->trans('gallery_creator.subalbums',[]) ?></p>
+      <?php if ($Subalbum['countSubalbums']): ?>
+      <p class="count_pics"><?= $Subalbum['countSubalbums'] ?> <?= $this->trans('gallery_creator.subalbums',[]) ?></p>
       <?php endif; ?>
 
-      <?php if ($Subalbum['comment']): ?>
-      <div class="album_comment"><?= $Subalbum['comment'] ?></div>
+      <?php if ($Subalbum['caption']): ?>
+      <div class="album_caption"><?= $Subalbum['caption'] ?></div>
       <?php endif; ?>
     </div>
     </li>
@@ -63,8 +63,8 @@
 <hr>
 <?php endif; ?>
 
-<?php if ($this->albumComment): ?>
-<div class="album_comment"><?= $this->albumComment ?></div>
+<?php if ($this->albumCaption): ?>
+<div class="album_caption"><?= $this->albumCaption ?></div>
 <?php endif; ?>
 
 <?= $this->pagination ?>
@@ -73,20 +73,7 @@
 <ul class="detail_view">
   <?php foreach ($this->arrPictures as $picture): ?>
   <li>
-    <figure<?= $picture['cssID'] ? ' id="' . $picture['cssID'] . '"' : '' ?> class="image_container<?= strlen($picture['cssClass']) ? ' ' . $picture['cssClass'] : '' ?>"<?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
-
-    <?php if ($picture['href']): ?>
-    <a href="<?= $picture['href'] ?>" <?= $picture['lightbox'] ?> title="<?= $picture['comment'] ? $picture['comment'] : ($picture['title'] ? $picture['title'] : $picture['filename']) ?>"<?php if ($picture['socialMediaSRC']): ?> socialmedia-embed="true"<?php endif; ?>>
-    <?php endif; ?>
-
-    <?php $this->insert('picture_default', $picture['picture']); ?>
-
-    <?php if ($picture['href']): ?>
-    </a>
-    <?php endif; ?>
-
-    </figure>
-
+    <?= $this->figure($picture['filesModel']->id, $picture['size'], $picture['figureOptions']) ?>
   </li>
   <?php endforeach;?>
 </ul>

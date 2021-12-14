@@ -277,7 +277,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function buttonCbImportImages($row, $href, $label, $title, $icon, $attributes): string
     {
-        $href .= 'id='.$row['id'].'&act=edit&table=tl_gallery_creator_albums&mode=import_images';
+        $href .= 'id='.$row['id'].'&act=edit&table=tl_gallery_creator_albums&mode=importImages';
 
         return '<a href="'.$this->addToUrl($href).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a>';
     }
@@ -394,7 +394,7 @@ class TlGalleryCreatorAlbums extends Backend
                         'album_name' => $translator->trans('tl_gallery_creator_albums.name.0', [], 'contao_default'),
                         'album_date' => $translator->trans('tl_gallery_creator_albums.date.0', [], 'contao_default'),
                         'album_owners_name' => $translator->trans('tl_gallery_creator_albums.owner.0', [], 'contao_default'),
-                        'album_comment' => $translator->trans('tl_gallery_creator_albums.comment.0', [], 'contao_default'),
+                        'album_caption' => $translator->trans('tl_gallery_creator_albums.caption.0', [], 'contao_default'),
                         'album_thumb' => $translator->trans('tl_gallery_creator_albums.thumb.0', [], 'contao_default'),
                     ],
                 ]
@@ -549,7 +549,7 @@ class TlGalleryCreatorAlbums extends Backend
             unset($arrButtons['save'], $arrButtons['saveNclose'], $arrButtons['saveNcreate']);
         }
 
-        if ('import_images' === Input::get('mode')) {
+        if ('importImages' === Input::get('mode')) {
             // Remove buttons
             unset($arrButtons['saveNclose'], $arrButtons['saveNcreate'], $arrButtons['uploadNback']);
         }
@@ -716,7 +716,7 @@ class TlGalleryCreatorAlbums extends Backend
      */
     public function onloadCbImportFromFilesystem(): void
     {
-        if ('import_images' !== Input::get('mode')) {
+        if ('importImages' !== Input::get('mode')) {
             return;
         }
         // load language file
@@ -776,9 +776,9 @@ class TlGalleryCreatorAlbums extends Backend
             return;
         }
 
-        // Create the *import_images* palette
-        if ('import_images' === Input::get('mode')) {
-            $dca['palettes']['default'] = $dca['palettes']['import_images'];
+        // Create the *importImages* palette
+        if ('importImages' === Input::get('mode')) {
+            $dca['palettes']['default'] = $dca['palettes']['importImages'];
             $dca['fields']['preserveFilename']['eval']['submitOnChange'] = false;
 
             return;
@@ -820,7 +820,7 @@ class TlGalleryCreatorAlbums extends Backend
         $this->checkUserRole(Input::get('id'));
 
         if ($objAlb->owner !== $this->User->id && true === $this->restrictedUser) {
-            $dca['palettes']['default'] = $dca['palettes']['restricted_user'];
+            $dca['palettes']['default'] = $dca['palettes']['restrictedUser'];
         }
     }
 

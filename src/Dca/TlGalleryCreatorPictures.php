@@ -264,7 +264,7 @@ class TlGalleryCreatorPictures extends Backend
             $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'], basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
             $return .= $hasMovie;
             $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
-            $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['comment']));
+            $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['caption']));
 
             return $return;
         }
@@ -486,7 +486,7 @@ class TlGalleryCreatorPictures extends Backend
     {
         if ($this->restrictedUser) {
             $this->restrictedUser = true;
-            $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['restricted_user'];
+            $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['restrictedUser'];
         }
 
         if ($this->User->isAdmin) {

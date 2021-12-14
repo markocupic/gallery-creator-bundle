@@ -26,9 +26,9 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
 <h2><?= $this->albumname ?></h2>
 <?php endif; ?>
 
-<?php if ($this->albumComment): ?>
-<div class="albumComment">
-       <p><?= $this->albumComment ?></p>
+<?php if ($this->albumCaption): ?>
+<div class="albumCaption">
+       <p><?= $this->albumCaption ?></p>
 </div>
 <?php endif; ?>
 
@@ -41,7 +41,7 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
   <li class="col_<?= $col ?><?= ($col == 0 ? ' col_first' : '') ?><?= ($col == $this->colsPerRow - 1 ? ' col_last' : '') ?>">
     <figure<?= (strlen($Picture['cssID']) ? ' id="' . $Picture['cssID'] . '"' : '') ?> class="image_container<?= strlen($Picture['cssClass']) ? ' ' . $Picture['cssClass'] : '' ?>"<?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
       <?php if ($Picture['href']): ?>
-      <a href="<?= $Picture['href'] ?>" <?= $Picture['lightbox'] ?> title="<?= $Picture['comment'] ? $Picture['comment'] : ($Picture['title'] ? $Picture['title'] : $Picture['filename']); ?>">
+      <a href="<?= $Picture['href'] ?>" <?= $Picture['lightbox'] ?> title="<?= $Picture['caption'] ? $Picture['caption'] : ($Picture['title'] ? $Picture['title'] : $Picture['filename']); ?>">
       <?php endif; ?>
 
         <?php $this->insert('picture_default', $Picture['picture']); ?>

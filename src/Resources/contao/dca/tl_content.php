@@ -53,7 +53,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSorting'] = array(
 	'eval'      => array('tl_class' => 'w50', 'submitOnChange' => true),
 	'exclude'   => true,
 	'inputType' => 'select',
-	'options'   => array('date', 'sorting', 'id', 'tstamp', 'name', 'alias', 'comment', 'visitors'),
+	'options'   => array('date', 'sorting', 'id', 'tstamp', 'name', 'alias', 'caption', 'visitors'),
 	'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
 	'sql'       => "varchar(64) NOT NULL default 'date'",
 );
@@ -71,7 +71,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSorting'] = array(
 	'eval'      => array('tl_class' => 'w50', 'submitOnChange' => false),
 	'exclude'   => true,
 	'inputType' => 'select',
-	'options'   => array('sorting', 'id', 'date', 'name', 'owner', 'comment', 'title'),
+	'options'   => array('sorting', 'id', 'date', 'name', 'owner', 'caption', 'title'),
 	'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
 	'sql'       => "varchar(64) NOT NULL default 'date'",
 );

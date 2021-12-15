@@ -1,4 +1,4 @@
-# config/routes.yml
 markocupic_gallery_creator.controller:
-    resource: ../../../src/Controller
+    resource: "@MarkocupicGalleryCreatorBundle/Controller"
     type: annotation
+

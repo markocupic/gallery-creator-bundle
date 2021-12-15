@@ -23,7 +23,6 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\Database;
-use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
 use Contao\FrontendUser;
@@ -38,6 +37,7 @@ use Haste\Util\Url;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,6 +69,11 @@ class GalleryCreatorController extends AbstractContentElementController
      * @var ScopeMatcher
      */
     private $scopeMatcher;
+
+    /**
+     * @var SecurityUtil
+     */
+    private $securityUtil;
 
     /**
      * @var string
@@ -105,12 +110,13 @@ class GalleryCreatorController extends AbstractContentElementController
      */
     private $user;
 
-    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher)
+    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, SecurityUtil $securityUtil)
     {
         $this->framework = $framework;
         $this->security = $security;
         $this->requestStack = $requestStack;
         $this->scopeMatcher = $scopeMatcher;
+        $this->securityUtil = $securityUtil;
     }
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
@@ -123,18 +129,10 @@ class GalleryCreatorController extends AbstractContentElementController
             $this->user = MemberModel::findByPk($this->security->getUser()->id);
         }
 
-        // Unset session entries
-        $this->session->remove('gc_current_album');
-
         // Get items url param from session
         if ($this->session->has('gc_redirect_to_album')) {
             Input::setGet('items', $this->session->get('gc_redirect_to_album'));
             $this->session->remove('gc_redirect_to_album');
-        }
-
-        // Handle ajax requests
-        if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && Environment::get('isAjaxRequest')) {
-            $this->handleAjax();
         }
 
         // Set the item from the auto_item parameter
@@ -178,7 +176,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
             // Remove id from $this->arrSelectedAlbums if user is not allowed
             if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && true === $objAlbum->protected) {
-                if (!$this->authenticate($objAlbum)) {
+                if (!$this->securityUtil->isAuthorized($objAlbum)) {
                     unset($this->arrSelectedAlbums[$key]);
                     continue;
                 }
@@ -206,7 +204,7 @@ class GalleryCreatorController extends AbstractContentElementController
 
             // Authentication for protected albums:
             // If not authorized, the user gets to see the album preview image only.
-            if (!$this->authenticate($objAlbum)) {
+            if (!$this->securityUtil->isAuthorized($objAlbum)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
         }
@@ -495,68 +493,6 @@ class GalleryCreatorController extends AbstractContentElementController
     }
 
     /**
-     * Ajax responses.
-     *
-     * @return false|string
-     */
-    protected function handleAjax()
-    {
-        // Returns an array with all data to certain picture
-        if (Input::get('isAjax') && Input::get('getImageByPk') && !empty(Input::get('id'))) {
-            if (null !== ($objPicture = GalleryCreatorPicturesModel::findByPk(Input::get('id')))) {
-                $arrPicture = GcHelper::getPictureInformationArray(Input::get('id'), $this->model);
-                echo json_encode($arrPicture);
-            }
-
-            exit;
-        }
-
-        // Send image-date from a certain album as JSON encoded array to the browser
-        // used f.ex. for the ce_gc_colorbox.html template
-        // --> https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
-        if (Input::get('isAjax') && Input::get('getImagesByPid') && Input::get('pid')) {
-            // Do not send data if album is protected and the user has no access
-            $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('albumId'));
-
-            if (!$this->authenticate($objAlbum)) {
-                return false;
-            }
-
-            // Init visit counter
-            GcHelper::initCounter($objAlbum);
-
-            // Sorting direction
-            $sorting = $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
-
-            $objPicture = Database::getInstance()
-                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$sorting)
-                ->execute(1, Input::get('pid'))
-            ;
-
-            $response = [];
-
-            while ($objPicture->next()) {
-                $objFile = FilesModel::findByUuid($objPicture->uuid);
-
-                $href = $objFile->path;
-                $href = !empty(trim((string) $objPicture->socialMediaSRC)) ? trim((string) $objPicture->socialMediaSRC) : $href;
-                $href = !empty(trim((string) $objPicture->localMediaSRC)) ? trim((string) $objPicture->localMediaSRC) : $href;
-                $arrPicture = [
-                    'href' => StringUtil::specialchars($href),
-                    'pid' => $objPicture->pid,
-                    'caption' => StringUtil::specialchars($objPicture->caption),
-                    'id' => $objPicture->id,
-                    'uuid' => StringUtil::binToUuid($objFile->uuid),
-                ];
-                $response[] = array_merge($objPicture->row(), $arrPicture);
-            }
-
-            echo json_encode(['src' => $response, 'success' => 'true']);
-            exit;
-        }
-    }
-
-    /**
      * Generates the back link.
      *
      * @return false|string|array<string>|null
@@ -619,52 +555,11 @@ class GalleryCreatorController extends AbstractContentElementController
             $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($objAlbum->keywords), ',');
         }
 
-        // Store all album-data in the array
-        $template->arrAlbumdata = $objAlbum->row();
-        // Store the data of the current album in the session
-        $this->session->set('gc_current_album', $objAlbum->row());
         // Back link
         $template->backLink = $this->generateBackLink($objAlbum);
-        // The superordinate album name for the picture
-        $template->albumname = $objAlbum->name;
-        // Count album visitors
-        $template->visitors = $objAlbum->vistors;
-        // Album caption/description
-        $template->caption = StringUtil::toHtml5($objAlbum->caption);
         // In the detail view, an article can optionally be added in front of the album
         $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // In the detail view, an article can optionally be added right after the album
         $template->insertArticlePost = $objAlbum->insertArticlePost ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePost) : null;
-        // The event date as a unix timestamp
-        $template->eventTstamp = $objAlbum->date;
-        // The event date as a formatted date
-        $template->eventDate = Date::parse(Config::get('dateFormat'), $objAlbum->date);
-        // Content model
-        $template->objElement = $this->model;
-    }
-
-    /**
-     * Check if a logged in frontend user has access to a protected album.
-     */
-    private function authenticate(GalleryCreatorAlbumsModel $objAlbum): bool
-    {
-        if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest())) {
-            if (!$objAlbum->protected) {
-                return true;
-            }
-
-            if (null !== $this->user) {
-                $allowedGroups = StringUtil::deserialize($objAlbum->groups, true);
-                $userGroups = StringUtil::deserialize($this->user->groups, true);
-
-                if (!empty(array_intersect($allowedGroups, $userGroups))) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        return true;
     }
 }

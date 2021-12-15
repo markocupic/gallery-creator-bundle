@@ -35,7 +35,6 @@ use Contao\Picture;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\UserModel;
-use Contao\Validator;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
@@ -404,19 +403,27 @@ class GcHelper
         // Get thumb dimensions
         $arrSize = StringUtil::deserialize($contentElementModel->gcSizeDetailView);
 
-        // Video-integration
-        $strMediaSrc = !empty(trim((string) $pictureModel->socialMediaSRC)) ? trim((string) $pictureModel->socialMediaSRC) : null;
-
-        // Local media
-        if (null !== ($objMovieFile = FilesModel::findByUuid($pictureModel->localMediaSRC))) {
-            $strMediaSrc =  $objMovieFile->path;
-        }
-
         $href = null;
+        $localMediaSrc = null;
+        $socialMediaSrc = null;
 
-        if (TL_MODE === 'FE' && $contentElementModel->gcFullsize) {
-            $href = $strMediaSrc ?? $filesModel->path;
-            $href = TL_FILES_URL.$href;
+        if (TL_MODE === 'FE') {
+            // e.g. youtube or vimeo
+            $href = $pictureModel->socialMediaSRC ?: null;
+            $socialMediaSrc = $pictureModel->socialMediaSRC ?: null;
+
+            // Local media
+            if (null !== ($objMovieFile = FilesModel::findByUuid($pictureModel->localMediaSRC))) {
+                $href = $objMovieFile->path;
+                $localMediaSrc = TL_FILES_URL . $objMovieFile->path;
+            }
+
+            // Simply display the image as default
+            if (!$href && $contentElementModel->gcFullsize) {
+                $href = $filesModel->path;
+            }
+
+            $href = $href ? TL_FILES_URL.$href : null;
         }
 
         // CssID
@@ -430,12 +437,13 @@ class GcHelper
             'albumModel' => $pictureModel->getRelated('pid'),
             'meta' => $arrMeta,
             'href' => $href,
-            'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),
-            'mediaSrc' => $strMediaSrc ?? null,
+            'localMediaSrc' => $localMediaSrc,
+            'socialMediaSrc' => $socialMediaSrc,
             'size' => !empty($arrSize) ? $arrSize : null,
             'exif' => static::getExif($objFile),
             'cssID' => '' !== $cssID[0] ? $cssID[0] : '',
             'cssClass' => '' !== $cssID[1] ? $cssID[1] : '',
+            'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),
             'figureOptions' => [
                 'metadata' => new Metadata($arrMeta),
                 'enableLightbox' => (bool) $contentElementModel->gcFullsize,

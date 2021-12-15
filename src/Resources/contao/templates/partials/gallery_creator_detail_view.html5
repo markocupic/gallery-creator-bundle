@@ -1,4 +1,4 @@
-<!-- ce_gallery_creator.html5 - detail view -->
+<!-- gallery_creator_detail_view.html5 - detail view -->
 
 <?php if ($this->insertArticlePre):?>
 <!-- article box pre -->
@@ -19,61 +19,26 @@
 <div class="subalbums">
   <h3><?= $this->trans('gallery_creator.subalbums_of',[]) ?>: <?= $this->albumname ?></h3>
 
-  <ul class="list_view">
-    <?php foreach ($this->subalbums as $Subalbum): ?>
-    <li<?php if ($Subalbum['cssClass']): ?> class="<?= $Subalbum['cssClass'] ?>"<?php endif; ?><?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
-    <div class="col_1">
-      <figure class="image_container" onmouseover="<?= $Subalbum['thumbMouseover'] ?>">
-        <?php if ($Subalbum['href']): ?>
-        <a href="<?= $Subalbum['href'] ?>" title="<?= $Subalbum['title'] ?>">
-        <?php endif; ?>
-
-          <?php $this->insert('picture_default', $Subalbum['picture']); ?>
-
-        <?php if ($Subalbum['href']): ?>
-        </a>
-        <?php endif; ?>
-      </figure>
-    </div>
-
-    <div class="col_2">
-      <?php if ($Subalbum['href']): ?><a href="<?= $Subalbum['href'] ?>" title="<?= $Subalbum['title'] ?>"><?php endif; ?>
-      <h2><?= $Subalbum['name'] ?></h2>
-      <?php if ($Subalbum['href']): ?></a><?php endif; ?>
-
-      <p class="time"><?= $Subalbum['eventDate'] ?></p>
-
-      <?php if ($Subalbum['count']): ?>
-      <p class="count_pics"><?= $Subalbum['count'] ?> <?= $this->trans('gallery_creator.pictures',[]) ?></p>
-      <p class="visitors"><?= $Subalbum['visitors'] ?> <?= $this->trans('gallery_creator.visitors',[]) ?></p>
-      <?php endif; ?>
-
-      <?php if ($Subalbum['countSubalbums']): ?>
-      <p class="count_pics"><?= $Subalbum['countSubalbums'] ?> <?= $this->trans('gallery_creator.subalbums',[]) ?></p>
-      <?php endif; ?>
-
-      <?php if ($Subalbum['caption']): ?>
-      <div class="album_caption"><?= $Subalbum['caption'] ?></div>
-      <?php endif; ?>
-    </div>
-    </li>
+  <ul class="gc-list-view">
+    <?php foreach ($this->subalbums as $subalbum): ?>
+    <?php $this->insert('gallery_creator_album', ['album' => $subalbum]); ?>
     <?php endforeach; ?>
   </ul>
 </div>
 <hr>
 <?php endif; ?>
 
-<?php if ($this->albumCaption): ?>
-<div class="album_caption"><?= $this->albumCaption ?></div>
+<?php if ($this->caption): ?>
+<div class="gc-album-caption"><?= $this->caption ?></div>
 <?php endif; ?>
 
 <?= $this->pagination ?>
 
 <?php if ($this->arrPictures): ?>
-<ul class="detail_view">
+<ul class="gc-detail-view">
   <?php foreach ($this->arrPictures as $picture): ?>
   <li>
-    <?= $this->figure($picture['filesModel']->id, $picture['size'], $picture['figureOptions']) ?>
+    <?= $this->figure($picture['figureUuid'], $picture['figureSize'], $picture['figureOptions']) ?>
   </li>
   <?php endforeach;?>
 </ul>
@@ -81,7 +46,7 @@
 
 <?php if ($this->insertArticlePost):?>
 <!-- article box post -->
-<div class="article_box_post">
+<div class="gc-article-box-post">
   <?= $this->insertArticlePost ?>
 </div>
 <?php endif; ?>

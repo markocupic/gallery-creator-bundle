@@ -26,16 +26,16 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
 <h2><?= $this->albumname ?></h2>
 <?php endif; ?>
 
-<?php if ($this->albumCaption): ?>
-<div class="albumCaption">
-       <p><?= $this->albumCaption ?></p>
+<?php if ($this->caption): ?>
+<div class="caption">
+       <p><?= $this->caption ?></p>
 </div>
 <?php endif; ?>
 
 <?= $this->pagination ?>
 <?php $col=0; ?>
 <?php if ($this->arrPictures): ?>
-<ul class="detail_view">
+<ul class="gc-detail-view">
 
 <?php foreach ($this->arrPictures as $Picture): ?>
   <li class="col_<?= $col ?><?= ($col == 0 ? ' col_first' : '') ?><?= ($col == $this->colsPerRow - 1 ? ' col_last' : '') ?>">
@@ -60,7 +60,7 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creat
 
 <?php if ($this->insertArticlePost):?>
 <!-- article box post -->
-<div class="article_box_post">
+<div class="gc-article-box-post">
 <?= $this->insertArticlePost ?>
 </div>
 <!-- end article box post -->

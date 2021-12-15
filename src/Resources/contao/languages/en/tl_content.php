@@ -35,9 +35,7 @@ $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection'] = ['Sort sequence', 'DES
 $GLOBALS['TL_LANG']['tl_content']['gcPictureSorting'] = ['Picture sorting', 'According to which field the pictures in a single album should be sorted?'];
 $GLOBALS['TL_LANG']['tl_content']['gcPictureSortingDirection'] = ['Sort sequence', 'DESC: descending, ASC: ascending'];
 $GLOBALS['TL_LANG']['tl_content']['gcSizeDetailView'] = ['Detailview: Thumbnail width and height', 'Here you can set the image dimensions and the resize mode.'];
-$GLOBALS['TL_LANG']['tl_content']['gcImageMarginDetailView'] = ['Image margin detailview', 'Here you can enter the top, right, bottom and left margin.'];
 $GLOBALS['TL_LANG']['tl_content']['gcSizeAlbumListing'] = ['Albumlist: Thumbnail width and height', 'Here you can set the image dimensions and the resize mode.'];
-$GLOBALS['TL_LANG']['tl_content']['gcImageMarginAlbumListing'] = ['Image margin albumlisting', 'Here you can enter the top, right, bottom and left margin.'];
 $GLOBALS['TL_LANG']['tl_content']['gcFullsize'] = ['Full-size view/new window', 'Open the full-size image in a lightbox or the link in a new browser window.'];
 
 // References

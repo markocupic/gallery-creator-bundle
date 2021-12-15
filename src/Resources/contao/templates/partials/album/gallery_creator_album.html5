@@ -1,0 +1,28 @@
+<li<?php if ($this->album['cssClass']): ?> class="<?= $this->album['cssClass'] ?>"<?php endif; ?>>
+
+    <div class="col_1">
+        <?= $this->figure($this->album['figureUuid'], $this->album['figureSize'], $this->album['figureOptions']) ?>
+    </div>
+
+    <div class="col_2">
+        <?php if ($this->album['href']): ?><a href="<?= $this->album['href'] ?>" title="<?= $this->album['title'] ?>"><?php endif; ?>
+        <h2><?= $this->album['albumModel']->name ?></h2>
+        <?php if ($this->album['href']): ?></a><?php endif; ?>
+
+        <p class="time">{{date::Y-m-d::<?= $this->album['albumModel']->date ?>}}</p>
+
+        <?php if ($this->album['albumModel']->photographer): ?>
+        <p class="photographer"><?= $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] ?>: <?= $this->album['albumModel']->photographer ?></p>
+        <?php endif; ?>
+
+        <?php if ($this->album['count']): ?>
+        <p class="gc-count-pics"><?= $this->album['count'] ?> <?= $this->trans('gallery_creator.pictures',[]) ?></p>
+        <p class="gc-visitors"><?= $this->album['albumModel']->visitors ?> <?= $this->trans('gallery_creator.visitors',[]) ?></p>
+        <?php endif; ?>
+
+        <?php if ($this->album['countSubalbums']): ?>
+        <p class="gc-count-pics"><?= $this->album['countSubalbums'] ?> <?= $this->trans('gallery_creator.subalbums',[]) ?></p>
+        <?php endif; ?>
+    </div>
+
+</li>

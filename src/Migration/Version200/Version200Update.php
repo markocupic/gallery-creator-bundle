@@ -183,23 +183,9 @@ class Version200Update extends AbstractMigration
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
-                'old' => 'gc_imagemargin_detailview',
-                'new' => 'gcImageMarginDetailView',
-                'sql' => 'varchar(128)',
-            ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
                 'old' => 'gc_size_albumlisting',
                 'new' => 'gcSizeAlbumListing',
                 'sql' => 'varchar(64)',
-            ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
-                'old' => 'gc_imagemargin_albumlisting',
-                'new' => 'gcImageMarginAlbumListing',
-                'sql' => 'varchar(128)',
             ],
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,

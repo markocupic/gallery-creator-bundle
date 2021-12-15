@@ -2,9 +2,12 @@
 
 # Gallery Creator Bundle
 
-## Frontend Modul für [Contao CMS](https://www.contao.org) >=4.9
+## Frontend Modul für [Contao CMS](https://www.contao.org) >=4.11
 
-Mit dem Modul lassen sich Alben verwalten und erstellen. Die Erweiterung bietet eine Albenübersicht und eine Detailansicht.
+Mit dieser Erweiterung für Contao CMS lassen sich Alben erstellen, verwalten und anzeigen.
+ Gallery Creator Bundle bietet eine Albenauflistung und eine Alben-Detailansicht.
+ Als Lightbox wird die ![Glightbox](https://biati-digital.github.io/glightbox/) empfohlen, welche mit `composer require inspiredminds/contao-glightbox` onstalliert werden kann.
+ Im Theme muss dann nur noch das Template aktiviert werden.
 
 ## "gc_generateFrontendTemplate"-Hook
 Mit dem "gc_generateFrontendTemplate"-Hook lässt sich die Frontend-Ausgabe anpassen.

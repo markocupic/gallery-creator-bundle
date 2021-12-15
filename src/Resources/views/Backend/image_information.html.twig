@@ -25,16 +25,16 @@
             <td><strong>{{ trans.picture_title }}: </strong></td>
             <td>{{ model.title }}</td>
         </tr>
-        {% if model.video_href_social %}
+        {% if model.socialMediaSRC %}
         <tr class="odd">
             <td><strong>{{ trans.picture_video_href_social }}: </strong></td>
-            <td>{{ model.video_href_social }}</td>
+            <td>{{ model.socialMediaSRC }}</td>
         </tr>
         {% endif %}
-        {% if model.video_href_local %}
+        {% if model.localMediaSRC %}
         <tr class="even">
             <td><strong>{{ trans.picture_video_href_local }}: </strong></td>
-            <td>{{ model.video_href_local }}</td>
+            <td>{{ model.localMediaSRC }}</td>
         </tr>
         {% endif %}
     </table>

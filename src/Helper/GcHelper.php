@@ -20,7 +20,6 @@ use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\File\Metadata;
 use Contao\Database;
-use Contao\Date;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\Files;
@@ -28,10 +27,8 @@ use Contao\FilesModel;
 use Contao\FileUpload;
 use Contao\Folder;
 use Contao\Frontend;
-use Contao\Image;
 use Contao\Input;
 use Contao\Message;
-use Contao\Picture;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\UserModel;
@@ -288,88 +285,53 @@ class GcHelper
     {
         global $objPage;
 
-        // Anzahl Subalben ermitteln
-        $objSubAlbums = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE published=? AND pid=?')
-            ->execute('1', $albumModel->id)
-        ;
+        $subAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
 
         $objPics = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND published=?')
+            ->prepare('SELECT COUNT(id) as count FROM tl_gallery_creator_pictures WHERE pid=? AND published=?')
             ->execute($albumModel->id, '1')
         ;
+        $countPics = $objPics->count;
 
-        $arrSize = unserialize($contentElementModel->gcSizeAlbumListing);
+        $arrSize = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
 
         $href = null;
 
         if (TL_MODE === 'FE') {
-            // Generate the url as a formatted string
-            $href = StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language));
-
-            // Add albumAlias
-            $href = sprintf($href, $albumModel->alias);
+            // Generate the url
+            $href = sprintf(
+                StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language)),
+                $albumModel->alias,
+            );
         }
 
-        $albumModelPic = static::getAlbumPreviewThumb($albumModel);
+        /** @var FilesModel $previewImage */
+        $previewImage = static::getAlbumPreviewThumb($albumModel);
 
-        if (null !== $albumModelPic) {
-            // Generate the thumbnails and the picture element
-            try {
-                $thumbSrc = Image::create($albumModelPic->path, $arrSize)->executeResize()->getResizedPath();
-                $picture = Picture::create($albumModelPic->path, $arrSize)->getTemplateData();
-                $picture['alt'] = StringUtil::specialchars($albumModel->name);
-                $picture['title'] = StringUtil::specialchars($albumModel->name);
-
-                if ($thumbSrc !== $albumModelPic->path) {
-                    new File($thumbSrc);
-                }
-            } catch (\Exception $e) {
-                System::log('Image "'.$albumModelPic->path.'" could not be processed: '.$e->getMessage(), __METHOD__, TL_ERROR);
-            }
-        }
+        $arrMeta = [];
+        $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
+        $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
+        $arrMeta['title'] = $albumModel->name.' ['.($countPics ? $countPics.' '.$GLOBALS['TL_LANG']['gallery_creator']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $subAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['gallery_creator']['contains'].' '.$subAlbumCount.'  '.$GLOBALS['TL_LANG']['gallery_creator']['subalbums'].']' : ']');
 
         // CSS class
         $arrCssClasses = [];
         $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'has-child-album' : '';
-        $arrCssClasses[] = !$objPics->numRows ? 'empty-album' : '';
+        $arrCssClasses[] = !$countPics ? 'empty-album' : '';
 
-        $arrAlbum = [
-            // [string] event date formatted
-            'eventDate' => Date::parse(Config::get('dateFormat'), $albumModel->date),
-            // [string] Event-Location
-            'eventLocation' => StringUtil::specialchars($albumModel->eventLocation),
-            // [string] albumname
-            'name' => StringUtil::specialchars($albumModel->name),
-            // [string] album caption
-            'caption' => StringUtil::toHtml5(nl2br((string) $albumModel->caption)),
-            // [string] Link zur Detailansicht
+        return [
+            'albumModel' => $albumModel,
             'href' => $href,
-            // [string] Inhalt fuer das title Attribut
-            'title' => $albumModel->name.' ['.($objPics->numRows ? $objPics->numRows.' '.$GLOBALS['TL_LANG']['gallery_creator']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $objSubAlbums->numRows > 0 ? ' '.$GLOBALS['TL_LANG']['gallery_creator']['contains'].' '.$objSubAlbums->numRows.'  '.$GLOBALS['TL_LANG']['gallery_creator']['subalbums'].']' : ']'),
-            // [int] Anzahl Bilder im Album
-            'count' => (int) $objPics->numRows,
-            // [int] Anzahl Unteralben
-            'countSubalbums' => \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id)),
-            // [string] alt Attribut fuer das Vorschaubild
-            'alt' => StringUtil::specialchars($albumModel->name),
-            // [string] Pfad zum Originalbild
-            'src' => $albumModelPic ? TL_FILES_URL.$albumModelPic->path : null,
-            // [string] Pfad zum Thumbnail
-            'thumbSrc' => $albumModelPic ? TL_FILES_URL.Image::get($albumModelPic->path, $arrSize[0], $arrSize[1], $arrSize[2]) : null,
-            // [string] css-Classname
-            'class' => 'thumb',
-            // [array] thumbnail size
-            'size' => $arrSize,
-            // [array] picture
-            'picture' => $picture,
-            // [string] cssClass
+            'count' => $countPics,
+            'caption' => StringUtil::specialchars(StringUtil::toHtml5($arrMeta['caption'])),
+            'countSubalbums' => $subAlbumCount,
             'cssClass' => implode(' ', array_filter($arrCssClasses)),
+            'figureUuid' => $previewImage ? $previewImage->uuid : null,
+            'figureSize' => !empty($arrSize) ? $arrSize : null,
+            'figureOptions' => [
+                'metadata' => new Metadata($arrMeta),
+                'linkHref' => $href,
+            ],
         ];
-
-        $arrAlbum = array_merge($albumModel->row(), $arrAlbum);
-
-        return $arrAlbum;
     }
 
     /**
@@ -388,8 +350,6 @@ class GcHelper
         if (!is_file($filesModel->getAbsolutePath())) {
             return null;
         }
-
-        $objFile = new File($filesModel->path);
 
         // Meta
         $arrMeta = Frontend::getMetaData($filesModel->meta, $objPage->language);
@@ -415,7 +375,7 @@ class GcHelper
             // Local media
             if (null !== ($objMovieFile = FilesModel::findByUuid($pictureModel->localMediaSRC))) {
                 $href = $objMovieFile->path;
-                $localMediaSrc = TL_FILES_URL . $objMovieFile->path;
+                $localMediaSrc = TL_FILES_URL.$objMovieFile->path;
             }
 
             // Simply display the image as default
@@ -439,11 +399,13 @@ class GcHelper
             'href' => $href,
             'localMediaSrc' => $localMediaSrc,
             'socialMediaSrc' => $socialMediaSrc,
-            'size' => !empty($arrSize) ? $arrSize : null,
-            'exif' => static::getExif($objFile),
+            'exif' => static::getExif(new File($filesModel->path)),
             'cssID' => '' !== $cssID[0] ? $cssID[0] : '',
             'cssClass' => '' !== $cssID[1] ? $cssID[1] : '',
             'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),
+            'figureUuid' => $pictureModel->addCustomThumb ? $pictureModel->customThumb : $filesModel->uuid,
+            'figureSize' => !empty($arrSize) ? $arrSize : null,
+            'figureHref' => $href,
             'figureOptions' => [
                 'metadata' => new Metadata($arrMeta),
                 'enableLightbox' => (bool) $contentElementModel->gcFullsize,
@@ -489,7 +451,7 @@ class GcHelper
 
         while ($objSubAlbums->next()) {
             // If it is a content element only
-            if ('' !== $contentElementModel->gcPublishAlbums) {
+            if ($contentElementModel->gcPublishAlbums) {
                 if (!$contentElementModel->gcPublishAllAlbums) {
                     if (!\in_array($objSubAlbums->id, StringUtil::deserialize($contentElementModel->gcPublishAlbums), false)) {
                         continue;
@@ -499,8 +461,7 @@ class GcHelper
             $objSubAlbum = GalleryCreatorAlbumsModel::findByPk($objSubAlbums->id);
 
             if (null !== $objSubAlbum) {
-                $arrSubalbum = self::getAlbumInformationArray($objSubAlbum, $contentElementModel);
-                array_push($arrSubalbums, $arrSubalbum);
+                $arrSubalbums[] = self::getAlbumInformationArray($objSubAlbum, $contentElementModel);
             }
         }
 
@@ -861,7 +822,7 @@ class GcHelper
     {
         $level = 0;
 
-        if (0 === (int) $pid) {
+        if (0 === $pid) {
             return $level;
         }
         $hasParent = true;

@@ -247,8 +247,6 @@ class GalleryCreatorController extends AbstractContentElementController
         return parent::__invoke($request, $this->model, $section, $classes, $pageModel);
     }
 
-
-
     /**
      * @throws \Exception
      */
@@ -292,7 +290,6 @@ class GalleryCreatorController extends AbstractContentElementController
                     }
                 }
 
-                $template->imagemargin = Controller::generateMargin(unserialize($this->model->gcImageMarginAlbumListing));
                 $template->arrAlbums = $arrAlbums;
 
                 // Call gcGenerateFrontendTemplateHook
@@ -633,7 +630,7 @@ class GalleryCreatorController extends AbstractContentElementController
         // Count album visitors
         $template->visitors = $objAlbum->vistors;
         // Album caption/description
-        $template->albumCaption = StringUtil::toHtml5($objAlbum->caption);
+        $template->caption = StringUtil::toHtml5($objAlbum->caption);
         // In the detail view, an article can optionally be added in front of the album
         $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // In the detail view, an article can optionally be added right after the album
@@ -642,8 +639,6 @@ class GalleryCreatorController extends AbstractContentElementController
         $template->eventTstamp = $objAlbum->date;
         // The event date as a formatted date
         $template->eventDate = Date::parse(Config::get('dateFormat'), $objAlbum->date);
-        // Margins
-        $template->imagemargin = 'detail_view' === $this->viewMode ? Controller::generateMargin(StringUtil::deserialize($this->model->gcImageMarginDetailView), 'margin') : $this->generateMargin(deserialize($this->model->gcImageMarginAlbumListing), 'margin');
         // Content model
         $template->objElement = $this->model;
     }

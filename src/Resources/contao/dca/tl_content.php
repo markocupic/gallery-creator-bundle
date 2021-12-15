@@ -25,8 +25,8 @@ $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array(
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gcHierarchicalOutput,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage,gcPaginationNumberOfLinks;
-{album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing,gcImageMarginAlbumListing;
-{picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView,gcImageMarginDetailView;
+{album_listing_legend},gcSorting,gcSortingDirection;
+{picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
@@ -34,7 +34,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = '
 $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_news'] = 'name,type,headline;
 {album_listing_legend},gcPublishSingleAlbum;
 {pagination_legend},gcThumbsPerPage,gcPaginationNumberOfLinks;
-{picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView,gcImageMarginDetailView;
+{picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
@@ -115,14 +115,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = array(
 	'sql'       => "varchar(64) NOT NULL default ''",
 );
 
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcImageMarginDetailView'] = array(
-	'eval'      => array('includeBlankOption' => true, 'tl_class' => 'w50'),
-	'exclude'   => true,
-	'inputType' => 'trbl',
-	'options'   => $GLOBALS['TL_CSS_UNITS'],
-	'sql'       => "varchar(128) NOT NULL default ''",
-);
-
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = array(
 	'eval'      => array('rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'),
 	'exclude'   => true,
@@ -130,14 +122,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = array(
 	'options'   => System::getImageSizes(),
 	'reference' => &$GLOBALS['TL_LANG']['MSC'],
 	'sql'       => "varchar(64) NOT NULL default ''",
-);
-
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcImageMarginAlbumListing'] = array(
-	'eval'      => array('includeBlankOption' => true, 'tl_class' => 'w50'),
-	'exclude'   => true,
-	'inputType' => 'trbl',
-	'options'   => $GLOBALS['TL_CSS_UNITS'],
-	'sql'       => "varchar(128) NOT NULL default ''",
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcFullsize'] = array(

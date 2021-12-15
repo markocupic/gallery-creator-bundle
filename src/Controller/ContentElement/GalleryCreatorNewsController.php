@@ -16,7 +16,6 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
-use Contao\Controller;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
@@ -46,7 +45,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
 
     private $pageModel;
 
-    public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, ?PageModel $pageModel = null): Response
+    public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {
         $this->model = $model;
         $this->pageModel = $pageModel;
@@ -202,7 +201,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         // Album visitors
         $template->visitors = $objAlbum->vistors;
         // Album caption
-        $template->albumCaption = StringUtil::toHtml5($objAlbum->caption);
+        $template->caption = StringUtil::toHtml5($objAlbum->caption);
         // Insert article pre
         $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
         // Insert article after
@@ -211,8 +210,6 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $template->eventTstamp = $objAlbum->date;
         // formated event date
         $template->eventDate = Date::parse(Config::get('dateFormat'), $objAlbum->date);
-        // Margins
-        $template->imagemargin = Controller::generateMargin(StringUtil::deserialize($this->model->gcImageMarginDetailView), 'margin');
         // Content model
         $template->objElement = $this->model;
     }

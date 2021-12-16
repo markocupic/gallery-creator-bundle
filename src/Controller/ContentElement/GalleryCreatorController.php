@@ -34,9 +34,10 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
 use Haste\Util\Url;
-use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
+use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -76,6 +77,16 @@ class GalleryCreatorController extends AbstractContentElementController
     private $securityUtil;
 
     /**
+     * @var AlbumUtil
+     */
+    private $albumUtil;
+
+    /**
+     * @var PictureUtil
+     */
+    private $pictureUtil;
+
+    /**
      * @var string
      */
     private $viewMode;
@@ -110,13 +121,15 @@ class GalleryCreatorController extends AbstractContentElementController
      */
     private $user;
 
-    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, SecurityUtil $securityUtil)
+    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
     {
         $this->framework = $framework;
         $this->security = $security;
         $this->requestStack = $requestStack;
         $this->scopeMatcher = $scopeMatcher;
         $this->securityUtil = $securityUtil;
+        $this->albumUtil = $albumUtil;
+        $this->pictureUtil = $pictureUtil;
     }
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
@@ -174,8 +187,11 @@ class GalleryCreatorController extends AbstractContentElementController
                 unset($this->arrSelectedAlbums[$key]);
                 continue;
             }
+
             // Remove id from $this->arrSelectedAlbums if user is not allowed
-            if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && true === $objAlbum->protected) {
+            $request = $this->requestStack->getCurrentRequest();
+
+            if ($request && $this->scopeMatcher->isFrontendRequest($request) && true === $objAlbum->protected) {
                 if (!$this->securityUtil->isAuthorized($objAlbum)) {
                     unset($this->arrSelectedAlbums[$key]);
                     continue;
@@ -283,7 +299,7 @@ class GalleryCreatorController extends AbstractContentElementController
                         $objAlbum = GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[$i]);
 
                         if (null !== $objAlbum) {
-                            $arrAlbums[] = GcHelper::getAlbumInformationArray($objAlbum, $this->model);
+                            $arrAlbums[] = $this->albumUtil->getAlbumData($objAlbum, $this->model);
                         }
                     }
                 }
@@ -300,7 +316,7 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 // generate the subalbum array
                 if ($this->model->gcHierarchicalOutput) {
-                    $arrSubalbums = GcHelper::getSubalbumsInformationArray($objAlbum, $this->model);
+                    $arrSubalbums = $this->albumUtil->getSubalbumsData($objAlbum, $this->model);
                     $template->subalbums = \count($arrSubalbums) ? $arrSubalbums : null;
                 }
 
@@ -362,7 +378,7 @@ class GalleryCreatorController extends AbstractContentElementController
                     $auxBasename[] = $basename;
 
                     if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($objPictures->id))) {
-                        $arrPictures[$objPictures->id] = GcHelper::getPictureInformationArray($objPicturesModel, $this->model);
+                        $arrPictures[$objPictures->id] = $this->pictureUtil->getPictureData($objPicturesModel, $this->model);
                     }
                 }
 
@@ -384,7 +400,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->getAlbumTemplateVars($objAlbum, $template);
 
                 // init the counter
-                GcHelper::initCounter($objAlbum);
+                $this->albumUtil->countAlbumViews($objAlbum);
 
                 // Call gcGenerateFrontendTemplateHook
                 $template = $this->callGcGenerateFrontendTemplateHook($this, $template, $objAlbum);
@@ -439,15 +455,15 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 if (\count($arrIDS)) {
                     if (null !== ($objPicturePrev = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex - 1]))) {
-                        $arrPictures['prev'] = GcHelper::getPictureInformationArray($objPicturePrev, $this->model);
+                        $arrPictures['prev'] = $this->pictureUtil->getPictureData($objPicturePrev, $this->model);
                     }
 
                     if (null !== ($objPictureCurrent = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex]))) {
-                        $arrPictures['current'] = GcHelper::getPictureInformationArray($objPictureCurrent, $this->model);
+                        $arrPictures['current'] = $this->pictureUtil->getPictureData($objPictureCurrent, $this->model);
                     }
 
                     if (null !== ($objPictureNext = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex + 1]))) {
-                        $arrPictures['next'] = GcHelper::getPictureInformationArray($objPictureNext, $this->model);
+                        $arrPictures['next'] = $this->pictureUtil->getPictureData($objPictureNext, $this->model);
                     }
 
                     // Add previous and next links to the template
@@ -480,7 +496,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->getAlbumTemplateVars($objAlbum, $template);
 
                 // init the counter
-                GcHelper::initCounter($objAlbum);
+                $this->albumUtil->countAlbumViews($objAlbum);
 
                 // Call gcGenerateFrontendTemplateHook
                 $template = $this->callGcGenerateFrontendTemplateHook($this, $template, $objAlbum);

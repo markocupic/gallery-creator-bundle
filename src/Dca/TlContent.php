@@ -19,7 +19,7 @@ use Contao\Database;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
-use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
+use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -27,6 +27,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TlContent extends Backend
 {
+    /**
+     * @var AlbumUtil
+     */
+    private $albumUtil;
+
+    public function __construct(AlbumUtil $albumUtil)
+    {
+        $this->albumUtil = $albumUtil;
+    }
 
     /**
      * Return array containing album ids.
@@ -120,7 +129,7 @@ class TlContent extends Backend
 
         $selectedAlbums = '' !== $objContent->gcPublishAlbums ? StringUtil::deserialize($objContent->gcPublishAlbums) : [];
 
-        $level = GcHelper::getAlbumLevel((int) $pid);
+        $level = $this->albumUtil->getAlbumLevelFromPid((int) $pid);
 
         $db = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)

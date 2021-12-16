@@ -30,9 +30,9 @@ use Contao\System;
 use Contao\UserModel;
 use Contao\Validator;
 use Contao\Versions;
-use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Util\FileUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -52,6 +52,11 @@ class TlGalleryCreatorPictures extends Backend
     private $requestStack;
 
     /**
+     * @var FileUtil
+     */
+    private $fileUtil;
+
+    /**
      * @var string
      */
     private $projectDir;
@@ -66,11 +71,12 @@ class TlGalleryCreatorPictures extends Backend
      */
     private $uploadPath;
 
-    public function __construct(RequestStack $requestStack, string $projectDir)
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, string $projectDir)
     {
         parent::__construct();
 
         $this->requestStack = $requestStack;
+        $this->fileUtil = $fileUtil;
         $this->projectDir = $projectDir;
         $this->session = $this->requestStack->getCurrentRequest()->getSession();
 
@@ -92,9 +98,10 @@ class TlGalleryCreatorPictures extends Backend
                 $objFile = FilesModel::findByUuid($objPic->uuid);
 
                 if (null !== $objFile) {
+                    $file = new File($objFile->path);
                     // Rotate image anticlockwise
                     $angle = 270;
-                    GcHelper::imageRotate($objFile->path, $angle);
+                    $this->fileUtil->imageRotate($file, $angle);
                     Dbafs::addResource($objFile->path, true);
                     $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.Input::get('id'));
                 }

@@ -28,9 +28,10 @@ use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
-use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
+use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,11 +40,36 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class GalleryCreatorNewsController extends AbstractContentElementController
 {
+    /**
+     * @var AlbumUtil
+     */
+    private $albumUtil;
+
+    /**
+     * @var PictureUtil
+     */
+    private $pictureUtil;
+
+    /**
+     * @var int
+     */
     private $intAlbumId;
 
+    /**
+     * @var ContentModel
+     */
     private $model;
 
+    /**
+     * @var PageModel
+     */
     private $pageModel;
+
+    public function __construct(AlbumUtil $albumUtil, PictureUtil $pictureUtil)
+    {
+        $this->albumUtil = $albumUtil;
+        $this->pictureUtil = $pictureUtil;
+    }
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {
@@ -64,7 +90,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        $this->intAlbumId = $objAlbum->id;
+        $this->intAlbumId = (int) $objAlbum->id;
 
         // Check Permission for protected albums
         if (TL_MODE === 'FE' && $objAlbum->protected) {
@@ -101,7 +127,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($this->intAlbumId);
 
         // Init the counter
-        GcHelper::initCounter($objAlbum);
+        $this->albumUtil->countAlbumViews($objAlbum);
 
         // Pagination settings
         $limit = $this->model->gcThumbsPerPage;
@@ -151,7 +177,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
             $auxBasename[] = $basename;
 
             if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($objPictures->id))) {
-                $arrPictures[$objPictures->id] = GcHelper::getPictureInformationArray($objPicturesModel, $this->model);
+                $arrPictures[$objPictures->id] = $this->pictureUtil->getPictureData($objPicturesModel, $this->model);
             }
         }
 

@@ -18,12 +18,11 @@ use Contao\ContentModel;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
 use Contao\FilesModel;
-use Contao\Input;
 use Contao\StringUtil;
-use Contao\System;
-use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
+use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,10 +40,22 @@ class GalleryCreatorAjax
      */
     private $securityUtil;
 
-    public function __construct(ContaoFramework $framework, SecurityUtil $securityUtil)
+    /**
+     * @var AlbumUtil
+     */
+    private $albumUtil;
+
+    /**
+     * @var PictureUtil
+     */
+    private $pictureUtil;
+
+    public function __construct(ContaoFramework $framework, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
     {
         $this->framework = $framework;
         $this->securityUtil = $securityUtil;
+        $this->albumUtil = $albumUtil;
+        $this->pictureUtil = $pictureUtil;
     }
 
     /**
@@ -54,17 +65,12 @@ class GalleryCreatorAjax
     {
         $this->framework->initialize(true);
 
-        if(!defined('TL_FILES_URL'))
-        {
-            \define('TL_FILES_URL', System::getContainer()->get('contao.assets.files_context')->getStaticUrl());
-        }
-
         $arrPicture = [];
         $pictureModel = GalleryCreatorPicturesModel::findByPk($pictureId);
         $contentModel = ContentModel::findByPk($contentId);
 
         if (null !== $pictureModel && null !== $contentModel) {
-            $arrPicture = GcHelper::getPictureInformationArray($pictureModel, $contentModel);
+            $arrPicture = $this->pictureUtil->getPictureData($pictureModel, $contentModel);
         }
 
         return new JsonResponse($arrPicture);
@@ -76,11 +82,6 @@ class GalleryCreatorAjax
     public function getImagesByPid(int $pid, int $contentId): Response
     {
         $this->framework->initialize(true);
-
-        if(!defined('TL_FILES_URL'))
-        {
-            \define('TL_FILES_URL', System::getContainer()->get('contao.assets.files_context')->getStaticUrl());
-        }
 
         // Do not send data if album is protected and the user has no access
         $albumModel = GalleryCreatorAlbumsModel::findByPk($pid);
@@ -103,7 +104,7 @@ class GalleryCreatorAjax
         }
 
         // Init visit counter
-        GcHelper::initCounter($albumModel);
+        $this->albumUtil->countAlbumViews($albumModel);
 
         // Sorting direction
         $sorting = $contentModel->gcPictureSorting.' '.$contentModel->gcPictureSortingDirection;

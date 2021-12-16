@@ -17,6 +17,7 @@ namespace Markocupic\GalleryCreatorBundle\Dca;
 use Contao\Automator;
 use Contao\Backend;
 use Contao\Config;
+use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Date;
@@ -34,11 +35,12 @@ use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
+use Markocupic\GalleryCreatorBundle\Util\FileUtil;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Transliterator;
 
 /**
  * Class TlGalleryCreatorAlbums.
@@ -49,6 +51,16 @@ class TlGalleryCreatorAlbums extends Backend
      * @var RequestStack
      */
     private $requestStack;
+
+    /**
+     * @var
+     */
+    private $albumUtil;
+
+    /**
+     * @var FileUtil
+     */
+    private $fileUtil;
 
     /**
      * @var string
@@ -65,23 +77,17 @@ class TlGalleryCreatorAlbums extends Backend
      */
     private $restrictedUser = false;
 
-    /**
-     * @var string|null
-     */
-    private $uploadPath;
-
-    public function __construct(RequestStack $requestStack, string $projectDir)
+    public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, string $projectDir)
     {
         parent::__construct();
 
         $this->requestStack = $requestStack;
+        $this->fileUtil = $fileUtil;
+        $this->albumUtil = $albumUtil;
         $this->projectDir = $projectDir;
         $this->session = $requestStack->getCurrentRequest()->getSession();
 
         $this->import('BackendUser', 'User');
-
-        // Path to the gallery_creator upload-directory
-        $this->uploadPath = Config::get('galleryCreatorUploadPath');
 
         // Register the parseBackendTemplate Hook
         $GLOBALS['TL_HOOKS']['parseBackendTemplate'][] = [
@@ -339,9 +345,9 @@ class TlGalleryCreatorAlbums extends Backend
      *
      * @return string
      */
-    public static function getUplaodPath()
+    public function getUploadPath()
     {
-        return self::uploadPath;
+        return Config::get('galleryCreatorUploadPath');
     }
 
     /**
@@ -374,7 +380,7 @@ class TlGalleryCreatorAlbums extends Backend
     {
         $objAlb = GalleryCreatorAlbumsModel::findByPk(Input::get('id'));
         $objUser = UserModel::findByPk($objAlb->owner);
-         $objAlb->ownersName = null !== $objUser ? $objUser->name : 'no-name';
+        $objAlb->ownersName = null !== $objUser ? $objUser->name : 'no-name';
         $objAlb->date_formatted = Date::parse('Y-m-d', $objAlb->date);
 
         // Check User Role
@@ -497,7 +503,7 @@ class TlGalleryCreatorAlbums extends Backend
         $href = sprintf('contao?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
-        $level = GcHelper::getAlbumLevel((int) $row['pid']);
+        $level = $this->albumUtil->getAlbumLevelFromPid((int) $row['pid']);
         $padding = $this->isNode($objAlbum) ? 3 * $level : 20 + (3 * $level);
         $label = str_replace('#padding-left#', 'padding-left:'.$padding.'px;', $label);
 
@@ -643,14 +649,14 @@ class TlGalleryCreatorAlbums extends Backend
     public function onloadCbCheckFolderSettings(DataContainer $dc): void
     {
         // Create the upload directory if it doesn't already exist
-        $objFolder = new Folder($this->uploadPath);
+        $objFolder = new Folder($this->getUploadPath());
         $objFolder->unprotect();
-        Dbafs::addResource($this->uploadPath, false);
+        Dbafs::addResource($this->getUploadPath(), false);
 
         $translator = System::getContainer()->get('translator');
 
-        if (!is_writable($this->projectDir.'/'.$this->uploadPath)) {
-            Message::addError($translator->trans('ERR.dirNotWriteable', [$this->uploadPath], 'contao_default'));
+        if (!is_writable($this->projectDir.'/'.$this->getUploadPath())) {
+            Message::addError($translator->trans('ERR.dirNotWriteable', [$this->getUploadPath()], 'contao_default'));
         }
     }
 
@@ -697,11 +703,11 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         // Call the uploader script
-        $arrUpload = GcHelper::fileupload($objAlbum, $strName);
+        $arrUpload = $this->fileUtil->fileupload($objAlbum, $strName);
 
         foreach ($arrUpload as $strFileSrc) {
             // Add  new data records into tl_gallery_creator_pictures
-            GcHelper::createNewImage($objAlbum, $strFileSrc);
+            $this->fileUtil->addImageToAlbum($objAlbum, $strFileSrc);
         }
 
         // Do not exit script if html5_uploader is selected and Javascript is disabled
@@ -713,13 +719,15 @@ class TlGalleryCreatorAlbums extends Backend
     /**
      * Onload callback
      * Import images from an external directory to an existing album.
+     *
+     * @throws \Exception
      */
     public function onloadCbImportFromFilesystem(): void
     {
         if ('importImages' !== Input::get('mode')) {
             return;
         }
-        // load language file
+        // Load language file
         $this->loadLanguageFile('tl_content');
 
         if (!$this->Input->post('FORM_SUBMIT')) {
@@ -737,12 +745,13 @@ class TlGalleryCreatorAlbums extends Backend
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserveFilename']['eval']['submitOnChange'] = false;
 
                 // import Images from filesystem and write entries to tl_gallery_creator_pictures
-                GcHelper::importFromFilesystem($objAlbum, $arrMultiSRC);
-                $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$objAlbum->id.'&ref='.TL_REFERER_ID.'&filesImported=true');
+                $this->fileUtil->importFromFilesystem($objAlbum, $arrMultiSRC);
+
+                throw new RedirectResponseException('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$objAlbum->id.'&ref='.TL_REFERER_ID.'&filesImported=true');
             }
         }
 
-        $this->redirect('contao?do=gallery_creator');
+        throw new RedirectResponseException('contao?do=gallery_creator');
     }
 
     /**
@@ -932,7 +941,7 @@ class TlGalleryCreatorAlbums extends Backend
         $i = 0;
 
         if ('' !== $strPrefix) {
-            $transliterator = Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
+            $transliterator = \Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', \Transliterator::FORWARD);
             $strPrefix = $transliterator->transliterate($strPrefix);
             $strPrefix = str_replace('.', '_', $strPrefix);
 
@@ -1090,7 +1099,7 @@ class TlGalleryCreatorAlbums extends Backend
         // Create default upload folder.
         if (false === $blnDoNotCreateDir) {
             // Create the new folder and register it in tl_files
-            $objFolder = new Folder($this->uploadPath.'/'.$strAlias);
+            $objFolder = new Folder($this->getUploadPath().'/'.$strAlias);
             $objFolder->unprotect();
             $oFolder = Dbafs::addResource($objFolder->path, true);
             $objAlbum->assignedDir = $oFolder->uuid;

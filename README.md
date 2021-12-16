@@ -6,7 +6,7 @@
 
 Mit dieser Erweiterung für Contao CMS lassen sich Alben erstellen, verwalten und anzeigen.
  Gallery Creator Bundle bietet eine Albenauflistung und eine Alben-Detailansicht.
- Als Lightbox wird die ![Glightbox](https://biati-digital.github.io/glightbox/) empfohlen, welche mit `composer require inspiredminds/contao-glightbox` onstalliert werden kann.
+ Als Lightbox wird die [Glightbox](https://biati-digital.github.io/glightbox/) empfohlen, welche mit `composer require inspiredminds/contao-glightbox` onstalliert werden kann.
  Im Theme muss dann nur noch das Template aktiviert werden.
 
 ## "gc_generateFrontendTemplate"-Hook

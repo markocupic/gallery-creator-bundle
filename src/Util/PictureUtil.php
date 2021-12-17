@@ -40,10 +40,16 @@ class PictureUtil
      */
     private $requestStack;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack)
+    /**
+     * @var string
+     */
+    private $galleryCreatorReadExifMetaData;
+
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, string $galleryCreatorReadExifMetaData)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
+        $this->galleryCreatorReadExifMetaData = $galleryCreatorReadExifMetaData;
     }
 
     /**
@@ -113,7 +119,7 @@ class PictureUtil
             'href' => $href,
             'localMediaSrc' => $localMediaSrc,
             'socialMediaSrc' => $socialMediaSrc,
-            'exif' => Config::get('gc_read_exif') ? $this->getExif(new File($filesModel->path)) : [],
+            'exif' => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
             'cssID' => '' !== $cssID[0] ? $cssID[0] : '',
             'cssClass' => '' !== $cssID[1] ? $cssID[1] : '',
             'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),

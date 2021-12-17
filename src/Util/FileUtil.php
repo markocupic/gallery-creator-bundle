@@ -48,11 +48,17 @@ class FileUtil
      */
     private $projectDir;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, string $projectDir)
+    /**
+     * @var string
+     */
+    private $galleryCreatorCopyImagesOnImport;
+
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, string $projectDir, string $galleryCreatorCopyImagesOnImport)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
         $this->projectDir = $projectDir;
+        $this->galleryCreatorCopyImagesOnImport = $galleryCreatorCopyImagesOnImport;
     }
 
     /**
@@ -327,7 +333,7 @@ class FileUtil
 
                 Input::setGet('importFromFilesystem', 'true');
 
-                if (Config::get('gc_album_import_copy_files')) {
+                if ($this->galleryCreatorCopyImagesOnImport) {
                     $strSource = $image['path'];
 
                     // Get the album upload directory

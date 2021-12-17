@@ -131,8 +131,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'relation'   => array('type' => 'belongsTo', 'load' => 'lazy'),
 			'sql'        => "int(10) unsigned NOT NULL default '0'",
 		),
-		'sorting'             => array('sql' => "int(10) unsigned NOT NULL default '0'"),
-		'tstamp'              => array('sql' => "int(10) unsigned NOT NULL default '0'"),
+		'sorting'             => array(
+		    'sql' => "int(10) unsigned NOT NULL default '0'",
+        ),
+		'tstamp'              => array(
+		    'sql' => "int(10) unsigned NOT NULL default '0'",
+        ),
 		'published'           => array(
 			'eval'      => array('submitOnChange' => true),
 			'inputType' => 'checkbox',
@@ -183,18 +187,20 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 		'alias'               => array(
 			'eval'          => array('doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true),
 			'inputType'     => 'text',
-			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbGenerateAlias')),
+			'save_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'saveCbGenerateAlias'),
+            ),
 			'sql'           => "varchar(128) COLLATE utf8_bin NOT NULL default ''",
 		),
 		'description'         => array(
-			'eval'      => array('style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr'),
+			'eval'      => array('decodeEntities' => true, 'tl_class' => 'clr'),
 			'exclude'   => true,
 			'inputType' => 'textarea',
 			'search'    => true,
 			'sql'       => "text NULL",
 		),
 		'keywords'            => array(
-			'eval'      => array('style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr'),
+			'eval'      => array('decodeEntities' => true, 'tl_class' => 'clr'),
 			'exclude'   => true,
 			'inputType' => 'textarea',
 			'search'    => true,
@@ -210,16 +216,22 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 		'thumb'               => array(
 			'eval'                 => array('doNotShow' => true, 'includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true),
 			'inputType'            => 'radio',
-			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbThumb'),
+			'input_field_callback' => array(
+			    TlGalleryCreatorAlbums::class, 'inputFieldCbThumb',
+            ),
 			'sql'                  => "int(10) unsigned NOT NULL default '0'",
 		),
 		'fileupload'          => array(
 			'eval'                 => array('doNotShow' => true),
-			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateUploaderMarkup'),
+			'input_field_callback' => array(
+			    TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateUploaderMarkup',
+            ),
 		),
 		'albumInfo'          => array(
 			'eval'                 => array('doNotShow' => true),
-			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateAlbumInformations'),
+			'input_field_callback' => array(
+			    TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateAlbumInformations',
+                ),
 		),
 		// save value in tl_user
 		'uploader'            => array(
@@ -227,26 +239,36 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'inputType'     => 'select',
 			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetUploader')),
 			'options'       => array('be_gc_html5_uploader'),
-			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbSaveUploader')),
+			'save_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'saveCbSaveUploader'),
+                ),
 			'sql'           => "varchar(32) NOT NULL default 'be_gc_html5_uploader'",
 		),
 		// save value in tl_user
 		'imageResolution'      => array(
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
 			'inputType'     => 'select',
-			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetImageResolution')),
+			'load_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'loadCbGetImageResolution'),
+                ),
 			'options'       => array_merge(array('no_scaling'), range(100, 3500, 50)),
 			'reference'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reference'],
-			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageResolution')),
+			'save_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageResolution'),
+                ),
 			'sql'           => "smallint(5) unsigned NOT NULL default '600'",
 		),
 		// save value in tl_user
 		'imageQuality'         => array(
 			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
 			'inputType'     => 'select',
-			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetImageQuality')),
+			'load_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'loadCbGetImageQuality'),
+                ),
 			'options'       => range(10, 100, 10),
-			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageQuality')),
+			'save_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageQuality'),
+                ),
 			'sql'           => "smallint(3) unsigned NOT NULL default '100'",
 		),
 		'preserveFilename'   => array(
@@ -301,14 +323,18 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
 			'inputType'     => 'select',
 			'options'       => array('----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'),
 			'reference'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
-			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbSortAlbum')),
+			'save_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'saveCbSortAlbum'),
+                ),
 			'sql'           => "varchar(32) NOT NULL default ''",
 		),
 		'filePrefix'          => array(
 			'eval'          => array('mandatory' => false, 'tl_class' => 'clr', 'rgxp' => 'alnum', 'nospace' => true),
 			'exclude'       => true,
 			'inputType'     => 'text',
-			'save_callback' => array(array(TlGalleryCreatorAlbums::class, 'saveCbValidateFileprefix')),
+			'save_callback' => array(
+			    array(TlGalleryCreatorAlbums::class, 'saveCbValidateFileprefix'),
+            ),
 			'sql'           => "varchar(32) NOT NULL default ''",
 		),
 	),

@@ -307,7 +307,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $template->arrAlbums = $arrAlbums;
 
                 // Call gcGenerateFrontendTemplateHook
-                $template = $this->callGcGenerateFrontendTemplateHook($this, $template, null);
+                $this->callGcGenerateFrontendTemplateHook($template, null);
                 break;
 
             case 'detail_view':
@@ -403,7 +403,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->albumUtil->countAlbumViews($objAlbum);
 
                 // Call gcGenerateFrontendTemplateHook
-                $template = $this->callGcGenerateFrontendTemplateHook($this, $template, $objAlbum);
+                $this->callGcGenerateFrontendTemplateHook($template, $objAlbum);
                 break;
 
             case 'single_image':
@@ -499,7 +499,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->albumUtil->countAlbumViews($objAlbum);
 
                 // Call gcGenerateFrontendTemplateHook
-                $template = $this->callGcGenerateFrontendTemplateHook($this, $template, $objAlbum);
+                $this->callGcGenerateFrontendTemplateHook($template, $objAlbum);
 
                 break;
         }
@@ -545,7 +545,7 @@ class GalleryCreatorController extends AbstractContentElementController
         return array_map('intval', $objAlbums->fetchEach('id'));
     }
 
-    protected function callGcGenerateFrontendTemplateHook(self $objModule, Template $template, GalleryCreatorAlbumsModel $objAlbum = null): Template
+    protected function callGcGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $objAlbum = null): void
     {
         /** @var System $systemAdapter */
         $systemAdapter = $this->framework->getAdapter(System::class);
@@ -553,11 +553,9 @@ class GalleryCreatorController extends AbstractContentElementController
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
             foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
-                $template = $systemAdapter->importStatic($callback[0])->{$callback[1]}($objModule, $template, $objAlbum);
+                $systemAdapter->importStatic($callback[0])->{$callback[1]}($this, $template, $objAlbum);
             }
         }
-
-        return $template;
     }
 
     /**

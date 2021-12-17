@@ -68,6 +68,16 @@ class TlGalleryCreatorAlbums extends Backend
     private $projectDir;
 
     /**
+     * @var string
+     */
+    private $galleryCreatorUploadPath;
+
+    /**
+     * @var
+     */
+    private $galleryCreatorBackendWriteProtection;
+
+    /**
      * @var Session|null
      */
     private $session;
@@ -77,15 +87,19 @@ class TlGalleryCreatorAlbums extends Backend
      */
     private $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, string $projectDir)
+    public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, string $projectDir, string $galleryCreatorUploadPath, string $galleryCreatorBackendWriteProtection)
     {
-        parent::__construct();
 
         $this->requestStack = $requestStack;
-        $this->fileUtil = $fileUtil;
         $this->albumUtil = $albumUtil;
+        $this->fileUtil = $fileUtil;
         $this->projectDir = $projectDir;
+        $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
+        $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
+
         $this->session = $requestStack->getCurrentRequest()->getSession();
+
+        parent::__construct();
 
         $this->import('BackendUser', 'User');
 
@@ -141,7 +155,7 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
             return '';
         }
 
@@ -157,7 +171,7 @@ class TlGalleryCreatorAlbums extends Backend
             ->execute($row['id'])
         ;
 
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
             return Image::getHtml($icon).' ';
         }
 
@@ -175,7 +189,7 @@ class TlGalleryCreatorAlbums extends Backend
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($intId);
 
         // Check if the user is allowed to publish/unpublish an album.
-        if (!$this->User->isAdmin && $objAlbum->owner !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->User->isAdmin && $objAlbum->owner !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
             $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
             $this->redirect('contao?act=error');
         }
@@ -220,7 +234,7 @@ class TlGalleryCreatorAlbums extends Backend
     public function buttonCbCutPicture($row, $href, $label, $title, $icon, $attributes)
     {
         // Allow cutting albums for album-owners and admins only
-        return (int) $this->User->id === (int) $row['owner'] || $this->User->isAdmin || Config::get('gc_disable_backend_edit_protection') ? ' <a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : ' '.Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
+        return (int) $this->User->id === (int) $row['owner'] || $this->User->isAdmin || !$this->galleryCreatorBackendWriteProtection ? ' <a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : ' '.Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
     }
 
     /**
@@ -236,7 +250,7 @@ class TlGalleryCreatorAlbums extends Backend
     public function buttonCbDelete($row, $href, $label, $title, $icon, $attributes): string
     {
         // enable deleting albums to album-owners and admins only
-        return $this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
+        return $this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
     }
 
     /**
@@ -325,7 +339,7 @@ class TlGalleryCreatorAlbums extends Backend
     {
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
 
-        if ($this->User->isAdmin || Config::get('gc_disable_backend_edit_protection')) {
+        if ($this->User->isAdmin || !$this->galleryCreatorBackendWriteProtection) {
             $this->restrictedUser = false;
 
             return;
@@ -340,15 +354,7 @@ class TlGalleryCreatorAlbums extends Backend
         $this->restrictedUser = false;
     }
 
-    /**
-     * Return the album upload path.
-     *
-     * @return string
-     */
-    public function getUploadPath()
-    {
-        return Config::get('galleryCreatorUploadPath');
-    }
+
 
     /**
      * Return the html.
@@ -599,7 +605,7 @@ class TlGalleryCreatorAlbums extends Backend
                     continue;
                 }
 
-                if ($this->User->isAdmin || (int) $objAlbumModel->owner === (int) $this->User->id || Config::get('gc_disable_backend_edit_protection')) {
+                if ($this->User->isAdmin || (int) $objAlbumModel->owner === (int) $this->User->id || !$this->galleryCreatorBackendWriteProtection) {
                     // remove all pictures from tl_gallery_creator_pictures
                     $objPicturesModel = GalleryCreatorPicturesModel::findByPid($idDelAlbum);
 
@@ -649,14 +655,14 @@ class TlGalleryCreatorAlbums extends Backend
     public function onloadCbCheckFolderSettings(DataContainer $dc): void
     {
         // Create the upload directory if it doesn't already exist
-        $objFolder = new Folder($this->getUploadPath());
+        $objFolder = new Folder($this->galleryCreatorUploadPath);
         $objFolder->unprotect();
-        Dbafs::addResource($this->getUploadPath(), false);
+        Dbafs::addResource($this->galleryCreatorUploadPath, false);
 
         $translator = System::getContainer()->get('translator');
 
-        if (!is_writable($this->projectDir.'/'.$this->getUploadPath())) {
-            Message::addError($translator->trans('ERR.dirNotWriteable', [$this->getUploadPath()], 'contao_default'));
+        if (!is_writable($this->projectDir.'/'.$this->galleryCreatorUploadPath)) {
+            Message::addError($translator->trans('ERR.dirNotWriteable', [$this->galleryCreatorUploadPath], 'contao_default'));
         }
     }
 
@@ -1099,7 +1105,7 @@ class TlGalleryCreatorAlbums extends Backend
         // Create default upload folder.
         if (false === $blnDoNotCreateDir) {
             // Create the new folder and register it in tl_files
-            $objFolder = new Folder($this->getUploadPath().'/'.$strAlias);
+            $objFolder = new Folder($this->galleryCreatorUploadPath.'/'.$strAlias);
             $objFolder->unprotect();
             $oFolder = Dbafs::addResource($objFolder->path, true);
             $objAlbum->assignedDir = $oFolder->uuid;

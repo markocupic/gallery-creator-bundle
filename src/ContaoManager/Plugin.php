@@ -17,7 +17,9 @@ namespace Markocupic\GalleryCreatorBundle\ContaoManager;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Contao\ManagerPlugin\Config\ConfigPluginInterface;
 use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -26,7 +28,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @author Marko Cupic
  */
-class Plugin implements BundlePluginInterface, RoutingPluginInterface
+class Plugin implements ConfigPluginInterface, BundlePluginInterface, RoutingPluginInterface
 {
     /**
      * {@inheritdoc}
@@ -38,6 +40,14 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
                 ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle'])
                 ->setReplace(['gallery_creator']),
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerContainerConfiguration(LoaderInterface $loader, array $config): void
+    {
+        $loader->load('@MarkocupicGalleryCreatorBundle/Resources/config/config.yml');
     }
 
     /**

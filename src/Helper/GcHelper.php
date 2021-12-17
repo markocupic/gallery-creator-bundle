@@ -58,7 +58,7 @@ class GcHelper
         $session->set('gc_error', []);
 
         // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
-        new Folder(Config::get('galleryCreatorUploadPath'));
+        new Folder(System::getContainer()->getParameter('markocupic_gallery_creator.upload_path'));
 
         // Check for valid album owner
         $objUser = UserModel::findByPk($albumModel->owner);

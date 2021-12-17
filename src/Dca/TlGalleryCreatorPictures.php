@@ -62,6 +62,16 @@ class TlGalleryCreatorPictures extends Backend
     private $projectDir;
 
     /**
+     * @var string
+     */
+    private $galleryCreatorUploadPath;
+
+    /**
+     * @var string
+     */
+    private $galleryCreatorBackendWriteProtection;
+
+    /**
      * @var Session|null
      */
     private $session;
@@ -71,13 +81,16 @@ class TlGalleryCreatorPictures extends Backend
      */
     private $uploadPath;
 
-    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, string $projectDir)
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, string $projectDir, string $galleryCreatorUploadPath, string $galleryCreatorBackendWriteProtection)
     {
         parent::__construct();
 
         $this->requestStack = $requestStack;
         $this->fileUtil = $fileUtil;
         $this->projectDir = $projectDir;
+        $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
+        $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
+
         $this->session = $this->requestStack->getCurrentRequest()->getSession();
 
         $this->import('BackendUser', 'User');
@@ -120,7 +133,7 @@ class TlGalleryCreatorPictures extends Backend
             case 'select':
                 if (!$this->User->isAdmin) {
                     // Only list pictures where user is owner
-                    if (!Config::get('gc_disable_backend_edit_protection')) {
+                    if ($this->galleryCreatorBackendWriteProtection) {
                         $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner=?', $this->User->id]];
                     }
                 }
@@ -158,7 +171,7 @@ class TlGalleryCreatorPictures extends Backend
             ->execute($row['id'])
         ;
 
-        return $this->User->isAdmin || (int) $this->User->id === (int) $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
+        return $this->User->isAdmin || (int) $this->User->id === (int) $objImg->owner || !$this->galleryCreatorBackendWriteProtection ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
     }
 
     /**
@@ -178,7 +191,7 @@ class TlGalleryCreatorPictures extends Backend
             ->execute($row['id'])
         ;
 
-        return $this->User->isAdmin || (int) $this->User->id === (int) $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
+        return $this->User->isAdmin || (int) $this->User->id === (int) $objImg->owner || !$this->galleryCreatorBackendWriteProtection ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)).' ';
     }
 
     /**
@@ -210,7 +223,7 @@ class TlGalleryCreatorPictures extends Backend
      */
     public function buttonCbRotateImage($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&imgId='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml($icon, $label);
+        return $this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection ? '<a href="'.$this->addToUrl($href.'&imgId='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml($icon, $label);
     }
 
     /**
@@ -475,7 +488,7 @@ class TlGalleryCreatorPictures extends Backend
                 ->execute(Input::get('id'))
             ;
 
-            if (Config::get('gc_disable_backend_edit_protection')) {
+            if (!$this->galleryCreatorBackendWriteProtection) {
                 return;
             }
 
@@ -519,7 +532,7 @@ class TlGalleryCreatorPictures extends Backend
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
             return '';
         }
 
@@ -529,7 +542,7 @@ class TlGalleryCreatorPictures extends Backend
             $icon = 'invisible.gif';
         }
 
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
             return Image::getHtml($icon).' ';
         }
 
@@ -547,7 +560,7 @@ class TlGalleryCreatorPictures extends Backend
         $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
 
         // Check if user is allowed to toggle visibility
-        if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
             $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
             $this->redirect('contao?act=error');
         }

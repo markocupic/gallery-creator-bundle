@@ -16,9 +16,6 @@ use Markocupic\GalleryCreatorBundle\Listener\ContaoHook\InitializeSystem;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 
-// Define upload path
-Config::set('galleryCreatorUploadPath', Config::get('uploadPath') . '/gallery_creator_albums');
-
 /**
  * Back end module
  */

@@ -5,6 +5,10 @@ services:
         public: true
         bind:
             $projectDir: '%kernel.project_dir%'
+            $galleryCreatorUploadPath: '%markocupic_gallery_creator.upload_path%'
+            $galleryCreatorBackendWriteProtection: '%markocupic_gallery_creator.backend_write_protection%'
+            $galleryCreatorCopyImagesOnImport: '%markocupic_gallery_creator.copy_images_on_import%'
+            $galleryCreatorReadExifMetaData: '%markocupic_gallery_creator.read_exif_meta_data%'
 
     _instanceof:
         Symfony\Bundle\FrameworkBundle\Controller\AbstractController:

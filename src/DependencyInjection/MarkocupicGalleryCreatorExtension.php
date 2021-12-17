@@ -29,6 +29,9 @@ class MarkocupicGalleryCreatorExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__.'/../Resources/config')
@@ -38,5 +41,11 @@ class MarkocupicGalleryCreatorExtension extends Extension
         $loader->load('services.yml');
         $loader->load('listener.yml');
         $loader->load('subscriber.yml');
+
+        // Configuration
+        $container->setParameter('markocupic_gallery_creator.upload_path', $config['upload_path']);
+        $container->setParameter('markocupic_gallery_creator.backend_write_protection', $config['backend_write_protection']);
+        $container->setParameter('markocupic_gallery_creator.copy_images_on_import', $config['copy_images_on_import']);
+        $container->setParameter('markocupic_gallery_creator.read_exif_meta_data', $config['read_exif_meta_data']);
     }
 }

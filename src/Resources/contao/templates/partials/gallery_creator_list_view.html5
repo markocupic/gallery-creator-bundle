@@ -4,6 +4,7 @@
 <?= $this->pagination ?>
 
 <ul class="gc-list-view">
+    <h1><?= $this->hallo ?></h1>
 	<?php foreach ($this->arrAlbums as $album): ?>
 	<li<?php if($album['cssClass']): ?> class="<?= $album['cssClass'] ?>"<?php endif; ?>>
 	<?php $this->insert('gallery_creator_album', ['album' => $album]); ?>

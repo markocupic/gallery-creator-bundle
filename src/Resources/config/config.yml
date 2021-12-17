@@ -1,0 +1,5 @@
+markocupic_gallery_creator:
+    upload_path: 'files/gallery_creator_albums'
+    backend_write_protection: false
+    copy_images_on_import: true
+    read_exif_meta_data: false

@@ -73,4 +73,29 @@ div.readonly input {
     padding-left: 20px;
 }
 
+.gc-element-background-view{
+    background-color: #1a1a1aff;
+    width: 100%;
+
+}
+
+.gc-element-background-inner{
+    width: 300px;
+    max-width: 80%;
+    position: relative;
+    justify-content: center;
+}
+
+.gc-flex-justify-content-center{
+    justify-content: center;
+}
+
+.gc-flex{
+    display:flex;
+}
+
+.gc-w-100{
+    width: 100%;
+    height:auto;
+}
 

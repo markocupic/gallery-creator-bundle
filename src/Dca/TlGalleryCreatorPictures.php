@@ -67,7 +67,7 @@ class TlGalleryCreatorPictures extends Backend
     private $galleryCreatorUploadPath;
 
     /**
-     * @var string
+     * @var bool
      */
     private $galleryCreatorBackendWriteProtection;
 
@@ -81,7 +81,7 @@ class TlGalleryCreatorPictures extends Backend
      */
     private $uploadPath;
 
-    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, string $projectDir, string $galleryCreatorUploadPath, string $galleryCreatorBackendWriteProtection)
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
     {
         parent::__construct();
 

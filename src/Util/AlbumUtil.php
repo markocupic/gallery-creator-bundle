@@ -80,7 +80,7 @@ class AlbumUtil
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
         $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPics ? $countPics.' '.$GLOBALS['TL_LANG']['gallery_creator']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $subAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['gallery_creator']['contains'].' '.$subAlbumCount.'  '.$GLOBALS['TL_LANG']['gallery_creator']['subalbums'].']' : ']');
+        $arrMeta['title'] = $albumModel->name.' ['.($countPics ? $countPics.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $subAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$subAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['subalbums'].']' : ']');
 
         $arrCssClasses = [];
         $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'has-child-album' : '';

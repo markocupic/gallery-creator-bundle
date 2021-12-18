@@ -8,7 +8,7 @@
 <?php endif; ?>
 
 <?php if ($this->backLink !== null): ?>
-<div class="backLink"><a href="<?= $this->backLink ?>" title="<?= $this->trans('gallery_creator.backToOverview',[]) ?>"><?= $this->trans('gallery_creator.backToOverview',[]) ?></a></div>
+<div class="backLink"><a href="<?= $this->backLink ?>" title="<?= $this->trans('GALLERY_CREATOR.backToOverview',[]) ?>"><?= $this->trans('GALLERY_CREATOR.backToOverview',[]) ?></a></div>
 <?php endif; ?>
 
 <?php if ($this->albumname): ?>
@@ -17,7 +17,7 @@
 
 <?php if ($this->hasChildAlbums): ?>
 <div class="subalbums">
-  <h3><?= $this->trans('gallery_creator.childAlbumsOf',[]) ?>: <?= $this->albumname ?></h3>
+  <h3><?= $this->trans('GALLERY_CREATOR.childAlbumsOf',[]) ?>: <?= $this->albumname ?></h3>
 
   <ul class="gc-list-view">
     <?php foreach ($this->subalbums as $subalbum): ?>

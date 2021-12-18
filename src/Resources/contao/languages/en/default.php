@@ -13,7 +13,7 @@ declare(strict_types=1);
  */
 
 /*
- * error messages
+ * Error messages
  */
 $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'The file "%s" doesn\'t exist on your server!';
 $GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. <br>Please clean up the database or check the existence of %s in the album with alias: %s!';
@@ -24,16 +24,18 @@ $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not write
 $GLOBALS['TL_LANG']['ERR']['supportJpegFormatOnly'] = 'Gallery Creator only supports jpeg/jpg files.';
 
 /*
- * frontend
+ * Frontend
  */
-$GLOBALS['TL_LANG']['gallery_creator']['backToOverview'] = 'back to general view';
-$GLOBALS['TL_LANG']['gallery_creator']['subalbums'] = 'subalbums';
-$GLOBALS['TL_LANG']['gallery_creator']['childAlbumsOf'] = 'Subalbums of';
-$GLOBALS['TL_LANG']['gallery_creator']['pictures'] = 'pictures';
-$GLOBALS['TL_LANG']['gallery_creator']['contains'] = 'contains';
-$GLOBALS['TL_LANG']['gallery_creator']['visitors'] = 'visitors';
-$GLOBALS['TL_LANG']['gallery_creator']['feAuthentificationError'] = ['Authentification error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
-$GLOBALS['TL_LANG']['gallery_creator']['photographerName'] = 'Photographers name';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['backToOverview'] = 'back to general view';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['subalbums'] = 'subalbums';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbumsOf'] = 'Subalbums of';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] = 'pictures';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'] = 'contains';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['visitors'] = 'visitors';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthentificationError'] = ['Authentification error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['photographerName'] = 'Photographers name';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
+
 
 /*
  * Backend

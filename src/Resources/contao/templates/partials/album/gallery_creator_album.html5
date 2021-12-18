@@ -11,17 +11,21 @@
 
         <p class="time">{{date::Y-m-d::<?= $this->album['albumModel']->date ?>}}</p>
 
+        <?php if ($this->album['albumModel']->eventLocation): ?>
+        <p class="event-location"><?= $this->trans('GALLERY_CREATOR.eventLocation') ?>: <?= $this->album['albumModel']->eventLocation ?></p>
+        <?php endif; ?>
+
         <?php if ($this->album['albumModel']->photographer): ?>
-        <p class="photographer"><?= $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] ?>: <?= $this->album['albumModel']->photographer ?></p>
+        <p class="photographer"><?= $this->trans('GALLERY_CREATOR.photographerName') ?>: <?= $this->album['albumModel']->photographer ?></p>
         <?php endif; ?>
 
         <?php if ($this->album['count']): ?>
-        <p class="gc-count-pics"><?= $this->album['count'] ?> <?= $this->trans('gallery_creator.pictures',[]) ?></p>
-        <p class="gc-visitors"><?= $this->album['albumModel']->visitors ?> <?= $this->trans('gallery_creator.visitors',[]) ?></p>
+        <p class="gc-count-pics"><?= $this->album['count'] ?> <?= $this->trans('GALLERY_CREATOR.pictures') ?></p>
+        <p class="gc-visitors"><?= $this->album['albumModel']->visitors ?> <?= $this->trans('GALLERY_CREATOR.visitors') ?></p>
         <?php endif; ?>
 
         <?php if ($this->album['countSubalbums']): ?>
-        <p class="gc-count-pics"><?= $this->album['countSubalbums'] ?> <?= $this->trans('gallery_creator.subalbums',[]) ?></p>
+        <p class="gc-count-pics"><?= $this->album['countSubalbums'] ?> <?= $this->trans('GALLERY_CREATOR.subalbums') ?></p>
         <?php endif; ?>
     </div>
 

@@ -139,7 +139,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'search' => true,
             'sql' => "varchar(255) NOT NULL default ''",
         ],
-        //activate subpalette
         'externalFile' => [
             'sql' => "char(1) NOT NULL default ''",
         ],

@@ -21,6 +21,7 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Database;
 use Contao\FilesModel;
 use Contao\StringUtil;
+use Doctrine\DBAL\Connection;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
@@ -38,10 +39,16 @@ class AlbumUtil
      */
     private $requestStack;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack)
+    /**
+     * @var Connection
+     */
+    private $connection;
+
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
+        $this->connection = $connection;
     }
 
     public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
@@ -51,13 +58,15 @@ class AlbumUtil
 
         $subAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
 
-        $objPics = Database::getInstance()
-            ->prepare('SELECT COUNT(id) as count FROM tl_gallery_creator_pictures WHERE pid=? AND published=?')
-            ->execute($albumModel->id, '1')
+        // Count images
+        $pics = $this->connection
+            ->executeQuery(
+                'SELECT COUNT(id) AS count FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
+                [$albumModel->id,'1'],
+            )
+            ->fetchAssociative()
         ;
-        $countPics = $objPics->count;
-
-        $arrSize = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
+        $countPics = $pics['count'];
 
         $href = null;
 

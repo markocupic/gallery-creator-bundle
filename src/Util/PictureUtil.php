@@ -45,7 +45,7 @@ class PictureUtil
      */
     private $galleryCreatorReadExifMetaData;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, string $galleryCreatorReadExifMetaData)
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, bool $galleryCreatorReadExifMetaData)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;

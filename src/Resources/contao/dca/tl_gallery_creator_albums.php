@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 
 use Contao\BackendUser;
-use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorAlbums;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
     // Config

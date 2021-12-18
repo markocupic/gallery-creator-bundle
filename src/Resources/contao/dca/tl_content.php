@@ -23,7 +23,7 @@ $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = [
 
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gcHierarchicalOutput,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
-{pagination_legend},gcAlbumsPerPage,gcThumbsPerPage,gcPaginationNumberOfLinks;
+{pagination_legend},gcAlbumsPerPage,gcThumbsPerPage;
 {album_listing_legend},gcSorting,gcSortingDirection;
 {picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
@@ -32,7 +32,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = '
 
 $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_news'] = 'name,type,headline;
 {album_listing_legend},gcPublishSingleAlbum;
-{pagination_legend},gcThumbsPerPage,gcPaginationNumberOfLinks;
+{pagination_legend},gcThumbsPerPage;
 {picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
@@ -93,13 +93,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumsPerPage'] = [
     'exclude' => true,
     'inputType' => 'text',
     'sql' => "smallint(5) unsigned NOT NULL default '0'",
-];
-
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcPaginationNumberOfLinks'] = [
-    'eval' => ['rgxp' => 'digit', 'tl_class' => 'clr'],
-    'exclude' => true,
-    'inputType' => 'text',
-    'sql' => "smallint(5) unsigned NOT NULL default '7'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [

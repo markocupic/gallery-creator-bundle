@@ -48,14 +48,12 @@ class ParseBackendTemplate
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if ($request && $this->scopeMatcher->isBackendRequest($request)){
-
-            if('tl_gallery_creator_albums' === $request->query->get('table') && 'fileupload' === $request->query->get('mode')) {
+        if ($request && $this->scopeMatcher->isBackendRequest($request)) {
+            if ('tl_gallery_creator_albums' === $request->query->get('table') && 'fileupload' === $request->query->get('mode')) {
                 // Form encoding
                 $strContent = str_replace('application/x-www-form-urlencoded', 'multipart/form-data', $strContent);
             }
         }
-
 
         return $strContent;
     }

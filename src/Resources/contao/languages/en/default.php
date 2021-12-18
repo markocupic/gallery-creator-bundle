@@ -36,7 +36,6 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthentificationError'] = ['Authentifi
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['photographerName'] = 'Photographers name';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
 
-
 /*
  * Backend
  */

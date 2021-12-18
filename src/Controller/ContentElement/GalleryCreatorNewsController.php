@@ -151,8 +151,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
             $itemsTotal = $objPictures->numRows;
 
             // Create the pagination menu
-            $numberOfLinks = $this->model->gcPaginationNumberOfLinks < 1 ? 7 : $this->model->gcPaginationNumberOfLinks;
-            $objPagination = new Pagination($itemsTotal, $limit, $numberOfLinks);
+            $objPagination = new Pagination($itemsTotal, $limit);
             $template->pagination = $objPagination->generate("\n ");
         }
 

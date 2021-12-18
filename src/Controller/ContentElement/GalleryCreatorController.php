@@ -29,10 +29,10 @@ use Contao\FrontendUser;
 use Contao\Input;
 use Contao\MemberModel;
 use Contao\PageModel;
-use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
+use Haste\Util\Pagination;
 use Haste\Util\Url;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
@@ -208,7 +208,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
         }
 
-        // Build up the new array
+        // Build the new array
         $this->arrSelectedAlbums = array_values($this->arrSelectedAlbums);
 
         // Abort if no album is selected
@@ -226,7 +226,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
 
             // Check if user is authorized.
-            // If not, he gets to see the album preview image only.
+            // If not, show empty page.
             if (!$this->securityUtil->isAuthorized($this->activeAlbum)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
@@ -235,7 +235,7 @@ class GalleryCreatorController extends AbstractContentElementController
         $this->viewMode = !empty(Input::get('img')) ? 'single_image' : $this->viewMode;
 
         if ('list_view' === $this->viewMode) {
-            // Redirect to detail view if there is only one album
+            // Redirect to detail view if there is only one album.
             if (1 === \count($this->arrSelectedAlbums) && $this->model->gcRedirectSingleAlb) {
                 $this->session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
                 Controller::reload();
@@ -279,7 +279,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $itemsTotal = \count($this->arrSelectedAlbums);
                 $perPage = (int) $this->model->gcAlbumsPerPage;
 
-                $objPagination = new \Haste\Util\Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
+                $objPagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
 
                 if ($objPagination->isOutOfRange()) {
                     throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
@@ -291,7 +291,7 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 $template->pagination = $objPagination->generate();
 
-                $template->arrAlbums  = array_map(
+                $template->arrAlbums = array_map(
                     function ($id) {
                         $albumModel = GalleryCreatorAlbumsModel::findByPk($id);
 
@@ -299,7 +299,6 @@ class GalleryCreatorController extends AbstractContentElementController
                     },
                     $arrItems
                 );
-
 
                 // Trigger gcGenerateFrontendTemplateHook
                 $this->callGcGenerateFrontendTemplateHook($template, null);
@@ -323,14 +322,13 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 $perPage = (int) $this->model->gcThumbsPerPage;
 
-                $objPagination = new \Haste\Util\Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
+                $objPagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
 
                 if ($objPagination->isOutOfRange()) {
                     throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
                 }
 
                 $template->pagination = $objPagination->generate();
-
 
                 // Picture sorting
                 $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;

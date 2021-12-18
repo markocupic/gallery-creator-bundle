@@ -169,13 +169,6 @@ class Version200Update extends AbstractMigration
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
-                'old' => 'gc_paginationNumberOfLinks',
-                'new' => 'gcPaginationNumberOfLinks',
-                'sql' => 'smallint(5)',
-            ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
                 'old' => 'gc_size_detailview',
                 'new' => 'gcSizeDetailView',
                 'sql' => 'varchar(64)',

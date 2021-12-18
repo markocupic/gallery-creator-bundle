@@ -31,7 +31,6 @@ $GLOBALS['TL_LANG']['tl_content']['gc_activateThumbSlider'] = ['Activate Ajax-Th
 $GLOBALS['TL_LANG']['tl_content']['gcRedirectSingleAlb'] = ['Redirection in case of a single album', 'Should be automatically redirected to the detail-view, in case of single-album-choice?'];
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumsPerPage'] = ['Items per page in the albumlisting', 'The number of items per page in the albumlisting. Set to 0 to disable pagination.'];
 $GLOBALS['TL_LANG']['tl_content']['gcThumbsPerPage'] = ['Thumbs per page in the detailview', 'The number of thumbnails per page in the detailview. Set to 0 to disable pagination.'];
-$GLOBALS['TL_LANG']['tl_content']['gcPaginationNumberOfLinks'] = ['Number of links in the pagination navigation', 'Set the number of links in the pagination navigation. Default to 7.'];
 $GLOBALS['TL_LANG']['tl_content']['gcSorting'] = ['Album sorting', 'According to which field the albums should be sorted?'];
 $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection'] = ['Sort sequence', 'DESC: descending, ASC: ascending'];
 $GLOBALS['TL_LANG']['tl_content']['gcPictureSorting'] = ['Picture sorting', 'According to which field the pictures in a single album should be sorted?'];

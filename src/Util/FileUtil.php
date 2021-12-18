@@ -26,12 +26,11 @@ use Contao\FileUpload;
 use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
-use Contao\System;
-use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Patchwork\Utf8;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class FileUtil

@@ -216,7 +216,6 @@ class GalleryCreatorController extends AbstractContentElementController
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        // Authenticate and get album alias and album id
         if (Input::get('items')) {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
@@ -226,8 +225,8 @@ class GalleryCreatorController extends AbstractContentElementController
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
 
-            // Authentication for protected albums:
-            // If not authorized, the user gets to see the album preview image only.
+            // Check if user is authorized.
+            // If not, he gets to see the album preview image only.
             if (!$this->securityUtil->isAuthorized($this->activeAlbum)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
@@ -260,13 +259,11 @@ class GalleryCreatorController extends AbstractContentElementController
         }
 
         if ('detail_view' === $this->viewMode) {
-            // for security reasons...
+            // For security reasons...
             if (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
         }
-
-
 
         return parent::__invoke($request, $this->model, $section, $classes, $pageModel);
     }
@@ -279,44 +276,32 @@ class GalleryCreatorController extends AbstractContentElementController
         switch ($this->viewMode) {
             case 'list_view':
 
-                // pagination settings
-                $limit = (int) $this->model->gcAlbumsPerPage;
-                $offset = 0;
+                $itemsTotal = \count($this->arrSelectedAlbums);
+                $perPage = (int) $this->model->gcAlbumsPerPage;
 
-                if ($limit > 0) {
-                    // Get the current page
-                    $id = 'page_g'.$this->model->id;
-                    $page = Input::get($id) ?: 1;
-                    $offset = ($page - 1) * $limit;
+                $objPagination = new \Haste\Util\Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
 
-                    // Count albums
-                    $itemsTotal = \count($this->arrSelectedAlbums);
-
-                    // Create pagination menu
-                    $numberOfLinks = $this->model->gcPaginationNumberOfLinks < 1 ? 7 : $this->model->gcPaginationNumberOfLinks;
-                    $objPagination = new Pagination($itemsTotal, $limit, $numberOfLinks, $id);
-                    $template->pagination = $objPagination->generate("\n ");
+                if ($objPagination->isOutOfRange()) {
+                    throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
                 }
 
-                if (0 === $limit || $limit > \count($this->arrSelectedAlbums)) {
-                    $limit = \count($this->arrSelectedAlbums);
-                }
+                // Paginate the result
+                $arrItems = $this->arrSelectedAlbums;
+                $arrItems = \array_slice($arrItems, $objPagination->getOffset(), $objPagination->getLimit());
 
-                $arrAlbums = [];
+                $template->pagination = $objPagination->generate();
 
-                for ($i = $offset; $i < $offset + $limit; ++$i) {
-                    if (isset($this->arrSelectedAlbums[$i])) {
-                        $albumModel = GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[$i]);
+                $template->arrAlbums  = array_map(
+                    function ($id) {
+                        $albumModel = GalleryCreatorAlbumsModel::findByPk($id);
 
-                        if (null !== $albumModel) {
-                            $arrAlbums[] = $this->albumUtil->getAlbumData($albumModel, $this->model);
-                        }
-                    }
-                }
+                        return null !== $albumModel ? $this->albumUtil->getAlbumData($albumModel, $this->model) : [];
+                    },
+                    $arrItems
+                );
 
-                $template->arrAlbums = $arrAlbums;
 
-                // Call gcGenerateFrontendTemplateHook
+                // Trigger gcGenerateFrontendTemplateHook
                 $this->callGcGenerateFrontendTemplateHook($template, null);
                 break;
 
@@ -329,51 +314,36 @@ class GalleryCreatorController extends AbstractContentElementController
                     $template->hasChildAlbums = \count($arrChildAlbums) ? true : false;
                 }
 
-                // count pictures
-                $objTotal = Database::getInstance()
-                    ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
+                // Count items
+                $objDb = Database::getInstance()
+                    ->prepare('SELECT COUNT(id) AS total FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
                     ->execute('1', $this->activeAlbum->id)
                 ;
-                $total = $objTotal->numRows;
+                $itemsTotal = $objDb->total;
 
-                // pagination settings
-                $limit = $this->model->gcThumbsPerPage;
-                $offset = 0;
+                $perPage = (int) $this->model->gcThumbsPerPage;
 
-                if ($limit > 0) {
-                    // Get the current page
-                    $id = 'page_g'.$this->model->id;
-                    $page = Input::get($id) ?? 1;
+                $objPagination = new \Haste\Util\Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
 
-                    // Do not index or cache the page if the page number is outside the range
-                    if ($page < 1 || $page > max(ceil($total / $limit), 1)) {
-                        throw new PageNotFoundException('Page not found: '.Environment::get('uri'));
-                    }
-
-                    $offset = ($page - 1) * $limit;
-
-                    // create the pagination menu
-                    $numberOfLinks = $this->model->gcPaginationNumberOfLinks ?? 7;
-                    $objPagination = new Pagination($total, $limit, $numberOfLinks, $id);
-                    $template->pagination = $objPagination->generate("\n  ");
+                if ($objPagination->isOutOfRange()) {
+                    throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
                 }
 
-                // picture sorting
+                $template->pagination = $objPagination->generate();
+
+
+                // Picture sorting
                 $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
 
-                // sort by name is done below
+                // Sort by name will be done below
                 $strSorting = str_replace('name', 'id', $strSorting);
 
                 $objPictures = Database::getInstance()
                     ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$strSorting)
+                    ->limit($objPagination->getLimit(), $objPagination->getOffset())
+                    ->execute(1, $this->activeAlbum->id)
                 ;
 
-                if ($limit > 0) {
-                    $objPictures->limit($limit, $offset);
-                }
-                $objPictures = $objPictures->execute(1, $this->activeAlbum->id);
-
-                // build up $arrPictures
                 $arrPictures = [];
                 $auxBasename = [];
 
@@ -391,7 +361,7 @@ class GalleryCreatorController extends AbstractContentElementController
                     }
                 }
 
-                // sort by basename
+                // Sort by basename
                 if ('name' === $this->model->gcPictureSorting) {
                     if ('ASC' === $this->model->gcPictureSortingDirection) {
                         array_multisort($arrPictures, SORT_STRING, $auxBasename, SORT_ASC);
@@ -402,16 +372,15 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 $arrPictures = array_values($arrPictures);
 
-                // store $arrPictures in the template variable
                 $template->arrPictures = $arrPictures;
 
-                // generate other template variables
+                // Augment template with more properties
                 $this->getAlbumTemplateVars($this->activeAlbum, $template);
 
-                // init the counter
+                // Count views
                 $this->albumUtil->countAlbumViews($this->activeAlbum);
 
-                // Call gcGenerateFrontendTemplateHook
+                // Trigger gcGenerateFrontendTemplateHook
                 $this->callGcGenerateFrontendTemplateHook($template, $this->activeAlbum);
                 break;
 
@@ -429,19 +398,18 @@ class GalleryCreatorController extends AbstractContentElementController
                 $picId = $objPic->id;
                 $published = $objPic->published && $this->activeAlbum->published ? true : false;
 
-                // for security reasons...
+                // For security reasons...
                 if (!$published || (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false))) {
                     throw new \Exception('Picture with id '.$picId." is either not published or not available or you haven't got enough permission to watch it!!!");
                 }
 
-                // picture sorting
+                // Picture sorting
                 $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
                 $objPictures = Database::getInstance()
                     ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$strSorting)
                     ->execute('1', $this->activeAlbum->id)
                 ;
 
-                // build up $arrPictures
                 $arrIDS = [];
                 $i = 0;
                 $currentIndex = null;
@@ -495,13 +463,13 @@ class GalleryCreatorController extends AbstractContentElementController
                 $template->returnHref = StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items'), $this->pageModel->language));
                 $template->arrPictures = $arrPictures;
 
-                // generate other template variables
+                // Augment template with more properties
                 $this->getAlbumTemplateVars($this->activeAlbum, $template);
 
-                // init the counter
+                // Count views
                 $this->albumUtil->countAlbumViews($this->activeAlbum);
 
-                // Call gcGenerateFrontendTemplateHook
+                // Trigger gcGenerateFrontendTemplateHook
                 $this->callGcGenerateFrontendTemplateHook($template, $this->activeAlbum);
 
                 break;

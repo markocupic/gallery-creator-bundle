@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 $GLOBALS['TL_LANG']['tl_module']['thumb_legend'] = 'Thumbnail instellingen';
 $GLOBALS['TL_LANG']['tl_module']['image_legend'] = 'Overige instellingen';
-$GLOBALS['TL_LANG']['tl_module']['gc_activateThumbSlider'][0] = 'Activeer Ajax Thumb Slider';
-$GLOBALS['TL_LANG']['tl_module']['gc_activateThumbSlider'][1] = 'Activeer Ajax-Thumb-Slider op mouseover in de albumlijst?';
 $GLOBALS['TL_LANG']['tl_module']['gcAlbumsPerPage'][0] = 'Onderdelen per pagina in de albumlijst';
 $GLOBALS['TL_LANG']['tl_module']['gcAlbumsPerPage'][1] = 'Aantal onderdelen op een pagina in de albumlijst (0=alles weergeven/geen paginering).';
 $GLOBALS['TL_LANG']['tl_module']['gcThumbsPerPage'][0] = 'Thumbnails per pagina in detailweergave';

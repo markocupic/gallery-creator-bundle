@@ -27,7 +27,6 @@ $GLOBALS['TL_LANG']['tl_content']['gcPublishAlbums'] = ['Publish these albums on
 $GLOBALS['TL_LANG']['tl_content']['gcPublishSingleAlbum'] = ['Publish this album', 'The selected album will be displayed in the frontend.'];
 $GLOBALS['TL_LANG']['tl_content']['gcPublishAllAlbums'] = ['Publish all given albums in the frontend'];
 $GLOBALS['TL_LANG']['tl_content']['gcHierarchicalOutput'] = ['Hierarchically Frontend-Album-Output', 'Hierarchically Frontend-Album-Output (Albums and Subalbums)'];
-$GLOBALS['TL_LANG']['tl_content']['gc_activateThumbSlider'] = ['Activate Ajax-Thumb-Slider', 'Activate Ajax-Thumb-Slider on mouseover in the album listing?'];
 $GLOBALS['TL_LANG']['tl_content']['gcRedirectSingleAlb'] = ['Redirection in case of a single album', 'Should be automatically redirected to the detail-view, in case of single-album-choice?'];
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumsPerPage'] = ['Items per page in the albumlisting', 'The number of items per page in the albumlisting. Set to 0 to disable pagination.'];
 $GLOBALS['TL_LANG']['tl_content']['gcThumbsPerPage'] = ['Thumbs per page in the detailview', 'The number of thumbnails per page in the detailview. Set to 0 to disable pagination.'];

@@ -112,11 +112,6 @@ class GalleryCreatorController extends AbstractContentElementController
     private $pageModel;
 
     /**
-     * @var null Session
-     */
-    private $session;
-
-    /**
      * @var MemberModel
      */
     private $user;
@@ -145,16 +140,16 @@ class GalleryCreatorController extends AbstractContentElementController
 
         $this->model = $model;
         $this->pageModel = $pageModel;
-        $this->session = $request->getSession();
+        $session = $request->getSession();
 
         if ($this->security->getUser() instanceof FrontendUser) {
             $this->user = MemberModel::findByPk($this->security->getUser()->id);
         }
 
         // Get items url param from session
-        if ($this->session->has('gc_redirect_to_album')) {
-            Input::setGet('items', $this->session->get('gc_redirect_to_album'));
-            $this->session->remove('gc_redirect_to_album');
+        if ($session->has('gc_redirect_to_album')) {
+            Input::setGet('items', $session->get('gc_redirect_to_album'));
+            $session->remove('gc_redirect_to_album');
         }
 
         // Set the item from the auto_item parameter
@@ -168,11 +163,11 @@ class GalleryCreatorController extends AbstractContentElementController
 
         // Remove or store the pagination variable "page" in the current session
         if (!Input::get('items')) {
-            $this->session->remove('gc_pagination');
+            $session->remove('gc_pagination');
         }
 
         if (Input::get('page') && 'detail_view' !== $this->viewMode) {
-            $this->session->set('gc_pagination', Input::get('page'));
+            $session->set('gc_pagination', Input::get('page'));
         }
 
         if ($this->model->gcPublishAllAlbums) {
@@ -198,7 +193,6 @@ class GalleryCreatorController extends AbstractContentElementController
             }
 
             // Remove id from $this->arrSelectedAlbums if user is not allowed
-            $request = $this->requestStack->getCurrentRequest();
 
             if ($request && $this->scopeMatcher->isFrontendRequest($request) && true === $objAlbum->protected) {
                 if (!$this->securityUtil->isAuthorized($objAlbum)) {
@@ -237,7 +231,7 @@ class GalleryCreatorController extends AbstractContentElementController
         if ('list_view' === $this->viewMode) {
             // Redirect to detail view if there is only one album.
             if (1 === \count($this->arrSelectedAlbums) && $this->model->gcRedirectSingleAlb) {
-                $this->session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
+                $session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
                 Controller::reload();
             }
 
@@ -495,9 +489,11 @@ class GalleryCreatorController extends AbstractContentElementController
 
         // Generates the link to the startup overview taking into account the pagination
         $url = $this->pageModel->getFrontendUrl();
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
 
-        if ($this->session->has('gc_pagination')) {
-            $url = Url::addQueryString('page_g='.$this->session->get('gc_pagination'), $url);
+        if ($session->has('gc_pagination')) {
+            $url = Url::addQueryString('page_g='.$session->get('gc_pagination'), $url);
         }
 
         return StringUtil::ampersand($url);

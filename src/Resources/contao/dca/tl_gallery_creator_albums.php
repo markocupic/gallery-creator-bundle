@@ -1,341 +1,329 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
 use Contao\BackendUser;
 use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorAlbums;
 
-/**
- * Table tl_gallery_creator_albums
- */
-$GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
-	// Config
-	'config'      => array(
-		'ctable'            => array('tl_gallery_creator_pictures'),
-		'notCopyable'       => true,
-		'enableVersioning'  => true,
-		'dataContainer'     => 'Table',
-		'onload_callback'   => array(
-			array(TlGalleryCreatorAlbums::class, 'handleAjaxRequests'),
-			array(TlGalleryCreatorAlbums::class, 'onloadCbCheckFolderSettings'),
-			array(TlGalleryCreatorAlbums::class, 'onloadCbFileupload'),
-			array(TlGalleryCreatorAlbums::class, 'onloadCbImportFromFilesystem'),
-			array(TlGalleryCreatorAlbums::class, 'onloadCbSetUpPalettes'),
-		),
-		'ondelete_callback' => array(
-			array(TlGalleryCreatorAlbums::class, 'ondeleteCb'),
-		),
-		'sql'               => array(
-			'keys' => array(
-				'id'    => 'primary',
-				'pid'   => 'index',
-				'alias' => 'index',
-			),
-		),
-	),
-	// Buttons callback
-	'edit'        => array(
-		'buttons_callback' => array(array(TlGalleryCreatorAlbums::class, 'buttonsCallback'))
-	),
-	// List
-	'list'        => array(
-		'sorting'           => array(
-			'mode'                  => 5,
-			'panelLayout'           => 'limit,sort',
-			'paste_button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbPastePicture'),
-		),
-		'label'             => array(
-			'fields'         => array('name'),
-			'format'         => '<span style="#padding-left#"><a href="#href#" title="#title#"><img src="#icon#"></span> %s <span style="color:#b3b3b3; padding-left:3px;">[#datum#] [#count_pics# images]</span></a>',
-			'label_callback' => array(TlGalleryCreatorAlbums::class, 'labelCb'),
-		),
-		'global_operations' => array(
-			'all'           => array(
-				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-				'class'      => 'header_edit_all',
-				'href'       => 'act=select',
-			),
-			'reviseDatabase' => array(
-				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-				'class'      => 'icon_reviseDatabase',
-				// href is set in TlGalleryCreatorAlbums::onloadCbSetUpPalettes
-				'href'       => '',
-			),
-		),
-		'operations'        => array(
-			'editheader'    => array
-			(
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbEditHeader'),
-				'href'            => 'act=edit',
-				'icon'            => 'header.svg',
-			),
-			'edit'          => array(
-				'attributes'      => 'class="contextmenu"',
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbEdit'),
-				'href'            => 'table=tl_gallery_creator_pictures',
-				'icon'            => 'bundles/markocupicgallerycreator/images/text_list_bullets.png',
-			),
-			'delete'        => array(
-				'attributes'      => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] . '\'))return false;Backend.getScrollOffset()"',
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbDelete'),
-				'href'            => 'act=delete',
-				'icon'            => 'delete.gif',
-			),
-			'toggle'        => array(
-				'attributes'      => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'toggleIcon'),
-				'icon'            => 'visible.gif',
-			),
-			'uploadImages' => array(
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbAddImages'),
-				'icon'            => 'bundles/markocupicgallerycreator/images/image_add.png',
-			),
-			'importImages' => array(
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbImportImages'),
-				'icon'            => 'bundles/markocupicgallerycreator/images/folder_picture.png',
-			),
-			'cut'           => array(
-				'attributes'      => 'onclick="Backend.getScrollOffset();"',
-				'button_callback' => array(TlGalleryCreatorAlbums::class, 'buttonCbCutPicture'),
-				'href'            => 'act=paste&mode=cut',
-				'icon'            => 'cut.gif',
-			),
-		),
-	),
-	// Palettes
-	'palettes'    => array(
-		'__selector__'      => array('protected'),
-		'default'           => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
-		'fileupload'        => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},uploader,fileupload',
-		'importImages'      => '{upload_settings},preserveFilename,multiSRC',
-		'restrictedUser'    => '{albumInfo},link_edit_images,albumInfo',
-		'reviseDatabase'    => '{maintenance},reviseDatabase',
-	),
-	// Subpalettes
-	'subpalettes' => array(
-		'protected' => 'groups'
-	),
-	// Fields
-	'fields'      => array(
-		'id'                  => array('sql' => "int(10) unsigned NOT NULL auto_increment"),
-		'pid'                 => array(
-			'foreignKey' => 'tl_gallery_creator_albums.alias',
-			'relation'   => array('type' => 'belongsTo', 'load' => 'lazy'),
-			'sql'        => "int(10) unsigned NOT NULL default '0'",
-		),
-		'sorting'             => array(
-		    'sql' => "int(10) unsigned NOT NULL default '0'",
-        ),
-		'tstamp'              => array(
-		    'sql' => "int(10) unsigned NOT NULL default '0'",
-        ),
-		'published'           => array(
-			'eval'      => array('submitOnChange' => true),
-			'inputType' => 'checkbox',
-			'sql'       => "char(1) NOT NULL default '1'",
-		),
-		'date'                => array(
-			'default'   => time(),
-			'eval'      => array('mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'w50 wizard', 'submitOnChange' => false),
-			'inputType' => 'text',
-			'sql'       => "int(10) unsigned NOT NULL default '0'",
-		),
-		'owner'               => array(
-			'default'    => BackendUser::getInstance()->id,
-			'eval'       => array('chosen' => true, 'includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'w50'),
-			'foreignKey' => 'tl_user.name',
-			'inputType'  => 'select',
-			'relation'   => array('type' => 'hasOne', 'load' => 'eager'),
-			'sql'        => "int(10) unsigned NOT NULL default '0'",
-		),
-		'assignedDir'         => array(
-			'eval'      => array('mandatory' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'),
-			'exclude'   => true,
-			'inputType' => 'fileTree',
-			'sql'       => "blob NULL",
-		),
-		'ownersName'         => array(
-			'default' => BackendUser::getInstance()->name,
-			'eval'    => array('doNotShow' => true, 'tl_class' => 'w50 readonly'),
-			'sql'     => "text NULL",
-		),
-		'photographer'      => array(
-			'eval'      => array('mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false),
-			'exclude'   => true,
-			'inputType' => 'text',
-			'sql'       => "varchar(255) NOT NULL default ''",
-		),
-		'eventLocation'      => array(
-			'eval'      => array('mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false),
-			'exclude'   => true,
-			'inputType' => 'text',
-			'sql'       => "varchar(255) NOT NULL default ''",
-		),
-		'name'                => array(
-			'eval'      => array('mandatory' => true, 'tl_class' => 'w50', 'submitOnChange' => false),
-			'inputType' => 'text',
-			'sql'       => "varchar(255) NOT NULL default ''",
-		),
-		'alias'               => array(
-			'eval'          => array('doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true),
-			'inputType'     => 'text',
-			'save_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'saveCbGenerateAlias'),
-            ),
-			'sql'           => "varchar(128) COLLATE utf8_bin NOT NULL default ''",
-		),
-		'description'         => array(
-			'eval'      => array('decodeEntities' => true, 'tl_class' => 'clr'),
-			'exclude'   => true,
-			'inputType' => 'textarea',
-			'search'    => true,
-			'sql'       => "text NULL",
-		),
-		'keywords'            => array(
-			'eval'      => array('decodeEntities' => true, 'tl_class' => 'clr'),
-			'exclude'   => true,
-			'inputType' => 'textarea',
-			'search'    => true,
-			'sql'       => "text NULL",
-		),
-		'caption'             => array(
-			'eval'      => array('tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'),
-			'exclude'   => true,
-			'inputType' => 'textarea',
-			'search'    => true,
-			'sql'       => "text NULL",
-		),
-		'thumb'               => array(
-			'eval'                 => array('doNotShow' => true, 'includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true),
-			'inputType'            => 'radio',
-			'input_field_callback' => array(
-			    TlGalleryCreatorAlbums::class, 'inputFieldCbThumb',
-            ),
-			'sql'                  => "int(10) unsigned NOT NULL default '0'",
-		),
-		'fileupload'          => array(
-			'eval'                 => array('doNotShow' => true),
-			'input_field_callback' => array(
-			    TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateUploaderMarkup',
-            ),
-		),
-		'albumInfo'          => array(
-			'eval'                 => array('doNotShow' => true),
-			'input_field_callback' => array(
-			    TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateAlbumInformations',
-                ),
-		),
-		// save value in tl_user
-		'uploader'            => array(
-			'eval'          => array('doNotShow' => true, 'tl_class' => 'clr', 'submitOnChange' => true),
-			'inputType'     => 'select',
-			'load_callback' => array(array(TlGalleryCreatorAlbums::class, 'loadCbGetUploader')),
-			'options'       => array('be_gc_html5_uploader'),
-			'save_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'saveCbSaveUploader'),
-                ),
-			'sql'           => "varchar(32) NOT NULL default 'be_gc_html5_uploader'",
-		),
-		// save value in tl_user
-		'imageResolution'      => array(
-			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
-			'inputType'     => 'select',
-			'load_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'loadCbGetImageResolution'),
-                ),
-			'options'       => array_merge(array('no_scaling'), range(100, 3500, 50)),
-			'reference'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reference'],
-			'save_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageResolution'),
-                ),
-			'sql'           => "smallint(5) unsigned NOT NULL default '600'",
-		),
-		// save value in tl_user
-		'imageQuality'         => array(
-			'eval'          => array('doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true),
-			'inputType'     => 'select',
-			'load_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'loadCbGetImageQuality'),
-                ),
-			'options'       => range(10, 100, 10),
-			'save_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'saveCbSaveImageQuality'),
-                ),
-			'sql'           => "smallint(3) unsigned NOT NULL default '100'",
-		),
-		'preserveFilename'   => array(
-			'eval'      => array('doNotShow' => true, 'submitOnChange' => true),
-			'inputType' => 'checkbox',
-			'sql'       => "char(1) NOT NULL default '1'",
-		),
-		'multiSRC'            => array(
-			'eval'      => array('doNotShow' => true, 'multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true),
-			'exclude'   => true,
-			'inputType' => 'fileTree',
-			'sql'       => "blob NULL",
-		),
-		'protected'           => array(
-			'eval'      => array('doNotShow' => true, 'submitOnChange' => true, 'tl_class' => 'clr'),
-			'exclude'   => true,
-			'inputType' => 'checkbox',
-			'sql'       => "char(1) NOT NULL default ''",
-		),
-		'groups'              => array(
-			'eval'       => array('doNotShow' => true, 'mandatory' => true, 'multiple' => true, 'tl_class' => 'clr'),
-			'foreignKey' => 'tl_member_group.name',
-			'inputType'  => 'checkbox',
-			'sql'        => "blob NULL",
-		),
-		'insertArticlePre'  => array(
-			'eval'      => array('doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'),
-			'inputType' => 'text',
-			'sql'       => "int(10) unsigned NOT NULL default '0'",
-		),
-		'insertArticlePost' => array(
-			'eval'      => array('doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'),
-			'inputType' => 'text',
-			'sql'       => "int(10) unsigned NOT NULL default '0'",
-		),
-		'reviseDatabase'       => array(
-			'eval'                 => array('doNotShow' => true),
-			'input_field_callback' => array(TlGalleryCreatorAlbums::class, 'inputFieldCbCleanDb'),
-		),
-		'visitorsDetails'    => array(
-			'inputType' => 'textarea',
-			'sql'       => "blob NULL",
-		),
-		'visitors'            => array(
-			'eval'      => array('maxlength' => 10, 'tl_class' => 'w50', 'rgxp' => 'digit'),
-			'inputType' => 'text',
-			'sql'       => "int(10) unsigned NOT NULL default '0'",
-		),
-		'sortBy'              => array(
-			'eval'          => array('chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'),
-			'exclude'       => true,
-			'inputType'     => 'select',
-			'options'       => array('----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'),
-			'reference'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
-			'save_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'saveCbSortAlbum'),
-                ),
-			'sql'           => "varchar(32) NOT NULL default ''",
-		),
-		'filePrefix'          => array(
-			'eval'          => array('mandatory' => false, 'tl_class' => 'clr', 'rgxp' => 'alnum', 'nospace' => true),
-			'exclude'       => true,
-			'inputType'     => 'text',
-			'save_callback' => array(
-			    array(TlGalleryCreatorAlbums::class, 'saveCbValidateFileprefix'),
-            ),
-			'sql'           => "varchar(32) NOT NULL default ''",
-		),
-	),
-);
+$GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
+    // Config
+    'config' => [
+        'ctable' => ['tl_gallery_creator_pictures'],
+        'notCopyable' => true,
+        'enableVersioning' => true,
+        'dataContainer' => 'Table',
+        'onload_callback' => [
+            [TlGalleryCreatorAlbums::class, 'handleAjaxRequests'],
+            [TlGalleryCreatorAlbums::class, 'onloadCbCheckFolderSettings'],
+            [TlGalleryCreatorAlbums::class, 'onloadCbFileupload'],
+            [TlGalleryCreatorAlbums::class, 'onloadCbImportFromFilesystem'],
+            [TlGalleryCreatorAlbums::class, 'onloadCbSetUpPalettes'],
+        ],
+        'ondelete_callback' => [
+            [TlGalleryCreatorAlbums::class, 'ondeleteCb'],
+        ],
+        'sql' => [
+            'keys' => [
+                'id' => 'primary',
+                'pid' => 'index',
+                'alias' => 'index',
+            ],
+        ],
+    ],
+    'edit' => [
+        'buttons_callback' => [[TlGalleryCreatorAlbums::class, 'buttonsCallback']],
+    ],
+    'list' => [
+        'sorting' => [
+            'mode' => 5,
+            'panelLayout' => 'limit,sort',
+            'paste_button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbPastePicture'],
+        ],
+        'label' => [
+            'fields' => ['name'],
+            'format' => '<span style="#padding-left#"><a href="#href#" title="#title#"><img src="#icon#"></span> %s <span style="color:#b3b3b3; padding-left:3px;">[#datum#] [#count_pics# images]</span></a>',
+            'label_callback' => [TlGalleryCreatorAlbums::class, 'labelCb'],
+        ],
+        'global_operations' => [
+            'all' => [
+                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
+                'class' => 'header_edit_all',
+                'href' => 'act=select',
+            ],
+            'reviseDatabase' => [
+                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
+                'class' => 'icon_reviseDatabase',
+                // href is set in TlGalleryCreatorAlbums::onloadCbSetUpPalettes
+                'href' => '',
+            ],
+        ],
+        'operations' => [
+            'editheader' => [
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbEditHeader'],
+                'href' => 'act=edit',
+                'icon' => 'header.svg',
+            ],
+            'edit' => [
+                'attributes' => 'class="contextmenu"',
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbEdit'],
+                'href' => 'table=tl_gallery_creator_pictures',
+                'icon' => 'bundles/markocupicgallerycreator/images/text_list_bullets.png',
+            ],
+            'delete' => [
+                'attributes' => 'onclick="if(!confirm(\''.$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'].'\'))return false;Backend.getScrollOffset()"',
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbDelete'],
+                'href' => 'act=delete',
+                'icon' => 'delete.gif',
+            ],
+            'toggle' => [
+                'attributes' => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'toggleIcon'],
+                'icon' => 'visible.gif',
+            ],
+            'uploadImages' => [
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbAddImages'],
+                'icon' => 'bundles/markocupicgallerycreator/images/image_add.png',
+            ],
+            'importImages' => [
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbImportImages'],
+                'icon' => 'bundles/markocupicgallerycreator/images/folder_picture.png',
+            ],
+            'cut' => [
+                'attributes' => 'onclick="Backend.getScrollOffset();"',
+                'button_callback' => [TlGalleryCreatorAlbums::class, 'buttonCbCutPicture'],
+                'href' => 'act=paste&mode=cut',
+                'icon' => 'cut.gif',
+            ],
+        ],
+    ],
+    'palettes' => [
+        '__selector__' => ['protected'],
+        'default' => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
+        'fileupload' => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},uploader,fileupload',
+        'importImages' => '{upload_settings},preserveFilename,multiSRC',
+        'restrictedUser' => '{albumInfo},link_edit_images,albumInfo',
+        'reviseDatabase' => '{maintenance},reviseDatabase',
+    ],
+    'subpalettes' => [
+        'protected' => 'groups',
+    ],
+    'fields' => [
+        'id' => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
+        'pid' => [
+            'foreignKey' => 'tl_gallery_creator_albums.alias',
+            'relation' => ['type' => 'belongsTo', 'load' => 'lazy'],
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'sorting' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'tstamp' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'published' => [
+            'eval' => ['submitOnChange' => true],
+            'inputType' => 'checkbox',
+            'sql' => "char(1) NOT NULL default '1'",
+        ],
+        'date' => [
+            'default' => time(),
+            'eval' => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'w50 wizard', 'submitOnChange' => false],
+            'inputType' => 'text',
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'owner' => [
+            'default' => BackendUser::getInstance()->id,
+            'eval' => ['chosen' => true, 'includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'w50'],
+            'foreignKey' => 'tl_user.name',
+            'inputType' => 'select',
+            'relation' => ['type' => 'hasOne', 'load' => 'eager'],
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'assignedDir' => [
+            'eval' => ['mandatory' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'],
+            'exclude' => true,
+            'inputType' => 'fileTree',
+            'sql' => 'blob NULL',
+        ],
+        'ownersName' => [
+            'default' => BackendUser::getInstance()->name,
+            'eval' => ['doNotShow' => true, 'tl_class' => 'w50 readonly'],
+            'sql' => 'text NULL',
+        ],
+        'photographer' => [
+            'eval' => ['mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'exclude' => true,
+            'inputType' => 'text',
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'eventLocation' => [
+            'eval' => ['mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'exclude' => true,
+            'inputType' => 'text',
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'name' => [
+            'eval' => ['mandatory' => true, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'inputType' => 'text',
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'alias' => [
+            'eval' => ['doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true],
+            'inputType' => 'text',
+            'save_callback' => [
+                [TlGalleryCreatorAlbums::class, 'saveCbGenerateAlias'],
+            ],
+            'sql' => "varchar(128) COLLATE utf8_bin NOT NULL default ''",
+        ],
+        'description' => [
+            'eval' => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'exclude' => true,
+            'inputType' => 'textarea',
+            'search' => true,
+            'sql' => 'text NULL',
+        ],
+        'keywords' => [
+            'eval' => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'exclude' => true,
+            'inputType' => 'textarea',
+            'search' => true,
+            'sql' => 'text NULL',
+        ],
+        'caption' => [
+            'eval' => ['tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'exclude' => true,
+            'inputType' => 'textarea',
+            'search' => true,
+            'sql' => 'text NULL',
+        ],
+        'thumb' => [
+            'eval' => ['doNotShow' => true, 'includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true],
+            'inputType' => 'radio',
+            'input_field_callback' => [
+                TlGalleryCreatorAlbums::class, 'inputFieldCbThumb',
+            ],
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'fileupload' => [
+            'eval' => ['doNotShow' => true],
+            'input_field_callback' => [
+                TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateUploaderMarkup',
+            ],
+        ],
+        'albumInfo' => [
+            'eval' => ['doNotShow' => true],
+            'input_field_callback' => [
+                TlGalleryCreatorAlbums::class, 'inputFieldCbGenerateAlbumInformations',
+            ],
+        ],
+        'uploader' => [
+            'eval' => ['doNotShow' => true, 'tl_class' => 'clr', 'submitOnChange' => true],
+            'inputType' => 'select',
+            'load_callback' => [[TlGalleryCreatorAlbums::class, 'loadCbGetUploader']],
+            'options' => ['be_gc_html5_uploader'],
+            'save_callback' => [
+                [TlGalleryCreatorAlbums::class, 'saveCbSaveUploader'],
+            ],
+            'sql' => "varchar(32) NOT NULL default 'be_gc_html5_uploader'",
+        ],
+        'imageResolution' => [
+            'eval' => ['doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true],
+            'inputType' => 'select',
+            'load_callback' => [
+                [TlGalleryCreatorAlbums::class, 'loadCbGetImageResolution'],
+            ],
+            'options' => array_merge(['no_scaling'], range(100, 3500, 50)),
+            'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reference'],
+            'save_callback' => [
+                [TlGalleryCreatorAlbums::class, 'saveCbSaveImageResolution'],
+            ],
+            'sql' => "smallint(5) unsigned NOT NULL default '600'",
+        ],
+        'imageQuality' => [
+            'eval' => ['doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true],
+            'inputType' => 'select',
+            'load_callback' => [
+                [TlGalleryCreatorAlbums::class, 'loadCbGetImageQuality'],
+            ],
+            'options' => range(10, 100, 10),
+            'save_callback' => [
+                [TlGalleryCreatorAlbums::class, 'saveCbSaveImageQuality'],
+            ],
+            'sql' => "smallint(3) unsigned NOT NULL default '100'",
+        ],
+        'preserveFilename' => [
+            'eval' => ['doNotShow' => true, 'submitOnChange' => true],
+            'inputType' => 'checkbox',
+            'sql' => "char(1) NOT NULL default '1'",
+        ],
+        'multiSRC' => [
+            'eval' => ['doNotShow' => true, 'multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true],
+            'exclude' => true,
+            'inputType' => 'fileTree',
+            'sql' => 'blob NULL',
+        ],
+        'protected' => [
+            'eval' => ['doNotShow' => true, 'submitOnChange' => true, 'tl_class' => 'clr'],
+            'exclude' => true,
+            'inputType' => 'checkbox',
+            'sql' => "char(1) NOT NULL default ''",
+        ],
+        'groups' => [
+            'eval' => ['doNotShow' => true, 'mandatory' => true, 'multiple' => true, 'tl_class' => 'clr'],
+            'foreignKey' => 'tl_member_group.name',
+            'inputType' => 'checkbox',
+            'sql' => 'blob NULL',
+        ],
+        'insertArticlePre' => [
+            'eval' => ['doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'inputType' => 'text',
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'insertArticlePost' => [
+            'eval' => ['doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'inputType' => 'text',
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'reviseDatabase' => [
+            'eval' => ['doNotShow' => true],
+            'input_field_callback' => [TlGalleryCreatorAlbums::class, 'inputFieldCbCleanDb'],
+        ],
+        'visitorsDetails' => [
+            'inputType' => 'textarea',
+            'sql' => 'blob NULL',
+        ],
+        'visitors' => [
+            'eval' => ['maxlength' => 10, 'tl_class' => 'w50', 'rgxp' => 'digit'],
+            'inputType' => 'text',
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'sortBy' => [
+            'eval' => ['chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'exclude' => true,
+            'inputType' => 'select',
+            'options' => ['----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
+            'save_callback' => [
+                [TlGalleryCreatorAlbums::class, 'saveCbSortAlbum'],
+            ],
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+        'filePrefix' => [
+            'eval' => ['mandatory' => false, 'tl_class' => 'clr', 'rgxp' => 'alnum', 'nospace' => true],
+            'exclude' => true,
+            'inputType' => 'text',
+            'save_callback' => [
+                [TlGalleryCreatorAlbums::class, 'saveCbValidateFileprefix'],
+            ],
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+    ],
+];

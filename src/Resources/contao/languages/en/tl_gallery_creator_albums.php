@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
-/**
+/*
  * Legends
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['albumInfo'] = 'albuminformations';
@@ -21,7 +21,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader_legend'] = 'uploader'
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['maintenance'] = 'Revise tables';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['album_preview_thumb_legend'] = 'Album-preview-thumb-settings & picture sorting';
 
-/**
+/*
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id'] = ['Album-ID'];
@@ -53,13 +53,13 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['assignedDir'] = ['Assigned dir
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['filePrefix'] = ['Rename all pictures using a file prefix', 'Enter a valid file prefix to rename all pictures of this album (e.g. "me-in-paris-2012").'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'] = ['Accepted files', 'Accepted files: %s.'];
 
-/**
+/*
  * Buttons
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'] = ['revise tables'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase']['0'] = "Revise tables";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase']['1'] = "Remove orphaned/incorrect entries";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn']['0'] = "Datenbank bereinigen";
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase']['0'] = 'Revise tables';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase']['1'] = 'Remove orphaned/incorrect entries';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn']['0'] = 'Datenbank bereinigen';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new'] = ['new album', 'Create a new album.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['list_pictures'] = ['list pictures', 'List pictures of album with ID %s.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'] = ['Edit album', 'Edit Album with ID %s.'];
@@ -71,7 +71,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['cut'] = ['move album', 'move a
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['pasteafter'] = ['Paste after', 'Paste after album ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['pasteinto'] = ['Paste into', 'Paste into album ID %s'];
 
-/**
+/*
  * References
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reference']['no_scaling'] = 'Do not scale images during the upload process.';
@@ -81,7 +81,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['date_asc'] = 'Date (ascending)
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['date_desc'] = 'Date (descending)';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['custom'] = 'Custom order';
 
-/**
+/*
  * Messages
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['messages']['reviseDatabase'] = 'Revise tables: Clean the database from damaged/invalid/orphaned entries';

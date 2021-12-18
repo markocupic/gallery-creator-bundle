@@ -3,13 +3,11 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * (c) Leo Feyer
+ *
+ * @license LGPL-3.0-or-later
  */
 
 namespace Markocupic\GalleryCreatorBundle\DependencyInjection;
@@ -37,10 +35,7 @@ class MarkocupicGalleryCreatorExtension extends Extension
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
-        $loader->load('parameters.yml');
         $loader->load('services.yml');
-        $loader->load('listener.yml');
-        $loader->load('subscriber.yml');
 
         // Configuration
         $container->setParameter('markocupic_gallery_creator.upload_path', $config['upload_path']);

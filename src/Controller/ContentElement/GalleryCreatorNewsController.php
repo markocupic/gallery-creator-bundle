@@ -3,13 +3,11 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
@@ -18,6 +16,7 @@ use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Database;
 use Contao\Date;
 use Contao\FilesModel;
@@ -51,6 +50,11 @@ class GalleryCreatorNewsController extends AbstractContentElementController
     private $pictureUtil;
 
     /**
+     * @var ScopeMatcher
+     */
+    private $scopeMatcher;
+
+    /**
      * @var int
      */
     private $intAlbumId;
@@ -65,10 +69,11 @@ class GalleryCreatorNewsController extends AbstractContentElementController
      */
     private $pageModel;
 
-    public function __construct(AlbumUtil $albumUtil, PictureUtil $pictureUtil)
+    public function __construct(AlbumUtil $albumUtil, PictureUtil $pictureUtil, ScopeMatcher $scopeMatcher)
     {
         $this->albumUtil = $albumUtil;
         $this->pictureUtil = $pictureUtil;
+        $this->scopeMatcher = $scopeMatcher;
     }
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
@@ -93,7 +98,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $this->intAlbumId = (int) $objAlbum->id;
 
         // Check Permission for protected albums
-        if (TL_MODE === 'FE' && $objAlbum->protected) {
+        if ($request && $this->scopeMatcher->isFrontendRequest($request) && $objAlbum->protected) {
             $blnAllowed = false;
 
             $objUser = FrontendUser::getInstance();

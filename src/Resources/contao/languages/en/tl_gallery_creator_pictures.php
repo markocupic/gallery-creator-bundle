@@ -1,22 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
-/**
+/*
  * Legends
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['media_integration'] = 'Embed a movie or a sound';
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['expert_legend'] = 'Expert Settings';
 
-/**
+/*
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['id'] = ['Image ID'];
@@ -39,7 +39,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = ['Embed m
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC'] = ['Embed movies/sounds located on the contao-file-system'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cssID'] = ['CSS ID/class', 'Here you can set an ID and one or more classes for this picture.'];
 
-/**
+/*
  * Buttons
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['edit'] = ['edit image settings', 'Edit image with ID %s.'];

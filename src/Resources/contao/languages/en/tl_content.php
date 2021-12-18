@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
-/**
+/*
  * module config
  */
 
@@ -39,15 +39,15 @@ $GLOBALS['TL_LANG']['tl_content']['gcSizeAlbumListing'] = ['Albumlist: Thumbnail
 $GLOBALS['TL_LANG']['tl_content']['gcFullsize'] = ['Full-size view/new window', 'Open the full-size image in a lightbox or the link in a new browser window.'];
 
 // References
-$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['DESC'] = "Ascending";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['ASC'] = "Descending";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['sorting'] = "Backend-module sorting (sorting)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['id'] = "ID";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['date'] = "Date of creation (date)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['name'] = "Name (name)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['owner'] = "Owner (owner)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['caption'] = "caption/Caption (caption)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['title'] = "Image-title (title)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['tstamp'] = "Revision date (tstamp)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['alias'] = "Albumalias (alias)";
-$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['visitors'] = "Number of visitors (visitors)";
+$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['DESC'] = 'Ascending';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['ASC'] = 'Descending';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['sorting'] = 'Backend-module sorting (sorting)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['id'] = 'ID';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['date'] = 'Date of creation (date)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['name'] = 'Name (name)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['owner'] = 'Owner (owner)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['caption'] = 'caption/Caption (caption)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['title'] = 'Image-title (title)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['tstamp'] = 'Revision date (tstamp)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['alias'] = 'Albumalias (alias)';
+$GLOBALS['TL_LANG']['tl_content']['gcSortingField']['visitors'] = 'Number of visitors (visitors)';

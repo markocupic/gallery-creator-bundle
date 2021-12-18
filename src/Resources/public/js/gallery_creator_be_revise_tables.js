@@ -57,7 +57,6 @@
          */
         labelCheckbox: false,
 
-
         /**
          * Constructor
          */
@@ -210,4 +209,3 @@
 
     });
 })(document.id);
-

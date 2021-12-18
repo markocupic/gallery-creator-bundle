@@ -3,13 +3,11 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
 namespace Markocupic\GalleryCreatorBundle\Util;
@@ -105,7 +103,6 @@ class FileUtil
      */
     public function addImageToAlbum(GalleryCreatorAlbumsModel $albumModel, string $strFilepath): bool
     {
-        //get the file-object
         $objFile = new File($strFilepath);
 
         if (!$objFile->isGdImage) {
@@ -165,16 +162,7 @@ class FileUtil
 
         if (is_file($this->projectDir.'/'.$objFile->path)) {
             // Get the userId
-            $userId = '0';
-
-            if (TL_MODE === 'BE') {
-                $userId = BackendUser::getInstance()->id;
-            }
-
-            // The album-owner is automatically the image owner, if the image was uploaded by a frontend user
-            if (TL_MODE === 'FE') {
-                $userId = $albumModel->owner;
-            }
+            $userId = BackendUser::getInstance()->id;
 
             // Finally save the new image in tl_gallery_creator_pictures
             $pictureModelModel->owner = $userId;

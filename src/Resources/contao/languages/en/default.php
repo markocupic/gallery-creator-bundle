@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of Gallery Creator Bundle.
+ * This file is part of Contao.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
+ * sdfdfsdfsdfsdf
+ *
+ * @license LGPL-3.0-or-later
  */
 
-/**
+/*
  * error messages
  */
 $GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'] = 'The file "%s" doesn\'t exist on your server!';
@@ -21,7 +21,7 @@ $GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'The file "%s" ist not readable!
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
 $GLOBALS['TL_LANG']['ERR']['accept_jpg'] = 'Gallery Creator only supports jpeg/jpg files.';
 
-/**
+/*
  * frontend
  */
 $GLOBALS['TL_LANG']['gallery_creator']['back_to_general_view'] = 'back to general view';
@@ -33,8 +33,8 @@ $GLOBALS['TL_LANG']['gallery_creator']['visitors'] = 'visitors';
 $GLOBALS['TL_LANG']['gallery_creator']['fe_authentification_error'] = ['Authentification error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
 $GLOBALS['TL_LANG']['gallery_creator']['photographerName'] = 'Photographers name';
 
-/**
+/*
  * Backend
  */
-$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] = "Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!";
-$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'] = "Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too!!!";
+$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!';
+$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too!!!';

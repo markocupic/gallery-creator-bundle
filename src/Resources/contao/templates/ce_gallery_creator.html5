@@ -7,12 +7,12 @@ $GLOBALS['TL_CSS'][] = 'bundles/markocupicgallerycreator/css/gallery_creator_fe.
 
 <?php $this->block('content'); ?>
 
-  <?php if (!Contao\Input::get('items')): ?>
-  <?php $this->insert('gallery_creator_list_view', $this->getData()); ?>
-  <?php endif; ?>
+<?php if (!Contao\Input::get('items')): ?>
+<?php $this->insert('gallery_creator_list_view', $this->getData()); ?>
+<?php endif; ?>
 
-  <?php if (Contao\Input::get('items')): ?>
-  <?php $this->insert('gallery_creator_detail_view', $this->getData()); ?>
-  <?php endif; ?>
+<?php if (Contao\Input::get('items')): ?>
+<?php $this->insert('gallery_creator_detail_view', $this->getData()); ?>
+<?php endif; ?>
 
 <?php $this->endblock(); ?>

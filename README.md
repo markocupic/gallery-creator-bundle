@@ -2,13 +2,17 @@
 
 # Gallery Creator Bundle
 
-## Frontend Modul für [Contao CMS](https://www.contao.org)
+## Frontend and backend extension for [Contao CMS](https://www.contao.org)
 
-With this extension for [Contao CMS](https://www.contao.org) you can create,
- display and manage photo albums.
+Use this extension to create, display and manage photo albums in your [Contao](https://www.contao.org) installation.
  The Gallery Creator Bundle offers an album listing and an album detail view.
- As a lightbox we recommend the [Glightbox](https://biati-digital.github.io/glightbox/) plugin,
- which you can install like this: `composer require inspiredminds/contao-glightbox`.
+
+## Installation
+Please run the `composer require markocupic/gallery-creator-bundle` in your CLI to install the extension.
+
+## Lightbox
+ As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/).
+ Simply run the `composer require inspiredminds/contao-glightbox` command in your CLI.
  Please ensure, that you have activated the lightbox template
  in the layout settings of your theme in the Contao backend.
 
@@ -32,13 +36,11 @@ contao:
  #....
 ```
 
-
 ## "gc_generateFrontendTemplate"-Hook
-The "gc_generateFrontendTemplate" hook can be used to adapt the frontend output.
- The "gc_generateFrontendTemplate" hook is executed before the Gallery Creator frontend template
- is ready to be parsed. This hook requires the content element model the current album object in the detail view.
- There is no return value expected.
-
+Use the "gc_generateFrontendTemplate" hook to adapt the frontend output.
+The "gc_generateFrontendTemplate" hook is triggered before the gallery creator front end template is parsed.
+ It passes the content element object, the template object and the album object.
+ The "gc_generateFrontendTemplate" hook expects no return value.
 
 ```php
 <?php

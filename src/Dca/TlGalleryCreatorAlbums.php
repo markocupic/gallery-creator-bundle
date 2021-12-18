@@ -53,7 +53,7 @@ class TlGalleryCreatorAlbums extends Backend
     private $requestStack;
 
     /**
-     * @var 
+     * @var
      */
     private $albumUtil;
 
@@ -73,7 +73,7 @@ class TlGalleryCreatorAlbums extends Backend
     private $galleryCreatorUploadPath;
 
     /**
-     * @var 
+     * @var
      */
     private $galleryCreatorBackendWriteProtection;
 
@@ -165,7 +165,7 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id= ?')
             ->limit(1)
             ->execute($row['id'])
         ;
@@ -210,7 +210,7 @@ class TlGalleryCreatorAlbums extends Backend
 
         // Update the database
         Database::getInstance()
-            ->prepare('UPDATE tl_gallery_creator_albums SET tstamp='.time().", published='".($blnVisible ? 1 : '')."' WHERE id=?")
+            ->prepare('UPDATE tl_gallery_creator_albums SET tstamp='.time().", published='".($blnVisible ? 1 : '')."' WHERE id= ?")
             ->execute($intId)
         ;
 
@@ -493,7 +493,7 @@ class TlGalleryCreatorAlbums extends Backend
     public function labelCb($row, $label)
     {
         $mysql = Database::getInstance()
-            ->prepare('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid=?')
+            ->prepare('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid= ?')
             ->execute($row['id'])
         ;
 
@@ -637,7 +637,7 @@ class TlGalleryCreatorAlbums extends Backend
                 } else {
                     // Do not delete albums that are not owned by the user.
                     Database::getInstance()
-                        ->prepare('UPDATE tl_gallery_creator_albums SET pid=? WHERE id=?')
+                        ->prepare('UPDATE tl_gallery_creator_albums SET pid= ? WHERE id= ?')
                         ->execute('0', $idDelAlbum)
                     ;
                 }
@@ -824,7 +824,7 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         $objAlb = Database::getInstance()
-            ->prepare('SELECT id, owner FROM tl_gallery_creator_albums WHERE id=?')
+            ->prepare('SELECT id, owner FROM tl_gallery_creator_albums WHERE id= ?')
             ->execute(Input::get('id'))
         ;
 
@@ -855,11 +855,11 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         $arrAlbums = [];
-        $arrSubalbums = [];
+        $arrChildAlbums = [];
 
         // Generate picture list
         $objPicture = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=? ORDER BY sorting')
+            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid= ? ORDER BY sorting')
             ->execute(Input::get('id'))
         ;
 
@@ -881,7 +881,7 @@ class TlGalleryCreatorAlbums extends Backend
             ;
 
             while ($objPicture->next()) {
-                $arrSubalbums[] = [
+                $arrChildAlbums[] = [
                     'uuid' => $objPicture->uuid,
                     'id' => $objPicture->id,
                 ];
@@ -890,7 +890,7 @@ class TlGalleryCreatorAlbums extends Backend
 
         $arrContainer = [
             $arrAlbums,
-            $arrSubalbums,
+            $arrChildAlbums,
         ];
 
         foreach ($arrContainer as $i => $arrData) {

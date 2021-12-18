@@ -8,16 +8,16 @@
 <?php endif; ?>
 
 <?php if ($this->backLink !== null): ?>
-<div class="backLink"><a href="<?= $this->backLink ?>" title="<?= $this->trans('gallery_creator.back_to_general_view',[]) ?>"><?= $this->trans('gallery_creator.back_to_general_view',[]) ?></a></div>
+<div class="backLink"><a href="<?= $this->backLink ?>" title="<?= $this->trans('gallery_creator.backToOverview',[]) ?>"><?= $this->trans('gallery_creator.backToOverview',[]) ?></a></div>
 <?php endif; ?>
 
 <?php if ($this->albumname): ?>
 <h2><?= $this->albumname ?></h2>
 <?php endif; ?>
 
-<?php if ($this->subalbums): ?>
+<?php if ($this->hasChildAlbums): ?>
 <div class="subalbums">
-  <h3><?= $this->trans('gallery_creator.subalbums_of',[]) ?>: <?= $this->albumname ?></h3>
+  <h3><?= $this->trans('gallery_creator.childAlbumsOf',[]) ?>: <?= $this->albumname ?></h3>
 
   <ul class="gc-list-view">
     <?php foreach ($this->subalbums as $subalbum): ?>

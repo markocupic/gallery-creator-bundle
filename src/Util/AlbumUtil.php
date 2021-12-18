@@ -18,7 +18,6 @@ use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\File\Metadata;
 use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\Database;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
@@ -59,14 +58,12 @@ class AlbumUtil
         $subAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
 
         // Count images
-        $pics = $this->connection
-            ->executeQuery(
+        $countPics = $this->connection
+            ->executeStatement(
                 'SELECT COUNT(id) AS count FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
-                [$albumModel->id,'1'],
+                [$albumModel->id, '1'],
             )
-            ->fetchAssociative()
         ;
-        $countPics = $pics['count'];
 
         $href = null;
 
@@ -94,6 +91,7 @@ class AlbumUtil
             'href' => $href,
             'count' => $countPics,
             'caption' => StringUtil::specialchars(StringUtil::toHtml5($arrMeta['caption'])),
+            'hasChildAlbums' => $subAlbumCount ? true : false,
             'countSubalbums' => $subAlbumCount,
             'cssClass' => implode(' ', array_filter($arrCssClasses)),
             'figureUuid' => $previewImage ? $previewImage->uuid : null,
@@ -105,32 +103,34 @@ class AlbumUtil
         ];
     }
 
-    public function getSubalbumsData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
+    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
     {
         $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
-        $objSubAlbums = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
-            ->execute($albumModel->id, '1')
-        ;
-        $arrSubalbums = [];
 
-        while ($objSubAlbums->next()) {
+        $stmt = $this->connection->executeQuery(
+            'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting,
+            [$albumModel->id, '1']
+        );
+
+        $arrChildAlbums = [];
+
+        while (false !== ($objSubAlbums = $stmt->fetchAssociative())) {
             // If it is a content element only
             if ($contentElementModel->gcPublishAlbums) {
                 if (!$contentElementModel->gcPublishAllAlbums) {
-                    if (!\in_array($objSubAlbums->id, StringUtil::deserialize($contentElementModel->gcPublishAlbums), false)) {
+                    if (!\in_array($objSubAlbums['id'], StringUtil::deserialize($contentElementModel->gcPublishAlbums), false)) {
                         continue;
                     }
                 }
             }
-            $objSubAlbum = GalleryCreatorAlbumsModel::findByPk($objSubAlbums->id);
+            $objSubAlbum = GalleryCreatorAlbumsModel::findByPk($objSubAlbums['id']);
 
             if (null !== $objSubAlbum) {
-                $arrSubalbums[] = $this->getAlbumData($objSubAlbum, $contentElementModel);
+                $arrChildAlbums[] = $this->getAlbumData($objSubAlbum, $contentElementModel);
             }
         }
 
-        return $arrSubalbums;
+        return $arrChildAlbums;
     }
 
     public function countAlbumViews(GalleryCreatorAlbumsModel $albumModel): void
@@ -151,7 +151,7 @@ class AlbumUtil
 
         // Keep visitors data in the db unless 50 other users have visited the album
         if (50 === \count($arrVisitors)) {
-            // slice the last position
+            // Slice last item
             $arrVisitors = \array_slice($arrVisitors, 0, \count($arrVisitors) - 1);
         }
 

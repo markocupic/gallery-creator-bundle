@@ -110,7 +110,7 @@ class GalleryCreatorAjax
         $sorting = $contentModel->gcPictureSorting.' '.$contentModel->gcPictureSortingDirection;
 
         $objPicture = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$sorting)
+            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published= ? AND pid=? ORDER BY '.$sorting)
             ->execute('1', $pid)
             ;
 

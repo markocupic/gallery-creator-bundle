@@ -314,10 +314,11 @@ class GalleryCreatorController extends AbstractContentElementController
 
                 $objAlbum = GalleryCreatorAlbumsModel::findByPk($this->intAlbumId);
 
-                // generate the subalbum array
+                // Get child albums
                 if ($this->model->gcHierarchicalOutput) {
-                    $arrSubalbums = $this->albumUtil->getSubalbumsData($objAlbum, $this->model);
-                    $template->subalbums = \count($arrSubalbums) ? $arrSubalbums : null;
+                    $arrChildAlbums = $this->albumUtil->getChildAlbums($objAlbum, $this->model);
+                    $template->subalbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
+                    $template->hasChildAlbums = \count($arrChildAlbums) ? true : false;
                 }
 
                 // count pictures

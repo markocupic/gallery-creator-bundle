@@ -134,7 +134,7 @@ class TlGalleryCreatorPictures extends Backend
                 if (!$this->User->isAdmin) {
                     // Only list pictures where user is owner
                     if ($this->galleryCreatorBackendWriteProtection) {
-                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner=?', $this->User->id]];
+                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner= ?', $this->User->id]];
                     }
                 }
 
@@ -167,7 +167,7 @@ class TlGalleryCreatorPictures extends Backend
     public function buttonCbDeletePicture($row, $href, $label, $title, $icon, $attributes): string
     {
         $objImg = Database::getInstance()
-            ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
+            ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id= ?')
             ->execute($row['id'])
         ;
 
@@ -187,7 +187,7 @@ class TlGalleryCreatorPictures extends Backend
     public function buttonCbEditImage($row, $href, $label, $title, $icon, $attributes): string
     {
         $objImg = Database::getInstance()
-            ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
+            ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id= ?')
             ->execute($row['id'])
         ;
 
@@ -484,7 +484,7 @@ class TlGalleryCreatorPictures extends Backend
 
         if ('edit' === Input::get('act')) {
             $objUser = Database::getInstance()
-                ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
+                ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id= ?')
                 ->execute(Input::get('id'))
             ;
 
@@ -582,7 +582,7 @@ class TlGalleryCreatorPictures extends Backend
 
         // Update the database
         Database::getInstance()
-            ->prepare('UPDATE tl_gallery_creator_pictures SET tstamp='.time().", published='".($blnVisible ? 1 : '')."' WHERE id=?")
+            ->prepare('UPDATE tl_gallery_creator_pictures SET tstamp='.time().", published='".($blnVisible ? 1 : '')."' WHERE id= ?")
             ->execute($intId)
         ;
 

@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\Dca;
 
 use Contao\Backend;
+use Contao\Controller;
 use Contao\Database;
 use Contao\Input;
 use Contao\StringUtil;
@@ -43,14 +44,14 @@ class TlContent extends Backend
     public function optionsCallbackListAlbums(): array
     {
         $objContent = Database::getInstance()
-            ->prepare('SELECT gcSorting, gcSortingDirection FROM tl_content WHERE id=?')
+            ->prepare('SELECT gcSorting, gcSortingDirection FROM tl_content WHERE id= ?')
             ->execute(Input::get('id'))
         ;
 
         $str_sorting = empty($objContent->gcSorting) || empty($objContent->gcSortingDirection) ? 'date DESC' : $objContent->gcSorting.' '.$objContent->gcSortingDirection;
 
         $db = Database::getInstance()
-            ->prepare('SELECT id, name FROM tl_gallery_creator_albums WHERE published=? ORDER BY '.$str_sorting)
+            ->prepare('SELECT id, name FROM tl_gallery_creator_albums WHERE published= ? ORDER BY '.$str_sorting)
             ->execute('1')
         ;
 
@@ -79,7 +80,7 @@ class TlContent extends Backend
                 }
                 $set = ['gcPublishAlbums' => serialize($albums)];
                 Database::getInstance()
-                    ->prepare('UPDATE tl_content %s WHERE id=? ')
+                    ->prepare('UPDATE tl_content %s WHERE id= ? ')
                     ->set($set)
                     ->execute(Input::get('id'))
                 ;
@@ -89,14 +90,18 @@ class TlContent extends Backend
         $translator = System::getContainer()->get('translator');
         $twig = System::getContainer()->get('twig');
 
+        Controller::loadLanguageFile('tl_content');
+
         return (new Response(
             $twig->render(
                 '@MarkocupicGalleryCreator/Backend/album_selector_form_field.html.twig',
                 [
                     'list' => $this->getSubalbumsAsUnorderedList(0),
                     'trans' => [
-                        'trans.gcPublishAlbums.0' => $translator->trans('tl_content.gcPublishAlbums.0', [], 'contao_default'),
-                        'trans.gcPublishAlbums.1' => $translator->trans('tl_content.gcPublishAlbums.1', [], 'contao_default'),
+                        'gcPublishAlbums' => [
+                            $translator->trans('tl_content.gcPublishAlbums.0', [], 'contao_default'),
+                            $translator->trans('tl_content.gcPublishAlbums.1', [], 'contao_default'),
+                        ],
                     ],
                 ]
             )
@@ -109,7 +114,7 @@ class TlContent extends Backend
     public function onloadCbSetUpPalettes(): void
     {
         $objContent = Database::getInstance()
-            ->prepare('SELECT gcPublishAllAlbums FROM tl_content WHERE id=?')
+            ->prepare('SELECT gcPublishAllAlbums FROM tl_content WHERE id= ?')
             ->execute(Input::get('id'))
         ;
 
@@ -121,7 +126,7 @@ class TlContent extends Backend
     private function getSubalbumsAsUnorderedList(int $pid = 0): string
     {
         $objContent = Database::getInstance()
-            ->prepare('SELECT * FROM tl_content WHERE id=?')
+            ->prepare('SELECT * FROM tl_content WHERE id= ?')
             ->execute($this->Input->get('id'))
         ;
 
@@ -132,7 +137,7 @@ class TlContent extends Backend
         $level = $this->albumUtil->getAlbumLevelFromPid((int) $pid);
 
         $db = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid= ? AND published= ? ORDER BY '.$str_sorting)
             ->execute($pid, 1)
         ;
 

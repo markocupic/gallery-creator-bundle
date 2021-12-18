@@ -16,6 +16,7 @@ namespace Markocupic\GalleryCreatorBundle\Util;
 
 use Contao\BackendUser;
 use Contao\Config;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Database;
 use Contao\Dbafs;
@@ -26,6 +27,8 @@ use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
+use Psr\Log\LoggerInterface;
+use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Patchwork\Utf8;
@@ -44,6 +47,16 @@ class FileUtil
     private $requestStack;
 
     /**
+     * @var Connection
+     */
+    private $connection;
+
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    /**
      * @var string
      */
     private $projectDir;
@@ -53,10 +66,12 @@ class FileUtil
      */
     private $galleryCreatorCopyImagesOnImport;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, string $projectDir, string $galleryCreatorCopyImagesOnImport)
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection, ?LoggerInterface $logger, string $projectDir, string $galleryCreatorCopyImagesOnImport)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
+        $this->connection = $connection;
+        $this->logger = $logger;
         $this->projectDir = $projectDir;
         $this->galleryCreatorCopyImagesOnImport = $galleryCreatorCopyImagesOnImport;
     }
@@ -139,39 +154,40 @@ class FileUtil
             $blnExternalFile = strstr($objFile->dirname, $assignedDir) ? false : true;
         }
 
-        // Db insert
-        $pictureModelModel = new GalleryCreatorPicturesModel();
-        $pictureModelModel->tstamp = time();
-        $pictureModelModel->pid = $albumModel->id;
-        $pictureModelModel->externalFile = $blnExternalFile ? '1' : '';
+        // New record
+        $pictureModel = new GalleryCreatorPicturesModel();
+        $pictureModel->tstamp = time();
+        $pictureModel->pid = $albumModel->id;
+        $pictureModel->externalFile = $blnExternalFile ? '1' : '';
+
         // Set uuid before model is saved the first time!!!
-        $pictureModelModel->uuid = $objFilesModel->uuid;
-        $pictureModelModel->save();
-        $insertId = $pictureModelModel->id;
+        $pictureModel->uuid = $objFilesModel->uuid;
+        $pictureModel->save();
+        $insertId = $pictureModel->id;
 
         // Get the next sorting index
-        $objImg = Database::getInstance()
-            ->prepare('SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid=?')
-            ->execute($albumModel->id)
-        ;
-        $sorting = $objImg->maximum;
+        $stmt = $this->connection->executeQuery(
+            'SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid = ?',
+            [$albumModel->id]
+        );
+        $result = $stmt->fetchAssociative();
+        $sorting = $result['maximum'];
 
-        // If filename should be generated
+        // If we use generic file names
         if (!$albumModel->preserveFilename && false === $blnExternalFile) {
             $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $albumModel->id, $insertId, $objFile->extension);
             $objFile->renameTo($newFilepath);
         }
 
         if (is_file($this->projectDir.'/'.$objFile->path)) {
-            // Get the userId
+            // Get the user id
             $userId = BackendUser::getInstance()->id;
 
-            // Finally save the new image in tl_gallery_creator_pictures
-            $pictureModelModel->owner = $userId;
-            $pictureModelModel->date = $albumModel->date;
-            $pictureModelModel->sorting = $sorting;
-            $pictureModelModel->save();
-            System::log('A new version of tl_gallery_creator_pictures ID '.$insertId.' has been created', __METHOD__, TL_GENERAL);
+            // Finaly save the new image in tl_gallery_creator_pictures
+            $pictureModel->owner = $userId;
+            $pictureModel->date = $albumModel->date;
+            $pictureModel->sorting = $sorting;
+            $pictureModel->save();
 
             // Check for a valid preview-thumb for the album
             if (!$albumModel->thumb) {
@@ -187,15 +203,28 @@ class FileUtil
                 }
             }
 
+            if ($this->logger) {
+                $this->logger->info(
+                    sprintf('Added a new picture with ID %s to the album "%s".', $insertId, $albumModel->name),
+                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)]
+                );
+            }
+
             return true;
         }
 
         if (true === $blnExternalFile) {
-            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath));
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileNotFound'], $strFilepath));
         } else {
             Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath));
         }
-        System::log('Unable to create the new image in: '.$strFilepath.'!', __METHOD__, TL_ERROR);
+
+        if ($this->logger) {
+            $this->logger->error(
+                sprintf('Unable to create a new image in: %s!', $strFilepath),
+                ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
+            );
+        }
 
         return false;
     }
@@ -299,7 +328,7 @@ class FileUtil
             ];
 
             $pictureModels = Database::getInstance()
-                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=?')
+                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid= ?')
                 ->execute($albumModel->id)
             ;
 

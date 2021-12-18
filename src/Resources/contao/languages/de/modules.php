@@ -12,10 +12,10 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-$GLOBALS['TL_LANG']['MOD']['gallery_creator']['0'] = 'Gallery Creator';
-$GLOBALS['TL_LANG']['MOD']['gallery_creator']['1'] = 'Bildgalerien erstellen und bearbeiten.';
+$GLOBALS['TL_LANG']['MOD']['gallery_creator'][0] = 'Gallery Creator';
+$GLOBALS['TL_LANG']['MOD']['gallery_creator'][1] = 'Bildgalerien erstellen und bearbeiten.';
 $GLOBALS['TL_LANG']['CTE']['gallery_creator_elements'] = 'Gallery Creator';
-$GLOBALS['TL_LANG']['CTE']['gallery_creator']['0'] = 'Gallery-Creator-Inhaltselement';
-$GLOBALS['TL_LANG']['CTE']['gallery_creator']['1'] = 'Gallery-Creator-Album als Inhaltselement einbinden.';
-$GLOBALS['TL_LANG']['CTE']['gallery_creator_news']['0'] = 'Gallery-Creator-News-Inhaltselement';
-$GLOBALS['TL_LANG']['CTE']['gallery_creator_news']['1'] = 'Ein Gallery-Creator-Album als Inhaltselement einbinden.';
+$GLOBALS['TL_LANG']['CTE']['gallery_creator'][0] = 'Gallery-Creator-Inhaltselement';
+$GLOBALS['TL_LANG']['CTE']['gallery_creator'][1] = 'Gallery-Creator-Album als Inhaltselement einbinden.';
+$GLOBALS['TL_LANG']['CTE']['gallery_creator_news'][0] = 'Gallery-Creator-News-Inhaltselement';
+$GLOBALS['TL_LANG']['CTE']['gallery_creator_news'][1] = 'Ein Gallery-Creator-Album als Inhaltselement einbinden.';

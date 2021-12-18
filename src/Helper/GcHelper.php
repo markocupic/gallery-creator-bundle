@@ -110,7 +110,7 @@ class GcHelper
                         } else {
                             // Show the error-message
                             $path = '' !== $pictureModels->path ? $pictureModels->path : 'unknown path';
-                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $pictureModels->id, $path, $albumModel->alias);
+                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $path, $albumModel->alias);
                         }
 
                         $session->set('gc_error', $arrError);
@@ -122,7 +122,7 @@ class GcHelper
                             $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $pictureModels->id, $albumModel->name);
                             $pictureModels->delete();
                         } else {
-                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $pictureModels->id, $objFile->path, $albumModel->alias);
+                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $objFile->path, $albumModel->alias);
                         }
 
                         $session->set('gc_error', $arrError);
@@ -143,7 +143,7 @@ class GcHelper
          * If not, these are removed from the array.
          */
         $objCont = Database::getInstance()
-            ->prepare('SELECT * FROM tl_content WHERE type=?')
+            ->prepare('SELECT * FROM tl_content WHERE type= ?')
             ->execute('gallery_creator')
         ;
 
@@ -154,7 +154,7 @@ class GcHelper
             if (\is_array($arrAlbums)) {
                 foreach ($arrAlbums as $AlbumID) {
                     $objAlb = Database::getInstance()
-                        ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
+                        ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id= ?')
                         ->limit('1')
                         ->execute($AlbumID)
                     ;
@@ -165,7 +165,7 @@ class GcHelper
                 }
             }
             Database::getInstance()
-                ->prepare('UPDATE tl_content SET gcPublishAlbums=? WHERE id=?')
+                ->prepare('UPDATE tl_content SET gcPublishAlbums= ? WHERE id= ?')
                 ->execute(serialize($newArr), $objCont->id)
             ;
         }

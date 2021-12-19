@@ -1,0 +1,17 @@
+<!-- gallery_creator_album_list_view.html5 -->
+
+<!-- indexer::stop -->
+<div class="gc-album-list-view">
+	<?= $this->pagination ?>
+
+	<ul class="gc-album-list">
+		<?php foreach ($this->arrAlbums as $album): ?>
+		<li class="gc-album-list-item <?= $this->album['cssClass'] ?>" data-id="<?= $album['albumModel']->id ?>">
+		<?php $this->insert('gallery_creator_album', ['album' => $album]); ?>
+		</li>
+		<?php endforeach; ?>
+	</ul>
+</div>
+<!-- indexer::continue -->
+
+

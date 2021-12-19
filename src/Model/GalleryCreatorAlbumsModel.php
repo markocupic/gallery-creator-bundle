@@ -44,7 +44,7 @@ class GalleryCreatorAlbumsModel extends Model
         // get the iteration depth
         $iterationDepth = '' === $iterationDepth ? null : $iterationDepth;
 
-        $arrSubAlbums = [];
+        $arrChildAlbums = [];
 
         if ('' === $strSorting) {
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid= ? ORDER BY sorting';
@@ -61,13 +61,13 @@ class GalleryCreatorAlbumsModel extends Model
 
         while ($objAlb->next()) {
             if ($depth < 0 && null !== $iterationDepth) {
-                return $arrSubAlbums;
+                return $arrChildAlbums;
             }
-            $arrSubAlbums[] = $objAlb->id;
-            $arrSubAlbums = array_merge($arrSubAlbums, static::getChildAlbums($objAlb->id, $strSorting, $depth));
+            $arrChildAlbums[] = $objAlb->id;
+            $arrChildAlbums = array_merge($arrChildAlbums, static::getChildAlbums($objAlb->id, $strSorting, $depth));
         }
 
-        return $arrSubAlbums;
+        return $arrChildAlbums;
     }
 
     /**

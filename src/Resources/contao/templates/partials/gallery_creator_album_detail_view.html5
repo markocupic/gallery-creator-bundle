@@ -1,0 +1,66 @@
+<!-- gallery_creator_album_detail_view.html5 -->
+<div class="gc-album-detail-view">
+  <div class="gc-album-detail-inner">
+
+    <?php if ($this->insertArticlePre):?>
+    <!-- article box pre -->
+    <div class="gc-album-detail-article-box-pre">
+      <?= $this->insertArticlePre ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($this->backLink !== null): ?>
+    <div class="gc-album-detail-back-link"><a href="<?= $this->backLink ?>" title="<?= $this->trans('GALLERY_CREATOR.backToOverview',[]) ?>"><?= $this->trans('GALLERY_CREATOR.backToOverview',[]) ?></a></div>
+    <?php endif; ?>
+
+    <?php if ($this->album['name']): ?>
+    <h2 class="gc-album-detail-name"><?= $this->album['name'] ?></h2>
+    <?php endif; ?>
+
+    <?php if ($this->album['dateFormatted']): ?>
+    <p class="gc-album-detail-date"><?= $this->album['dateFormatted'] ?></p>
+    <?php endif; ?>
+
+    <?php if ($this->album['eventLocation']): ?>
+    <p class="gc-album-detail-location"><?= $this->album['eventLocation'] ?></p>
+    <?php endif; ?>
+
+    <?php if ($this->hasChildAlbums): ?>
+    <div class="gc-album-detail-child-albums">
+      <h3><?= $this->trans('GALLERY_CREATOR.childAlbumsOf',[]) ?>: <?= $this->album['name'] ?></h3>
+
+      <ul class="gc-album-list">
+        <?php foreach ($this->childAlbums as $childAlbum): ?>
+        <li class="gc-album-list-item <?= $this->$childAlbum['cssClass'] ?>" data-id="<?= $childAlbum['albumModel']->id ?>">
+        <?php $this->insert('gallery_creator_album', ['album' => $childAlbum]); ?>
+        </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <hr>
+    <?php endif; ?>
+
+    <?php if ($this->album['caption']): ?>
+    <div class="gc-album-detail-caption"><?= nl2br($this->album['caption']) ?></div>
+    <?php endif; ?>
+
+    <?= $this->pagination ?>
+
+    <?php if ($this->arrPictures): ?>
+    <ul class="gc-album-detail-picture-list">
+      <?php foreach ($this->arrPictures as $picture): ?>
+      <li class="gc-album-detail-picture-list-item">
+        <?= $this->figure($picture['figureUuid'], $picture['figureSize'], $picture['figureOptions']) ?>
+      </li>
+      <?php endforeach;?>
+    </ul>
+    <?php endif;?>
+
+    <?php if ($this->insertArticlePost):?>
+    <!-- article box post -->
+    <div class="gc-album-detail-article-box-pre">
+      <?= $this->insertArticlePost ?>
+    </div>
+    <?php endif; ?>
+  </div>
+</div>

@@ -18,6 +18,7 @@ use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\File\Metadata;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\Date;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
@@ -55,7 +56,7 @@ class AlbumUtil
         global $objPage;
         $request = $this->requestStack->getCurrentRequest();
 
-        $subAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
+        $childAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
 
         // Count images
         $countPictures = $this->connection
@@ -84,20 +85,23 @@ class AlbumUtil
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
         $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $subAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$subAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['subalbums'].']' : ']');
+        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
 
         $arrCssClasses = [];
         $arrCssClasses[] = 'gc-level-'.$this->getAlbumLevelFromPid((int) $albumModel->pid);
         $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'gc-has-child-album' : '';
         $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : '';
 
+        // Add formatted date to the album model
+        $albumModel->dateFormatted = Date::parse(Config::get('dateFormat'), $albumModel->date);
+
         return [
-            'albumModel' => $albumModel,
+            'row' => $albumModel->row(),
+            'meta' => new Metadata($arrMeta),
             'href' => $href,
             'countPictures' => $countPictures,
-            'caption' => StringUtil::specialchars(StringUtil::toHtml5($arrMeta['caption'])),
-            'hasChildAlbums' => $subAlbumCount ? true : false,
-            'countSubalbums' => $subAlbumCount,
+            'hasChildAlbums' => $childAlbumCount ? true : false,
+            'countChildAlbums' => $childAlbumCount,
             'cssClass' => implode(' ', array_filter($arrCssClasses)),
             'figureUuid' => $previewImage ? $previewImage->uuid : null,
             'figureSize' => !empty($arrSize) ? $arrSize : null,
@@ -119,19 +123,19 @@ class AlbumUtil
 
         $arrChildAlbums = [];
 
-        while (false !== ($objSubAlbums = $stmt->fetchAssociative())) {
+        while (false !== ($objChildAlbums = $stmt->fetchAssociative())) {
             // If it is a content element only
             if ($contentElementModel->gcPublishAlbums) {
                 if (!$contentElementModel->gcPublishAllAlbums) {
-                    if (!\in_array($objSubAlbums['id'], StringUtil::deserialize($contentElementModel->gcPublishAlbums), false)) {
+                    if (!\in_array($objChildAlbums['id'], StringUtil::deserialize($contentElementModel->gcPublishAlbums), false)) {
                         continue;
                     }
                 }
             }
-            $objSubAlbum = GalleryCreatorAlbumsModel::findByPk($objSubAlbums['id']);
+            $objChildAlbum = GalleryCreatorAlbumsModel::findByPk($objChildAlbums['id']);
 
-            if (null !== $objSubAlbum) {
-                $arrChildAlbums[] = $this->getAlbumData($objSubAlbum, $contentElementModel);
+            if (null !== $objChildAlbum) {
+                $arrChildAlbums[] = $this->getAlbumData($objChildAlbum, $contentElementModel);
             }
         }
 
@@ -189,7 +193,7 @@ class AlbumUtil
     }
 
     /**
-     * Return the level of an album or subalbum
+     * Return the level of an album or child album
      * (level_0, level_1, level_2,...).
      */
     public function getAlbumLevelFromPid(int $pid): int

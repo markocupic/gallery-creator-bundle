@@ -66,7 +66,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                 'icon' => 'bundles/markocupicgallerycreator/images/text_list_bullets.png',
             ],
             'delete' => [
-                'attributes' => 'onclick="if(!confirm(\''.$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'].'\'))return false;Backend.getScrollOffset()"',
+                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] . '\'))return false;Backend.getScrollOffset()"',
                 'href' => 'act=delete',
                 'icon' => 'delete.gif',
             ],
@@ -161,7 +161,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         'alias' => [
             'eval' => ['doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true],
             'inputType' => 'text',
-            'sql' => "varchar(128) COLLATE utf8_bin NOT NULL default ''",
+            'sql' => "varchar(255) BINARY NOT NULL default ''",
         ],
         'description' => [
             'eval' => ['decodeEntities' => true, 'tl_class' => 'clr'],

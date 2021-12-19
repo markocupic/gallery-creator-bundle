@@ -96,7 +96,7 @@ class TlContent extends Backend
             $twig->render(
                 '@MarkocupicGalleryCreator/Backend/album_selector_form_field.html.twig',
                 [
-                    'list' => $this->getSubalbumsAsUnorderedList(0),
+                    'list' => $this->getChildAlbumsAsUnorderedList(0),
                     'trans' => [
                         'gcPublishAlbums' => [
                             $translator->trans('tl_content.gcPublishAlbums.0', [], 'contao_default'),
@@ -123,7 +123,7 @@ class TlContent extends Backend
         }
     }
 
-    private function getSubalbumsAsUnorderedList(int $pid = 0): string
+    private function getChildAlbumsAsUnorderedList(int $pid = 0): string
     {
         $objContent = Database::getInstance()
             ->prepare('SELECT * FROM tl_content WHERE id= ?')
@@ -146,7 +146,7 @@ class TlContent extends Backend
         while ($db->next()) {
             $checked = \in_array($db->id, $selectedAlbums, false) ? ' checked' : '';
             $list .= '<li class="album-list-item"><input type="checkbox" name="gcPublishAlbums[]" class="album-control-field" id="albumControlField-'.$db->id.'" value="'.$db->id.'"'.$checked.'>'.$db->name;
-            $list .= $this->getSubalbumsAsUnorderedList((int) $db->id);
+            $list .= $this->getChildAlbumsAsUnorderedList((int) $db->id);
             $list .= '</li>';
         }
 

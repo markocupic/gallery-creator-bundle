@@ -2,12 +2,12 @@
 
 <?php $this->block('content'); ?>
 
-<?php if (!Contao\Input::get('items')): ?>
-<?php $this->insert('gallery_creator_list_view', $this->getData()); ?>
+<?php if ($this->viewMode === 'list_view'): ?>
+<?php $this->insert('gallery_creator_album_list_view', $this->getData()); ?>
 <?php endif; ?>
 
-<?php if (Contao\Input::get('items')): ?>
-<?php $this->insert('gallery_creator_detail_view', $this->getData()); ?>
+<?php if ($this->viewMode === 'detail_view'): ?>
+<?php $this->insert('gallery_creator_album_detail_view', $this->getData()); ?>
 <?php endif; ?>
 
 <?php $this->endblock(); ?>

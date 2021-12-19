@@ -14,10 +14,10 @@
             </ul>
         {% endif %}
 
-        {% if has_sub_album_thumbs %}
-            <h3>{{ trans.sub_albums }}</h3>
+        {% if has_child_album_thumbs %}
+            <h3>{{ trans.child_albums }}</h3>
             <ul id="previewThumbListSub" style="display:flex;flex-wrap:wrap">
-                {% for thumb in sub_album_thumbs %}
+                {% for thumb in child_album_thumbs %}
                     <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename }}">
                         <input type="radio" name="thumb" value="{{ thumb.id }}"{{ thumb.attr_checked }}>
                         {{ thumb.image|raw }}

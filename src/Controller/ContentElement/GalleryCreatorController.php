@@ -23,6 +23,7 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\Database;
+use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
 use Contao\FrontendUser;
@@ -50,6 +51,9 @@ use Symfony\Component\Security\Core\Security;
 class GalleryCreatorController extends AbstractContentElementController
 {
     public const TYPE = 'gallery_creator';
+    public const GC_VIEW_MODE_LIST = 'list_view';
+    public const GC_VIEW_MODE_DETAIL = 'detail_view';
+    public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
     /**
      * @var ContaoFramework
@@ -158,7 +162,7 @@ class GalleryCreatorController extends AbstractContentElementController
         }
 
         if (!empty(Input::get('items'))) {
-            $this->viewMode = 'detail_view';
+            $this->viewMode = self::GC_VIEW_MODE_DETAIL;
         }
 
         // Remove or store the pagination variable "page" in the current session
@@ -166,7 +170,7 @@ class GalleryCreatorController extends AbstractContentElementController
             $session->remove('gc_pagination');
         }
 
-        if (Input::get('page') && 'detail_view' !== $this->viewMode) {
+        if (Input::get('page') && self::GC_VIEW_MODE_DETAIL !== $this->viewMode) {
             $session->set('gc_pagination', Input::get('page'));
         }
 
@@ -214,7 +218,7 @@ class GalleryCreatorController extends AbstractContentElementController
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
             if (null !== $this->activeAlbum) {
-                $this->viewMode = 'detail_view';
+                $this->viewMode = self::GC_VIEW_MODE_DETAIL;
             } else {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
@@ -225,10 +229,10 @@ class GalleryCreatorController extends AbstractContentElementController
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
         }
-        $this->viewMode = $this->viewMode ?: 'list_view';
-        $this->viewMode = !empty(Input::get('img')) ? 'single_image' : $this->viewMode;
+        $this->viewMode = $this->viewMode ?: self::GC_VIEW_MODE_LIST;
+        $this->viewMode = !empty(Input::get('img')) ? self::GC_VIEW_MODE_SINGLE_IMAGE : $this->viewMode;
 
-        if ('list_view' === $this->viewMode) {
+        if (self::GC_VIEW_MODE_LIST === $this->viewMode) {
             // Redirect to detail view if there is only one album.
             if (1 === \count($this->arrSelectedAlbums) && $this->model->gcRedirectSingleAlb) {
                 $session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
@@ -252,7 +256,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
         }
 
-        if ('detail_view' === $this->viewMode) {
+        if (self::GC_VIEW_MODE_DETAIL === $this->viewMode) {
             // For security reasons...
             if (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
@@ -267,8 +271,10 @@ class GalleryCreatorController extends AbstractContentElementController
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
     {
+        $template->viewMode = $this->viewMode;
+
         switch ($this->viewMode) {
-            case 'list_view':
+            case self::GC_VIEW_MODE_LIST:
 
                 $itemsTotal = \count($this->arrSelectedAlbums);
                 $perPage = (int) $this->model->gcAlbumsPerPage;
@@ -298,12 +304,12 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->triggerGenerateFrontendTemplateHook($template, null);
                 break;
 
-            case 'detail_view':
+            case self::GC_VIEW_MODE_DETAIL:
 
                 // Get child albums
                 if ($this->model->gcHierarchicalOutput) {
                     $arrChildAlbums = $this->albumUtil->getChildAlbums($this->activeAlbum, $this->model);
-                    $template->subalbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
+                    $template->childAlbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
                     $template->hasChildAlbums = \count($arrChildAlbums) ? true : false;
                 }
 
@@ -362,8 +368,8 @@ class GalleryCreatorController extends AbstractContentElementController
                     }
                 }
 
+                // Add pictures to the template
                 $arrPictures = array_values($arrPictures);
-
                 $template->arrPictures = $arrPictures;
 
                 // Augment template with more properties
@@ -376,7 +382,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
                 break;
 
-            case 'single_image':
+            case self::GC_VIEW_MODE_SINGLE_IMAGE:
 
                 $objPic = Database::getInstance()
                     ->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND name LIKE '".Input::get('img').".%'")
@@ -528,8 +534,12 @@ class GalleryCreatorController extends AbstractContentElementController
      */
     protected function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template &$template): void
     {
+        // Add formatted date string to the album model
+        $albumModel->dateFormatted = Date::parse(Config::get('dateFormat'), $albumModel->date);
+        $template->album = $albumModel->row();
+
         // Add meta tags to the page object
-        if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && 'detail_view' === $this->viewMode) {
+        if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && self::GC_VIEW_MODE_DETAIL === $this->viewMode) {
             $this->pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : $this->pageModel->description;
             $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($albumModel->keywords), ',');
         }

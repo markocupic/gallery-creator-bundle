@@ -735,11 +735,11 @@ class TlGalleryCreatorAlbums extends Backend
         }
 
         // Get all child albums
-        $arrSubIds = GalleryCreatorAlbumsModel::getChildAlbums(Input::get('id'));
+        $arrChildIds = GalleryCreatorAlbumsModel::getChildAlbums(Input::get('id'));
 
-        if (\count($arrSubIds)) {
+        if (\count($arrChildIds)) {
             $objPicture = Database::getInstance()
-                ->execute('SELECT * FROM tl_gallery_creator_pictures WHERE pid IN ('.implode(',', $arrSubIds).') ORDER BY id')
+                ->execute('SELECT * FROM tl_gallery_creator_pictures WHERE pid IN ('.implode(',', $arrChildIds).') ORDER BY id')
             ;
 
             while ($objPicture->next()) {
@@ -785,13 +785,13 @@ class TlGalleryCreatorAlbums extends Backend
                 '@MarkocupicGalleryCreator/Backend/album_thumbnail_list.html.twig',
                 [
                     'album_thumbs' => $arrContainer[0],
-                    'sub_album_thumbs' => $arrContainer[1],
+                    'child_album_thumbs' => $arrContainer[1],
                     'has_album_thumbs' => \count($arrContainer[0]) ? true : false,
-                    'has_sub_album_thumbs' => \count($arrContainer[1]) ? true : false,
+                    'has_child_album_thumbs' => \count($arrContainer[1]) ? true : false,
                     'trans' => [
                         'album_thumb' => $translator->trans('tl_gallery_creator_albums.thumb.0', [], 'contao_default'),
                         'drag_items_hint' => $translator->trans('tl_gallery_creator_albums.thumb.1', [], 'contao_default'),
-                        'sub_albums' => $translator->trans('GALLERY_CREATOR.subalbums', [], 'contao_default'),
+                        'child_albums' => $translator->trans('GALLERY_CREATOR.childAlbums', [], 'contao_default'),
                     ],
                 ]
             )
@@ -923,16 +923,12 @@ class TlGalleryCreatorAlbums extends Backend
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.alias.save")
      */
-    public function saveCbAlias(string $strAlias, DataContainer $dc): void
+    public function saveCbAlias(string $strAlias, DataContainer $dc): string
     {
         $blnDoNotCreateDir = false;
 
         // Get current row
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($dc->id);
-
-        if (null === $objAlbum) {
-            return;
-        }
 
         // Save assigned directory if it has been defined.
         if ($this->Input->post('FORM_SUBMIT') && \strlen((string) $this->Input->post('assignedDir'))) {
@@ -956,7 +952,7 @@ class TlGalleryCreatorAlbums extends Backend
 
         // If alias already exists, append the album id to the alias.
         $objAlb = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id!=? AND alias=?')
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id != ? AND alias = ?')
             ->execute($dc->activeRecord->id, $strAlias)
         ;
 
@@ -976,6 +972,8 @@ class TlGalleryCreatorAlbums extends Backend
             // Important
             Input::setPost('assignedDir', StringUtil::binToUuid($objAlbum->assignedDir));
         }
+
+        return $strAlias;
     }
 
     /**

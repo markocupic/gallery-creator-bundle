@@ -27,8 +27,8 @@ $GLOBALS['TL_LANG']['ERR']['supportJpegFormatOnly'] = 'Gallery Creator only supp
  * Frontend
  */
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['backToOverview'] = 'back to general view';
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['subalbums'] = 'subalbums';
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbumsOf'] = 'Subalbums of';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'] = 'child albums';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbumsOf'] = 'Child albums of';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] = 'pictures';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'] = 'contains';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['visitors'] = 'visitors';

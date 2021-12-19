@@ -3,12 +3,13 @@
 <!-- indexer::stop -->
 <?= $this->pagination ?>
 
-<ul class="gc-list-view">
-    <h1><?= $this->hallo ?></h1>
+<ul class="gc-album-list">
 	<?php foreach ($this->arrAlbums as $album): ?>
-	<li<?php if($album['cssClass']): ?> class="<?= $album['cssClass'] ?>"<?php endif; ?>>
+	<li class="gc-album-list-item <?= $this->album['cssClass'] ?>" data-id="<?= $album['albumModel']->id ?>">
 	<?php $this->insert('gallery_creator_album', ['album' => $album]); ?>
 	</li>
 	<?php endforeach; ?>
 </ul>
 <!-- indexer::continue -->
+
+

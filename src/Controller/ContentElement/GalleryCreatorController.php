@@ -295,7 +295,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 );
 
                 // Trigger gcGenerateFrontendTemplateHook
-                $this->callGcGenerateFrontendTemplateHook($template, null);
+                $this->triggerGenerateFrontendTemplateHook($template, null);
                 break;
 
             case 'detail_view':
@@ -373,7 +373,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->albumUtil->countAlbumViews($this->activeAlbum);
 
                 // Trigger gcGenerateFrontendTemplateHook
-                $this->callGcGenerateFrontendTemplateHook($template, $this->activeAlbum);
+                $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
                 break;
 
             case 'single_image':
@@ -462,7 +462,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 $this->albumUtil->countAlbumViews($this->activeAlbum);
 
                 // Trigger gcGenerateFrontendTemplateHook
-                $this->callGcGenerateFrontendTemplateHook($template, $this->activeAlbum);
+                $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
 
                 break;
         }
@@ -510,7 +510,7 @@ class GalleryCreatorController extends AbstractContentElementController
         return array_map('intval', $objAlbums->fetchEach('id'));
     }
 
-    protected function callGcGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
+    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
     {
         /** @var System $systemAdapter */
         $systemAdapter = $this->framework->getAdapter(System::class);
@@ -526,7 +526,7 @@ class GalleryCreatorController extends AbstractContentElementController
     /**
      * Set the template-vars to the template object for the selected album.
      */
-    pr function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template &$template): void
+    protected function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template &$template): void
     {
         // Add meta tags to the page object
         if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && 'detail_view' === $this->viewMode) {

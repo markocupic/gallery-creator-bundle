@@ -58,12 +58,16 @@ class AlbumUtil
         $subAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
 
         // Count images
-        $countPics = $this->connection
+        $countPictures = $this->connection
             ->executeStatement(
-                'SELECT COUNT(id) AS count FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
+                'SELECT id FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
                 [$albumModel->id, '1'],
             )
         ;
+
+        // Image size
+        $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
+        $arrSize = !empty($size) && \is_array($size) ? $size : null;
 
         $href = null;
 
@@ -80,16 +84,17 @@ class AlbumUtil
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
         $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPics ? $countPics.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $subAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$subAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['subalbums'].']' : ']');
+        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $subAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$subAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['subalbums'].']' : ']');
 
         $arrCssClasses = [];
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'has-child-album' : '';
-        $arrCssClasses[] = !$countPics ? 'empty-album' : '';
+        $arrCssClasses[] = 'gc-level-'.$this->getAlbumLevelFromPid((int) $albumModel->pid);
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'gc-has-child-album' : '';
+        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : '';
 
         return [
             'albumModel' => $albumModel,
             'href' => $href,
-            'count' => $countPics,
+            'countPictures' => $countPictures,
             'caption' => StringUtil::specialchars(StringUtil::toHtml5($arrMeta['caption'])),
             'hasChildAlbums' => $subAlbumCount ? true : false,
             'countSubalbums' => $subAlbumCount,

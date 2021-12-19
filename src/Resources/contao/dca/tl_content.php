@@ -12,6 +12,7 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
+use Contao\BackendUser;
 use Contao\System;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
 use Markocupic\GalleryCreatorBundle\Dca\TlContent;
@@ -24,7 +25,7 @@ $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = [
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gcHierarchicalOutput,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage;
-{album_listing_legend},gcSorting,gcSortingDirection;
+{album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing;
 {picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
@@ -95,22 +96,22 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumsPerPage'] = [
     'sql' => "smallint(5) unsigned NOT NULL default '0'",
 ];
 
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
-    'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
-    'exclude' => true,
-    'inputType' => 'imageSize',
-    'options' => System::getImageSizes(),
-    'reference' => &$GLOBALS['TL_LANG']['MSC'],
-    'sql' => "varchar(64) NOT NULL default ''",
-];
-
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = [
     'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
     'exclude' => true,
     'inputType' => 'imageSize',
-    'options' => System::getImageSizes(),
+    'options_callback' => static fn () => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
     'reference' => &$GLOBALS['TL_LANG']['MSC'],
-    'sql' => "varchar(64) NOT NULL default ''",
+    'sql' => "varchar(255) NOT NULL default ''",
+];
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
+    'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
+    'exclude' => true,
+    'inputType' => 'imageSize',
+    'options_callback' => static fn () => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
+    'reference' => &$GLOBALS['TL_LANG']['MSC'],
+    'sql' => "varchar(255) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcFullsize'] = [

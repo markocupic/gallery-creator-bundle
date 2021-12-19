@@ -1,32 +1,36 @@
-<li<?php if ($this->album['cssClass']): ?> class="<?= $this->album['cssClass'] ?>"<?php endif; ?>>
-
-    <div class="col_1">
+<div class="gc-album-list-inner">
+    <div class="gc-album-list-figure">
+        <?php if ($this->album['href']): ?><a href="<?= $this->album['href'] ?>" title="<?= $this->album['title'] ?>" class="gc-album-list-link"><?php endif; ?>
         <?= $this->figure($this->album['figureUuid'], $this->album['figureSize'], $this->album['figureOptions']) ?>
+        <?php if ($this->album['href']): ?></a><?php endif; ?>
     </div>
 
-    <div class="col_2">
-        <?php if ($this->album['href']): ?><a href="<?= $this->album['href'] ?>" title="<?= $this->album['title'] ?>"><?php endif; ?>
-        <h2><?= $this->album['albumModel']->name ?></h2>
-        <?php if ($this->album['href']): ?></a><?php endif; ?>
+    <div class="gc-album-list-facts">
+        <h2 class="gc-album-list-name"><?= $this->album['albumModel']->name ?></h2>
 
-        <p class="time">{{date::Y-m-d::<?= $this->album['albumModel']->date ?>}}</p>
+        <p class="gc-album-list-date">{{date::Y-m-d::<?= $this->album['albumModel']->date ?>}}</p>
 
         <?php if ($this->album['albumModel']->eventLocation): ?>
-        <p class="event-location"><?= $this->trans('GALLERY_CREATOR.eventLocation') ?>: <?= $this->album['albumModel']->eventLocation ?></p>
+        <p class="gc-album-list-location"><?= $this->trans('GALLERY_CREATOR.eventLocation') ?>: <?= $this->album['albumModel']->eventLocation ?></p>
         <?php endif; ?>
 
         <?php if ($this->album['albumModel']->photographer): ?>
-        <p class="photographer"><?= $this->trans('GALLERY_CREATOR.photographerName') ?>: <?= $this->album['albumModel']->photographer ?></p>
+        <p class="gc-album-list-photographer"><?= $this->trans('GALLERY_CREATOR.photographerName') ?>: <?= $this->album['albumModel']->photographer ?></p>
         <?php endif; ?>
 
-        <?php if ($this->album['count']): ?>
-        <p class="gc-count-pics"><?= $this->album['count'] ?> <?= $this->trans('GALLERY_CREATOR.pictures') ?></p>
-        <p class="gc-visitors"><?= $this->album['albumModel']->visitors ?> <?= $this->trans('GALLERY_CREATOR.visitors') ?></p>
-        <?php endif; ?>
+        <p class="gc-album-list-count-pictures"><?= $this->album['countPictures'] ?> <?= $this->trans('GALLERY_CREATOR.pictures') ?></p>
+
+        <p class="gc-album-list-visitors"><?= $this->album['albumModel']->visitors ?> <?= $this->trans('GALLERY_CREATOR.visitors') ?></p>
 
         <?php if ($this->album['countSubalbums']): ?>
         <p class="gc-count-pics"><?= $this->album['countSubalbums'] ?> <?= $this->trans('GALLERY_CREATOR.subalbums') ?></p>
         <?php endif; ?>
-    </div>
 
-</li>
+        <?php if ($this->album['caption']): ?>
+        <div class="gc-album-list-caption">
+            <p><?= $this->album['caption'] ?></p>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>
+

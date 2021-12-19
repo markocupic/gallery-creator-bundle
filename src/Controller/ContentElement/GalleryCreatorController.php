@@ -526,7 +526,7 @@ class GalleryCreatorController extends AbstractContentElementController
     /**
      * Set the template-vars to the template object for the selected album.
      */
-    private function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template &$template): void
+    pr function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template &$template): void
     {
         // Add meta tags to the page object
         if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && 'detail_view' === $this->viewMode) {

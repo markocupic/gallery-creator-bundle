@@ -12,54 +12,52 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-namespace Markocupic\GalleryCreatorBundle\Helper;
+namespace Markocupic\GalleryCreatorBundle\Revise;
 
-use Contao\BackendTemplate;
 use Contao\Database;
 use Contao\Dbafs;
 use Contao\FilesModel;
-use Contao\FileUpload;
 use Contao\Folder;
 use Contao\System;
 use Contao\UserModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Symfony\Component\HttpFoundation\RequestStack;
 
-class GcHelper
+class ReviseAlbumDatabase
 {
     /**
-     * Generate the uploader.
+     * @var RequestStack
      */
-    public static function generateUploader(string $uploader = 'be_gc_html5_uploader'): string
+    private $requestStack;
+
+    /**
+     * @var string
+     */
+    private $projectDir;
+
+    public function __construct(RequestStack $requestStack, string $projectDir)
     {
-        // Create the template object
-        $objTemplate = new BackendTemplate($uploader);
-
-        // Maximum uploaded size
-        $objTemplate->maxUploadedSize = FileUpload::getMaxUploadSize();
-
-        // $_FILES['file']
-        $objTemplate->strName = 'file';
-
-        // Return the parsed uploader template
-        return $objTemplate->parse();
+        $this->requestStack = $requestStack;
+        $this->projectDir = $projectDir;
     }
 
     /**
-     * Revise tables.
-     *
+     * @param GalleryCreatorAlbumsModel $albumModel
+     * @param bool $blnCleanDb
+     * @return void
      * @throws \Exception
      */
-    public static function reviseTables(GalleryCreatorAlbumsModel $albumModel, bool $blnCleanDb = false): void
+    public function run(GalleryCreatorAlbumsModel $albumModel, bool $blnCleanDb = false): void
     {
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-        $session = System::getContainer()->get('session');
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
         $session->set('gc_error', []);
 
-        // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
+        // Create the upload directory
         new Folder(System::getContainer()->getParameter('markocupic_gallery_creator.upload_path'));
 
-        // Check for valid album owner
+        // Check for a valid album owner
         $objUser = UserModel::findByPk($albumModel->owner);
 
         if (null !== $objUser) {
@@ -70,7 +68,7 @@ class GcHelper
         $albumModel->ownersName = $owner;
 
         // Check for valid pid
-        if ($albumModel->pid > 0) {
+        if ((int)$albumModel->pid > 0) {
             $objParentAlb = $albumModel->getRelated('pid');
 
             if (null === $objParentAlb) {
@@ -91,7 +89,7 @@ class GcHelper
 
                     if (null === $objFile) {
                         if ('' !== $pictureModels->path) {
-                            if (is_file($projectDir.'/'.$pictureModels->path)) {
+                            if (is_file($this->projectDir.'/'.$pictureModels->path)) {
                                 $objModel = Dbafs::addResource($pictureModels->path);
 
                                 if (null !== $objModel) {
@@ -108,13 +106,13 @@ class GcHelper
                             $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $pictureModels->id, $albumModel->name);
                             $pictureModels->delete();
                         } else {
-                            // Show the error-message
+                            // Show error-message
                             $path = '' !== $pictureModels->path ? $pictureModels->path : 'unknown path';
                             $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $path, $albumModel->alias);
                         }
 
                         $session->set('gc_error', $arrError);
-                    } elseif (!is_file($projectDir.'/'.$objFile->path)) {
+                    } elseif (!is_file($this->projectDir.'/'.$objFile->path)) {
                         $arrError = $session->get('gc_error');
 
                         // If file has an entry in Dbafs, but doesn't exist on the server anymore
@@ -127,7 +125,7 @@ class GcHelper
 
                         $session->set('gc_error', $arrError);
                     } else {
-                        // Pfadangaben mit tl_files.path abgleichen (Redundanz)
+                        // Sync tl_gallery_creator_pictures.path with tl_files.path (redundancy)
                         if ($pictureModels->path !== $objFile->path) {
                             $pictureModels->path = $objFile->path;
                             $pictureModels->save();
@@ -143,9 +141,9 @@ class GcHelper
          * If not, these are removed from the array.
          */
         $objCont = Database::getInstance()
-            ->prepare('SELECT * FROM tl_content WHERE type= ?')
+            ->prepare('SELECT * FROM tl_content WHERE type = ?')
             ->execute('gallery_creator')
-        ;
+            ;
 
         while ($objCont->next()) {
             $newArr = [];
@@ -154,10 +152,10 @@ class GcHelper
             if (\is_array($arrAlbums)) {
                 foreach ($arrAlbums as $AlbumID) {
                     $objAlb = Database::getInstance()
-                        ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id= ?')
+                        ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id = ?')
                         ->limit('1')
                         ->execute($AlbumID)
-                    ;
+                        ;
 
                     if ($objAlb->next()) {
                         $newArr[] = $AlbumID;
@@ -165,9 +163,9 @@ class GcHelper
                 }
             }
             Database::getInstance()
-                ->prepare('UPDATE tl_content SET gcPublishAlbums= ? WHERE id= ?')
+                ->prepare('UPDATE tl_content SET gcPublishAlbums = ? WHERE id = ?')
                 ->execute(serialize($newArr), $objCont->id)
-            ;
+                ;
         }
     }
 }

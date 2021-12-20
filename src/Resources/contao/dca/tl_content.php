@@ -15,12 +15,7 @@ declare(strict_types=1);
 use Contao\BackendUser;
 use Contao\System;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
-use Markocupic\GalleryCreatorBundle\Dca\TlContent;
-
-$GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = [
-    TlContent::class,
-    'onloadCbSetUpPalettes',
-];
+use Markocupic\GalleryCreatorBundle\DataContainer\Content;
 
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gcHierarchicalOutput,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
@@ -132,7 +127,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcPublishAlbums'] = [
     'eval' => ['multiple' => true, 'mandatory' => false, 'tl_class' => 'clr'],
     'exclude' => true,
     'inputType' => 'checkbox',
-    'input_field_callback' => [TlContent::class, 'inputFieldCallbackListAlbums'],
     'sql' => 'blob NULL',
 ];
 
@@ -140,7 +134,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcPublishSingleAlbum'] = [
     'eval' => ['mandatory' => false, 'multiple' => false, 'tl_class' => 'clr'],
     'exclude' => true,
     'inputType' => 'radio',
-    'options_callback' => [TlContent::class, 'optionsCallbackListAlbums'],
     'sql' => 'blob NULL',
 ];
 

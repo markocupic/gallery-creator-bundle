@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-namespace Markocupic\GalleryCreatorBundle\Dca;
+namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\Backend;
 use Contao\Config;
@@ -40,7 +40,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 /**
  * Class tl_gallery_creator_pictures.
  */
-class TlGalleryCreatorPictures extends Backend
+class GalleryCreatorPictures extends Backend
 {
     /**
      * @var bool

@@ -45,11 +45,17 @@ class PictureUtil
      */
     private $galleryCreatorReadExifMetaData;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, bool $galleryCreatorReadExifMetaData)
+    /**
+     * @var string
+     */
+    private $projectDir;
+
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, bool $galleryCreatorReadExifMetaData, string $projectDir)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
         $this->galleryCreatorReadExifMetaData = $galleryCreatorReadExifMetaData;
+        $this->projectDir = $projectDir;
     }
 
     /**
@@ -98,16 +104,13 @@ class PictureUtil
                 $localMediaSrc = $tlFilesUrl.$objMovieFile->path;
             }
 
-            // Simply display the image as default
-            if (!$href && $contentElementModel->gcFullsize) {
+            // Use the image path as default
+            if ($href === null && $contentElementModel->gcFullsize) {
                 $href = $filesModel->path;
             }
 
             $href = $href ? $tlFilesUrl.$href : null;
         }
-
-        // CssID
-        $cssID = StringUtil::deserialize($pictureModel->cssID, true);
 
         // Build the array
         return [
@@ -120,8 +123,6 @@ class PictureUtil
             'localMediaSrc' => $localMediaSrc,
             'socialMediaSrc' => $socialMediaSrc,
             'exif' => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
-            'cssID' => '' !== $cssID[0] ? $cssID[0] : '',
-            'cssClass' => '' !== $cssID[1] ? $cssID[1] : '',
             'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),
             'figureUuid' => $pictureModel->addCustomThumb ? $pictureModel->customThumb : $filesModel->uuid,
             'figureSize' => !empty($arrSize) ? $arrSize : null,
@@ -141,11 +142,9 @@ class PictureUtil
      */
     public function getExif(File $file): array
     {
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-
         // Exif
         try {
-            $exif = \is_callable('exif_read_data') ? exif_read_data($projectDir.'/'.$file->path) : ['info' => "The function 'exif_read_data()' is not available on this server."];
+            $exif = \is_callable('exif_read_data') ? exif_read_data($this->projectDir.'/'.$file->path) : ['info' => "The function 'exif_read_data()' is not available on this server."];
         } catch (\Exception $e) {
             $exif = ['info' => "The function 'exif_read_data()' is not available on this server."];
         }

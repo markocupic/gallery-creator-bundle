@@ -13,7 +13,7 @@ declare(strict_types=1);
  */
 
 use Contao\BackendUser;
-use Markocupic\GalleryCreatorBundle\Dca\TlGalleryCreatorPictures;
+use Markocupic\GalleryCreatorBundle\DataContainer\GalleryCreatorPictures;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     'config' => [
@@ -23,14 +23,14 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         'enableVersioning' => true,
         'dataContainer' => 'Table',
         'onload_callback' => [
-            [TlGalleryCreatorPictures::class, 'onloadCbCheckPermission'],
-            [TlGalleryCreatorPictures::class, 'onloadCbSetUpPalettes'],
+            [GalleryCreatorPictures::class, 'onloadCbCheckPermission'],
+            [GalleryCreatorPictures::class, 'onloadCbSetUpPalettes'],
         ],
         'ondelete_callback' => [
-            [TlGalleryCreatorPictures::class, 'ondeleteCb'],
+            [GalleryCreatorPictures::class, 'ondeleteCb'],
         ],
         'oncut_callback' => [
-            [TlGalleryCreatorPictures::class, 'oncutCb'],
+            [GalleryCreatorPictures::class, 'oncutCb'],
         ],
         'sql' => [
             'keys' => [
@@ -40,11 +40,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
     ],
     'edit' => [
-        'buttons_callback' => [TlGalleryCreatorPictures::class, 'editButtonsCallback'],
+        'buttons_callback' => [GalleryCreatorPictures::class, 'editButtonsCallback'],
     ],
     'list' => [
         'sorting' => [
-            'child_record_callback' => [TlGalleryCreatorPictures::class, 'childRecordCb'],
+            'child_record_callback' => [GalleryCreatorPictures::class, 'childRecordCb'],
             'fields' => ['sorting'],
             'headerFields' => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
             'mode' => 4,
@@ -64,38 +64,38 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'operations' => [
             'edit' => [
-                'button_callback' => [TlGalleryCreatorPictures::class, 'buttonCbEditImage'],
+                'button_callback' => [GalleryCreatorPictures::class, 'buttonCbEditImage'],
                 'href' => 'act=edit',
                 'icon' => 'edit.gif',
             ],
             'delete' => [
                 'attributes' => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'].'\')) return false; Backend.getScrollOffset();"',
-                'button_callback' => [TlGalleryCreatorPictures::class, 'buttonCbDeletePicture'],
+                'button_callback' => [GalleryCreatorPictures::class, 'buttonCbDeletePicture'],
                 'href' => 'act=delete',
                 'icon' => 'delete.gif',
             ],
             'cut' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();"',
-                'button_callback' => [TlGalleryCreatorPictures::class, 'buttonCbCutImage'],
+                'button_callback' => [GalleryCreatorPictures::class, 'buttonCbCutImage'],
                 'href' => 'act=paste&mode=cut',
                 'icon' => 'cut.gif',
             ],
             'imagerotate' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();"',
-                'button_callback' => [TlGalleryCreatorPictures::class, 'buttonCbRotateImage'],
+                'button_callback' => [GalleryCreatorPictures::class, 'buttonCbRotateImage'],
                 'href' => 'mode=imagerotate',
                 'icon' => 'bundles/markocupicgallerycreator/images/arrow_rotate_clockwise.png',
             ],
             'toggle' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-                'button_callback' => [TlGalleryCreatorPictures::class, 'toggleIcon'],
+                'button_callback' => [GalleryCreatorPictures::class, 'toggleIcon'],
                 'icon' => 'visible.gif',
             ],
         ],
     ],
     'palettes' => [
         '__selector__' => ['addCustomThumb'],
-        'default' => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC;{expert_legend:hide},cssID',
+        'default' => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
         'restrictedUser' => 'imageInfo,picture',
     ],
     'subpalettes' => [
@@ -129,7 +129,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'imageInfo' => [
             'eval' => ['tl_class' => 'clr'],
-            'input_field_callback' => [TlGalleryCreatorPictures::class, 'inputFieldCbGenerateImageInformation'],
+            'input_field_callback' => [GalleryCreatorPictures::class, 'inputFieldCbGenerateImageInformation'],
         ],
         'title' => [
             'eval' => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
@@ -154,7 +154,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'picture' => [
             'eval' => ['tl_class' => 'clr'],
-            'input_field_callback' => [TlGalleryCreatorPictures::class, 'inputFieldCbGenerateImage'],
+            'input_field_callback' => [GalleryCreatorPictures::class, 'inputFieldCbGenerateImage'],
         ],
         'date' => [
             'inputType' => 'text',
@@ -203,12 +203,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'inputType' => 'fileTree',
             'search' => true,
             'sql' => 'binary(16) NULL',
-        ],
-        'cssID' => [
-            'eval' => ['multiple' => true, 'size' => 2, 'tl_class' => 'w50 clr'],
-            'exclude' => true,
-            'inputType' => 'text',
-            'sql' => "varchar(255) NOT NULL default ''",
         ],
     ],
 ];

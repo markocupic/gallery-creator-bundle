@@ -39,7 +39,6 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename'] = ['Filename'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path'] = ['Path'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = ['Embed movies/sounds located on a social-media-plattform', 'Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&wmode=transparent'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC'] = ['Embed movies/sounds located on the contao-file-system'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cssID'] = ['CSS ID/class', 'Here you can set an ID and one or more classes for this picture.'];
 
 /*
  * Buttons

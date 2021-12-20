@@ -230,13 +230,6 @@ class Version200Update extends AbstractMigration
                 'new' => 'gcImageQuality',
                 'sql' => 'smallint(3)',
             ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_user',
-                'old' => 'gc_be_uploader_template',
-                'new' => 'gcBeUploaderTemplate',
-                'sql' => 'varchar(64)',
-            ],
             // tl_gallery_creator_albums
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,

@@ -326,13 +326,15 @@ class FileUtil
                 'basename' => [],
             ];
 
-            $pictureModels = Database::getInstance()
-                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid= ?')
-                ->execute($albumModel->id)
+            $arrPictures['uuid'] = $this->connection
+                ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?',  [$albumModel->id])
+                ->fetchFirstColumn()
             ;
 
-            $arrPictures['uuid'] = $pictureModels->fetchEach('uuid');
-            $arrPictures['path'] = $pictureModels->fetchEach('path');
+            $arrPictures['path'] = $this->connection
+                ->executeQuery('SELECT path FROM tl_gallery_creator_pictures WHERE pid = ?',  [$albumModel->id])
+                ->fetchFirstColumn()
+            ;
 
             foreach ($arrPictures['path'] as $path) {
                 $arrPictures['basename'][] = basename($path);

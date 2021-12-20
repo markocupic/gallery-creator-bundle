@@ -19,7 +19,3 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['gcImageResolution'] = [
 $GLOBALS['TL_DCA']['tl_user']['fields']['gcImageQuality'] = [
     'sql' => "smallint(3) unsigned NOT NULL default '100'",
 ];
-
-$GLOBALS['TL_DCA']['tl_user']['fields']['gcBeUploaderTemplate'] = [
-    'sql' => "varchar(64) NOT NULL default 'be_gc_html5_uploader'",
-];

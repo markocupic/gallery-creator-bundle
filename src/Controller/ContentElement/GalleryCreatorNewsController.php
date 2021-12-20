@@ -19,6 +19,7 @@ use Contao\ContentModel;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\Database;
 use Contao\Date;
 use Contao\FilesModel;
@@ -37,10 +38,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GalleryCreatorNewsController.
+ * @ContentElement(GalleryCreatorNewsController::TYPE, category="gallery_creator_elements")
  */
 class GalleryCreatorNewsController extends AbstractContentElementController
 {
+    public const TYPE = 'gallery_creator_news';
+
     /**
      * @var AlbumUtil
      */
@@ -80,6 +83,15 @@ class GalleryCreatorNewsController extends AbstractContentElementController
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {
+        // Do not parse the content element in the backend
+        if ($request && $this->scopeMatcher->isBackendRequest($request)) {
+            $twig = System::getContainer()->get('twig');
+
+            return new Response(
+                $twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', [])
+            );
+        }
+
         $this->model = $model;
         $this->pageModel = $pageModel;
 

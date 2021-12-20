@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'Het bestand "%s" staat niet op uw server!';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'Het bestand "%s" kon niet worden geüpload!';
-$GLOBALS['TL_LANG']['ERR']['fileDontExist'] = 'Het bestand "%s" bestaat niet!';
-$GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'Het bestand "%s" is niet leesbaar! Controleer uw toegangsrechten.';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'De map "%s" is niet beschrijfbaar! Controleer de chmod instellingen!';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['backToOverview'] = 'Terug naar het algemene scherm';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'] = 'subalbums';

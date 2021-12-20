@@ -35,9 +35,7 @@ use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\UserModel;
-use Contao\Versions;
 use Doctrine\DBAL\Connection;
-use Markocupic\GalleryCreatorBundle\Helper\GcHelper;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
@@ -97,7 +95,7 @@ class GalleryCreatorAlbums extends Backend
      */
     private $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, Connection  $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
+    public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
     {
         $this->requestStack = $requestStack;
         $this->albumUtil = $albumUtil;
@@ -137,23 +135,23 @@ class GalleryCreatorAlbums extends Backend
     /**
      * Check Permission callback.
      */
-    public function checkPermissionCbToggle(string $table, array $hasteAjaxOperationSettings, bool &$hasPermission)
+    public function checkPermissionCbToggle(string $table, array $hasteAjaxOperationSettings, bool &$hasPermission): void
     {
         $request = $this->requestStack->getCurrentRequest();
         $hasPermission = true;
-        if($request->request->has('id')){
-            $id = (int) $request->request->get('id',0);
-            $album = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id=?',[$id]);
-            if($album)
-            {
-                if(!$this->User->isAdmin && (int) $album['owner'] !== (int) $this->User->id && $this->galleryCreatorBackendWriteProtection){
+
+        if ($request->request->has('id')) {
+            $id = (int) $request->request->get('id', 0);
+            $album = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id = ?', [$id]);
+            if ($album) {
+                if (!$this->User->isAdmin && (int) $album['owner'] !== (int) $this->User->id && $this->galleryCreatorBackendWriteProtection) {
                     $hasPermission = false;
+                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'], $album['name']));
+                    $this->redirect('contao?do=gallery_creator');
                 }
             }
         }
     }
-
-
 
     /**
      * Button callback.
@@ -1025,6 +1023,4 @@ class GalleryCreatorAlbums extends Backend
         // ...so the current user is the album owner
         $this->restrictedUser = false;
     }
-
-
 }

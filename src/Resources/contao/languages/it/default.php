@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'Il file "%s" non è presente nel tuo server!';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'Il file "%s" non può essere caricato!';
-$GLOBALS['TL_LANG']['ERR']['fileDontExist'] = 'Il file "%s" non esiste!';
-$GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'Il file "%s" non può essere letto! Controllare i permessi.';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'La directory "%s" non ha i permessi di scritura! Controllare i settaggi chmod!';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['backToOverview'] = 'torna alla back to general view';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'] = 'sotto album';

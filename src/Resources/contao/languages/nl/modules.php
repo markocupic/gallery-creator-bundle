@@ -12,9 +12,17 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-$GLOBALS['TL_LANG']['MOD']['gallery_creator'][0] = 'Gallery Creator';
-$GLOBALS['TL_LANG']['MOD']['gallery_creator'][1] = 'Maak en verander albums/galerijen.';
-$GLOBALS['TL_LANG']['FMD']['gallery_creator_fmd'][0] = 'Gallery Creator';
-$GLOBALS['TL_LANG']['FMD']['gallery_creator_fmd'][1] = 'Toon Gallery Creator albums als frontend module.';
-$GLOBALS['TL_LANG']['CTE']['gallery_creator'][0] = 'Gallery Creator';
-$GLOBALS['TL_LANG']['CTE']['gallery_creator'][1] = 'Toon Gallery Creator albums als frontend inhoudselement.';
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController;
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
+
+/*
+ * Back end modules
+ */
+$GLOBALS['TL_LANG']['MOD']['gallery_creator'] = ['Gallery Creator', 'Maak en verander albums/galerijen.'];
+
+/*
+ * Front end content elements
+ */
+$GLOBALS['TL_LANG']['CTE']['gallery_creator_elements'] = 'Gallery Creator';
+$GLOBALS['TL_LANG']['CTE'][GalleryCreatorController::TYPE] = ['Gallery Creator', 'Toon Gallery Creator albums als frontend inhoudselement.'];
+$GLOBALS['TL_LANG']['CTE'][GalleryCreatorNewsController::TYPE] = ['Gallery Creator News', 'Toon Gallery Creator albums als frontend inhoudselement.'];

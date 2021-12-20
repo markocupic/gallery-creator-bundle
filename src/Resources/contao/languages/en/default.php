@@ -18,10 +18,14 @@ declare(strict_types=1);
 $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'The file "%s" doesn\'t exist on your server!';
 $GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. <br>Please clean up the database or check the existence of %s in the album with alias: %s!';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded!';
-$GLOBALS['TL_LANG']['ERR']['fileDontExist'] = 'The file "%s" does not exist!';
-$GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'The file "%s" ist not readable! Check access rights.';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
-$GLOBALS['TL_LANG']['ERR']['supportJpegFormatOnly'] = 'Gallery Creator only supports jpeg/jpg files.';
+$GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album: "%s".';
+
+/**
+ * Confirm
+ */
+$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!';
+$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too!!!';
 
 /*
  * Frontend
@@ -36,8 +40,4 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthentificationError'] = ['Authentifi
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['photographerName'] = 'Photographers name';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
 
-/*
- * Backend
- */
-$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!';
-$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too!!!';
+

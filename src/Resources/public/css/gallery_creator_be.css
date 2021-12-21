@@ -1,101 +1,122 @@
-*.clear {
-    clear: both;
-}
-.icon_reviseDatabase {
-    margin-left: 20px;
-    padding: 2px 0 3px 22px;
-    background: url("../images/database_gear.png") no-repeat left center;
-}
-.icon_image_add {
-    margin-left: 20px;
-    padding: 2px 0 3px 22px;
-    background: url("../images/image_add.png") no-repeat left center;
-}
-.album_infos td {
+/**
+ * Album detail
+ */
+.gc-album-info-table td {
     padding: .5rem;
 }
-.album_infos tr.odd > td {
+
+.gc-album-info-table tr.odd > td {
     background-color: #f3f3f5;
 }
-div.readonly input {
+
+div.gc-readonly input {
     background-color: #f3f3f5;
 }
-#tl_gallery_creator_albums .preview_thumb li {
+
+.gc-preview_thumb li {
     height: 60px;
     width: 100px;
     margin: 0 20px 20px 0;
     overflow: hidden;
     float: left;
     background-color: #ececec;
-    position:relative;
+    position: relative;
 }
-#tl_gallery_creator_albums .preview_thumb input {
+
+.gc-preview_thumb input {
     position: absolute;
     top: 22px;
     left: 0;
 }
-#tl_gallery_creator_albums .preview_thumb li img {
+
+.gc-preview_thumb li img {
     height: 60px;
     max-height: 60px;
-    position:absolute;
-    top:0;
+    position: absolute;
+    top: 0;
     left: 20px;
-    width:80px;
+    width: 80px;
     max-width: 80px;
 }
-#tl_gallery_creator_albums .preview_thumb li.checked,
-#tl_gallery_creator_albums .preview_thumb li:hover
-{
+
+.gc-preview_thumb li.checked, .gc-preview_thumb li:hover {
     background-color: rgb(235, 253, 215);
 }
 
-#previewThumbList li:hover
-{
+#gcPreviewThumbList li:hover {
     cursor: move !important;
 }
 
-/** revise table in the backend **/
-.gc_check_tables .tl_folder_top {
-    position:relative;
-}
-.gc_check_tables .tl_status_box {
-    position:relative;
-    right:0;
-    top:5px;
-    font-size: 11px;
-    color:green;
+/**
+ * Global operations
+ */
+.gc-gop-icon {
+    margin-left: 20px;
+    padding: 3px 0 3px 22px;
+    background: url("../images/revise_database.svg") no-repeat left center;
+    background-size: 16px 16px;
 }
 
-.gcReviseDatabase .tl_status_box {
+/**
+ * Operations
+ */
+[data-icon="gc-op-icon"] > img {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+/**
+ * Label
+ */
+img[data-icon="_album.svg"]{
+    filter: brightness(200%);
+}
+
+/**
+ * Revise table
+ */
+.gc-check-tables .tl_folder_top {
+    position: relative;
+}
+
+.gc-check-tables .gc-check-tables-status-box {
+    position: relative;
+    right: 0;
+    top: 5px;
+    font-size: 11px;
+    color: green;
+}
+
+.gc-revise-database .gc-check-tables-status-box {
     margin-top: 20px;
     font-size: 13px;
-    color:green;
+    color: green;
     padding-left: 20px;
 }
 
-.gc-element-background-view{
+.gc-element-background-view {
     background-color: #f9f9f9;
     width: 100%;
 
 }
 
-.gc-element-background-inner{
+.gc-element-background-inner {
     width: 300px;
     max-width: 80%;
     position: relative;
     justify-content: center;
 }
 
-.gc-flex-justify-content-center{
+.gc-flex-justify-content-center {
     justify-content: center;
 }
 
-.gc-flex{
-    display:flex;
+.gc-flex {
+    display: flex;
 }
 
-.gc-w-100{
+.gc-w-100 {
     width: 100%;
-    height:auto;
+    height: auto;
 }
 

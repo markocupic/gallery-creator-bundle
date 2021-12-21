@@ -31,7 +31,7 @@
          * constructor
          */
         initialize: function () {
-            document.id('main').addClass('gc_check_tables');
+            document.id('main').addClass('gc-check-tables');
         },
 
         /**
@@ -153,8 +153,8 @@
 
                     onComplete: function () {
                         // Destroy previous status boxes
-                        if ($$('.tl_status_box')) {
-                            $$('.tl_status_box').each(function (el) {
+                        if ($$('.gc-check-tables-status-box')) {
+                            $$('.gc-check-tables-status-box').each(function (el) {
                                 el.destroy();
                             });
                         }
@@ -162,7 +162,7 @@
                         // Inject status box into DOM
                         $$('#tl_listing .tl_folder_top')[0].setStyle('position', 'relative');
                         let statusBox = new Element('p#statusBox' + albumId, {
-                            'class': 'tl_status_box',
+                            'class': 'gc-check-tables-status-box',
                             text: 'Check album with ID ' + albumId + '.',
                         });
 
@@ -177,7 +177,7 @@
                         if (counter === self.albumIDS.length) {
                             setTimeout(function () {
                                 let statusBox = new Element('p#statusBoxChecksCompleted', {
-                                    'class': 'tl_status_box',
+                                    'class': 'gc-check-tables-status-box',
                                     text: 'All checks completed.',
                                 });
                                 statusBox.inject($$('.tl_folder_top')[0]);

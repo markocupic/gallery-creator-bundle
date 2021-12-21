@@ -17,9 +17,13 @@ $GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'Der Datenbankeintrag zum 
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'Die Datei "%s" konnte nicht hochgeladen werden!';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'Das Verzeichnis "%s" ist nicht beschreibbar! Zugriffsrechte müssen manuell überprüft werden.';
 $GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'] = 'Sie haben nicht die erforderlichen Rechte das Album "%s" zu bearbeiten.';
+$GLOBALS['TL_LANG']['ERR']['notAllowedFilenameOrExtension'] = 'Ungültiger Dateiname oder nicht zulässige Dateiendung: => %s. Bitte überprüfen Sie die erlaubten Dateiendungen: (%s).';
+
+
+
+
 $GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Soll das Album mit der ID %s gelöscht werden? \\r\\nAchtung! Es werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht!!!';
 $GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Soll das Bild mit der ID %s gelöscht werden? \\r\\nAchtung! Es wird auch die Bilddatei aus dem Verzeichnis gelöscht!!!';
-
 
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['backToOverview'] = 'zurück zur Übersicht';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'] = 'Unteralben';

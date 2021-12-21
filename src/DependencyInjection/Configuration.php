@@ -25,16 +25,32 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-            ->scalarNode('upload_path')->cannotBeEmpty()->end()
+            ->scalarNode('upload_path')
+            ->cannotBeEmpty()
+            ->defaultValue('files/gallery_creator_albums')
+            ->end()
+
             ->booleanNode('backend_write_protection')
             ->info('Activate album protection so that only album owners have write access to the picture settings (e.g. edit caption, edit location...). Default to false.')
+            ->defaultFalse()
             ->end()
+
             ->booleanNode('copy_images_on_import')
             ->info('Make a copy of the original when importing images from an foreign directory. Default to true.')
+            ->defaultTrue()
             ->end()
+
             ->booleanNode('read_exif_meta_data')
             ->info('Read exif meta data from file. Default to false.')
+            ->defaultFalse()
             ->end()
+
+            ->arrayNode('valid_extensions')
+            ->prototype('scalar')->end()
+            ->useAttributeAsKey('name')
+            ->defaultValue(['jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff', 'bmp', 'svg', 'svgz', 'webp'])
+            ->end()
+
             ->end()
         ;
 

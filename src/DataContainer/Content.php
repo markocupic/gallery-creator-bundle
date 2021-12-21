@@ -38,7 +38,7 @@ class Content extends Backend
     private $albumUtil;
 
     /**
-     * @var
+     * @var 
      */
     private $connection;
 

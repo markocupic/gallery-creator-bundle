@@ -16,22 +16,24 @@ namespace Markocupic\GalleryCreatorBundle\Util;
 
 use Contao\BackendUser;
 use Contao\Config;
+use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\Database;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\FilesModel;
 use Contao\FileUpload;
-use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
+use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Patchwork\Utf8;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FileUtil
 {
@@ -51,6 +53,11 @@ class FileUtil
     private $connection;
 
     /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @var LoggerInterface|null
      */
     private $logger;
@@ -65,14 +72,21 @@ class FileUtil
      */
     private $galleryCreatorCopyImagesOnImport;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection, ?LoggerInterface $logger, string $projectDir, string $galleryCreatorCopyImagesOnImport)
+    /**
+     * @var array
+     */
+    private $galleryCreatorValidExtensions;
+
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, ?LoggerInterface $logger, string $projectDir, string $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
         $this->connection = $connection;
+        $this->translator = $translator;
         $this->logger = $logger;
         $this->projectDir = $projectDir;
         $this->galleryCreatorCopyImagesOnImport = $galleryCreatorCopyImagesOnImport;
+        $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
     }
 
     /**
@@ -119,20 +133,21 @@ class FileUtil
      */
     public function addImageToAlbum(GalleryCreatorAlbumsModel $albumModel, string $strFilepath): bool
     {
+        $request = $this->requestStack->getCurrentRequest();
+
         $objFile = new File($strFilepath);
 
         if (!$objFile->isGdImage) {
             return false;
         }
 
-        // Get files model
         $objFilesModel = $objFile->getModel();
 
         if (null === $objFilesModel) {
-            throw new \Exception('Aborted Script, because there is no file model.');
+            throw new \Exception('Aborted script, because there is no file model.');
         }
 
-        // Get the assigned album directory
+        // Get the folder that is assigned to the album
         $objFolder = FilesModel::findByUuid($albumModel->assignedDir);
         $assignedDir = null;
 
@@ -146,10 +161,10 @@ class FileUtil
             throw new \Exception('Aborted Script, because there is no upload directory assigned to the Album with ID '.$albumModel->id);
         }
 
-        // Check if the file ist stored in the album-directory or if it is stored in an external directory
+        // Check if the file is stored in the album directory or if it is stored in an external directory
         $blnExternalFile = false;
 
-        if (Input::get('importFromFilesystem')) {
+        if ($request->query->has('importFromFilesystem')) {
             $blnExternalFile = strstr($objFile->dirname, $assignedDir) ? false : true;
         }
 
@@ -159,12 +174,12 @@ class FileUtil
         $pictureModel->pid = $albumModel->id;
         $pictureModel->externalFile = $blnExternalFile ? '1' : '';
 
-        // Set uuid before model is saved the first time!!!
+        // Set uuid before the model is saved the first time!!!
         $pictureModel->uuid = $objFilesModel->uuid;
         $pictureModel->save();
         $insertId = $pictureModel->id;
 
-        // Get the next sorting index
+        // Get the sorting index
         $stmt = $this->connection->executeQuery(
             'SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid = ?',
             [$albumModel->id]
@@ -172,23 +187,20 @@ class FileUtil
         $result = $stmt->fetchAssociative();
         $sorting = $result['maximum'];
 
-        // If we use generic file names
         if (!$albumModel->preserveFilename && false === $blnExternalFile) {
+            // Generate a generic file name
             $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $albumModel->id, $insertId, $objFile->extension);
             $objFile->renameTo($newFilepath);
         }
 
         if (is_file($this->projectDir.'/'.$objFile->path)) {
-            // Get the user id
-            $userId = BackendUser::getInstance()->id;
-
-            // Finaly save the new image in tl_gallery_creator_pictures
-            $pictureModel->owner = $userId;
+            // Finally, save the new image in tl_gallery_creator_pictures
+            $pictureModel->owner = BackendUser::getInstance()->id;
             $pictureModel->date = $albumModel->date;
             $pictureModel->sorting = $sorting;
             $pictureModel->save();
 
-            // Check for a valid preview-thumb for the album
+            // Use this picture as the album preview image, if the album doesn't have one.
             if (!$albumModel->thumb) {
                 $albumModel->thumb = $insertId;
                 $albumModel->save();
@@ -198,7 +210,7 @@ class FileUtil
             if (isset($GLOBALS['TL_HOOKS']['galleryCreatorImagePostInsert']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorImagePostInsert'])) {
                 foreach ($GLOBALS['TL_HOOKS']['galleryCreatorImagePostInsert'] as $callback) {
                     $objClass = self::importStatic($callback[0]);
-                    $objClass->$callback[1]($insertId);
+                    $objClass->$callback[1]($pictureModel);
                 }
             }
 
@@ -248,7 +260,6 @@ class FileUtil
         $basename = basename($strPath, '.'.$extension);
         $dirname = \dirname($strPath);
 
-        // If file already exists, append an integer with leading zeros -> filename0001.jpg
         for ($i = 1; $i < 1000; ++$i) {
             if (!file_exists($this->projectDir.'/'.$dirname.'/'.$basename.'.'.$extension)) {
                 // Exit loop if filename is unique
@@ -277,6 +288,8 @@ class FileUtil
      */
     public function importFromFilesystem(GalleryCreatorAlbumsModel $albumModel, array $arrMultiSRC): void
     {
+        $request = $this->requestStack->getCurrentRequest();
+
         $images = [];
 
         if (null === ($objFilesModel = FilesModel::findMultipleByUuids($arrMultiSRC))) {
@@ -293,8 +306,10 @@ class FileUtil
             if ('file' === $objFilesModel->type) {
                 $objFile = new File($objFilesModel->path);
 
-                if ($objFile->isGdImage) {
+                if (\in_array($objFile->extension, $this->galleryCreatorValidExtensions, true)) {
                     $images[$objFile->path] = ['uuid' => $objFilesModel->uuid, 'basename' => $objFile->basename, 'path' => $objFile->path];
+                } else {
+                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension));
                 }
             } else {
                 // If resource is a directory, then store its files in the array
@@ -305,7 +320,7 @@ class FileUtil
                 }
 
                 while ($objSubfilesModel->next()) {
-                    // Skip sub folders
+                    // Skip child folders
                     if ('folder' === $objSubfilesModel->type || !is_file($this->projectDir.'/'.$objSubfilesModel->path)) {
                         continue;
                     }
@@ -327,12 +342,12 @@ class FileUtil
             ];
 
             $arrPictures['uuid'] = $this->connection
-                ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?',  [$albumModel->id])
+                ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
                 ->fetchFirstColumn()
             ;
 
             $arrPictures['path'] = $this->connection
-                ->executeQuery('SELECT path FROM tl_gallery_creator_pictures WHERE pid = ?',  [$albumModel->id])
+                ->executeQuery('SELECT path FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
                 ->fetchFirstColumn()
             ;
 
@@ -351,7 +366,7 @@ class FileUtil
                     continue;
                 }
 
-                Input::setGet('importFromFilesystem', 'true');
+                $request->query->set('importFromFilesystem', 'true');
 
                 if ($this->galleryCreatorCopyImagesOnImport) {
                     $strSource = $image['path'];
@@ -375,7 +390,7 @@ class FileUtil
                     $strDestination = $this->generateSanitizedAndUniqueFilename($objFolderModel->path.'/'.basename($strSource));
 
                     if (is_file($this->projectDir.'/'.$strSource)) {
-                        // Copy Image to the upload folder
+                        // Copy the image to the upload folder
                         $objFile = new File($strSource);
                         $objFile->copyTo($strDestination);
                         Dbafs::addResource($strSource);
@@ -396,58 +411,112 @@ class FileUtil
      */
     public function fileupload(GalleryCreatorAlbumsModel $albumModel, string $strName = 'file'): array
     {
-        $blnIsError = false;
+        $request = $this->requestStack->getCurrentRequest();
 
         // Check for a valid upload directory
         $objUploadDir = FilesModel::findByUuid($albumModel->assignedDir);
 
         if (null === $objUploadDir || !is_dir($this->projectDir.'/'.$objUploadDir->path)) {
-            $blnIsError = true;
             Message::addError('No upload directory defined in the album settings!');
+
+            return [];
         }
 
         // Check if there are some files in $_FILES
         if (!\is_array($_FILES[$strName])) {
-            $blnIsError = true;
-            Message::addError('Please select one or more files.');
-        }
+            Message::addError('Please select one or more files to be uploaded.');
 
-        if ($blnIsError) {
             return [];
         }
 
+        // Dropzone sends only one file per request
         if (\is_string($_FILES[$strName]['name']) && \strlen($_FILES[$strName]['name'])) {
-            $_FILES[$strName]['name'] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name']));
+
+            // Generate a unique filename
+            $_FILES[$strName]['name'][$i] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
+
+            if (!$this->isValidFileName($_FILES[$strName]['name'])) {
+                $error = sprintf($this->translator->trans(
+                    'ERR.notAllowedFilenameOrExtension',
+                    [
+                        $_FILES[$strName]['name'],
+                        implode(', ', $this->galleryCreatorValidExtensions),
+                    ],
+                    'contao_default'
+                ));
+
+                Message::addError($error);
+
+                // Send error message to Dropzone
+                throw new ResponseException(new JsonResponse($error, 415));
+            }
         } elseif (\is_array($_FILES[$strName]['name'])) {
+
             $intCount = \count($_FILES[$strName]['name']);
 
             for ($i = 0; $i < $intCount; ++$i) {
                 if (!empty($_FILES[$strName]['name'][$i])) {
-                    // Generate unique filename
+
+                    // Generate a unique filename
                     $_FILES[$strName]['name'][$i] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
+
+                    if (!$this->isValidFileName($_FILES[$strName]['name'][$i])) {
+                        $error = sprintf($this->translator->trans(
+                            'ERR.notAllowedFilenameOrExtension',
+                            [
+                                $_FILES[$strName]['name'][$i],
+                                implode(', ', $this->galleryCreatorValidExtensions),
+                            ],
+                            'contao_default'
+                        ));
+
+                        // Send error message
+                        throw new ResponseException(new JsonResponse($error, 415));
+                    }
                 }
             }
         }
 
+
         // Resize image if feature is enabled
-        if (Input::post('imageResolution') > 1) {
-            Config::set('imageWidth', Input::post('imageResolution'));
+        if ($request->request->get('imageResolution', 0) > 1) {
+            Config::set('imageWidth', $request->request->get('imageResolution'));
             Config::set('imageHeight', 999999999);
-            Config::set('jpgQuality', Input::post('imageQuality'));
+            Config::set('jpgQuality', $request->request->get('imageQuality', 100));
         } else {
             Config::set('maxImageWidth', 999999999);
         }
 
-        // Call the Contao FileUpload class
+        // Call the Contao file upload service
         $objUpload = new FileUpload();
         $objUpload->setName($strName);
         $arrUpload = $objUpload->uploadTo($objUploadDir->path);
 
         foreach ($arrUpload as $strFileSrc) {
-            // Store file in tl_files
             Dbafs::addResource($strFileSrc);
         }
 
         return $arrUpload;
+    }
+
+    public function isValidFileName(string $strName): bool
+    {
+        $strName = strtolower($strName);
+
+        if (!Validator::isValidFileName($strName)) {
+            return false;
+        }
+
+        $pathParts = pathinfo($strName);
+
+        if (!$pathParts['extension']) {
+            return false;
+        }
+
+        if (!\in_array($pathParts['extension'], $this->galleryCreatorValidExtensions, true)) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -36,6 +36,7 @@ use Markocupic\GalleryCreatorBundle\Util\FileUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class tl_gallery_creator_pictures.
@@ -55,6 +56,11 @@ class GalleryCreatorPictures extends Backend
      * @var FileUtil
      */
     private $fileUtil;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * @var string
@@ -81,12 +87,13 @@ class GalleryCreatorPictures extends Backend
      */
     private $uploadPath;
 
-    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
     {
         parent::__construct();
 
         $this->requestStack = $requestStack;
         $this->fileUtil = $fileUtil;
+        $this->translator = $translator;
         $this->projectDir = $projectDir;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
@@ -104,7 +111,7 @@ class GalleryCreatorPictures extends Backend
             $this->session->set('referer', $session);
         }
 
-        switch (Input::get('mode')) {
+        switch (Input::get('key')) {
             case 'imagerotate':
 
                 $objPic = GalleryCreatorPicturesModel::findById(Input::get('imgId'));
@@ -259,12 +266,11 @@ class GalleryCreatorPictures extends Backend
             }
 
             if ('' !== trim($arrRow['socialMediaSRC']) || null !== $lmSRC) {
-                $type = empty(trim((string) $arrRow['localMediaSRC'])) ? ' embeded local-media: ' : ' embeded social media: ';
-                $iconSrc = 'bundles/markocupicgallerycreator/images/film.png';
-                $movieIcon = Image::getHtml($iconSrc);
+                $type = empty(trim((string) $arrRow['localMediaSRC'])) ? $this->translator->trans('GALLERY_CREATOR.localMedia', [], 'contao_default') : $this->translator->trans('GALLERY_CREATOR.socialMedia', [], 'contao_default');
+                $iconSrc = 'bundles/markocupicgallerycreator/images/movie.svg';
                 $hasMovie = sprintf(
-                    '<div class="block">%s%s<a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
-                    $movieIcon,
+                    '<div class="block"><img src="%s" width="18" height="18"> <span style="color:darkred; font-weight:500">%s:</span> <a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
+                    $iconSrc,
                     $type,
                     $src,
                     Input::get('id'),
@@ -389,9 +395,8 @@ class GalleryCreatorPictures extends Backend
         $objFile = FilesModel::findByUuid($objImage->uuid);
         $objSocial = FilesModel::findByUuid($objImage->socialMediaSRC);
         $objLocal = FilesModel::findByUuid($objImage->localMediaSRC);
-
         $objImage->video_href_social = $objSocial ? $objSocial->path : '';
-        $objImage->video_href_social = $objLocal ? $objLocal->path : '';
+        $objImage->video_href_local = $objLocal ? $objLocal->path : '';
         $objImage->path = $objFile->path;
         $objImage->filename = basename((string) $objFile->path);
         $objImage->date_formatted = Date::parse('Y-m-d', $objImage->date);

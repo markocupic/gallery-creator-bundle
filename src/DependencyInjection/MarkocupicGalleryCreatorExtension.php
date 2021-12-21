@@ -44,5 +44,7 @@ class MarkocupicGalleryCreatorExtension extends Extension
         $container->setParameter('markocupic_gallery_creator.backend_write_protection', $config['backend_write_protection']);
         $container->setParameter('markocupic_gallery_creator.copy_images_on_import', $config['copy_images_on_import']);
         $container->setParameter('markocupic_gallery_creator.read_exif_meta_data', $config['read_exif_meta_data']);
+        $container->setParameter('markocupic_gallery_creator.valid_extensions', $config['valid_extensions']);
+
     }
 }

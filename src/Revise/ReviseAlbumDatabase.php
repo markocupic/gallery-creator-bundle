@@ -43,9 +43,6 @@ class ReviseAlbumDatabase
     }
 
     /**
-     * @param GalleryCreatorAlbumsModel $albumModel
-     * @param bool $blnCleanDb
-     * @return void
      * @throws \Exception
      */
     public function run(GalleryCreatorAlbumsModel $albumModel, bool $blnCleanDb = false): void
@@ -68,7 +65,7 @@ class ReviseAlbumDatabase
         $albumModel->ownersName = $owner;
 
         // Check for valid pid
-        if ((int)$albumModel->pid > 0) {
+        if ((int) $albumModel->pid > 0) {
             $objParentAlb = $albumModel->getRelated('pid');
 
             if (null === $objParentAlb) {

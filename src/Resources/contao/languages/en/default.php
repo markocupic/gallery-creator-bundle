@@ -20,8 +20,9 @@ $GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s i
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded!';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
 $GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album: "%s".';
+$GLOBALS['TL_LANG']['ERR']['notAllowedFilenameOrExtension'] = 'Invalid file name or extension: => %s. Please check the list of supported file extensions (%s).';
 
-/**
+/*
  * Confirm
  */
 $GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!';
@@ -40,4 +41,8 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthentificationError'] = ['Authentifi
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['photographerName'] = 'Photographers name';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
 
-
+/**
+ * Backend
+ */
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['localMedia'] = 'Play local movie/sound';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['socialMedia'] = 'Play social media';

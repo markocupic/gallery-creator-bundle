@@ -17,7 +17,6 @@ use Contao\System;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController;
 
-
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
 {miscellaneous_legend},gcHierarchicalOutput,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage;

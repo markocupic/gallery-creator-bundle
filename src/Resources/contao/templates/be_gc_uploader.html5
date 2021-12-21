@@ -1,22 +1,19 @@
 <?php
 
-// String of accepted file extensions
-$strAccepted = '.jpg,.jpeg,.png,.gif';
-
 // Add the scripts
 $GLOBALS['TL_CSS'][] = 'assets/dropzone/css/dropzone.min.css';
 $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
 ?>
 
 <div class="long widget">
-    <h3><?= $GLOBALS['TL_LANG']['tl_files']['fileupload'][0] ?></h3>
+    <h3><?= $this->trans('tl_files.fileupload.0') ?></h3>
     <input type="hidden" name="action" value="fileupload">
     <div class="fallback">
         <input type="file" name="<?= $this->strName ?>[]" multiple>
     </div>
     <div class="dropzone">
         <div class="dz-default dz-message">
-            <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
+            <span><?= $this->trans('tl_files.dropzone') ?></span>
         </div>
         <div class="dropzone-previews"></div>
     </div>
@@ -27,12 +24,12 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
                 url: window.location.href,
                 paramName: "<?= $this->strName ?>",
                 maxFilesize: <?= round($this->maxUploadedSize / 1024 / 1024) ?>,
-                acceptedFiles: "<?= $strAccepted ?>",
+                acceptedFiles: "<?= $this->strAccepted ?>",
                 previewsContainer: ".dropzone-previews",
                 clickable: ".dropzone",
                 timeout: 0,
-                dictFileTooBig: <?= json_encode($GLOBALS['TL_LANG']['tl_files']['dropzoneFileTooBig']) ?>,
-                dictInvalidFileType: <?= json_encode($GLOBALS['TL_LANG']['tl_files']['dropzoneInvalidType']) ?>
+                dictFileTooBig: <?= json_encode($this->trans('tl_files.dropzoneFileTooBig')) ?>,
+                dictInvalidFileType: <?= json_encode($this->trans('tl_files.dropzoneInvalidType')) ?>,
         }).on("success", function (objFile, responseString, xhrProgressEvent) {
                 // Add code here
             }).on("addedfile", function() {
@@ -41,5 +38,5 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
         });
     </script>
 
-    <p class="tl_help tl_tip"><?= sprintf($GLOBALS['TL_LANG']['tl_files']['fileupload'][1], Contao\System::getReadableSize($this->maxUploadedSize), Contao\Config::get('gdMaxImgWidth').'x'.Contao\Config::get('gdMaxImgHeight')) ?> <?= sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'][1], $strAccepted) ?></p>
+    <p class="tl_help tl_tip"><?= sprintf($this->trans('tl_files.fileupload.1'), \Contao\System::getReadableSize($this->maxUploadedSize), \Contao\Config::get('gdMaxImgWidth').'x'.\Contao\Config::get('gdMaxImgHeight')) ?> <?= sprintf($this->trans('tl_gallery_creator_albums.acceptedFiles.1'), $this->strAccepted) ?></p>
 </div>

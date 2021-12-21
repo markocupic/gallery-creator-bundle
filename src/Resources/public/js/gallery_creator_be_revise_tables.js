@@ -62,7 +62,7 @@
          */
         initialize: function () {
             let self = this;
-            document.id('main').addClass('gcReviseDatabase');
+            document.id('main').addClass('gc-revise-database');
 
             self.button = document.id('reviseTableBtn');
             self.checkbox = $$('input[name=reviseDatabase]')[0];
@@ -73,7 +73,7 @@
             self.messageBox.inject($$('.tl_formbody_submit')[0], 'before');
 
             self.statusBox = new Element('div#statusBox', {
-                'class': 'tl_status_box'
+                'class': 'gc-check-tables-status-box'
             });
             self.statusBox.inject(self.messageBox);
 
@@ -98,7 +98,7 @@
             this.albumIDS = null;
 
             // Reset message box
-            $$('#messageBox > p, #messageBox>.tl_status_box > p').each(function (el) {
+            $$('#messageBox > p, #messageBox>.gc-check-tables-status-box > p').each(function (el) {
                 el.destroy();
             });
 

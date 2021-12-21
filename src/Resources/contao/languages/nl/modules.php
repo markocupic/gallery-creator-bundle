@@ -12,8 +12,8 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController;
 
 /*
  * Back end modules

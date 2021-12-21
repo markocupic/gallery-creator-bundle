@@ -47,7 +47,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['fileupload'] = ['File Upload',
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'] = ['Uploader', 'Please choose the uploader.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'] = ['Image width', 'During the upload process the image resolution will be scaled to the selected value.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'] = ['Image quality/compression', 'During the upload process the image will be compressed. (100 = best quality)'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'] = ['Preserve the original filename', 'Otherwise the filename will be automatically generated.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'] = ['Preserve the original filename', 'Otherwise the filename will be generated automatically.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitors'] = ['Number of visitors'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitorsDetails'] = ['Visitors details (ip, browser type, etc.)'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['sortBy'] = ['Re-order images by', 'Please choose the sort order.'];
@@ -68,7 +68,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'] = ['Edit album', 
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['delete'] = ['delete album', 'Delete album with ID %s.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['toggle'] = ['Publish/unpublish album', 'Publish/unpublish album ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploadImages'] = ['uplaod images', 'Upload images to album with ID %s.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['importImages'] = ['copy images from directory on the server', 'copy images from directory on the server into the album with ID %s'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['importImagesFromFilesystem'] = ['copy images from directory on the server', 'copy images from directory on the server into the album with ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['cut'] = ['move album', 'move album with ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['pasteafter'] = ['Paste after', 'Paste after album ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['pasteinto'] = ['Paste into', 'Paste into album ID %s'];

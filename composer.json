@@ -19,7 +19,7 @@
   },
   "require": {
     "contao/core-bundle": "^4.12",
-    "php": "^7.3 || ^8.0",
+    "php": "^7.4 || ^8.0",
     "codefog/contao-haste": "^4.20",
     "jaybizzle/crawler-detect": "^1.2"
   },

@@ -105,7 +105,7 @@ class PictureUtil
             }
 
             // Use the image path as default
-            if ($href === null && $contentElementModel->gcFullsize) {
+            if (null === $href && $contentElementModel->gcFullsize) {
                 $href = $filesModel->path;
             }
 

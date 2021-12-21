@@ -39,12 +39,12 @@ class AddBackendAssetsSubscriber implements EventSubscriberInterface
 
         if ($request && $this->scopeMatcher->isBackendRequest($request)) {
             // Check tables script
-            if (\count($_GET) <= 2 && 'gallery_creator' === $request->query->get('do') && 'reviseDatabase' !== $request->query->get('mode')) {
+            if (\count($_GET) <= 2 && 'gallery_creator' === $request->query->get('do') && 'reviseDatabase' !== $request->query->get('key')) {
                 $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_check_tables.js';
             }
 
             // Revise table script
-            if ('gallery_creator' === $request->query->get('do') && 'reviseDatabase' === $request->query->get('mode')) {
+            if ('gallery_creator' === $request->query->get('do') && 'reviseDatabase' === $request->query->get('key')) {
                 $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_tables.js';
             }
 

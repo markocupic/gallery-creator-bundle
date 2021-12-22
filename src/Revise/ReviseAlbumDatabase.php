@@ -29,12 +29,12 @@ class ReviseAlbumDatabase
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * @var string
      */
-    private $projectDir;
+    private string $projectDir;
 
     public function __construct(RequestStack $requestStack, string $projectDir)
     {

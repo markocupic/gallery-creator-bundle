@@ -35,17 +35,15 @@ class Content extends Backend
     /**
      * @var AlbumUtil
      */
-    private $albumUtil;
+    private AlbumUtil $albumUtil;
 
-    /**
-     * @var 
-     */
-    private $connection;
+
+    private Connection $connection;
 
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     public function __construct(AlbumUtil $albumUtil, Connection $connection, RequestStack $requestStack)
     {

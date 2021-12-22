@@ -35,7 +35,6 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -43,49 +42,21 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class GalleryCreatorPictures extends Backend
 {
-    /**
-     * @var bool
-     */
-    public $restrictedUser = false;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    public bool $restrictedUser = false;
 
-    /**
-     * @var FileUtil
-     */
-    private $fileUtil;
+    private RequestStack $requestStack;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private FileUtil $fileUtil;
 
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private TranslatorInterface $translator;
 
-    /**
-     * @var string
-     */
-    private $galleryCreatorUploadPath;
+    private string $projectDir;
 
-    /**
-     * @var bool
-     */
-    private $galleryCreatorBackendWriteProtection;
+    private string $galleryCreatorUploadPath;
 
-    /**
-     * @var Session|null
-     */
-    private $session;
+    private bool $galleryCreatorBackendWriteProtection;
 
-    /**
-     * @var string
-     */
-    private $uploadPath;
+    private string $uploadPath;
 
     public function __construct(RequestStack $requestStack, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
     {
@@ -98,7 +69,8 @@ class GalleryCreatorPictures extends Backend
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
 
-        $this->session = $this->requestStack->getCurrentRequest()->getSession();
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
 
         $this->import('BackendUser', 'User');
 
@@ -106,9 +78,9 @@ class GalleryCreatorPictures extends Backend
 
         // Set the correct referer when redirecting from "import files from the filesystem"
         if (Input::get('filesImported')) {
-            $session = $this->session->get('referer');
+            $session = $session->get('referer');
             $session[TL_REFERER_ID]['current'] = 'contao?do=gallery_creator';
-            $this->session->set('referer', $session);
+            $session->set('referer', $session);
         }
 
         switch (Input::get('key')) {
@@ -156,7 +128,7 @@ class GalleryCreatorPictures extends Backend
             $objPicture = GalleryCreatorPicturesModel::findByPk(Input::get('id'));
 
             if (null !== $objPicture) {
-                $this->session->set('gc_source_album_id', $objPicture->pid);
+                $session->set('gc_source_album_id', $objPicture->pid);
             }
         }
     }
@@ -257,10 +229,10 @@ class GalleryCreatorPictures extends Backend
             $src = '' !== trim($arrRow['socialMediaSRC']) ? trim($arrRow['socialMediaSRC']) : $src;
 
             // Local media (movies, etc.)
-            if (Validator::isBinaryUuid($arrRow['localMediaSRC'])) {
-                $lmSRC = FilesModel::findByUuid($arrRow['localMediaSRC']);
+            $lmSRC = null;
 
-                if (null !== $lmSRC) {
+            if (Validator::isBinaryUuid($arrRow['localMediaSRC'])) {
+                if (null !== ($lmSRC = FilesModel::findByUuid($arrRow['localMediaSRC']))) {
                     $src = $lmSRC->path;
                 }
             }
@@ -287,7 +259,7 @@ class GalleryCreatorPictures extends Backend
                 $blnShowThumb = true;
             }
 
-            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'], basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
+            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
             $return .= $hasMovie;
             $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
             $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['caption']));
@@ -303,13 +275,16 @@ class GalleryCreatorPictures extends Backend
      */
     public function onCutCb(DataContainer $dc): void
     {
-        if (!$this->session->has('gc_source_album_id')) {
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
+
+        if (!$session->has('gc_source_album_id')) {
             return;
         }
 
         // Get sourceAlbumObject
-        $objSourceAlbum = GalleryCreatorAlbumsModel::findByPk($this->session->get('gc_source_album_id'));
-        $this->session->remove('gc_source_album_id');
+        $objSourceAlbum = GalleryCreatorAlbumsModel::findByPk($session->get('gc_source_album_id'));
+        $session->remove('gc_source_album_id');
 
         // Get pictureToMoveObject
         $objPictureToMove = GalleryCreatorPicturesModel::findByPk(Input::get('id'));

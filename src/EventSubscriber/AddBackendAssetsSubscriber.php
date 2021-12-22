@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class AddBackendAssetsSubscriber implements EventSubscriberInterface
 {
-    protected $scopeMatcher;
+    protected ScopeMatcher $scopeMatcher;
 
     public function __construct(ScopeMatcher $scopeMatcher)
     {

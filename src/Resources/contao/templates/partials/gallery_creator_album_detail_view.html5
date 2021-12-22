@@ -31,7 +31,7 @@
 
       <ul class="gc-album-list">
         <?php foreach ($this->childAlbums as $childAlbum): ?>
-        <li class="gc-album-list-item <?= $this->$childAlbum['cssClass'] ?>" data-id="<?= $childAlbum['albumModel']->id ?>">
+        <li class="gc-album-list-item<?php if(isset($childAlbum['cssClass'])): ?> <?= $childAlbum['cssClass'] ?><?php endif; ?>" data-id="<?= $childAlbum['row']['id'] ?>">
         <?php $this->insert('gallery_creator_album', ['album' => $childAlbum]); ?>
         </li>
         <?php endforeach; ?>

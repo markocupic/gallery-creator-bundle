@@ -33,22 +33,22 @@ class PictureUtil
     /**
      * @var ScopeMatcher
      */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * @var string
      */
-    private $galleryCreatorReadExifMetaData;
+    private string $galleryCreatorReadExifMetaData;
 
     /**
      * @var string
      */
-    private $projectDir;
+    private string $projectDir;
 
     public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, bool $galleryCreatorReadExifMetaData, string $projectDir)
     {
@@ -112,12 +112,14 @@ class PictureUtil
             $href = $href ? $tlFilesUrl.$href : null;
         }
 
+        $ownerModel = UserModel::findByPk($pictureModel->owner);
+
         // Build the array
         return [
-            'ownerModel' => UserModel::findByPk($pictureModel->owner),
-            'filesModel' => $filesModel,
-            'pictureModel' => $pictureModel,
-            'albumModel' => $pictureModel->getRelated('pid'),
+            'ownerRow' => $ownerModel ? $ownerModel->row() : [],
+            'filesRow' => $filesModel->row(),
+            'pictureRow' => $pictureModel->row,
+            'albumRow' => $pictureModel->getRelated('pid')->row(),
             'meta' => $arrMeta,
             'href' => $href,
             'localMediaSrc' => $localMediaSrc,

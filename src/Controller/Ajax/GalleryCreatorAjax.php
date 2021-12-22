@@ -30,25 +30,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GalleryCreatorAjax
 {
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
+    private ContaoFramework $framework;
 
-    /**
-     * @var SecurityUtil
-     */
-    private $securityUtil;
+    private SecurityUtil $securityUtil;
 
-    /**
-     * @var AlbumUtil
-     */
-    private $albumUtil;
+    private AlbumUtil $albumUtil;
 
-    /**
-     * @var PictureUtil
-     */
-    private $pictureUtil;
+    private PictureUtil $pictureUtil;
 
     public function __construct(ContaoFramework $framework, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
     {
@@ -136,5 +124,12 @@ class GalleryCreatorAjax
         $json['status'] = 'success';
 
         return new JsonResponse($json);
+    }
+
+    public function setFramework(ContaoFramework $framework): self
+    {
+        $this->framework = $framework;
+
+        return $this;
     }
 }

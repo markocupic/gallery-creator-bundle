@@ -50,55 +50,25 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class GalleryCreatorAlbums extends Backend
 {
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /**
-     * @var AlbumUtil
-     */
-    private $albumUtil;
+    private AlbumUtil $albumUtil;
 
-    /**
-     * @var FileUtil
-     */
-    private $fileUtil;
+    private FileUtil$fileUtil;
 
-    /**
-     * @var
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * @var ReviseAlbumDatabase
-     */
-    private $reviseAlbumDatabase;
+    private ReviseAlbumDatabase $reviseAlbumDatabase;
 
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private string $projectDir;
 
-    /**
-     * @var string
-     */
-    private $galleryCreatorUploadPath;
+    private string $galleryCreatorUploadPath;
 
-    /**
-     * @var bool
-     */
-    private $galleryCreatorBackendWriteProtection;
+    private bool $galleryCreatorBackendWriteProtection;
 
-    /**
-     * @var array
-     */
-    private $galleryCreatorValidExtensions;
+    private array $galleryCreatorValidExtensions;
 
-    /**
-     * @var bool
-     */
-    private $restrictedUser = false;
+    private bool $restrictedUser = false;
 
     public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions)
     {
@@ -209,6 +179,8 @@ class GalleryCreatorAlbums extends Backend
         // Return the buttons
         $imagePasteAfter = Image::getHtml('pasteafter.svg', sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id']), 'class="blink"');
         $imagePasteInto = Image::getHtml('pasteinto.svg', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id']), 'class="blink"');
+
+        $return = '';
 
         if ($row['id'] > 0) {
             $return = $disablePA ? Image::getHtml('pasteafter_.svg', '', 'class="blink"').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&mode=1&pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&id='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteAfter.'</a> ';
@@ -528,13 +500,24 @@ class GalleryCreatorAlbums extends Backend
                     }
 
                     // Remove the folder from the database and from the filesystem.
-                    $oFolder = FilesModel::findByUuid($objAlbumModel->assignedDir);
+                    $filesModel = FilesModel::findByUuid($objAlbumModel->assignedDir);
 
-                    if (null !== $oFolder) {
-                        $folder = new Folder($oFolder->path);
+                    if (null !== $filesModel) {
+                        $folder = new Folder($filesModel->path);
 
-                        if ($folder->isEmpty()) {
-                            $folder->delete();
+                        // See https://github.com/contao/contao/issues/3854
+                        if ($folder->isUnprotected()) {
+                            $folder->protect();
+
+                            if ($folder->isEmpty()) {
+                                $folder->delete();
+                            } else {
+                                $folder->unprotect();
+                            }
+                        } else {
+                            if ($folder->isEmpty()) {
+                                $folder->delete();
+                            }
                         }
                     }
                     $objAlbumModel->delete();

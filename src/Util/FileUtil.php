@@ -40,27 +40,25 @@ class FileUtil
     /**
      * @var ScopeMatcher
      */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * @var Connection
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * @var TranslatorInterface
      */
-    private $translator;
+    private TranslatorInterface $translator;
 
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+
+    private ?Logger $logger = null;
 
     /**
      * @var string
@@ -431,7 +429,6 @@ class FileUtil
 
         // Dropzone sends only one file per request
         if (\is_string($_FILES[$strName]['name']) && \strlen($_FILES[$strName]['name'])) {
-
             // Generate a unique filename
             $_FILES[$strName]['name'][$i] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
 
@@ -451,12 +448,10 @@ class FileUtil
                 throw new ResponseException(new JsonResponse($error, 415));
             }
         } elseif (\is_array($_FILES[$strName]['name'])) {
-
             $intCount = \count($_FILES[$strName]['name']);
 
             for ($i = 0; $i < $intCount; ++$i) {
                 if (!empty($_FILES[$strName]['name'][$i])) {
-
                     // Generate a unique filename
                     $_FILES[$strName]['name'][$i] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
 
@@ -476,7 +471,6 @@ class FileUtil
                 }
             }
         }
-
 
         // Resize image if feature is enabled
         if ($request->request->get('imageResolution', 0) > 1) {

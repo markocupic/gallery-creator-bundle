@@ -26,12 +26,12 @@ class Version200Update extends AbstractMigration
     /**
      * @var Connection
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * @var array<string>
      */
-    private $resultMessages = [];
+    private array $resultMessages = [];
 
     public function __construct(Connection $connection)
     {
@@ -121,7 +121,7 @@ class Version200Update extends AbstractMigration
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
                 'old' => 'gc_hierarchicalOutput',
-                'new' => 'gcHierarchicalOutput',
+                'new' => 'gcShowChildAlbums',
                 'sql' => 'char(1)',
             ],
             [

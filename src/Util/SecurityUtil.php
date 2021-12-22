@@ -26,17 +26,17 @@ class SecurityUtil
     /**
      * @var Security
      */
-    private $security;
+    private Security $security;
 
     /**
      * @var ScopeMatcher
      */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     public function __construct(Security $security, ScopeMatcher $scopeMatcher, RequestStack $requestStack)
     {

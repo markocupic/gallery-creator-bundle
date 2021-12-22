@@ -47,32 +47,26 @@ class GalleryCreatorNewsController extends AbstractContentElementController
     /**
      * @var AlbumUtil
      */
-    private $albumUtil;
+    private AlbumUtil $albumUtil;
 
     /**
      * @var PictureUtil
      */
-    private $pictureUtil;
+    private PictureUtil $pictureUtil;
 
     /**
      * @var ScopeMatcher
      */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
-    /**
-     * @var int
-     */
-    private $intAlbumId;
 
-    /**
-     * @var ContentModel
-     */
-    private $model;
+    private ?int $intAlbumId = null;
 
-    /**
-     * @var PageModel
-     */
-    private $pageModel;
+
+    private ?ContentModel $model = null;
+
+
+    private ?PageModel $pageModel = null;
 
     public function __construct(AlbumUtil $albumUtil, PictureUtil $pictureUtil, ScopeMatcher $scopeMatcher)
     {

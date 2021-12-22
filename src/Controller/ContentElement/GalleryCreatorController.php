@@ -22,7 +22,6 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
-use Contao\Database;
 use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
@@ -33,6 +32,7 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
+use Doctrine\DBAL\Connection;
 use Haste\Util\Pagination;
 use Haste\Util\Url;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
@@ -55,77 +55,41 @@ class GalleryCreatorController extends AbstractContentElementController
     public const GC_VIEW_MODE_DETAIL = 'detail_view';
     public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
+    private ContaoFramework $framework;
 
-    /**
-     * @var Security
-     */
-    private $security;
+    private Security $security;
 
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /**
-     * @var ScopeMatcher
-     */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
-    /**
-     * @var SecurityUtil
-     */
-    private $securityUtil;
+    private Connection $connection;
 
-    /**
-     * @var AlbumUtil
-     */
-    private $albumUtil;
+    private SecurityUtil $securityUtil;
 
-    /**
-     * @var PictureUtil
-     */
-    private $pictureUtil;
+    private AlbumUtil $albumUtil;
 
-    /**
-     * @var string
-     */
-    private $viewMode;
+    private PictureUtil $pictureUtil;
 
-    /**
-     * @var GalleryCreatorAlbumsModel
-     */
-    private $activeAlbum;
+    private ?string $viewMode = null;
 
-    /**
-     * @var array Contains the album ids
-     */
-    private $arrSelectedAlbums;
+    private ?GalleryCreatorAlbumsModel $activeAlbum = null;
 
-    /**
-     * @var ContentModel
-     */
-    private $model;
+    private array $arrSelectedAlbums = [];
 
-    /**
-     * @var PageModel
-     */
-    private $pageModel;
+    private ?ContentModel $model;
 
-    /**
-     * @var MemberModel
-     */
-    private $user;
+    private ?PageModel $pageModel;
 
-    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
+    private ?MemberModel $user;
+
+    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, Connection $connection, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
     {
         $this->framework = $framework;
         $this->security = $security;
         $this->requestStack = $requestStack;
         $this->scopeMatcher = $scopeMatcher;
+        $this->connection = $connection;
         $this->securityUtil = $securityUtil;
         $this->albumUtil = $albumUtil;
         $this->pictureUtil = $pictureUtil;
@@ -184,25 +148,16 @@ class GalleryCreatorController extends AbstractContentElementController
 
         // Clean array from unpublished or empty or protected albums
         foreach ($this->arrSelectedAlbums as $key => $albumId) {
-            // Get all not empty albums
-            $objAlbum = Database::getInstance()
-                ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE (SELECT COUNT(id) FROM tl_gallery_creator_pictures WHERE pid = ? AND published=?) > 0 AND id=? AND published=?')
-                ->execute($albumId, 1, $albumId, 1)
-            ;
-
-            // If the album doesn't exist
-            if (!$objAlbum->numRows && !GalleryCreatorAlbumsModel::hasChildAlbums($objAlbum->id) && !$this->model->gcHierarchicalOutput) {
-                unset($this->arrSelectedAlbums[$key]);
-                continue;
-            }
-
             // Remove id from $this->arrSelectedAlbums if user is not allowed
-
-            if ($request && $this->scopeMatcher->isFrontendRequest($request) && true === $objAlbum->protected) {
-                if (!$this->securityUtil->isAuthorized($objAlbum)) {
-                    unset($this->arrSelectedAlbums[$key]);
-                    continue;
+            $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
+            if($objAlbum !== null){
+                if ($objAlbum->protected) {
+                    if (!$this->securityUtil->isAuthorized($objAlbum)) {
+                        unset($this->arrSelectedAlbums[$key]);
+                    }
                 }
+            }else{
+                unset($this->arrSelectedAlbums[$key]);
             }
         }
 
@@ -240,7 +195,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
 
             // Hierarchical output
-            if ($this->model->gcHierarchicalOutput) {
+            if ($this->model->gcShowChildAlbums) {
                 foreach ($this->arrSelectedAlbums as $k => $albumId) {
                     $albumModel = GalleryCreatorAlbumsModel::findByPk($albumId);
 
@@ -307,18 +262,17 @@ class GalleryCreatorController extends AbstractContentElementController
             case self::GC_VIEW_MODE_DETAIL:
 
                 // Get child albums
-                if ($this->model->gcHierarchicalOutput) {
+                if ($this->model->gcShowChildAlbums) {
                     $arrChildAlbums = $this->albumUtil->getChildAlbums($this->activeAlbum, $this->model);
                     $template->childAlbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
                     $template->hasChildAlbums = \count($arrChildAlbums) ? true : false;
                 }
 
                 // Count items
-                $objDb = Database::getInstance()
-                    ->prepare('SELECT COUNT(id) AS total FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
-                    ->execute('1', $this->activeAlbum->id)
-                ;
-                $itemsTotal = $objDb->total;
+                $itemsTotal = $this->connection->fetchOne(
+                    'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
+                    ['1', $this->activeAlbum->id]
+                );
 
                 $perPage = (int) $this->model->gcThumbsPerPage;
 
@@ -331,40 +285,46 @@ class GalleryCreatorController extends AbstractContentElementController
                 $template->pagination = $objPagination->generate();
 
                 // Picture sorting
-                $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
+                $arrSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$this->model->gcPictureSorting, $this->model->gcPictureSortingDirection];
 
                 // Sort by name will be done below
-                $strSorting = str_replace('name', 'id', $strSorting);
+                $arrSorting[0] = str_replace('name', 'id', $arrSorting[0]);
 
-                $objPictures = Database::getInstance()
-                    ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$strSorting)
-                    ->limit($objPagination->getLimit(), $objPagination->getOffset())
-                    ->execute(1, $this->activeAlbum->id)
+                $stmt = $this->connection->createQueryBuilder()
+                    ->select('*')
+                    ->from('tl_gallery_creator_pictures', 't')
+                    ->where('t.pid = :pid')
+                    ->andWhere('t.published = :published')
+                    ->orderBy(...$arrSorting)
+                    ->setParameter('published', '1')
+                    ->setParameter('pid', $this->activeAlbum->id)
+                    ->setFirstResult($objPagination->getOffset())
+                    ->setMaxResults($objPagination->getLimit())
+                    ->execute()
                 ;
 
                 $arrPictures = [];
-                $auxBasename = [];
 
-                while ($objPictures->next()) {
-                    $objFilesModel = FilesModel::findByUuid($objPictures->uuid);
+                while (false !== ($rowPicture = $stmt->fetchAssociative())) {
+                    $objFilesModel = FilesModel::findByUuid($rowPicture['uuid']);
                     $basename = 'undefined';
 
                     if (null !== $objFilesModel) {
                         $basename = $objFilesModel->name;
                     }
-                    $auxBasename[] = $basename;
 
-                    if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($objPictures->id))) {
-                        $arrPictures[$objPictures->id] = $this->pictureUtil->getPictureData($objPicturesModel, $this->model);
+                    if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
+                        // Prevent overriding items with same basename
+                        $arrPictures[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($objPicturesModel, $this->model);
                     }
                 }
 
                 // Sort by basename
                 if ('name' === $this->model->gcPictureSorting) {
                     if ('ASC' === $this->model->gcPictureSortingDirection) {
-                        array_multisort($arrPictures, SORT_STRING, $auxBasename, SORT_ASC);
+                        uksort($arrPictures, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
                     } else {
-                        array_multisort($arrPictures, SORT_STRING, $auxBasename, SORT_DESC);
+                        uksort($arrPictures, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
                     }
                 }
 
@@ -384,40 +344,44 @@ class GalleryCreatorController extends AbstractContentElementController
 
             case self::GC_VIEW_MODE_SINGLE_IMAGE:
 
-                $objPic = Database::getInstance()
-                    ->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND name LIKE '".Input::get('img').".%'")
-                    ->execute($this->activeAlbum->id)
+                $arrActivePicture = $this->connection
+                    ->fetchAssociative(
+                        "SELECT * FROM tl_gallery_creator_pictures WHERE pid = ? AND name LIKE '".Input::get('img').".%'",
+                        [$this->activeAlbum->id],
+                    )
                 ;
 
-                if (!$objPic->numRows) {
+                if (!$arrActivePicture) {
                     throw new \Exception(sprintf('File with filename "%s" does not exist in album with alias "%s".', Input::get('img'), Input::get('items')));
                 }
 
-                $picId = $objPic->id;
-                $published = $objPic->published && $this->activeAlbum->published ? true : false;
+                $activePictureId = $arrActivePicture['id'];
+                $published = $arrActivePicture['published'] && $this->activeAlbum->published ? true : false;
 
                 // For security reasons...
                 if (!$published || (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false))) {
-                    throw new \Exception('Picture with id '.$picId." is either not published or not available or you haven't got enough permission to watch it!!!");
+                    throw new \Exception('Picture with id '.$activePictureId." is either not published or not available or you haven't got enough permission to watch it!!!");
                 }
 
                 // Picture sorting
                 $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
-                $objPictures = Database::getInstance()
-                    ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$strSorting)
-                    ->execute('1', $this->activeAlbum->id)
+                $arrPictureIDS = $this->connection
+                    ->fetchFirstColumn(
+                        'SELECT id FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY '.$strSorting,
+                        ['1', $this->activeAlbum->id]
+                    )
                 ;
 
                 $arrIDS = [];
-                $i = 0;
                 $currentIndex = null;
 
-                while ($objPictures->next()) {
-                    if ((int) $picId === (int) $objPictures->id) {
-                        $currentIndex = $i;
+                if ($arrPictureIDS) {
+                    foreach ($arrPictureIDS as $i => $id) {
+                        if ((int) $activePictureId === (int) $id) {
+                            $currentIndex = $i;
+                        }
+                        $arrIDS[] = $id;
                     }
-                    $arrIDS[] = $objPictures->id;
-                    ++$i;
                 }
 
                 $arrPictures = [];
@@ -489,7 +453,7 @@ class GalleryCreatorController extends AbstractContentElementController
         }
 
         // Generates the link to the parent album
-        if ($this->model->gcHierarchicalOutput && null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
+        if ($this->model->gcShowChildAlbums && null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
             return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
         }
 
@@ -508,12 +472,24 @@ class GalleryCreatorController extends AbstractContentElementController
     protected function listAllAlbums(int $pid = 0): array
     {
         $strSorting = empty($this->model->gcSorting) || empty($this->model->gcSortingDirection) ? 'date DESC' : $this->model->gcSorting.' '.$this->model->gcSortingDirection;
-        $objAlbums = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
-            ->execute($pid, 1)
-        ;
 
-        return array_map('intval', $objAlbums->fetchEach('id'));
+        if ($this->model->showChildAlbums) {
+            $arrAlbumIDS = $this->connection
+                ->fetchFirstColumn(
+                    'SELECT * FROM tl_gallery_creator_albums WHERE published=? ORDER BY '.$strSorting,
+                    ['1']
+                )
+            ;
+        } else {
+            $arrAlbumIDS = $this->connection
+                ->fetchFirstColumn(
+                    'SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting,
+                    [$pid, '1']
+                )
+            ;
+        }
+
+        return array_map('intval', $arrAlbumIDS);
     }
 
     protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void

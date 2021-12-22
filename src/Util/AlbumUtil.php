@@ -32,17 +32,17 @@ class AlbumUtil
     /**
      * @var ScopeMatcher
      */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * @var Connection
      */
-    private $connection;
+    private Connection $connection;
 
     public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection)
     {
@@ -85,12 +85,12 @@ class AlbumUtil
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
         $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcHierarchicalOutput && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
+        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcShowChildAlbums && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
 
         $arrCssClasses = [];
         $arrCssClasses[] = 'gc-level-'.$this->getAlbumLevelFromPid((int) $albumModel->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'gc-has-child-album' : '';
-        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : '';
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
 
         // Add formatted date to the album model
         $albumModel->dateFormatted = Date::parse(Config::get('dateFormat'), $albumModel->date);

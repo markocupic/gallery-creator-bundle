@@ -17,193 +17,193 @@ use Contao\System;
 use Markocupic\GalleryCreatorBundle\DataContainer\GalleryCreatorPictures;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
-    'config'      => [
-        'ptable'            => 'tl_gallery_creator_albums',
-        'notCopyable'       => true,
-        'notCreatable'      => true,
-        'enableVersioning'  => true,
-        'dataContainer'     => 'Table',
-        'onload_callback'   => [
+    'config' => [
+        'ptable' => 'tl_gallery_creator_albums',
+        'notCopyable' => true,
+        'notCreatable' => true,
+        'enableVersioning' => true,
+        'dataContainer' => 'Table',
+        'onload_callback' => [
             [GalleryCreatorPictures::class, 'onloadCbCheckPermission'],
             [GalleryCreatorPictures::class, 'onloadCbSetUpPalettes'],
         ],
         'ondelete_callback' => [
             [GalleryCreatorPictures::class, 'ondeleteCb'],
         ],
-        'oncut_callback'    => [
+        'oncut_callback' => [
             [GalleryCreatorPictures::class, 'oncutCb'],
         ],
-        'sql'               => [
+        'sql' => [
             'keys' => [
-                'id'  => 'primary',
+                'id' => 'primary',
                 'pid' => 'index',
             ],
         ],
     ],
-    'edit'        => [
+    'edit' => [
         'buttons_callback' => [GalleryCreatorPictures::class, 'editButtonsCallback'],
     ],
-    'list'        => [
-        'sorting'           => [
+    'list' => [
+        'sorting' => [
             'child_record_callback' => [GalleryCreatorPictures::class, 'childRecordCb'],
-            'fields'                => ['sorting'],
-            'headerFields'          => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
-            'mode'                  => 4,
-            'panelLayout'           => 'filter;search,limit',
+            'fields' => ['sorting'],
+            'headerFields' => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
+            'mode' => 4,
+            'panelLayout' => 'filter;search,limit',
         ],
         'global_operations' => [
             'fileupload' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-                'class'      => 'gc-op-upload-img',
-                'href'       => 'act=edit&table=tl_gallery_creator_albums&mode=fileupload',
+                'class' => 'gc-op-upload-img',
+                'href' => 'act=edit&table=tl_gallery_creator_albums&key=fileupload',
             ],
-            'all'        => [
+            'all' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-                'class'      => 'header_edit_all',
-                'href'       => 'act=select',
+                'class' => 'header_edit_all',
+                'href' => 'act=select',
             ],
         ],
-        'operations'        => [
-            'edit'        => [
+        'operations' => [
+            'edit' => [
                 'button_callback' => [GalleryCreatorPictures::class, 'buttonCbEditImage'],
-                'href'            => 'act=edit',
-                'icon'            => 'edit.gif',
+                'href' => 'act=edit',
+                'icon' => 'edit.gif',
             ],
-            'delete'      => [
-                'attributes'      => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmPicture'].'\')) return false; Backend.getScrollOffset();"',
+            'delete' => [
+                'attributes' => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'].'\')) return false; Backend.getScrollOffset();"',
                 'button_callback' => [GalleryCreatorPictures::class, 'buttonCbDeletePicture'],
-                'href'            => 'act=delete',
-                'icon'            => 'delete.gif',
+                'href' => 'act=delete',
+                'icon' => 'delete.gif',
             ],
-            'cut'         => [
-                'attributes'      => 'onclick="Backend.getScrollOffset();"',
+            'cut' => [
+                'attributes' => 'onclick="Backend.getScrollOffset();"',
                 'button_callback' => [GalleryCreatorPictures::class, 'buttonCbCutImage'],
-                'href'            => 'act=paste&mode=cut',
-                'icon'            => 'cut.gif',
+                'href' => 'act=paste&mode=cut',
+                'icon' => 'cut.gif',
             ],
             'imagerotate' => [
-                'attributes'      => 'data-icon="gc-op-icon" onclick="Backend.getScrollOffset();"',
+                'attributes' => 'data-icon="gc-op-icon" onclick="Backend.getScrollOffset();"',
                 'button_callback' => [GalleryCreatorPictures::class, 'buttonCbRotateImage'],
-                'href'            => 'key=imagerotate',
-                'icon'            => 'bundles/markocupicgallerycreator/images/rotate.svg',
+                'href' => 'key=imagerotate',
+                'icon' => 'bundles/markocupicgallerycreator/images/rotate.svg',
             ],
-            'toggle'      => [
-                'attributes'      => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
+            'toggle' => [
+                'attributes' => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
                 'button_callback' => [GalleryCreatorPictures::class, 'toggleIcon'],
-                'icon'            => 'visible.gif',
+                'icon' => 'visible.gif',
             ],
         ],
     ],
-    'palettes'    => [
-        '__selector__'   => ['addCustomThumb'],
-        'default'        => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+    'palettes' => [
+        '__selector__' => ['addCustomThumb'],
+        'default' => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
         'restrictedUser' => 'imageInfo,picture',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',
     ],
-    'fields'      => [
-        'id'             => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
-        'pid'            => [
-            'eval'       => ['doNotShow' => true],
+    'fields' => [
+        'id' => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
+        'pid' => [
+            'eval' => ['doNotShow' => true],
             'foreignKey' => 'tl_gallery_creator_albums.alias',
-            'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
-            'sql'        => "int(10) unsigned NOT NULL default '0'",
+            'relation' => ['type' => 'belongsTo', 'load' => 'lazy'],
+            'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'path'           => [
+        'path' => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
-        'uuid'           => [
+        'uuid' => [
             'sql' => 'binary(16) NULL',
         ],
-        'sorting'        => [
+        'sorting' => [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'tstamp'         => [
+        'tstamp' => [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'published'      => [
-            'eval'      => ['isBoolean' => true, 'submitOnChange' => true, 'tl_class' => 'long'],
-            'filter'    => true,
+        'published' => [
+            'eval' => ['isBoolean' => true, 'submitOnChange' => true, 'tl_class' => 'long'],
+            'filter' => true,
             'inputType' => 'checkbox',
-            'sql'       => "char(1) NOT NULL default '1'",
+            'sql' => "char(1) NOT NULL default '1'",
         ],
-        'imageInfo'      => [
-            'eval'                 => ['tl_class' => 'clr'],
+        'imageInfo' => [
+            'eval' => ['tl_class' => 'clr'],
             'input_field_callback' => [GalleryCreatorPictures::class, 'inputFieldCbGenerateImageInformation'],
         ],
-        'title'          => [
-            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
-            'exclude'   => true,
-            'filter'    => true,
+        'title' => [
+            'eval' => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
+            'exclude' => true,
+            'filter' => true,
             'inputType' => 'text',
-            'search'    => true,
-            'sql'       => "varchar(255) NOT NULL default ''",
+            'search' => true,
+            'sql' => "varchar(255) NOT NULL default ''",
         ],
-        'externalFile'   => [
+        'externalFile' => [
             'sql' => "char(1) NOT NULL default ''",
         ],
-        'caption'        => [
-            'cols'      => 20,
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
-            'exclude'   => true,
-            'filter'    => true,
+        'caption' => [
+            'cols' => 20,
+            'eval' => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'exclude' => true,
+            'filter' => true,
             'inputType' => 'textarea',
-            'rows'      => 6,
-            'search'    => true,
-            'sql'       => 'text NULL',
+            'rows' => 6,
+            'search' => true,
+            'sql' => 'text NULL',
         ],
-        'picture'        => [
-            'eval'                 => ['tl_class' => 'clr'],
+        'picture' => [
+            'eval' => ['tl_class' => 'clr'],
             'input_field_callback' => [GalleryCreatorPictures::class, 'inputFieldCbGenerateImage'],
         ],
-        'date'           => [
+        'date' => [
             'inputType' => 'text',
             // A new uploaded image inherits the date of the parent album.
-            'default'   => time(),
-            'filter'    => true,
-            'search'    => true,
-            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'clr wizard ', 'submitOnChange' => false],
-            'sql'       => "int(10) unsigned NOT NULL default '0'",
+            'default' => time(),
+            'filter' => true,
+            'search' => true,
+            'eval' => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'clr wizard ', 'submitOnChange' => false],
+            'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
         'addCustomThumb' => [
-            'eval'      => ['submitOnChange' => true],
-            'exclude'   => true,
-            'filter'    => true,
+            'eval' => ['submitOnChange' => true],
+            'exclude' => true,
+            'filter' => true,
             'inputType' => 'checkbox',
-            'sql'       => "char(1) NOT NULL default ''",
+            'sql' => "char(1) NOT NULL default ''",
         ],
-        'customThumb'    => [
-            'eval'      => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
-            'exclude'   => true,
+        'customThumb' => [
+            'eval' => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
+            'exclude' => true,
             'inputType' => 'fileTree',
-            'sql'       => 'blob NULL',
+            'sql' => 'blob NULL',
         ],
-        'owner'          => [
-            'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'clr w50'],
-            'filter'     => true,
+        'owner' => [
+            'default' => BackendUser::getInstance()->id,
+            'eval' => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'clr w50'],
+            'filter' => true,
             'foreignKey' => 'tl_user.name',
-            'inputType'  => 'select',
-            'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
-            'search'     => true,
-            'sql'        => "int(10) NOT NULL default '0'",
+            'inputType' => 'select',
+            'relation' => ['type' => 'hasOne', 'load' => 'eager'],
+            'search' => true,
+            'sql' => "int(10) NOT NULL default '0'",
         ],
         'socialMediaSRC' => [
-            'eval'      => ['tl_class' => 'clr'],
-            'exclude'   => true,
-            'filter'    => true,
+            'eval' => ['tl_class' => 'clr'],
+            'exclude' => true,
+            'filter' => true,
             'inputType' => 'text',
-            'search'    => true,
-            'sql'       => "varchar(255) NOT NULL default ''",
+            'search' => true,
+            'sql' => "varchar(255) NOT NULL default ''",
         ],
-        'localMediaSRC'  => [
-            'eval'      => ['files' => true, 'filesOnly' => true, 'fieldType' => 'radio'],
-            'exclude'   => true,
-            'filter'    => true,
+        'localMediaSRC' => [
+            'eval' => ['files' => true, 'filesOnly' => true, 'fieldType' => 'radio'],
+            'exclude' => true,
+            'filter' => true,
             'inputType' => 'fileTree',
-            'search'    => true,
-            'sql'       => 'binary(16) NULL',
+            'search' => true,
+            'sql' => 'binary(16) NULL',
         ],
     ],
 ];

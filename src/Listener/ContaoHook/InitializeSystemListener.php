@@ -31,12 +31,12 @@ class InitializeSystemListener
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * @var ScopeMatcher
      */
-    private $scopeMatcher;
+    private ScopeMatcher $scopeMatcher;
 
     public function __construct(RequestStack $requestStack, ScopeMatcher $scopeMatcher)
     {

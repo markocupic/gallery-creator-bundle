@@ -18,8 +18,8 @@ $GLOBALS['TL_LANG']['tl_module']['gcAlbumsPerPage'][0] = 'Onderdelen per pagina 
 $GLOBALS['TL_LANG']['tl_module']['gcAlbumsPerPage'][1] = 'Aantal onderdelen op een pagina in de albumlijst (0=alles weergeven/geen paginering).';
 $GLOBALS['TL_LANG']['tl_module']['gcThumbsPerPage'][0] = 'Thumbnails per pagina in detailweergave';
 $GLOBALS['TL_LANG']['tl_module']['gcThumbsPerPage'][1] = "Aantal thumbnails per pagina in de detailweergave (0=alles weergeven/geen paginering).\u{a0}";
-$GLOBALS['TL_LANG']['tl_module']['gcHierarchicalOutput'][0] = 'Hiërarchische albums frontend';
-$GLOBALS['TL_LANG']['tl_module']['gcHierarchicalOutput'][1] = 'Hiërarchische weergave albums/subalbums in het frontend.';
+$GLOBALS['TL_LANG']['tl_module']['gcShowChildAlbums'][0] = 'Hiërarchische albums frontend';
+$GLOBALS['TL_LANG']['tl_module']['gcShowChildAlbums'][1] = 'Hiërarchische weergave albums/subalbums in het frontend.';
 $GLOBALS['TL_LANG']['tl_module']['gcSizeDetailView'][0] = 'Detailweergave: thumbnail breedte en hoogte';
 $GLOBALS['TL_LANG']['tl_module']['gcSizeDetailView'][1] = 'Geef hier de thumbnail maten en de resize mode.';
 $GLOBALS['TL_LANG']['tl_module']['gcSizeAlbumListing'][0] = 'Albumlijst: thumbnail breedte en hoogte';

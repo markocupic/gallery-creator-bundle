@@ -53,8 +53,19 @@ div.gc-readonly input {
 .gc-gop-icon {
     margin-left: 20px;
     padding: 3px 0 3px 22px;
-    background: url("../images/revise_database.svg") no-repeat left center;
-    background-size: 16px 16px;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position-x: left;
+    background-position-y: center;
+
+}
+
+.gc-gop-icon.gc-gop-revise-database{
+    background-image: url("../images/revise_database.svg");
+}
+
+.gc-gop-icon.gc-gop-upload-img{
+    background-image: url("../images/add_image.svg");
 }
 
 /**

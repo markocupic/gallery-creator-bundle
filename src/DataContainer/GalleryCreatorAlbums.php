@@ -754,7 +754,7 @@ class GalleryCreatorAlbums extends Backend
 
         // Generate picture list
         $id = $request->query->get('id');
-        $stmt = $this->connection->executeQuery('SELECT * FROM tl_gallery_creator_pictures WHERE pid= ? ORDER BY sorting', [$id]);
+        $stmt = $this->connection->executeQuery('SELECT * FROM tl_gallery_creator_pictures WHERE pid = ? ORDER BY sorting', [$id]);
 
         while (false !== ($arrPicture = $stmt->fetchAssociative())) {
             $arrAlbums[] = [

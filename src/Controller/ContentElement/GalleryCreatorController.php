@@ -150,13 +150,14 @@ class GalleryCreatorController extends AbstractContentElementController
         foreach ($this->arrSelectedAlbums as $key => $albumId) {
             // Remove id from $this->arrSelectedAlbums if user is not allowed
             $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
-            if($objAlbum !== null){
+
+            if (null !== $objAlbum) {
                 if ($objAlbum->protected) {
                     if (!$this->securityUtil->isAuthorized($objAlbum)) {
                         unset($this->arrSelectedAlbums[$key]);
                     }
                 }
-            }else{
+            } else {
                 unset($this->arrSelectedAlbums[$key]);
             }
         }
@@ -476,14 +477,14 @@ class GalleryCreatorController extends AbstractContentElementController
         if ($this->model->showChildAlbums) {
             $arrAlbumIDS = $this->connection
                 ->fetchFirstColumn(
-                    'SELECT * FROM tl_gallery_creator_albums WHERE published=? ORDER BY '.$strSorting,
+                    'SELECT id FROM tl_gallery_creator_albums WHERE published = ? ORDER BY '.$strSorting,
                     ['1']
                 )
             ;
         } else {
             $arrAlbumIDS = $this->connection
                 ->fetchFirstColumn(
-                    'SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting,
+                    'SELECT id FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting,
                     [$pid, '1']
                 )
             ;

@@ -44,27 +44,15 @@ class GalleryCreatorNewsController extends AbstractContentElementController
 {
     public const TYPE = 'gallery_creator_news';
 
-    /**
-     * @var AlbumUtil
-     */
     private AlbumUtil $albumUtil;
 
-    /**
-     * @var PictureUtil
-     */
     private PictureUtil $pictureUtil;
 
-    /**
-     * @var ScopeMatcher
-     */
     private ScopeMatcher $scopeMatcher;
-
 
     private ?int $intAlbumId = null;
 
-
     private ?ContentModel $model = null;
-
 
     private ?PageModel $pageModel = null;
 
@@ -94,7 +82,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         }
 
         $objAlbum = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=? AND published=?')
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id = ? AND published = ?')
             ->execute($this->model->gcPublishSingleAlbum, '1')
         ;
 
@@ -151,7 +139,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
 
             // Count pictures
             $objPictures = Database::getInstance()
-                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
+                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?')
                 ->execute('1', $this->intAlbumId)
             ;
             $itemsTotal = $objPictures->numRows;
@@ -167,7 +155,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         // Sort by name is done below
         $str_sorting = str_replace('name', 'id', $str_sorting);
         $objPictures = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
+            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY '.$str_sorting)
         ;
 
         if ($limit > 0) {

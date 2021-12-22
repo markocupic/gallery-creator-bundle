@@ -30,24 +30,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class PictureUtil
 {
-    /**
-     * @var ScopeMatcher
-     */
     private ScopeMatcher $scopeMatcher;
 
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
-    /**
-     * @var string
-     */
-    private string $galleryCreatorReadExifMetaData;
+    private bool $galleryCreatorReadExifMetaData;
 
-    /**
-     * @var string
-     */
     private string $projectDir;
 
     public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, bool $galleryCreatorReadExifMetaData, string $projectDir)

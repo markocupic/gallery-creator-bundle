@@ -56,7 +56,7 @@ class GalleryCreatorPictures extends Backend
 
     private bool $galleryCreatorBackendWriteProtection;
 
-    private string $uploadPath;
+    private ?string $uploadPath = null;
 
     public function __construct(RequestStack $requestStack, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection)
     {

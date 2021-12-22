@@ -587,7 +587,7 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Return if there is no upload
-        if (!\is_array($_FILES[$strName])) {
+        if (!isset($_FILES[$strName])) {
             return;
         }
 

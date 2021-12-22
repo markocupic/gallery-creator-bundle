@@ -37,28 +37,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FileUtil
 {
-    /**
-     * @var ScopeMatcher
-     */
     private ScopeMatcher $scopeMatcher;
 
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
-    /**
-     * @var Connection
-     */
     private Connection $connection;
 
-    /**
-     * @var TranslatorInterface
-     */
     private TranslatorInterface $translator;
 
-
-    private ?Logger $logger = null;
+    private ?LoggerInterface $logger = null;
 
     /**
      * @var string
@@ -421,16 +408,16 @@ class FileUtil
         }
 
         // Check if there are some files in $_FILES
-        if (!\is_array($_FILES[$strName])) {
+        if (!isset($_FILES[$strName])) {
             Message::addError('Please select one or more files to be uploaded.');
 
             return [];
         }
 
         // Dropzone sends only one file per request
-        if (\is_string($_FILES[$strName]['name']) && \strlen($_FILES[$strName]['name'])) {
+        if (is_array($_FILES[$strName]) && \is_string($_FILES[$strName]['name']) && \strlen($_FILES[$strName]['name'])) {
             // Generate a unique filename
-            $_FILES[$strName]['name'][$i] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
+            $_FILES[$strName]['name'] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name']));
 
             if (!$this->isValidFileName($_FILES[$strName]['name'])) {
                 $error = sprintf($this->translator->trans(
@@ -447,7 +434,7 @@ class FileUtil
                 // Send error message to Dropzone
                 throw new ResponseException(new JsonResponse($error, 415));
             }
-        } elseif (\is_array($_FILES[$strName]['name'])) {
+        } elseif (isset($_FILES[$strName]['name']) && \is_array($_FILES[$strName]['name'])) {
             $intCount = \count($_FILES[$strName]['name']);
 
             for ($i = 0; $i < $intCount; ++$i) {

@@ -16,9 +16,11 @@ namespace Markocupic\GalleryCreatorBundle\Controller\Ajax;
 
 use Contao\ContentModel;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\Database;
 use Contao\FilesModel;
 use Contao\StringUtil;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception as DoctrineDBALException;
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
@@ -32,21 +34,29 @@ class GalleryCreatorAjax
 {
     private ContaoFramework $framework;
 
+    private Connection $connection;
+
     private SecurityUtil $securityUtil;
 
     private AlbumUtil $albumUtil;
 
     private PictureUtil $pictureUtil;
 
-    public function __construct(ContaoFramework $framework, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
+    public function __construct(ContaoFramework $framework, Connection $connection, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
     {
         $this->framework = $framework;
+        $this->connection = $connection;
         $this->securityUtil = $securityUtil;
         $this->albumUtil = $albumUtil;
         $this->pictureUtil = $pictureUtil;
     }
 
     /**
+     * @param int $pictureId
+     * @param int $contentId
+     * @return Response
+     * @throws \Exception
+     *
      * @Route("/_gallery_creator/get_image/{pictureId}/{contentId}", name="GalleryCreatorAjax::class\getImage", defaults={"_scope" = "frontend"})
      */
     public function getImage(int $pictureId, int $contentId): Response
@@ -64,7 +74,15 @@ class GalleryCreatorAjax
         return new JsonResponse($arrPicture);
     }
 
+
+
     /**
+     * @param int $pid
+     * @param int $contentId
+     * @return Response
+     * @throws DoctrineDBALDriverException
+     * @throws DoctrineDBALException
+     *
      * @Route("/_gallery_creator/get_images_by_pid/{pid}/{contentId}", name="GalleryCreatorAjax::class\getImagesByPid", defaults={"_scope" = "frontend"})
      */
     public function getImagesByPid(int $pid, int $contentId): Response
@@ -97,26 +115,27 @@ class GalleryCreatorAjax
         // Sorting direction
         $sorting = $contentModel->gcPictureSorting.' '.$contentModel->gcPictureSortingDirection;
 
-        $objPicture = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY '.$sorting)
-            ->execute('1', $pid)
-            ;
+        $stmt = $this->connection->executeQuery(
+            'SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY '.$sorting,
+            ['1', $pid],
+        );
 
-        while ($objPicture->next()) {
-            if (null === ($filesModel = FilesModel::findByUuid($objPicture->uuid))) {
+        while (false !== ($arrPicture = $stmt->fetchAssociative())) {
+            if (null === ($filesModel = FilesModel::findByUuid($arrPicture['uuid']))) {
                 continue;
             }
 
-            $href = $filesModel->path;
-            $href = !empty($objPicture->socialMediaSRC) ? $objPicture->socialMediaSRC : $href;
-            $href = !empty($objPicture->localMediaSRC) ? $objPicture->localMediaSRC : $href;
+            $localMediaModel = null;
+            if (!empty($arrPicture['localMediaSRC'])){
+                $localMediaModel = FilesModel::findByUuid($arrPicture['localMediaSRC']);
+            }
 
-            $arrPicture = $objPicture->row();
+            $href = $filesModel->path;
+            $href = !empty($arrPicture['socialMediaSRC']) ? $arrPicture['socialMediaSRC'] : $href;
+            $href = $localMediaModel ? $localMediaModel->path : $href;
 
             $arrPicture['href'] = $href;
-            $arrPicture['pid'] = $objPicture->pid;
-            $arrPicture['caption'] = StringUtil::specialchars($objPicture->caption);
-            $arrPicture['id'] = $objPicture->id;
+            $arrPicture['caption'] = StringUtil::specialchars($arrPicture['caption']);
             $arrPicture['uuid'] = StringUtil::binToUuid($filesModel->uuid);
 
             $json['data'][] = $arrPicture;

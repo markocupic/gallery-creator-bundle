@@ -14,12 +14,15 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Revise;
 
-use Contao\Database;
 use Contao\Dbafs;
 use Contao\FilesModel;
 use Contao\Folder;
+use Contao\StringUtil;
 use Contao\System;
 use Contao\UserModel;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -28,16 +31,24 @@ class ReviseAlbumDatabase
 {
     private RequestStack $requestStack;
 
+    private Connection $connection;
+
     private string $projectDir;
 
-    public function __construct(RequestStack $requestStack, string $projectDir)
+    private string $galleryCreatorUploadPath;
+
+
+    public function __construct(RequestStack $requestStack, Connection $connection, string $projectDir, string $galleryCreatorUploadPath)
     {
         $this->requestStack = $requestStack;
+        $this->connection = $connection;
         $this->projectDir = $projectDir;
+        $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
+     * @throws DoctrineDBALException
      */
     public function run(GalleryCreatorAlbumsModel $albumModel, bool $blnCleanDb = false): void
     {
@@ -45,8 +56,8 @@ class ReviseAlbumDatabase
         $session = $request->getSession();
         $session->set('gc_error', []);
 
-        // Create the upload directory
-        new Folder(System::getContainer()->getParameter('markocupic_gallery_creator.upload_path'));
+        // Create the upload directory if it doesn't exist.
+        new Folder($this->galleryCreatorUploadPath);
 
         // Check for a valid album owner
         $objUser = UserModel::findByPk($albumModel->owner);
@@ -69,58 +80,57 @@ class ReviseAlbumDatabase
 
         $albumModel->save();
 
-        if (Database::getInstance()->fieldExists('path', 'tl_gallery_creator_pictures')) {
-            // Try to identify entries with no uuid via path
-            $pictureModels = GalleryCreatorPicturesModel::findByPid($albumModel->id);
+        // Try to identify entries with no uuid via path
+        $picturesModel = GalleryCreatorPicturesModel::findByPid($albumModel->id);
 
-            if (null !== $pictureModels) {
-                while ($pictureModels->next()) {
-                    // Get parent album
-                    $filesModel = FilesModel::findByUuid($pictureModels->uuid);
+        if (null !== $picturesModel) {
+            while ($picturesModel->next()) {
+                // Get parent album
+                $filesModel = FilesModel::findByUuid($picturesModel->uuid);
 
-                    if (null === $filesModel) {
-                        if ('' !== $pictureModels->path) {
-                            if (is_file($this->projectDir.'/'.$pictureModels->path)) {
-                                $objModel = Dbafs::addResource($pictureModels->path);
+                if (null === $filesModel) {
+                    if ('' !== $picturesModel->path) {
+                        if (is_file($this->projectDir.'/'.$picturesModel->path)) {
+                            $objModel = Dbafs::addResource($picturesModel->path);
 
-                                if (null !== $objModel) {
-                                    $pictureModels->uuid = $objModel->uuid;
-                                    $pictureModels->save();
-                                    continue;
-                                }
+                            if (null !== $objModel) {
+                                $picturesModel->uuid = $objModel->uuid;
+                                $picturesModel->save();
+
+                                continue;
                             }
                         }
+                    }
 
-                        $arrError = $session->get('gc_error');
+                    $arrError = $session->get('gc_error');
 
-                        if (false !== $blnCleanDb) {
-                            $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $pictureModels->id, $albumModel->name);
-                            $pictureModels->delete();
-                        } else {
-                            // Show error-message
-                            $path = '' !== $pictureModels->path ? $pictureModels->path : 'unknown path';
-                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $path, $albumModel->alias);
-                        }
-
-                        $session->set('gc_error', $arrError);
-                    } elseif (!is_file($this->projectDir.'/'.$filesModel->path)) {
-                        $arrError = $session->get('gc_error');
-
-                        // If there is data record for the file, but doesn't exist on the server anymore.
-                        if (false !== $blnCleanDb) {
-                            $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $pictureModels->id, $albumModel->name);
-                            $pictureModels->delete();
-                        } else {
-                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $filesModel->path, $albumModel->alias);
-                        }
-
-                        $session->set('gc_error', $arrError);
+                    if (false !== $blnCleanDb) {
+                        $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
+                        $picturesModel->delete();
                     } else {
-                        // Sync tl_gallery_creator_pictures.path with tl_files.path (redundancy)
-                        if ($pictureModels->path !== $filesModel->path) {
-                            $pictureModels->path = $filesModel->path;
-                            $pictureModels->save();
-                        }
+                        // Show error-message
+                        $path = '' !== $picturesModel->path ? $picturesModel->path : 'unknown path';
+                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $path, $albumModel->alias);
+                    }
+
+                    $session->set('gc_error', $arrError);
+                } elseif (!is_file($this->projectDir.'/'.$filesModel->path)) {
+                    $arrError = $session->get('gc_error');
+
+                    // If there is data record for the file, but doesn't exist on the server anymore.
+                    if (false !== $blnCleanDb) {
+                        $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
+                        $picturesModel->delete();
+                    } else {
+                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $filesModel->path, $albumModel->alias);
+                    }
+
+                    $session->set('gc_error', $arrError);
+                } else {
+                    // Sync tl_gallery_creator_pictures.path with tl_files.path (redundancy)
+                    if ($picturesModel->path !== $filesModel->path) {
+                        $picturesModel->path = $filesModel->path;
+                        $picturesModel->save();
                     }
                 }
             }
@@ -131,32 +141,25 @@ class ReviseAlbumDatabase
          * Checks whether the albums defined in the content element still exist.
          * If not, these are removed from the array.
          */
-        $objCont = Database::getInstance()
-            ->prepare('SELECT * FROM tl_content WHERE type = ?')
-            ->execute('gallery_creator')
-            ;
+        $stmtContent = $this->connection->executeQuery('SELECT * FROM tl_content WHERE type = ?', ['gallery_creator']);
 
-        while ($objCont->next()) {
+        while (false !== ($arrContent = $stmtContent->fetchAssociative())) {
             $newArr = [];
-            $arrAlbums = unserialize($objCont->gcPublishAlbums);
+            $arrAlbums = StringUtil::deserialize($arrContent['gcPublishAlbums'], true);
 
-            if (\is_array($arrAlbums)) {
-                foreach ($arrAlbums as $AlbumID) {
-                    $objAlb = Database::getInstance()
-                        ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id = ?')
-                        ->limit('1')
-                        ->execute($AlbumID)
-                        ;
+            foreach ($arrAlbums as $AlbumId) {
+                $id = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id = ?', [$AlbumId]);
 
-                    if ($objAlb->next()) {
-                        $newArr[] = $AlbumID;
-                    }
+                if (false !== $id) {
+                    $newArr[] = $id;
                 }
             }
-            Database::getInstance()
-                ->prepare('UPDATE tl_content SET gcPublishAlbums = ? WHERE id = ?')
-                ->execute(serialize($newArr), $objCont->id)
-                ;
+
+            $this->connection->update(
+                'tl_content',
+                ['tl_content.gcPublishAlbums' => serialize($newArr)],
+                ['tl_content.id' => $arrContent['id']],
+            );
         }
     }
 }

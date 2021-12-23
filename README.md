@@ -29,7 +29,7 @@ markocupic_gallery_creator:
   backend_write_protection: false
   copy_images_on_import: true
   read_exif_meta_data: false
-  .valid_extensions: ['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg', 'svgz']
+  valid_extensions: ['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg', 'svgz']
 
 # Contao configuration
 contao:

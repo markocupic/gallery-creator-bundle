@@ -52,12 +52,12 @@ class AlbumUtil
         global $objPage;
         $request = $this->requestStack->getCurrentRequest();
 
-        $childAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums($albumModel->id));
+        $childAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums((int) $albumModel->id));
 
         // Count images
         $countPictures = $this->connection
-            ->executeStatement(
-                'SELECT id FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
+            ->fetchOne(
+                'SELECT COUNT(id) AS countPictures FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
                 [$albumModel->id, '1'],
             )
         ;

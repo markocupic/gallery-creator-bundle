@@ -19,7 +19,6 @@ use Contao\ContentModel;
 use Contao\Controller;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Exception\PageNotFoundException;
-use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\Date;
@@ -222,7 +221,7 @@ class GalleryCreatorController extends AbstractContentElementController
      * @throws Exception
      * @throws \Doctrine\DBAL\Exception
      */
-    protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
+    protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
         $template->viewMode = $this->viewMode;
 
@@ -263,7 +262,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 if ($this->model->gcShowChildAlbums) {
                     $arrChildAlbums = $this->albumUtil->getChildAlbums($this->activeAlbum, $this->model);
                     $template->childAlbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
-                    $template->hasChildAlbums = (bool)\count($arrChildAlbums);
+                    $template->hasChildAlbums = (bool) \count($arrChildAlbums);
                 }
 
                 // Count items
@@ -439,13 +438,9 @@ class GalleryCreatorController extends AbstractContentElementController
         return $template->getResponse();
     }
 
-
-
     /**
      * Generates the back link.
      *
-     * @param GalleryCreatorAlbumsModel $albumModel
-     * @return string|null
      * @throws \Exception
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): ?string
@@ -507,7 +502,7 @@ class GalleryCreatorController extends AbstractContentElementController
     /**
      * Set the template-vars to the template object for the selected album.
      */
-    protected function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template &$template): void
+    protected function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template $template): void
     {
         // Add formatted date string to the album model
         $albumModel->dateFormatted = Date::parse(Config::get('dateFormat'), $albumModel->date);

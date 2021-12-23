@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Listener\ContaoHook;
 
+use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Template;
-use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 /**
@@ -28,7 +28,7 @@ class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
-    public function __invoke(GalleryCreatorController $contentElement, Template $template, GalleryCreatorAlbumsModel $albumsModel = null): void
+    public function __invoke(AbstractContentElementController $contentElement, Template $template, GalleryCreatorAlbumsModel $albumsModel = null): void
     {
         //$template->hallo = 'Lorem ipsum';
     }

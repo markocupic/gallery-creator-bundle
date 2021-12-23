@@ -497,9 +497,9 @@ class GalleryCreatorController extends AbstractContentElementController
 
     protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
     {
-        // HOOK: modify the page or template object
-        if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
-            foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
+        // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
+        if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
+            foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
                 System::importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
             }
         }

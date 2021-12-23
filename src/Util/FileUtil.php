@@ -25,6 +25,7 @@ use Contao\FilesModel;
 use Contao\FileUpload;
 use Contao\Message;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
@@ -191,11 +192,10 @@ class FileUtil
                 $albumModel->save();
             }
 
-            // GalleryCreatorImagePostInsert - HOOK
+            // Trigger the galleryCreatorImagePostInsert - HOOK
             if (isset($GLOBALS['TL_HOOKS']['galleryCreatorImagePostInsert']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorImagePostInsert'])) {
                 foreach ($GLOBALS['TL_HOOKS']['galleryCreatorImagePostInsert'] as $callback) {
-                    $objClass = self::importStatic($callback[0]);
-                    $objClass->$callback[1]($pictureModel);
+                    System::importStatic($callback[0])->{$callback[1]}($pictureModel);
                 }
             }
 

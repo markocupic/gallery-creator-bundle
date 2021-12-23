@@ -20,11 +20,11 @@ use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorCont
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 /**
- * @Hook(GenerateGalleryCreatorFrontendTemplateListener::HOOK)
+ * @Hook(GalleryCreatorFrontendTemplateListener::HOOK, priority=100)
  */
-class GenerateGalleryCreatorFrontendTemplateListener
+class GalleryCreatorFrontendTemplateListener
 {
-    public const HOOK = 'gc_generateFrontendTemplate';
+    public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
     public function __invoke(GalleryCreatorController $contentElement, Template $template, GalleryCreatorAlbumsModel $albumsModel = null): void
     {

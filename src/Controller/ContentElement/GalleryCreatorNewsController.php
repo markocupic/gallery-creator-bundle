@@ -193,8 +193,8 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $this->getAlbumTemplateVars($this->activeAlbum, $template);
 
         // HOOK: modify the page or template object
-        if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
-            foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
+        if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
+            foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
                 $template = System::importStatic($callback[0])->{$callback[1]}($this, $this->activeAlbum);
             }
         }

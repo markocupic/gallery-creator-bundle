@@ -165,7 +165,7 @@ class GalleryCreatorPictures extends Backend
         if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&amp;id=' . $row['id']),
+                $this->addToUrl($href.'&amp;id='.$row['id']),
                 StringUtil::specialchars($title),
                 $attributes,
                 Image::getHtml($icon, $label),
@@ -185,7 +185,7 @@ class GalleryCreatorPictures extends Backend
         if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&amp;id=' . $row['id']),
+                $this->addToUrl($href.'&amp;id='.$row['id']),
                 StringUtil::specialchars($title),
                 $attributes,
                 Image::getHtml($icon, $label),
@@ -242,18 +242,18 @@ class GalleryCreatorPictures extends Backend
 
         $key = $arrRow['published'] ? 'published' : 'unpublished';
 
-        $oFile = FilesModel::findByUuid($arrRow['uuid']);
+        $filesModel = FilesModel::findByUuid($arrRow['uuid']);
 
-        if (!is_file($this->projectDir.'/'.$oFile->path)) {
+        if (!is_file($this->projectDir.'/'.$filesModel->path)) {
             return '';
         }
 
-        $objFile = new File($oFile->path);
+        $file = new File($filesModel->path);
 
-        if ($objFile->isGdImage) {
+        if ($file->isGdImage) {
             // If data record contains a link to a movie file...
             $hasMovie = null;
-            $src = $objFile->path;
+            $src = $file->path;
             $src = '' !== trim($arrRow['socialMediaSRC']) ? trim($arrRow['socialMediaSRC']) : $src;
 
             // Local media (movies, etc.)
@@ -282,12 +282,12 @@ class GalleryCreatorPictures extends Backend
             $src = '';
 
             // Generate icon/thumbnail
-            if (Config::get('thumbnails') && null !== $oFile) {
-                $src = Image::get($oFile->path, '100', '', 'center_center');
+            if (Config::get('thumbnails') && null !== $filesModel) {
+                $src = Image::get($filesModel->path, '100', '', 'center_center');
                 $blnShowThumb = true;
             }
 
-            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
+            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($filesModel->path), $file->width, $file->height, $this->getReadableSize($file->filesize));
             $return .= $hasMovie;
             $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
             $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['caption']));
@@ -339,26 +339,26 @@ class GalleryCreatorPictures extends Backend
             return;
         }
 
-        $objFile = FilesModel::findByUuid($objPictureToMove->uuid);
+        $filesModel = FilesModel::findByUuid($objPictureToMove->uuid);
         $objTargetFolder = FilesModel::findByUuid($objTargetAlbum->assignedDir);
         $objSourceFolder = FilesModel::findByUuid($objSourceAlbum->assignedDir);
 
-        if (null === $objFile || null === $objTargetFolder || null === $objSourceFolder) {
+        if (null === $filesModel || null === $objTargetFolder || null === $objSourceFolder) {
             return;
         }
 
         // Return if it is an external file
-        if (false === strpos($objFile->path, $objSourceFolder->path)) {
+        if (false === strpos($filesModel->path, $objSourceFolder->path)) {
             return;
         }
 
-        $strDestination = $objTargetFolder->path.'/'.basename($objFile->path);
+        $strDestination = $objTargetFolder->path.'/'.basename($filesModel->path);
 
-        if ($strDestination !== $objFile->path) {
-            $oFile = new File($objFile->path);
+        if ($strDestination !== $filesModel->path) {
+            $file = new File($filesModel->path);
 
             // Move file to the target folder
-            if ($oFile->renameTo($strDestination)) {
+            if ($file->renameTo($strDestination)) {
                 $objPictureToMove->path = $strDestination;
                 $objPictureToMove->save();
             }
@@ -478,8 +478,8 @@ class GalleryCreatorPictures extends Backend
             $picturesModel->delete();
             $filesModel = FilesModel::findByUuid($uuid);
 
-            $objAlbum = GalleryCreatorAlbumsModel::findByPk($pid);
-            $oFolder = FilesModel::findByUuid($objAlbum->assignedDir);
+            $albumsModel = GalleryCreatorAlbumsModel::findByPk($pid);
+            $oFolder = FilesModel::findByUuid($albumsModel->assignedDir);
 
             // Only delete images if they are located in the directory assigned to the album
             if (null !== $oFolder && null !== $filesModel && strstr($filesModel->path, $oFolder->path)) {

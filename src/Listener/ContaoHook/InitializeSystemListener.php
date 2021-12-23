@@ -28,14 +28,8 @@ class InitializeSystemListener
 {
     public const HOOK = 'initializeSystem';
 
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
-    /**
-     * @var ScopeMatcher
-     */
     private ScopeMatcher $scopeMatcher;
 
     public function __construct(RequestStack $requestStack, ScopeMatcher $scopeMatcher)

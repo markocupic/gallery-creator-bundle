@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-/**
+/*
  * tl_comment
  */
 $GLOBALS['TL_LANG']['tl_comment']['tl_gallery_creator_albums'] = 'Gallery Creator Album';

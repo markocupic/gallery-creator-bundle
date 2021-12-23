@@ -26,14 +26,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ReviseAlbumDatabase
 {
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
-    /**
-     * @var string
-     */
     private string $projectDir;
 
     public function __construct(RequestStack $requestStack, string $projectDir)
@@ -82,9 +76,9 @@ class ReviseAlbumDatabase
             if (null !== $pictureModels) {
                 while ($pictureModels->next()) {
                     // Get parent album
-                    $objFile = FilesModel::findByUuid($pictureModels->uuid);
+                    $filesModel = FilesModel::findByUuid($pictureModels->uuid);
 
-                    if (null === $objFile) {
+                    if (null === $filesModel) {
                         if ('' !== $pictureModels->path) {
                             if (is_file($this->projectDir.'/'.$pictureModels->path)) {
                                 $objModel = Dbafs::addResource($pictureModels->path);
@@ -109,7 +103,7 @@ class ReviseAlbumDatabase
                         }
 
                         $session->set('gc_error', $arrError);
-                    } elseif (!is_file($this->projectDir.'/'.$objFile->path)) {
+                    } elseif (!is_file($this->projectDir.'/'.$filesModel->path)) {
                         $arrError = $session->get('gc_error');
 
                         // If file has an entry in Dbafs, but doesn't exist on the server anymore
@@ -117,14 +111,14 @@ class ReviseAlbumDatabase
                             $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $pictureModels->id, $albumModel->name);
                             $pictureModels->delete();
                         } else {
-                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $objFile->path, $albumModel->alias);
+                            $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $pictureModels->id, $filesModel->path, $albumModel->alias);
                         }
 
                         $session->set('gc_error', $arrError);
                     } else {
                         // Sync tl_gallery_creator_pictures.path with tl_files.path (redundancy)
-                        if ($pictureModels->path !== $objFile->path) {
-                            $pictureModels->path = $objFile->path;
+                        if ($pictureModels->path !== $filesModel->path) {
+                            $pictureModels->path = $filesModel->path;
                             $pictureModels->save();
                         }
                     }

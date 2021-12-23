@@ -29,9 +29,9 @@ class GalleryCreatorAlbumsModel extends Model
      */
     protected static $strTable = 'tl_gallery_creator_albums';
 
-    public static function getParentAlbum(self $objAlbum): ?self
+    public static function getParentAlbum(self $albumsModel): ?self
     {
-        return $objAlbum->getRelated('pid');
+        return $albumsModel->getRelated('pid');
     }
 
     /**
@@ -52,19 +52,19 @@ class GalleryCreatorAlbumsModel extends Model
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid= ? ORDER BY '.$strSorting;
         }
 
-        $objAlb = Database::getInstance()
+        $objAlbums = Database::getInstance()
             ->prepare($strSql)
             ->execute($parentId)
         ;
 
         $depth = null !== $iterationDepth ? $iterationDepth - 1 : null;
 
-        while ($objAlb->next()) {
+        while ($objAlbums->next()) {
             if ($depth < 0 && null !== $iterationDepth) {
                 return $arrChildAlbums;
             }
-            $arrChildAlbums[] = $objAlb->id;
-            $arrChildAlbums = array_merge($arrChildAlbums, static::getChildAlbums($objAlb->id, $strSorting, $depth));
+            $arrChildAlbums[] = $objAlbums->id;
+            $arrChildAlbums = array_merge($arrChildAlbums, static::getChildAlbums($objAlbums->id, $strSorting, $depth));
         }
 
         return $arrChildAlbums;

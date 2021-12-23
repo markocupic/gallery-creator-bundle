@@ -35,12 +35,14 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\UserModel;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -115,7 +117,9 @@ class GalleryCreatorAlbums extends Backend
     }
 
     /**
-     * Check Permission callback.
+     * Check Permission callback (haste_ajax_operation).
+     *
+     * @throws DoctrineDBALException
      */
     public function checkPermissionCbToggle(string $table, array $hasteAjaxOperationSettings, bool &$hasPermission): void
     {
@@ -335,11 +339,11 @@ class GalleryCreatorAlbums extends Backend
                 $sorting = 10;
 
                 foreach (explode(',', $request->query->get('pictureSorting')) as $pictureId) {
-                    $objPicture = GalleryCreatorPicturesModel::findByPk($pictureId);
+                    $picturesModel = GalleryCreatorPicturesModel::findByPk($pictureId);
 
-                    if (null !== $objPicture) {
-                        $objPicture->sorting = $sorting;
-                        $objPicture->save();
+                    if (null !== $picturesModel) {
+                        $picturesModel->sorting = $sorting;
+                        $picturesModel->save();
                         $sorting += 10;
                     }
                 }
@@ -354,14 +358,14 @@ class GalleryCreatorAlbums extends Backend
                 }
 
                 if ($request->query->has('albumId')) {
-                    $objAlbum = GalleryCreatorAlbumsModel::findByPk($request->query->get('albumId', 0));
+                    $albumsModel = GalleryCreatorAlbumsModel::findByPk($request->query->get('albumId', 0));
 
-                    if (null !== $objAlbum) {
+                    if (null !== $albumsModel) {
                         if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
                             // Delete damaged data records
                             $cleanDb = $this->User->isAdmin && $request->query->has('reviseTables') ? true : false;
 
-                            $this->reviseAlbumDatabase->run($objAlbum, $cleanDb);
+                            $this->reviseAlbumDatabase->run($albumsModel, $cleanDb);
 
                             if ($session->has('gc_error') && \is_array($session->get('gc_error'))) {
                                 if (!empty($session->get('gc_error'))) {
@@ -386,6 +390,8 @@ class GalleryCreatorAlbums extends Backend
      * Label callback.
      *
      * @Callback(table="tl_gallery_creator_albums", target="list.label.label")
+     *
+     * @throws DoctrineDBALException
      */
     public function labelCb(array $row, string $label): string
     {
@@ -455,6 +461,8 @@ class GalleryCreatorAlbums extends Backend
      * Ondelete callback.
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.ondelete", priority=100)
+     *
+     * @throws DoctrineDBALException
      */
     public function ondeleteCb(DataContainer $dc): void
     {
@@ -467,60 +475,56 @@ class GalleryCreatorAlbums extends Backend
                 $this->log('An unauthorized user tried to delete an entry from tl_gallery_creator_albums with ID '.$dc->activeRecord->id.'.', __METHOD__, TL_ERROR);
                 $this->redirect('contao?do=error');
             }
-            // Also delete the child element
+
+            // Also delete child albums
             $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums($dc->activeRecord->id);
             $arrDeletedAlbums = array_merge([$dc->activeRecord->id], $arrDeletedAlbums);
 
             foreach ($arrDeletedAlbums as $idDelAlbum) {
-                $objAlbumModel = GalleryCreatorAlbumsModel::findByPk($idDelAlbum);
+                $albumsModel = GalleryCreatorAlbumsModel::findByPk($idDelAlbum);
 
-                if (null === $objAlbumModel) {
+                if (null === $albumsModel) {
                     continue;
                 }
 
-                if ($this->User->isAdmin || (int) $objAlbumModel->owner === (int) $this->User->id || !$this->galleryCreatorBackendWriteProtection) {
-                    // Remove all pictures from tl_gallery_creator_pictures
-                    $objPicturesModel = GalleryCreatorPicturesModel::findByPid($idDelAlbum);
+                if ($this->User->isAdmin || (int) $albumsModel->owner === (int) $this->User->id || !$this->galleryCreatorBackendWriteProtection) {
+                    // Remove all pictures from the database
+                    $picturesModel = GalleryCreatorPicturesModel::findByPid($idDelAlbum);
 
-                    if (null !== $objPicturesModel) {
-                        while ($objPicturesModel->next()) {
-                            $fileUuid = $objPicturesModel->uuid;
-                            $objPicturesModel->delete();
-                            $objPicture = GalleryCreatorPicturesModel::findByUuid($fileUuid);
+                    if (null !== $picturesModel) {
+                        while ($picturesModel->next()) {
+                            $fileUuid = $picturesModel->uuid;
+                            $picturesModel->delete();
 
-                            if (null === $objPicture) {
-                                $oFile = FilesModel::findByUuid($fileUuid);
+                            // Delete the picture from the filesystem if it is not in use on another album
+                            if (null === GalleryCreatorPicturesModel::findByUuid($fileUuid)) {
+                                $filesModel = FilesModel::findByUuid($fileUuid);
 
-                                if (null !== $oFile) {
-                                    $file = new File($oFile->path);
+                                if (null !== $filesModel) {
+                                    $file = new File($filesModel->path);
                                     $file->delete();
                                 }
                             }
                         }
                     }
 
-                    // Remove the folder from the database and from the filesystem.
-                    $filesModel = FilesModel::findByUuid($objAlbumModel->assignedDir);
+                    $filesModel = FilesModel::findByUuid($albumsModel->assignedDir);
 
                     if (null !== $filesModel) {
-                        $folder = new Folder($filesModel->path);
+                        $finder = new Finder();
+                        $finder->in($filesModel->getAbsolutePath())
+                            ->depth('== 0')
+                            ->notName('.public')
+                            ;
 
-                        // See https://github.com/contao/contao/issues/3854
-                        if ($folder->isUnprotected()) {
-                            $folder->protect();
-
-                            if ($folder->isEmpty()) {
-                                $folder->delete();
-                            } else {
-                                $folder->unprotect();
-                            }
-                        } else {
-                            if ($folder->isEmpty()) {
-                                $folder->delete();
-                            }
+                        if (!$finder->hasResults()) {
+                            // Remove the folder if empty
+                            (new Folder($filesModel->path))->delete();
                         }
                     }
-                    $objAlbumModel->delete();
+
+                    // Remove the album from the database
+                    $albumsModel->delete();
                 } else {
                     // Do not delete albums that are not owned by the currently logged-in user.
                     $this->connection->update('tl_gallery_creator_albums', ['pid' => 0], ['id' => $idDelAlbum]);
@@ -571,14 +575,14 @@ class GalleryCreatorAlbums extends Backend
         $strName = 'file';
 
         // Return if there is no album
-        if (null === ($objAlbum = GalleryCreatorAlbumsModel::findById($intAlbumId))) {
+        if (null === ($albumsModel = GalleryCreatorAlbumsModel::findById($intAlbumId))) {
             Message::addError('Album with ID '.$intAlbumId.' does not exist.');
 
             return;
         }
 
         // Return if there is no album directory
-        $objUploadDir = FilesModel::findByUuid($objAlbum->assignedDir);
+        $objUploadDir = FilesModel::findByUuid($albumsModel->assignedDir);
 
         if (null === $objUploadDir || !is_dir($this->projectDir.'/'.$objUploadDir->path)) {
             Message::addError('No upload directory defined in the album settings!');
@@ -592,11 +596,11 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Call the uploader script
-        $arrUpload = $this->fileUtil->fileupload($objAlbum, $strName);
+        $arrUpload = $this->fileUtil->fileupload($albumsModel, $strName);
 
         foreach ($arrUpload as $strFileSrc) {
             // Add  new data records to tl_gallery_creator_pictures
-            $this->fileUtil->addImageToAlbum($objAlbum, $strFileSrc);
+            $this->fileUtil->addImageToAlbum($albumsModel, $strFileSrc);
         }
 
         // Do not exit the script if html5_uploader is selected and Javascript is disabled
@@ -624,9 +628,9 @@ class GalleryCreatorAlbums extends Backend
             return;
         }
 
-        if (null !== ($objAlbum = GalleryCreatorAlbumsModel::findByPk($request->query->get('id')))) {
-            $objAlbum->preserveFilename = $request->request->get('preserveFilename');
-            $objAlbum->save();
+        if (null !== ($albumsModel = GalleryCreatorAlbumsModel::findByPk($request->query->get('id')))) {
+            $albumsModel->preserveFilename = $request->request->get('preserveFilename');
+            $albumsModel->save();
 
             // Comma separated list with folder uuid's => 10585872-5f1f-11e3-858a-0025900957c8,105e9de0-5f1f-11e3-858a-0025900957c8,105e9dd6-5f1f-11e3-858a-0025900957c8
             $arrMultiSRC = explode(',', (string) $request->request->get('multiSRC'));
@@ -634,10 +638,10 @@ class GalleryCreatorAlbums extends Backend
             if (!empty($arrMultiSRC)) {
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserveFilename']['eval']['submitOnChange'] = false;
 
-                // import Images from filesystem and write entries to tl_gallery_creator_pictures
-                $this->fileUtil->importFromFilesystem($objAlbum, $arrMultiSRC);
+                // Import Images from filesystem and write entries to tl_gallery_creator_pictures
+                $this->fileUtil->importFromFilesystem($albumsModel, $arrMultiSRC);
 
-                throw new RedirectResponseException('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$objAlbum->id.'&filesImported=true');
+                throw new RedirectResponseException('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$albumsModel->id.'&filesImported=true');
             }
         }
 
@@ -648,6 +652,8 @@ class GalleryCreatorAlbums extends Backend
      * Onload callback.
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload", priority=60)
+     *
+     * @throws DoctrineDBALException
      */
     public function onloadCbSetUpPalettes(): void
     {
@@ -730,23 +736,26 @@ class GalleryCreatorAlbums extends Backend
      * List all images of the album (and child albums).
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.thumb.input_field")
+     *
+     * @throws DoctrineDBALException
+     * @throws Exception
      */
     public function inputFieldCbThumb(): string
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (null === ($objAlbum = GalleryCreatorAlbumsModel::findByPk($request->query->get('id')))) {
+        if (null === ($albumsModel = GalleryCreatorAlbumsModel::findByPk($request->query->get('id')))) {
             return '';
         }
 
         // Save input
         if ('tl_gallery_creator_albums' === $request->request->get('FORM_SUBMIT')) {
             if (null === GalleryCreatorPicturesModel::findByPk($request->request->get('thumb'))) {
-                $objAlbum->thumb = 0;
+                $albumsModel->thumb = 0;
             } else {
-                $objAlbum->thumb = $request->request->get('thumb');
+                $albumsModel->thumb = $request->request->get('thumb');
             }
-            $objAlbum->save();
+            $albumsModel->save();
         }
 
         $arrAlbums = [];
@@ -788,21 +797,21 @@ class GalleryCreatorAlbums extends Backend
 
         foreach ($arrContainer as $i => $arrData) {
             foreach ($arrData as $ii => $arrItem) {
-                $objFileModel = FilesModel::findByUuid($arrItem['uuid']);
+                $filesModel = FilesModel::findByUuid($arrItem['uuid']);
 
-                if (null !== $objFileModel) {
-                    if (file_exists($this->projectDir.'/'.$objFileModel->path)) {
-                        $objFile = new \File($objFileModel->path);
+                if (null !== $filesModel) {
+                    if (file_exists($filesModel->getAbsolutePath())) {
+                        $file = new File($filesModel->path);
                         $src = 'placeholder.png';
 
-                        if ($objFile->height <= Config::get('gdMaxImgHeight') && $objFile->width <= Config::get('gdMaxImgWidth')) {
-                            $src = Image::get($objFile->path, 80, 60, 'center_center');
+                        if ($file->height <= Config::get('gdMaxImgHeight') && $file->width <= Config::get('gdMaxImgWidth')) {
+                            $src = Image::get($file->path, 80, 60, 'center_center');
                         }
 
-                        $arrContainer[$i][$ii]['attr_checked'] = $checked = (int) $objAlbum->thumb === (int) $arrItem['id'] ? ' checked' : '';
+                        $arrContainer[$i][$ii]['attr_checked'] = $checked = (int) $albumsModel->thumb === (int) $arrItem['id'] ? ' checked' : '';
                         $arrContainer[$i][$ii]['class'] = '' !== \strlen($checked) ? ' class="checked"' : '';
-                        $arrContainer[$i][$ii]['filename'] = StringUtil::specialchars($objFile->name);
-                        $arrContainer[$i][$ii]['image'] = Image::getHtml($src, $objFile->name);
+                        $arrContainer[$i][$ii]['filename'] = StringUtil::specialchars($file->name);
+                        $arrContainer[$i][$ii]['image'] = Image::getHtml($src, $file->name);
                     }
                 }
             }
@@ -848,28 +857,28 @@ class GalleryCreatorAlbums extends Backend
                 'value' => [$dc->id],
                 'order' => 'sorting ASC',
             ];
-            $objPicture = GalleryCreatorPicturesModel::findAll($arrOptions);
+            $picturesModel = GalleryCreatorPicturesModel::findAll($arrOptions);
 
-            if (null !== $objPicture) {
-                while ($objPicture->next()) {
-                    $objFile = FilesModel::findOneByUuid($objPicture->uuid);
+            if (null !== $picturesModel) {
+                while ($picturesModel->next()) {
+                    $filesModel = FilesModel::findOneByUuid($picturesModel->uuid);
 
-                    if (null !== $objFile) {
-                        if (is_file($this->projectDir.'/'.$objFile->path)) {
-                            $oFile = new File($objFile->path);
+                    if (null !== $filesModel) {
+                        if (is_file($this->projectDir.'/'.$filesModel->path)) {
+                            $file = new File($filesModel->path);
                             ++$i;
 
-                            while (is_file($oFile->dirname.'/'.$strPrefix.'_'.$i.'.'.strtolower($oFile->extension))) {
+                            while (is_file($file->dirname.'/'.$strPrefix.'_'.$i.'.'.strtolower($file->extension))) {
                                 ++$i;
                             }
-                            $oldPath = $oFile->dirname.'/'.$strPrefix.'_'.$i.'.'.strtolower($oFile->extension);
+                            $oldPath = $file->dirname.'/'.$strPrefix.'_'.$i.'.'.strtolower($file->extension);
                             $newPath = str_replace($this->projectDir.'/', '', $oldPath);
 
                             // Rename file
-                            if ($oFile->renameTo($newPath)) {
-                                $objPicture->path = $oFile->path;
-                                $objPicture->save();
-                                Message::addInfo(sprintf('Picture with ID %s has been renamed to %s.', $objPicture->id, $newPath));
+                            if ($file->renameTo($newPath)) {
+                                $picturesModel->path = $file->path;
+                                $picturesModel->save();
+                                Message::addInfo(sprintf('Picture with ID %s has been renamed to %s.', $picturesModel->id, $newPath));
                             }
                         }
                     }
@@ -894,22 +903,22 @@ class GalleryCreatorAlbums extends Backend
             return $varValue;
         }
 
-        $objPictures = GalleryCreatorPicturesModel::findByPid($dc->id);
+        $picturesModels = GalleryCreatorPicturesModel::findByPid($dc->id);
 
-        if (null === $objPictures) {
+        if (null === $picturesModels) {
             return '----';
         }
 
         $files = [];
         $auxDate = [];
 
-        while ($objPictures->next()) {
-            $oFile = FilesModel::findByUuid($objPictures->uuid);
-            $objFile = new File($oFile->path, true);
-            $files[$oFile->path] = [
-                'id' => $objPictures->id,
+        while ($picturesModels->next()) {
+            $filesModel = FilesModel::findByUuid($picturesModels->uuid);
+            $file = new File($filesModel->path, true);
+            $files[$filesModel->path] = [
+                'id' => $picturesModels->id,
             ];
-            $auxDate[] = $objFile->mtime;
+            $auxDate[] = $file->mtime;
         }
 
         switch ($varValue) {
@@ -937,9 +946,12 @@ class GalleryCreatorAlbums extends Backend
 
         foreach ($files as $arrFile) {
             $sorting += 10;
-            $objPicture = GalleryCreatorPicturesModel::findByPk($arrFile['id']);
-            $objPicture->sorting = $sorting;
-            $objPicture->save();
+            $picturesModel = GalleryCreatorPicturesModel::findByPk($arrFile['id']);
+
+            if (null !== $picturesModels) {
+                $picturesModel->sorting = $sorting;
+                $picturesModel->save();
+            }
         }
 
         // Return default value
@@ -953,6 +965,8 @@ class GalleryCreatorAlbums extends Backend
      * and create a directory with the same name
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.alias.save")
+     *
+     * @throws DoctrineDBALException
      */
     public function saveCbAlias(string $strAlias, DataContainer $dc): string
     {
@@ -961,12 +975,12 @@ class GalleryCreatorAlbums extends Backend
         $blnDoNotCreateDir = false;
 
         // Get current row
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk($dc->id);
+        $albumsModel = GalleryCreatorAlbumsModel::findByPk($dc->id);
 
         // Save assigned directory if it has been defined.
         if ($this->Input->post('FORM_SUBMIT') && \strlen((string) $this->Input->post('assignedDir'))) {
-            $objAlbum->assignedDir = $this->Input->post('assignedDir');
-            $objAlbum->save();
+            $albumsModel->assignedDir = $this->Input->post('assignedDir');
+            $albumsModel->save();
             $blnDoNotCreateDir = true;
         }
 
@@ -999,11 +1013,11 @@ class GalleryCreatorAlbums extends Backend
             $objFolder = new Folder($this->galleryCreatorUploadPath.'/'.$strAlias);
             $objFolder->unprotect();
             $oFolder = Dbafs::addResource($objFolder->path, true);
-            $objAlbum->assignedDir = $oFolder->uuid;
-            $objAlbum->save();
+            $albumsModel->assignedDir = $oFolder->uuid;
+            $albumsModel->save();
 
             // Important
-            $request->request->set('assignedDir', StringUtil::binToUuid($objAlbum->assignedDir));
+            $request->request->set('assignedDir', StringUtil::binToUuid($albumsModel->assignedDir));
         }
 
         return $strAlias;
@@ -1013,6 +1027,8 @@ class GalleryCreatorAlbums extends Backend
      * Save callback.
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.imageQuality.save")
+     *
+     * @throws DoctrineDBALException
      */
     public function saveCbImageQuality(string $value): void
     {
@@ -1023,6 +1039,8 @@ class GalleryCreatorAlbums extends Backend
      * Save callback.
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.imageResolution.save")
+     *
+     * @throws DoctrineDBALException
      */
     public function saveCbImageResolution(string $value): void
     {
@@ -1034,7 +1052,7 @@ class GalleryCreatorAlbums extends Backend
      */
     private function checkUserRole($albumId): void
     {
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
+        $albumsModel = GalleryCreatorAlbumsModel::findByPk($albumId);
 
         if ($this->User->isAdmin || !$this->galleryCreatorBackendWriteProtection) {
             $this->restrictedUser = false;
@@ -1042,7 +1060,7 @@ class GalleryCreatorAlbums extends Backend
             return;
         }
 
-        if ($objAlbum->owner !== $this->User->id) {
+        if ($albumsModel->owner !== $this->User->id) {
             $this->restrictedUser = true;
 
             return;

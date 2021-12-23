@@ -32,17 +32,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Content extends Backend
 {
-    /**
-     * @var AlbumUtil
-     */
     private AlbumUtil $albumUtil;
-
 
     private Connection $connection;
 
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
     public function __construct(AlbumUtil $albumUtil, Connection $connection, RequestStack $requestStack)

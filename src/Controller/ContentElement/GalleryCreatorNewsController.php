@@ -50,7 +50,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
 
     private ScopeMatcher $scopeMatcher;
 
-    private ?int $intAlbumId = null;
+    private ?GalleryCreatorAlbumsModel $activeAlbum = null;
 
     private ?ContentModel $model = null;
 
@@ -80,28 +80,25 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         if (!$this->model->gcPublishSingleAlbum) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
-
-        $objAlbum = Database::getInstance()
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id = ? AND published = ?')
-            ->execute($this->model->gcPublishSingleAlbum, '1')
-        ;
+        $this->activeAlbum = GalleryCreatorAlbumsModel::findOneBy(
+            ['tl_gallery_creator_albums.id = ? AND tl_gallery_creator_albums.published = ?'],
+            [$this->model->gcPublishSingleAlbum, '1']
+        );
 
         // if the album doesn't exist
-        if (!$objAlbum->numRows) {
+        if (null === $this->activeAlbum) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        $this->intAlbumId = (int) $objAlbum->id;
-
         // Check Permission for protected albums
-        if ($request && $this->scopeMatcher->isFrontendRequest($request) && $objAlbum->protected) {
+        if ($request && $this->scopeMatcher->isFrontendRequest($request) && $this->activeAlbum->protected) {
             $blnAllowed = false;
 
             $objUser = FrontendUser::getInstance();
 
             if (FE_USER_LOGGED_IN && null !== $objUser && \is_array(unserialize($objUser->allGroups))) {
                 // Check if logged in user is in the allowed group
-                if (array_intersect(unserialize($objUser->allGroups), unserialize($objAlbum->groups))) {
+                if (array_intersect(unserialize($objUser->allGroups), unserialize($this->activeAlbum->groups))) {
                     $blnAllowed = true;
                 }
             }
@@ -124,11 +121,8 @@ class GalleryCreatorNewsController extends AbstractContentElementController
 
     protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
     {
-        // Get the album object
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk($this->intAlbumId);
-
         // Init the counter
-        $this->albumUtil->countAlbumViews($objAlbum);
+        $this->albumUtil->countAlbumViews($this->activeAlbum);
 
         // Pagination settings
         $limit = $this->model->gcThumbsPerPage;
@@ -140,7 +134,7 @@ class GalleryCreatorNewsController extends AbstractContentElementController
             // Count pictures
             $objPictures = Database::getInstance()
                 ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?')
-                ->execute('1', $this->intAlbumId)
+                ->execute('1', $this->activeAlbum->id)
             ;
             $itemsTotal = $objPictures->numRows;
 
@@ -161,23 +155,23 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         if ($limit > 0) {
             $objPictures->limit($limit, $offset);
         }
-        $objPictures = $objPictures->execute('1', $this->intAlbumId);
+        $objPictures = $objPictures->execute('1', $this->activeAlbum->id);
 
         // Build up $arrPictures
         $arrPictures = [];
         $auxBasename = [];
 
         while ($objPictures->next()) {
-            $objFilesModel = FilesModel::findByUuid($objPictures->uuid);
+            $filesModel = FilesModel::findByUuid($objPictures->uuid);
             $basename = 'undefined';
 
-            if (null !== $objFilesModel) {
-                $basename = $objFilesModel->name;
+            if (null !== $filesModel) {
+                $basename = $filesModel->name;
             }
             $auxBasename[] = $basename;
 
-            if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($objPictures->id))) {
-                $arrPictures[$objPictures->id] = $this->pictureUtil->getPictureData($objPicturesModel, $this->model);
+            if (null !== ($picturesModel = GalleryCreatorPicturesModel::findByPk($objPictures->id))) {
+                $arrPictures[$objPictures->id] = $this->pictureUtil->getPictureData($picturesModel, $this->model);
             }
         }
 
@@ -196,15 +190,12 @@ class GalleryCreatorNewsController extends AbstractContentElementController
         $template->arrPictures = $arrPictures;
 
         // Generate other template variables
-        $this->getAlbumTemplateVars($objAlbum, $template);
-
-        /** @var System $systemAdapter */
-        $systemAdapter = $this->get('contao.framework')->getAdapter(System::class);
+        $this->getAlbumTemplateVars($this->activeAlbum, $template);
 
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
             foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
-                $template = $systemAdapter->importStatic($callback[0])->{$callback[1]}($this, $objAlbum);
+                $template = System::importStatic($callback[0])->{$callback[1]}($this, $this->activeAlbum);
             }
         }
 
@@ -212,30 +203,31 @@ class GalleryCreatorNewsController extends AbstractContentElementController
     }
 
     /**
+     * @todo Refactoring needed
      * Set the template-vars to the template object for the selected album.
      */
-    private function getAlbumTemplateVars(GalleryCreatorAlbumsModel $objAlbum, Template &$template): void
+    private function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumsModel, Template &$template): void
     {
-        $this->pageModel->description = '' !== $objAlbum->description ? StringUtil::specialchars($objAlbum->description) : $this->pageModel->description;
-        $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($objAlbum->keywords), ',');
+        $this->pageModel->description = '' !== $albumsModel->description ? StringUtil::specialchars($albumsModel->description) : $this->pageModel->description;
+        $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($albumsModel->keywords), ',');
 
         // Store all album-data in the array
-        $template->arrAlbumdata = $objAlbum->row();
+        $template->arrAlbumdata = $albumsModel->row();
 
         // Albumname
-        $template->albumname = $objAlbum->name;
+        $template->albumname = $albumsModel->name;
         // Album visitors
-        $template->visitors = $objAlbum->vistors;
+        $template->visitors = $albumsModel->vistors;
         // Album caption
-        $template->caption = StringUtil::toHtml5($objAlbum->caption);
+        $template->caption = StringUtil::toHtml5($albumsModel->caption);
         // Insert article pre
-        $template->insertArticlePre = $objAlbum->insertArticlePre ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePre) : null;
+        $template->insertArticlePre = $albumsModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumsModel->insertArticlePre) : null;
         // Insert article after
-        $template->insertArticlePost = $objAlbum->insertArticlePost ? sprintf('{{insert_article::%s}}', $objAlbum->insertArticlePost) : null;
+        $template->insertArticlePost = $albumsModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumsModel->insertArticlePost) : null;
         // event date as unix timestamp
-        $template->eventTstamp = $objAlbum->date;
+        $template->eventTstamp = $albumsModel->date;
         // formated event date
-        $template->eventDate = Date::parse(Config::get('dateFormat'), $objAlbum->date);
+        $template->eventDate = Date::parse(Config::get('dateFormat'), $albumsModel->date);
         // Content model
         $template->objElement = $this->model;
     }

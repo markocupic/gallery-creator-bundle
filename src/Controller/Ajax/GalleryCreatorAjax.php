@@ -103,11 +103,11 @@ class GalleryCreatorAjax
             ;
 
         while ($objPicture->next()) {
-            if (null === ($objFile = FilesModel::findByUuid($objPicture->uuid))) {
+            if (null === ($filesModel = FilesModel::findByUuid($objPicture->uuid))) {
                 continue;
             }
 
-            $href = $objFile->path;
+            $href = $filesModel->path;
             $href = !empty($objPicture->socialMediaSRC) ? $objPicture->socialMediaSRC : $href;
             $href = !empty($objPicture->localMediaSRC) ? $objPicture->localMediaSRC : $href;
 
@@ -117,7 +117,7 @@ class GalleryCreatorAjax
             $arrPicture['pid'] = $objPicture->pid;
             $arrPicture['caption'] = StringUtil::specialchars($objPicture->caption);
             $arrPicture['id'] = $objPicture->id;
-            $arrPicture['uuid'] = StringUtil::binToUuid($objFile->uuid);
+            $arrPicture['uuid'] = StringUtil::binToUuid($filesModel->uuid);
 
             $json['data'][] = $arrPicture;
         }

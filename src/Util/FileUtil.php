@@ -120,15 +120,15 @@ class FileUtil
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        $objFile = new File($strFilepath);
+        $file = new File($strFilepath);
 
-        if (!$objFile->isGdImage) {
+        if (!$file->isGdImage) {
             return false;
         }
 
-        $objFilesModel = $objFile->getModel();
+        $filesModel = $file->getModel();
 
-        if (null === $objFilesModel) {
+        if (null === $filesModel) {
             throw new \Exception('Aborted script, because there is no file model.');
         }
 
@@ -150,7 +150,7 @@ class FileUtil
         $blnExternalFile = false;
 
         if ($request->query->has('importFromFilesystem')) {
-            $blnExternalFile = strstr($objFile->dirname, $assignedDir) ? false : true;
+            $blnExternalFile = strstr($file->dirname, $assignedDir) ? false : true;
         }
 
         // New record
@@ -160,7 +160,7 @@ class FileUtil
         $pictureModel->externalFile = $blnExternalFile ? '1' : '';
 
         // Set uuid before the model is saved the first time!!!
-        $pictureModel->uuid = $objFilesModel->uuid;
+        $pictureModel->uuid = $filesModel->uuid;
         $pictureModel->save();
         $insertId = $pictureModel->id;
 
@@ -174,11 +174,11 @@ class FileUtil
 
         if (!$albumModel->preserveFilename && false === $blnExternalFile) {
             // Generate a generic file name
-            $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $albumModel->id, $insertId, $objFile->extension);
-            $objFile->renameTo($newFilepath);
+            $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $albumModel->id, $insertId, $file->extension);
+            $file->renameTo($newFilepath);
         }
 
-        if (is_file($this->projectDir.'/'.$objFile->path)) {
+        if (is_file($this->projectDir.'/'.$file->path)) {
             // Finally, save the new image in tl_gallery_creator_pictures
             $pictureModel->owner = BackendUser::getInstance()->id;
             $pictureModel->date = $albumModel->date;
@@ -277,28 +277,28 @@ class FileUtil
 
         $images = [];
 
-        if (null === ($objFilesModel = FilesModel::findMultipleByUuids($arrMultiSRC))) {
+        if (null === ($filesModel = FilesModel::findMultipleByUuids($arrMultiSRC))) {
             return;
         }
 
-        while ($objFilesModel->next()) {
+        while ($filesModel->next()) {
             // Continue if the file has been processed or does not exist
-            if (isset($images[$objFilesModel->path]) || !file_exists($this->projectDir.'/'.$objFilesModel->path)) {
+            if (isset($images[$filesModel->path]) || !file_exists($filesModel->getAbsolutePath())) {
                 continue;
             }
 
             // If item is a file, then store it in the array
-            if ('file' === $objFilesModel->type) {
-                $objFile = new File($objFilesModel->path);
+            if ('file' === $filesModel->type) {
+                $file = new File($filesModel->path);
 
-                if (\in_array($objFile->extension, $this->galleryCreatorValidExtensions, true)) {
-                    $images[$objFile->path] = ['uuid' => $objFilesModel->uuid, 'basename' => $objFile->basename, 'path' => $objFile->path];
+                if (\in_array($file->extension, $this->galleryCreatorValidExtensions, true)) {
+                    $images[$file->path] = ['uuid' => $filesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
                 } else {
-                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension));
+                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $file->extension));
                 }
             } else {
                 // If resource is a directory, then store its files in the array
-                $objSubfilesModel = FilesModel::findMultipleFilesByFolder($objFilesModel->path);
+                $objSubfilesModel = FilesModel::findMultipleFilesByFolder($filesModel->path);
 
                 if (null === $objSubfilesModel) {
                     continue;
@@ -310,10 +310,10 @@ class FileUtil
                         continue;
                     }
 
-                    $objFile = new File($objSubfilesModel->path);
+                    $file = new File($objSubfilesModel->path);
 
-                    if ($objFile->isGdImage) {
-                        $images[$objFile->path] = ['uuid' => $objSubfilesModel->uuid, 'basename' => $objFile->basename, 'path' => $objFile->path];
+                    if ($file->isGdImage) {
+                        $images[$file->path] = ['uuid' => $objSubfilesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
                     }
                 }
             }
@@ -376,8 +376,8 @@ class FileUtil
 
                     if (is_file($this->projectDir.'/'.$strSource)) {
                         // Copy the image to the upload folder
-                        $objFile = new File($strSource);
-                        $objFile->copyTo($strDestination);
+                        $file = new File($strSource);
+                        $file->copyTo($strDestination);
                         Dbafs::addResource($strSource);
                     }
 
@@ -415,7 +415,7 @@ class FileUtil
         }
 
         // Dropzone sends only one file per request
-        if (is_array($_FILES[$strName]) && \is_string($_FILES[$strName]['name']) && \strlen($_FILES[$strName]['name'])) {
+        if (\is_array($_FILES[$strName]) && \is_string($_FILES[$strName]['name']) && \strlen($_FILES[$strName]['name'])) {
             // Generate a unique filename
             $_FILES[$strName]['name'] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name']));
 

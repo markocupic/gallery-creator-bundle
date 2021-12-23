@@ -23,9 +23,6 @@ class Version200Update extends AbstractMigration
 {
     private const ALTERATION_TYPE_RENAME_COLUMN = 'alteration_type_rename_column';
 
-    /**
-     * @var Connection
-     */
     private Connection $connection;
 
     /**

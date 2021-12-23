@@ -25,14 +25,8 @@ class ParseBackendTemplate
 {
     public const HOOK = 'parseBackendTemplate';
 
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
-    /**
-     * @var ScopeMatcher
-     */
     private ScopeMatcher $scopeMatcher;
 
     public function __construct(RequestStack $requestStack, ScopeMatcher $scopeMatcher)

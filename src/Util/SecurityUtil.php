@@ -23,19 +23,10 @@ use Symfony\Component\Security\Core\Security;
 
 class SecurityUtil
 {
-    /**
-     * @var Security
-     */
     private Security $security;
 
-    /**
-     * @var ScopeMatcher
-     */
     private ScopeMatcher $scopeMatcher;
 
-    /**
-     * @var RequestStack
-     */
     private RequestStack $requestStack;
 
     public function __construct(Security $security, ScopeMatcher $scopeMatcher, RequestStack $requestStack)
@@ -49,17 +40,17 @@ class SecurityUtil
      * Check if a logged in frontend user
      * has access to a protected album.
      */
-    public function isAuthorized(GalleryCreatorAlbumsModel $objAlbum): bool
+    public function isAuthorized(GalleryCreatorAlbumsModel $albumsModel): bool
     {
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!$objAlbum->protected) {
+        if (!$albumsModel->protected) {
             return true;
         }
 
         if ($request && $this->scopeMatcher->isFrontendRequest($request) && $user instanceof FrontendUser) {
-            $allowedGroups = StringUtil::deserialize($objAlbum->groups, true);
+            $allowedGroups = StringUtil::deserialize($albumsModel->groups, true);
             $userGroups = StringUtil::deserialize($user->groups, true);
 
             if (!empty(array_intersect($allowedGroups, $userGroups))) {

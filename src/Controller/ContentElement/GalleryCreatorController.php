@@ -33,6 +33,7 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Exception;
 use Haste\Util\Pagination;
 use Haste\Util\Url;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
@@ -149,11 +150,11 @@ class GalleryCreatorController extends AbstractContentElementController
         // Clean array from unpublished or empty or protected albums
         foreach ($this->arrSelectedAlbums as $key => $albumId) {
             // Remove id from $this->arrSelectedAlbums if user is not allowed
-            $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
+            $albumsModel = GalleryCreatorAlbumsModel::findByPk($albumId);
 
-            if (null !== $objAlbum) {
-                if ($objAlbum->protected) {
-                    if (!$this->securityUtil->isAuthorized($objAlbum)) {
+            if (null !== $albumsModel) {
+                if ($albumsModel->protected) {
+                    if (!$this->securityUtil->isAuthorized($albumsModel)) {
                         unset($this->arrSelectedAlbums[$key]);
                     }
                 }
@@ -189,13 +190,13 @@ class GalleryCreatorController extends AbstractContentElementController
         $this->viewMode = !empty(Input::get('img')) ? self::GC_VIEW_MODE_SINGLE_IMAGE : $this->viewMode;
 
         if (self::GC_VIEW_MODE_LIST === $this->viewMode) {
-            // Redirect to detail view if there is only one album.
+            // Redirect to detail view if there is only one album in the selection
             if (1 === \count($this->arrSelectedAlbums) && $this->model->gcRedirectSingleAlb) {
                 $session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
                 Controller::reload();
             }
 
-            // Hierarchical output
+            // Show child albums? Yes or no?
             if ($this->model->gcShowChildAlbums) {
                 foreach ($this->arrSelectedAlbums as $k => $albumId) {
                     $albumModel = GalleryCreatorAlbumsModel::findByPk($albumId);
@@ -223,7 +224,8 @@ class GalleryCreatorController extends AbstractContentElementController
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
     {
@@ -307,20 +309,20 @@ class GalleryCreatorController extends AbstractContentElementController
                 $arrPictures = [];
 
                 while (false !== ($rowPicture = $stmt->fetchAssociative())) {
-                    $objFilesModel = FilesModel::findByUuid($rowPicture['uuid']);
+                    $filesModel = FilesModel::findByUuid($rowPicture['uuid']);
                     $basename = 'undefined';
 
-                    if (null !== $objFilesModel) {
-                        $basename = $objFilesModel->name;
+                    if (null !== $filesModel) {
+                        $basename = $filesModel->name;
                     }
 
-                    if (null !== ($objPicturesModel = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
+                    if (null !== ($picturesModel = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
                         // Prevent overriding items with same basename
-                        $arrPictures[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($objPicturesModel, $this->model);
+                        $arrPictures[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picturesModel, $this->model);
                     }
                 }
 
-                // Sort by basename
+                // Sort by name
                 if ('name' === $this->model->gcPictureSorting) {
                     if ('ASC' === $this->model->gcPictureSortingDirection) {
                         uksort($arrPictures, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
@@ -388,16 +390,16 @@ class GalleryCreatorController extends AbstractContentElementController
                 $arrPictures = [];
 
                 if (\count($arrIDS)) {
-                    if (null !== ($objPicturePrev = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex - 1]))) {
-                        $arrPictures['prev'] = $this->pictureUtil->getPictureData($objPicturePrev, $this->model);
+                    if (null !== ($picturesModelPrev = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex - 1]))) {
+                        $arrPictures['prev'] = $this->pictureUtil->getPictureData($picturesModelPrev, $this->model);
                     }
 
-                    if (null !== ($objPictureCurrent = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex]))) {
-                        $arrPictures['current'] = $this->pictureUtil->getPictureData($objPictureCurrent, $this->model);
+                    if (null !== ($picturesModelCurrent = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex]))) {
+                        $arrPictures['current'] = $this->pictureUtil->getPictureData($picturesModelCurrent, $this->model);
                     }
 
-                    if (null !== ($objPictureNext = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex + 1]))) {
-                        $arrPictures['next'] = $this->pictureUtil->getPictureData($objPictureNext, $this->model);
+                    if (null !== ($picturesModelNext = GalleryCreatorPicturesModel::findByPk($arrIDS[$currentIndex + 1]))) {
+                        $arrPictures['next'] = $this->pictureUtil->getPictureData($picturesModelNext, $this->model);
                     }
 
                     // Add previous and next links to the template
@@ -490,18 +492,15 @@ class GalleryCreatorController extends AbstractContentElementController
             ;
         }
 
-        return array_map('intval', $arrAlbumIDS);
+        return false !== $arrAlbumIDS ? array_map('intval', $arrAlbumIDS) : [];
     }
 
     protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
     {
-        /** @var System $systemAdapter */
-        $systemAdapter = $this->framework->getAdapter(System::class);
-
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
             foreach ($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'] as $callback) {
-                $systemAdapter->importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
+                System::importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
             }
         }
     }

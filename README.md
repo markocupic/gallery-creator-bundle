@@ -30,22 +30,25 @@ markocupic_gallery_creator:
   copy_images_on_import: true
   read_exif_meta_data: false
   valid_extensions: ['jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff', 'bmp', 'svg', 'svgz', 'webp']
-  
+
 # Contao configuration
 contao:
  url_suffix: ''
  #....
 ```
 
-## "gc_generateFrontendTemplate"-Hook
-Use the "gc_generateFrontendTemplate" hook to adapt the frontend output.
-The "gc_generateFrontendTemplate" hook is triggered before the gallery creator front end template is parsed.
+## "galleryCreatorGenerateFrontendTemplate" - Hook
+Use the "galleryCreatorGenerateFrontendTemplate" hook to adapt the frontend output.
+
+The "galleryCreatorGenerateFrontendTemplate" hook is triggered before the gallery creator front end template is parsed.
  It passes the content element object, the template object and the album object.
- The "gc_generateFrontendTemplate" hook expects no return value.
+ The "galleryCreatorGenerateFrontendTemplate" hook expects no return value.
 
 ```php
 <?php
-// src/EventListener/GenerateGalleryCreatorFrontendTemplateListener.php
+// src/EventListener/GalleryCreatorFrontendTemplateListener.php
+declare(strict_types=1);
+
 namespace App\EventListener;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
@@ -54,11 +57,11 @@ use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorCont
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 /**
- * @Hook(GenerateGalleryCreatorFrontendTemplateListener::HOOK)
+ * @Hook(GalleryCreatorFrontendTemplateListener::HOOK, priority=100)
  */
-class GenerateGalleryCreatorFrontendTemplateListener
+class GalleryCreatorFrontendTemplateListener
 {
-    public const HOOK = 'gc_generateFrontendTemplate';
+    public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
     public function __invoke(GalleryCreatorController $contentElement, Template $template, GalleryCreatorAlbumsModel $albumsModel)
     {
@@ -66,6 +69,52 @@ class GenerateGalleryCreatorFrontendTemplateListener
     }
 }
 
+```
+
+
+## "galleryCreatorImagePostInsert" - Hook
+Use the "galleryCreatorImagePostInsert" hook to adapt the picture entity when uploading new images to an album.
+
+The "galleryCreatorImagePostInsert" is executed right after an image has been uploaded and has been written to the database.
+It passes the pictures model and expects no return value.
+
+```php
+<?php
+// src/EventListener/GalleryCreatorImagePostInsertListener.php
+declare(strict_types=1);
+
+namespace App\EventListener;
+
+use Contao\BackendUser;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Symfony\Component\Security\Core\Security;
+
+/**
+ * @Hook(GalleryCreatorImagePostInsertListener::HOOK, priority=100)
+ */
+class GalleryCreatorImagePostInsertListener
+{
+    public const HOOK = 'galleryCreatorImagePostInsert';
+
+    private Security $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
+    public function __invoke(GalleryCreatorPicturesModel $picturesModel): void
+    {
+        $user = $this->security->getUser();
+
+        // Automatically add a caption to the uploaded image
+        if ($user instanceof BackendUser && $user->name) {
+            $picturesModel->caption = 'Holidays '.date('Y').', Photo: '.$user->name;
+            $picturesModel->save();
+        }
+    }
+}
 ```
 
 

@@ -21,6 +21,7 @@ use Contao\Config;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Exception\ResponseException;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\Date;
@@ -40,8 +41,8 @@ use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
-use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -53,8 +54,6 @@ use Symfony\Component\HttpFoundation\Response;
 class GalleryCreatorAlbums extends Backend
 {
     private RequestStack $requestStack;
-
-    private AlbumUtil $albumUtil;
 
     private FileUtil$fileUtil;
 
@@ -72,10 +71,11 @@ class GalleryCreatorAlbums extends Backend
 
     private bool $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, AlbumUtil $albumUtil, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions)
+    private ?LoggerInterface $logger;
+
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, ?LoggerInterface $logger)
     {
         $this->requestStack = $requestStack;
-        $this->albumUtil = $albumUtil;
         $this->fileUtil = $fileUtil;
         $this->connection = $connection;
         $this->reviseAlbumDatabase = $reviseAlbumDatabase;
@@ -83,6 +83,7 @@ class GalleryCreatorAlbums extends Backend
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
+        $this->logger = $logger;
 
         parent::__construct();
 
@@ -165,9 +166,9 @@ class GalleryCreatorAlbums extends Backend
     /**
      * Paste button callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="list.sorting.paste_button")
+     * @param mixed|false $arrClipboard
      *
-     * @param $arrClipboard
+     * @Callback(table="tl_gallery_creator_albums", target="list.sorting.paste_button")
      */
     public function buttonCbPastePicture(DataContainer $dc, array $row, string $table, bool $cr, $arrClipboard = false): string
     {
@@ -301,7 +302,7 @@ class GalleryCreatorAlbums extends Backend
     /**
      * Input field callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.fileupload.input_field")
+     * @Callback(table="tl_gallery_creator_albums", target="fields.fileUpload.input_field")
      */
     public function inputFieldCbFileUpload(): string
     {
@@ -363,7 +364,7 @@ class GalleryCreatorAlbums extends Backend
                     if (null !== $albumsModel) {
                         if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
                             // Delete damaged data records
-                            $cleanDb = $this->User->isAdmin && $request->query->has('reviseTables') ? true : false;
+                            $cleanDb = $this->User->isAdmin && $request->query->has('reviseTables');
 
                             $this->reviseAlbumDatabase->run($albumsModel, $cleanDb);
 
@@ -444,7 +445,7 @@ class GalleryCreatorAlbums extends Backend
             $arrButtons['save'] = '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'][0].'</button>';
         }
 
-        if ('fileupload' === $request->query->get('key')) {
+        if ('fileUpload' === $request->query->get('key')) {
             // Remove buttons
             unset($arrButtons['save'], $arrButtons['saveNclose'], $arrButtons['saveNcreate']);
         }
@@ -472,12 +473,18 @@ class GalleryCreatorAlbums extends Backend
             $this->checkUserRole($dc->activeRecord->id);
 
             if ($this->restrictedUser) {
-                $this->log('An unauthorized user tried to delete an entry from tl_gallery_creator_albums with ID '.$dc->activeRecord->id.'.', __METHOD__, TL_ERROR);
+                if ($this->logger) {
+                    $this->logger->info(
+                        sprintf('An unauthorized user tried to delete an entry from tl_gallery_creator_albums with ID %s.', $dc->id),
+                        ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
+                    );
+                }
+
                 $this->redirect('contao?do=error');
             }
 
             // Also delete child albums
-            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums($dc->activeRecord->id);
+            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums((int) $dc->activeRecord->id);
             $arrDeletedAlbums = array_merge([$dc->activeRecord->id], $arrDeletedAlbums);
 
             foreach ($arrDeletedAlbums as $idDelAlbum) {
@@ -561,7 +568,7 @@ class GalleryCreatorAlbums extends Backend
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if ('fileupload' !== $request->query->get('key') || !$request->query->has('id')) {
+        if ('fileUpload' !== $request->query->get('key') || !$request->query->has('id')) {
             return;
         }
 
@@ -596,11 +603,15 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Call the uploader script
-        $arrUpload = $this->fileUtil->fileupload($albumsModel, $strName);
+        $arrUpload = $this->fileUtil->uploadFile($albumsModel, $strName);
 
-        foreach ($arrUpload as $strFileSrc) {
-            // Add  new data records to tl_gallery_creator_pictures
-            $this->fileUtil->addImageToAlbum($albumsModel, $strFileSrc);
+        foreach ($arrUpload as $strPath) {
+            if (null === ($file = new File($strPath))) {
+                throw new ResponseException(new JsonResponse('Could not upload file '.$strName.'.', Response::HTTP_BAD_REQUEST));
+            }
+
+            // Add new data records to the database
+            $this->fileUtil->addImageToAlbum($albumsModel, $file);
         }
 
         // Do not exit the script if html5_uploader is selected and Javascript is disabled
@@ -674,15 +685,15 @@ class GalleryCreatorAlbums extends Backend
         $dca['fields']['ownersName']['eval']['style'] = '" readonly="readonly';
 
         // Create the file uploader palette
-        if ('fileupload' === $request->query->get('key')) {
+        if ('fileUpload' === $request->query->get('key')) {
             if ('no_scaling' === $this->User->gcImageResolution) {
                 PaletteManipulator::create()
                     ->removeField('imageQuality')
-                    ->applyToPalette('fileupload', 'tl_gallery_creator_albums')
+                    ->applyToPalette('fileUpload', 'tl_gallery_creator_albums')
                     ;
             }
 
-            $dca['palettes']['default'] = $dca['palettes']['fileupload'];
+            $dca['palettes']['default'] = $dca['palettes']['fileUpload'];
 
             return;
         }
@@ -773,7 +784,7 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Get all child albums
-        $arrChildIds = GalleryCreatorAlbumsModel::getChildAlbums($request->query->get('id'));
+        $arrChildIds = GalleryCreatorAlbumsModel::getChildAlbums((int) $request->query->get('id'));
 
         if (!empty($arrChildIds)) {
             $stmt = $this->connection->executeQuery(
@@ -802,17 +813,28 @@ class GalleryCreatorAlbums extends Backend
                 if (null !== $filesModel) {
                     if (file_exists($filesModel->getAbsolutePath())) {
                         $file = new File($filesModel->path);
-                        $src = 'placeholder.png';
-
-                        if ($file->height <= Config::get('gdMaxImgHeight') && $file->width <= Config::get('gdMaxImgWidth')) {
-                            $src = Image::get($file->path, 80, 60, 'center_center');
-                        }
-
-                        $arrContainer[$i][$ii]['attr_checked'] = $checked = (int) $albumsModel->thumb === (int) $arrItem['id'] ? ' checked' : '';
-                        $arrContainer[$i][$ii]['class'] = '' !== \strlen($checked) ? ' class="checked"' : '';
-                        $arrContainer[$i][$ii]['filename'] = StringUtil::specialchars($file->name);
-                        $arrContainer[$i][$ii]['image'] = Image::getHtml($src, $file->name);
+                    } else {
+                        $placeholder = 'web/bundles/markocupicgallerycreator/images/placeholder.png';
+                        $file = new File($placeholder);
                     }
+
+                    $src = $file->path;
+
+                    if ($file->height <= Config::get('gdMaxImgHeight') && $file->width <= Config::get('gdMaxImgWidth')) {
+                        $src = (new Image($file))
+                            ->setTargetWidth(80)
+                            ->setTargetHeight(60)
+                            ->setResizeMode('center_center')
+                            ->executeResize()->getResizedPath()
+                        ;
+                    }
+
+                    $checked = (int) $albumsModel->thumb === (int) $arrItem['id'] ? ' checked' : '';
+
+                    $arrContainer[$i][$ii]['attr_checked'] = $checked;
+                    $arrContainer[$i][$ii]['class'] = \strlen($checked) ? ' class="checked"' : '';
+                    $arrContainer[$i][$ii]['filename'] = StringUtil::specialchars($filesModel->name);
+                    $arrContainer[$i][$ii]['image'] = Image::getHtml($src, $filesModel->name);
                 }
             }
         }
@@ -914,7 +936,7 @@ class GalleryCreatorAlbums extends Backend
 
         while ($picturesModels->next()) {
             $filesModel = FilesModel::findByUuid($picturesModels->uuid);
-            $file = new File($filesModel->path, true);
+            $file = new File($filesModel->path);
             $files[$filesModel->path] = [
                 'id' => $picturesModels->id,
             ];
@@ -946,9 +968,8 @@ class GalleryCreatorAlbums extends Backend
 
         foreach ($files as $arrFile) {
             $sorting += 10;
-            $picturesModel = GalleryCreatorPicturesModel::findByPk($arrFile['id']);
 
-            if (null !== $picturesModels) {
+            if (null !== ($picturesModel = GalleryCreatorPicturesModel::findByPk($arrFile['id']))) {
                 $picturesModel->sorting = $sorting;
                 $picturesModel->save();
             }
@@ -961,7 +982,7 @@ class GalleryCreatorAlbums extends Backend
     /**
      * Save callback.
      *
-     * Generate an unique album alias based on the album name
+     * Generate a unique album alias based on the album name
      * and create a directory with the same name
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.alias.save")

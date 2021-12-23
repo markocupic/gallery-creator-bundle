@@ -43,7 +43,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected'] = ['Protect album'
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups'] = ['Allowed frontend-groups'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insertArticlePre'] = ['Insert article optionally before the album', 'Insert the id of the article that you optionally like have displayed in the detail view.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insertArticlePost'] = ['Insert article optionally after the album', 'Insert the id of the article that you optionally like have displayed in the detail view.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['fileupload'] = ['File Upload', 'Browse your local computer and select the files you want to upload to the server.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['fileUpload'] = ['File Upload', 'Browse your local computer and select the files you want to upload to the server.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'] = ['Uploader', 'Please choose the uploader.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'] = ['Image width', 'During the upload process the image resolution will be scaled to the selected value.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'] = ['Image quality/compression', 'During the upload process the image will be compressed. (100 = best quality)'];

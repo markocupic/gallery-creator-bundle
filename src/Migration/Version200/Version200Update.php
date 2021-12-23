@@ -25,11 +25,6 @@ class Version200Update extends AbstractMigration
 
     private Connection $connection;
 
-    /**
-     * @var array<string>
-     */
-    private array $resultMessages = [];
-
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
@@ -71,7 +66,7 @@ class Version200Update extends AbstractMigration
      */
     public function run(): MigrationResult
     {
-        $this->resultMessages = [];
+        $resultMessages = [];
 
         $schemaManager = $this->connection->getSchemaManager();
         $arrAlterations = $this->getAlterationData();
@@ -94,9 +89,10 @@ class Version200Update extends AbstractMigration
                             $arrAlteration['new'],
                             $arrAlteration['sql'],
                         );
-                        $this->connection->query($strQuery);
 
-                        $this->resultMessages[] = sprintf(
+                        $this->connection->executeQuery($strQuery);
+
+                        $resultMessages[] = sprintf(
                             'Rename column %s.%s to %s.%s. ',
                             $strTable,
                             $arrAlteration['old'],
@@ -108,7 +104,7 @@ class Version200Update extends AbstractMigration
             }
         }
 
-        return $this->createResult(true, $this->resultMessages ? implode("\n", $this->resultMessages) : null);
+        return $this->createResult(true, $resultMessages ? implode("\n", $resultMessages) : null);
     }
 
     private function getAlterationData(): array
@@ -181,7 +177,7 @@ class Version200Update extends AbstractMigration
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
                 'old' => 'gc_fullsize',
-                'new' => 'gcFullsize',
+                'new' => 'gcFullSize',
                 'sql' => 'char(1)',
             ],
             [

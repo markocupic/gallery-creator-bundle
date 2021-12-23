@@ -24,5 +24,5 @@ $GLOBALS['TL_LANG']['tl_module']['gcSizeDetailView'][0] = 'Detailweergave: thumb
 $GLOBALS['TL_LANG']['tl_module']['gcSizeDetailView'][1] = 'Geef hier de thumbnail maten en de resize mode.';
 $GLOBALS['TL_LANG']['tl_module']['gcSizeAlbumListing'][0] = 'Albumlijst: thumbnail breedte en hoogte';
 $GLOBALS['TL_LANG']['tl_module']['gcSizeAlbumListing'][1] = 'Geef hier de thumbnail maten en de resize mode.';
-$GLOBALS['TL_LANG']['tl_module']['gcFullsize'][0] = 'Ware grootte/nieuw venster';
-$GLOBALS['TL_LANG']['tl_module']['gcFullsize'][1] = 'Open de afbeelding op ware grootte in een lightbox of de link in een nieuw browser venster.';
+$GLOBALS['TL_LANG']['tl_module']['gcFullSize'][0] = 'Ware grootte/nieuw venster';
+$GLOBALS['TL_LANG']['tl_module']['gcFullSize'][1] = 'Open de afbeelding op ware grootte in een lightbox of de link in een nieuw browser venster.';

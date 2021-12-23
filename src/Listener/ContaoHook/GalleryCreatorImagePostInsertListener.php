@@ -20,6 +20,8 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\Security\Core\Security;
 
 /**
+ * This is a demo class!
+ *
  * @Hook(GalleryCreatorImagePostInsertListener::HOOK, priority=100)
  */
 class GalleryCreatorImagePostInsertListener

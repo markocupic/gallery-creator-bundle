@@ -28,7 +28,7 @@ class AddBackendAssetsSubscriber implements EventSubscriberInterface
         $this->scopeMatcher = $scopeMatcher;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [KernelEvents::REQUEST => 'onKernelRequest'];
     }

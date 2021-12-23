@@ -60,11 +60,11 @@ div.gc-readonly input {
 
 }
 
-.gc-gop-icon.gc-gop-revise-database{
+.gc-gop-icon.gc-gop-revise-database {
     background-image: url("../images/revise_database.svg");
 }
 
-.gc-gop-icon.gc-gop-upload-img{
+.gc-gop-icon.gc-gop-upload-img {
     background-image: url("../images/add_image.svg");
 }
 
@@ -79,7 +79,7 @@ div.gc-readonly input {
 /**
  * Label
  */
-img[data-icon="_album.svg"]{
+img[data-icon="_album.svg"] {
     filter: brightness(200%);
 }
 
@@ -130,4 +130,3 @@ img[data-icon="_album.svg"]{
     width: 100%;
     height: auto;
 }
-

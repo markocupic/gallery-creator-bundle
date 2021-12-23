@@ -38,10 +38,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'panelLayout'  => 'filter;search,limit',
         ],
         'global_operations' => [
-            'fileupload' => [
+            'fileUpload' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
                 'class'      => 'gc-gop-icon gc-gop-upload-img',
-                'href'       => 'act=edit&table=tl_gallery_creator_albums&key=fileupload',
+                'href'       => 'act=edit&table=tl_gallery_creator_albums&key=fileUpload',
             ],
             'all'        => [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',

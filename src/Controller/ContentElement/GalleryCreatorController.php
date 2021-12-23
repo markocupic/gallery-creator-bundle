@@ -56,8 +56,6 @@ class GalleryCreatorController extends AbstractContentElementController
     public const GC_VIEW_MODE_DETAIL = 'detail_view';
     public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
-    private ContaoFramework $framework;
-
     private Security $security;
 
     private RequestStack $requestStack;
@@ -82,11 +80,8 @@ class GalleryCreatorController extends AbstractContentElementController
 
     private ?PageModel $pageModel;
 
-    private ?MemberModel $user;
-
-    public function __construct(ContaoFramework $framework, Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, Connection $connection, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
+    public function __construct(Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, Connection $connection, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
     {
-        $this->framework = $framework;
         $this->security = $security;
         $this->requestStack = $requestStack;
         $this->scopeMatcher = $scopeMatcher;
@@ -99,7 +94,7 @@ class GalleryCreatorController extends AbstractContentElementController
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {
         // Do not parse the content element in the backend
-        if ($request && $this->scopeMatcher->isBackendRequest($request)) {
+        if ($this->scopeMatcher->isBackendRequest($request)) {
             $twig = System::getContainer()->get('twig');
 
             return new Response(
@@ -220,7 +215,7 @@ class GalleryCreatorController extends AbstractContentElementController
             }
         }
 
-        return parent::__invoke($request, $this->model, $section, $classes, $pageModel);
+        return parent::__invoke($request, $this->model, $section, $classes);
     }
 
     /**
@@ -259,7 +254,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 );
 
                 // Trigger gcGenerateFrontendTemplateHook
-                $this->triggerGenerateFrontendTemplateHook($template, null);
+                $this->triggerGenerateFrontendTemplateHook($template);
                 break;
 
             case self::GC_VIEW_MODE_DETAIL:
@@ -268,7 +263,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 if ($this->model->gcShowChildAlbums) {
                     $arrChildAlbums = $this->albumUtil->getChildAlbums($this->activeAlbum, $this->model);
                     $template->childAlbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
-                    $template->hasChildAlbums = \count($arrChildAlbums) ? true : false;
+                    $template->hasChildAlbums = (bool)\count($arrChildAlbums);
                 }
 
                 // Count items
@@ -359,7 +354,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 }
 
                 $activePictureId = $arrActivePicture['id'];
-                $published = $arrActivePicture['published'] && $this->activeAlbum->published ? true : false;
+                $published = $arrActivePicture['published'] && $this->activeAlbum->published;
 
                 // For security reasons...
                 if (!$published || (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false))) {
@@ -444,10 +439,14 @@ class GalleryCreatorController extends AbstractContentElementController
         return $template->getResponse();
     }
 
+
+
     /**
      * Generates the back link.
      *
-     * @return false|string|array<string>|null
+     * @param GalleryCreatorAlbumsModel $albumModel
+     * @return string|null
+     * @throws \Exception
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): ?string
     {

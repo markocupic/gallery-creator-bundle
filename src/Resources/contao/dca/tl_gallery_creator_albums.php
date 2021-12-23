@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             ],
             'uploadImages'               => [
                 'attributes' => 'data-icon="gc-op-icon"',
-                'href'       => 'id=%s&act=edit&table=tl_gallery_creator_albums&key=fileupload',
+                'href'       => 'id=%s&act=edit&table=tl_gallery_creator_albums&key=fileUpload',
                 'icon'       => 'bundles/markocupicgallerycreator/images/add_image.svg',
             ],
             'importImagesFromFilesystem' => [
@@ -111,7 +111,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
     'palettes'    => [
         '__selector__'               => ['protected'],
         'default'                    => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
-        'fileupload'                 => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},fileupload',
+        'fileUpload'                 => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},fileUpload',
         'importImagesFromFilesystem' => '{upload_settings},preserveFilename,multiSRC',
         'restrictedUser'             => '{albumInfo},link_edit_images,albumInfo',
         'reviseDatabase'             => '{maintenance},reviseDatabase',
@@ -210,7 +210,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'inputType' => 'radio',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
-        'fileupload'        => [
+        'fileUpload'        => [
             'eval' => ['doNotShow' => true],
         ],
         'albumInfo'         => [

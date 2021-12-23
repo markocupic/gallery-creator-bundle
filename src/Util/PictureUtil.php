@@ -93,7 +93,7 @@ class PictureUtil
             }
 
             // Use the image path as default
-            if (null === $href && $contentElementModel->gcFullsize) {
+            if (null === $href && $contentElementModel->gcFullSize) {
                 $href = $filesModel->path;
             }
 
@@ -119,7 +119,7 @@ class PictureUtil
             'figureHref' => $href,
             'figureOptions' => [
                 'metadata' => new Metadata($arrMeta),
-                'enableLightbox' => (bool) $contentElementModel->gcFullsize,
+                'enableLightbox' => (bool) $contentElementModel->gcFullSize,
                 'lightboxGroupIdentifier' => sprintf('data-lightbox="lb%s"', $pictureModel->pid),
                 //'lightboxSize' => '_big_size',
                 'linkHref' => $href,

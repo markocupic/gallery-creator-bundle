@@ -35,5 +35,5 @@ $GLOBALS['TL_LANG']['tl_content']['gcPictureSortingDirection'][1] = 'DESC: decre
 $GLOBALS['TL_LANG']['tl_content']['gcSizeDetailView'][0] = 'Vista dettaglio: larghezza e altezza miniatura';
 $GLOBALS['TL_LANG']['tl_content']['gcSizeDetailView'][1] = "Qui puoi impostare le dimensioni dell'immagine e la modalità di ridimensionamento.";
 $GLOBALS['TL_LANG']['tl_content']['gcSizeAlbumListing'][1] = "Qui puoi impostare le dimensioni dell'immagine e la modalità di ridimensionamento.";
-$GLOBALS['TL_LANG']['tl_content']['gcFullsize'][0] = 'Visione a dimensione intera / in una nuova finestra';
-$GLOBALS['TL_LANG']['tl_content']['gcFullsize'][1] = "Apri l'immagine a dimensione intera in una lightbox oppure il link in una nuova finestra del browser";
+$GLOBALS['TL_LANG']['tl_content']['gcFullSize'][0] = 'Visione a dimensione intera / in una nuova finestra';
+$GLOBALS['TL_LANG']['tl_content']['gcFullSize'][1] = "Apri l'immagine a dimensione intera in una lightbox oppure il link in una nuova finestra del browser";

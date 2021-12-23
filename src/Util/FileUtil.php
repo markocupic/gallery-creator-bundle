@@ -18,7 +18,6 @@ use Contao\BackendUser;
 use Contao\Config;
 use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Monolog\ContaoContext;
-use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\FilesModel;
@@ -28,44 +27,35 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Patchwork\Utf8;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FileUtil
 {
-    private ScopeMatcher $scopeMatcher;
-
     private RequestStack $requestStack;
 
     private Connection $connection;
 
     private TranslatorInterface $translator;
 
-    private ?LoggerInterface $logger = null;
+    private ?LoggerInterface $logger;
 
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private string $projectDir;
 
-    /**
-     * @var string
-     */
-    private $galleryCreatorCopyImagesOnImport;
+    private bool $galleryCreatorCopyImagesOnImport;
 
-    /**
-     * @var array
-     */
-    private $galleryCreatorValidExtensions;
+    private array $galleryCreatorValidExtensions;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, ?LoggerInterface $logger, string $projectDir, string $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions)
+    public function __construct(RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, ?LoggerInterface $logger, string $projectDir, bool $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions)
     {
-        $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
         $this->connection = $connection;
         $this->translator = $translator;
@@ -115,22 +105,16 @@ class FileUtil
     }
 
     /**
-     * @throws \Exception
+     * @throws DoctrineDBALException
      */
-    public function addImageToAlbum(GalleryCreatorAlbumsModel $albumModel, string $strFilepath): bool
+    public function addImageToAlbum(GalleryCreatorAlbumsModel $albumModel, File $file): bool
     {
         $request = $this->requestStack->getCurrentRequest();
-
-        $file = new File($strFilepath);
-
-        if (!$file->isGdImage) {
-            return false;
-        }
 
         $filesModel = $file->getModel();
 
         if (null === $filesModel) {
-            throw new \Exception('Aborted script, because there is no file model.');
+            throw new ResponseException(new JsonResponse('Aborted script, because we found no file model for '.$file->path.'.', 400));
         }
 
         // Get the folder that is assigned to the album
@@ -144,14 +128,14 @@ class FileUtil
         }
 
         if (null === $assignedDir) {
-            throw new \Exception('Aborted Script, because there is no upload directory assigned to the Album with ID '.$albumModel->id);
+            throw new ResponseException(new JsonResponse('Aborted script, because there is no upload directory assigned to the Album with ID '.$albumModel->id, 400));
         }
 
-        // Check if the file is stored in the album directory or if it is stored in an external directory
+        // Check if the file is stored on the album directory or if it is stored in an external directory
         $blnExternalFile = false;
 
         if ($request->query->has('importFromFilesystem')) {
-            $blnExternalFile = strstr($file->dirname, $assignedDir) ? false : true;
+            $blnExternalFile = !strstr($file->dirname, $assignedDir);
         }
 
         // New record
@@ -160,18 +144,16 @@ class FileUtil
         $pictureModel->pid = $albumModel->id;
         $pictureModel->externalFile = $blnExternalFile ? '1' : '';
 
-        // Set uuid before the model is saved the first time!!!
+        // Set the file uuid before the model is saved the first time!!!
         $pictureModel->uuid = $filesModel->uuid;
         $pictureModel->save();
         $insertId = $pictureModel->id;
 
-        // Get the sorting index
-        $stmt = $this->connection->executeQuery(
-            'SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid = ?',
+        // Get the next sorting value
+        $sortingVal = $this->connection->fetchOne(
+            'SELECT MAX(sorting) + 10 AS sortingVal FROM tl_gallery_creator_pictures WHERE pid = ?',
             [$albumModel->id]
         );
-        $result = $stmt->fetchAssociative();
-        $sorting = $result['maximum'];
 
         if (!$albumModel->preserveFilename && false === $blnExternalFile) {
             // Generate a generic file name
@@ -183,7 +165,7 @@ class FileUtil
             // Finally, save the new image in tl_gallery_creator_pictures
             $pictureModel->owner = BackendUser::getInstance()->id;
             $pictureModel->date = $albumModel->date;
-            $pictureModel->sorting = $sorting;
+            $pictureModel->sorting = $sortingVal;
             $pictureModel->save();
 
             // Use this picture as the album preview image, if the album doesn't have one.
@@ -210,14 +192,14 @@ class FileUtil
         }
 
         if (true === $blnExternalFile) {
-            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileNotFound'], $strFilepath));
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileNotFound'], $file->path));
         } else {
-            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath));
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $file->path));
         }
 
         if ($this->logger) {
-            $this->logger->error(
-                sprintf('Unable to create a new image in: %s!', $strFilepath),
+            $this->logger->info(
+                sprintf('Unable to create a new image in: %s!', $file->path),
                 ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
             );
         }
@@ -240,8 +222,8 @@ class FileUtil
             throw new \Exception($GLOBALS['TL_LANG']['ERR']['invalidName']);
         }
 
-        $pathinfo = pathinfo($strPath);
-        $extension = $pathinfo['extension'];
+        $pathInfo = pathinfo($strPath);
+        $extension = $pathInfo['extension'];
         $basename = basename($strPath, '.'.$extension);
         $dirname = \dirname($strPath);
 
@@ -269,6 +251,7 @@ class FileUtil
     /**
      * Load images from the Contao filesystem into an album.
      *
+     * @throws DoctrineDBALDriverException
      * @throws \Exception
      */
     public function importFromFilesystem(GalleryCreatorAlbumsModel $albumModel, array $arrMultiSRC): void
@@ -287,104 +270,104 @@ class FileUtil
                 continue;
             }
 
-            // If item is a file, then store it in the array
+            // If item is a file,
             if ('file' === $filesModel->type) {
-                $file = new File($filesModel->path);
-
-                if (\in_array($file->extension, $this->galleryCreatorValidExtensions, true)) {
-                    $images[$file->path] = ['uuid' => $filesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
-                } else {
-                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $file->extension));
-                }
-            } else {
-                // If resource is a directory, then store its files in the array
-                $objSubfilesModel = FilesModel::findMultipleFilesByFolder($filesModel->path);
-
-                if (null === $objSubfilesModel) {
+                if (null === ($file = new File($filesModel->path))) {
                     continue;
                 }
 
-                while ($objSubfilesModel->next()) {
+                if (!$this->isValidFileName($file->path)) {
+                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $file->extension));
+                }
+            } else {
+                // If resource is a directory
+                $subFilesModel = FilesModel::findMultipleFilesByFolder($filesModel->path);
+
+                if (null === $subFilesModel) {
+                    continue;
+                }
+
+                while ($subFilesModel->next()) {
                     // Skip child folders
-                    if ('folder' === $objSubfilesModel->type || !is_file($this->projectDir.'/'.$objSubfilesModel->path)) {
+                    if ('folder' === $subFilesModel->type || !is_file($this->projectDir.'/'.$subFilesModel->path)) {
                         continue;
                     }
 
-                    $file = new File($objSubfilesModel->path);
-
-                    if ($file->isGdImage) {
-                        $images[$file->path] = ['uuid' => $objSubfilesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
+                    if (null === ($file = new File($subFilesModel->path))) {
+                        continue;
                     }
+
+                    if (!$this->isValidFileName($file->path)) {
+                        continue;
+                    }
+
+                    $images[$file->path] = ['uuid' => $subFilesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
                 }
             }
         }
 
-        if (\count($images)) {
-            $arrPictures = [
-                'uuid' => [],
-                'path' => [],
-                'basename' => [],
-            ];
+        if (empty($images)) {
+            return;
+        }
 
-            $arrPictures['uuid'] = $this->connection
-                ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
-                ->fetchFirstColumn()
+        $arrPictures = [
+            'uuid' => [],
+            'path' => [],
+            'basename' => [],
+        ];
+
+        $arrPictures['uuid'] = $this->connection
+            ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
+            ->fetchFirstColumn()
             ;
 
-            $arrPictures['path'] = $this->connection
-                ->executeQuery('SELECT path FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
-                ->fetchFirstColumn()
+        $arrPictures['path'] = $this->connection
+            ->executeQuery('SELECT path FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
+            ->fetchFirstColumn()
             ;
 
-            foreach ($arrPictures['path'] as $path) {
-                $arrPictures['basename'][] = basename($path);
+        $arrPictures['basename'] = array_map(static fn ($path) => basename($path), $arrPictures['path']);
+
+        foreach ($images as $image) {
+            // Prevent duplicate entries
+            if (\in_array($image['uuid'], $arrPictures['uuid'], false)) {
+                continue;
             }
 
-            foreach ($images as $image) {
-                // Prevent duplicate entries
-                if (\in_array($image['uuid'], $arrPictures['uuid'], false)) {
-                    continue;
-                }
+            // Prevent duplicate entries
+            if (\in_array($image['basename'], $arrPictures['basename'], true)) {
+                continue;
+            }
 
-                // Prevent duplicate entries
-                if (\in_array($image['basename'], $arrPictures['basename'], true)) {
-                    continue;
-                }
+            $request->query->set('importFromFilesystem', 'true');
 
-                $request->query->set('importFromFilesystem', 'true');
+            if (!$this->galleryCreatorCopyImagesOnImport) {
+                $this->addImageToAlbum($albumModel, new File($image['path']));
+            } else {
+                $strSource = $image['path'];
 
-                if ($this->galleryCreatorCopyImagesOnImport) {
-                    $strSource = $image['path'];
+                // Get the album upload directory
+                $objFolderModel = FilesModel::findByUuid($albumModel->assignedDir);
 
-                    // Get the album upload directory
-                    $objFolderModel = FilesModel::findByUuid($albumModel->assignedDir);
+                if (null === $objFolderModel || 'folder' !== $objFolderModel->type || !is_dir($objFolderModel->getAbsolutePath())) {
                     $errMsg = 'Aborted import process, because there is no upload folder assigned to the album with ID '.$albumModel->id.'.';
 
-                    if (null === $objFolderModel) {
-                        throw new \Exception($errMsg);
-                    }
-
-                    if ('folder' !== $objFolderModel->type) {
-                        throw new \Exception($errMsg);
-                    }
-
-                    if (!is_dir($this->projectDir.'/'.$objFolderModel->path)) {
-                        throw new \Exception($errMsg);
-                    }
-
-                    $strDestination = $this->generateSanitizedAndUniqueFilename($objFolderModel->path.'/'.basename($strSource));
-
-                    if (is_file($this->projectDir.'/'.$strSource)) {
-                        // Copy the image to the upload folder
-                        $file = new File($strSource);
-                        $file->copyTo($strDestination);
-                        Dbafs::addResource($strSource);
-                    }
-
-                    $this->addImageToAlbum($albumModel, $strDestination);
-                } else {
-                    $this->addImageToAlbum($albumModel, $image['path']);
+                    throw new \Exception($errMsg);
                 }
+
+                $strDestination = $this->generateSanitizedAndUniqueFilename($objFolderModel->path.'/'.basename($strSource));
+
+                $file = new File($strSource);
+
+                if (!is_file($this->projectDir.'/'.$file->path)) {
+                    throw new ResponseException(new Response('Could not find file '.$file->path.'.', 415));
+                }
+
+                // Copy the image to the upload folder
+                $file->copyTo($strDestination);
+                Dbafs::addResource($strDestination);
+
+                $this->addImageToAlbum($albumModel, new File($strDestination));
             }
         }
     }
@@ -394,7 +377,7 @@ class FileUtil
      *
      * @throws \Exception
      */
-    public function fileupload(GalleryCreatorAlbumsModel $albumModel, string $strName = 'file'): array
+    public function uploadFile(GalleryCreatorAlbumsModel $albumModel, string $strName = 'file'): array
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -420,14 +403,14 @@ class FileUtil
             $_FILES[$strName]['name'] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name']));
 
             if (!$this->isValidFileName($_FILES[$strName]['name'])) {
-                $error = sprintf($this->translator->trans(
+                $error = $this->translator->trans(
                     'ERR.notAllowedFilenameOrExtension',
                     [
                         $_FILES[$strName]['name'],
                         implode(', ', $this->galleryCreatorValidExtensions),
                     ],
                     'contao_default'
-                ));
+                );
 
                 Message::addError($error);
 
@@ -443,14 +426,14 @@ class FileUtil
                     $_FILES[$strName]['name'][$i] = basename($this->generateSanitizedAndUniqueFilename($objUploadDir->path.'/'.$_FILES[$strName]['name'][$i]));
 
                     if (!$this->isValidFileName($_FILES[$strName]['name'][$i])) {
-                        $error = sprintf($this->translator->trans(
+                        $error = $this->translator->trans(
                             'ERR.notAllowedFilenameOrExtension',
                             [
                                 $_FILES[$strName]['name'][$i],
                                 implode(', ', $this->galleryCreatorValidExtensions),
                             ],
                             'contao_default'
-                        ));
+                        );
 
                         // Send error message
                         throw new ResponseException(new JsonResponse($error, 415));

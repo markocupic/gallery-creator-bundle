@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = '
 {miscellaneous_legend},gcShowChildAlbums,gcPublishAllAlbums,gcPublishAlbums,gcRedirectSingleAlb;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage;
 {album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing;
-{picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
+{picture_listing_legend},gcFullSize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
@@ -29,7 +29,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = '
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorNewsController::TYPE] = 'name,type,headline;
 {album_listing_legend},gcPublishSingleAlbum;
 {pagination_legend},gcThumbsPerPage;
-{picture_listing_legend},gcFullsize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
+{picture_listing_legend},gcFullSize,gcPictureSorting,gcPictureSortingDirection,gcSizeDetailView;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},align,space,cssID';
@@ -109,7 +109,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
     'sql'              => "varchar(255) NOT NULL default ''",
 ];
 
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcFullsize'] = [
+$GLOBALS['TL_DCA']['tl_content']['fields']['gcFullSize'] = [
     'eval'      => ['tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'checkbox',

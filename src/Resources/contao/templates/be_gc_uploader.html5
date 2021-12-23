@@ -6,8 +6,8 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
 ?>
 
 <div class="long widget">
-    <h3><?= $this->trans('tl_files.fileupload.0') ?></h3>
-    <input type="hidden" name="action" value="fileupload">
+    <h3><?= $this->trans('tl_files.fileUpload.0') ?></h3>
+    <input type="hidden" name="action" value="fileUpload">
     <div class="fallback">
         <input type="file" name="<?= $this->strName ?>[]" multiple>
     </div>
@@ -38,5 +38,5 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
         });
     </script>
 
-    <p class="tl_help tl_tip"><?= sprintf($this->trans('tl_files.fileupload.1'), \Contao\System::getReadableSize($this->maxUploadedSize), \Contao\Config::get('gdMaxImgWidth').'x'.\Contao\Config::get('gdMaxImgHeight')) ?> <?= sprintf($this->trans('tl_gallery_creator_albums.acceptedFiles.1'), $this->strAccepted) ?></p>
+    <p class="tl_help tl_tip"><?= sprintf($this->trans('tl_files.fileUpload.1'), \Contao\System::getReadableSize($this->maxUploadedSize), \Contao\Config::get('gdMaxImgWidth').'x'.\Contao\Config::get('gdMaxImgHeight')) ?> <?= sprintf($this->trans('tl_gallery_creator_albums.acceptedFiles.1'), $this->strAccepted) ?></p>
 </div>

@@ -44,5 +44,5 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['paste'][0] = 'Unterhalb einf
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['paste'][1] = 'Unterhalb Bild mit ID %s einfügen';
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imagerotate'][0] = 'Bild um 90° drehen.';
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imagerotate'][1] = 'Bild um 90° drehen.';
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileupload'][0] = 'Bilder uploaden';
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileupload'][1] = 'Bilder uploaden';
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileUpload'][0] = 'Bilder uploaden';
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileUpload'][1] = 'Bilder uploaden';

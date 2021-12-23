@@ -36,7 +36,7 @@ $GLOBALS['TL_LANG']['tl_content']['gcPictureSorting'] = ['Picture sorting', 'Acc
 $GLOBALS['TL_LANG']['tl_content']['gcPictureSortingDirection'] = ['Sort sequence', 'DESC: descending, ASC: ascending'];
 $GLOBALS['TL_LANG']['tl_content']['gcSizeDetailView'] = ['Detailview: Thumbnail width and height', 'Here you can set the image dimensions and the resize mode.'];
 $GLOBALS['TL_LANG']['tl_content']['gcSizeAlbumListing'] = ['Albumlist: Thumbnail width and height', 'Here you can set the image dimensions and the resize mode.'];
-$GLOBALS['TL_LANG']['tl_content']['gcFullsize'] = ['Full-size view/new window', 'Open the full-size image in a lightbox or the link in a new browser window.'];
+$GLOBALS['TL_LANG']['tl_content']['gcFullSize'] = ['Full-size view/new window', 'Open the full-size image in a lightbox or the link in a new browser window.'];
 
 // References
 $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['DESC'] = 'Ascending';

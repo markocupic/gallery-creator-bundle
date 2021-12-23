@@ -26,16 +26,16 @@
             <td>{{ model.title }}</td>
         </tr>
         {% if model.socialMediaSRC %}
-        <tr class="odd">
-            <td><strong>{{ trans.picture_video_href_social }}: </strong></td>
-            <td>{{ model.video_href_social }}</td>
-        </tr>
+            <tr class="odd">
+                <td><strong>{{ trans.picture_video_href_social }}: </strong></td>
+                <td>{{ model.video_href_social }}</td>
+            </tr>
         {% endif %}
         {% if model.localMediaSRC %}
-        <tr class="even">
-            <td><strong>{{ trans.picture_video_href_local }}: </strong></td>
-            <td>{{ model.video_href_local }}</td>
-        </tr>
+            <tr class="even">
+                <td><strong>{{ trans.picture_video_href_local }}: </strong></td>
+                <td>{{ model.video_href_local }}</td>
+            </tr>
         {% endif %}
     </table>
 </div>

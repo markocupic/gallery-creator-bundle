@@ -16,6 +16,7 @@ namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\Backend;
 use Contao\Config;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\Date;
@@ -33,6 +34,7 @@ use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -51,9 +53,11 @@ class GalleryCreatorPictures extends Backend
 
     private bool $galleryCreatorBackendWriteProtection;
 
+    private ?LoggerInterface $logger;
+
     private bool $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection)
+    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, LoggerInterface $logger = null)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;
@@ -61,6 +65,7 @@ class GalleryCreatorPictures extends Backend
         $this->translator = $translator;
         $this->projectDir = $projectDir;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
+        $this->logger = $logger;
 
         $request = $this->requestStack->getCurrentRequest();
         $session = $request->getSession();
@@ -71,7 +76,6 @@ class GalleryCreatorPictures extends Backend
             case 'create':
                 // New images can only be implemented via an image upload
                 $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$request->query->get('pid'));
-                break;
 
             case 'select':
                 if (!$this->User->isAdmin) {
@@ -87,7 +91,7 @@ class GalleryCreatorPictures extends Backend
                 break;
         }
 
-        // Get the source album when copy & pasting pictures from one album into an other
+        // Get the source album when copy & pasting pictures from one album into another
         if ('paste' === $request->query->get('act') && 'cut' === $request->query->get('mode')) {
             $objPicture = GalleryCreatorPicturesModel::findByPk($request->query->get('id'));
 
@@ -120,6 +124,8 @@ class GalleryCreatorPictures extends Backend
 
     /**
      * Onload callback.
+     *
+     * @throws \Exception
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=90)
      */
@@ -250,52 +256,54 @@ class GalleryCreatorPictures extends Backend
 
         $file = new File($filesModel->path);
 
-        if ($file->isGdImage) {
-            // If data record contains a link to a movie file...
-            $hasMovie = null;
-            $src = $file->path;
-            $src = '' !== trim($arrRow['socialMediaSRC']) ? trim($arrRow['socialMediaSRC']) : $src;
+        // If data record contains a link to a movie file...
+        $hasMovie = null;
+        $src = $file->path;
 
-            // Local media (movies, etc.)
-            $lmSRC = null;
+        // Has social media?
+        $src = $arrRow['socialMediaSRC'] ?: $src;
 
-            if (Validator::isBinaryUuid($arrRow['localMediaSRC'])) {
-                if (null !== ($lmSRC = FilesModel::findByUuid($arrRow['localMediaSRC']))) {
-                    $src = $lmSRC->path;
-                }
+        // Local media (movies, etc.)
+        $lmSRC = null;
+
+        if (Validator::isBinaryUuid($arrRow['localMediaSRC'])) {
+            if (null !== ($lmSRC = FilesModel::findByUuid($arrRow['localMediaSRC']))) {
+                $src = $lmSRC->path;
             }
-
-            if ('' !== trim($arrRow['socialMediaSRC']) || null !== $lmSRC) {
-                $type = empty(trim((string) $arrRow['localMediaSRC'])) ? $this->translator->trans('GALLERY_CREATOR.localMedia', [], 'contao_default') : $this->translator->trans('GALLERY_CREATOR.socialMedia', [], 'contao_default');
-                $iconSrc = 'bundles/markocupicgallerycreator/images/movie.svg';
-                $hasMovie = sprintf(
-                    '<div class="block"><img src="%s" width="18" height="18"> <span style="color:darkred; font-weight:500">%s:</span> <a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
-                    $iconSrc,
-                    $type,
-                    $src,
-                    $request->query->get('id'),
-                    $src,
-                );
-            }
-
-            $blnShowThumb = false;
-            $src = '';
-
-            // Generate icon/thumbnail
-            if (Config::get('thumbnails') && null !== $filesModel) {
-                $src = Image::get($filesModel->path, '100', '', 'center_center');
-                $blnShowThumb = true;
-            }
-
-            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($filesModel->path), $file->width, $file->height, $this->getReadableSize($file->filesize));
-            $return .= $hasMovie;
-            $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
-            $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['caption']));
-
-            return $return;
         }
 
-        return '';
+        if ($arrRow['socialMediaSRC'] || $lmSRC) {
+            $type = empty(trim((string) $arrRow['localMediaSRC'])) ? $this->translator->trans('GALLERY_CREATOR.localMedia', [], 'contao_default') : $this->translator->trans('GALLERY_CREATOR.socialMedia', [], 'contao_default');
+            $iconSrc = 'bundles/markocupicgallerycreator/images/movie.svg';
+            $hasMovie = sprintf(
+                '<div class="block"><img src="%s" width="18" height="18"> <span style="color:darkred; font-weight:500">%s:</span> <a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
+                $iconSrc,
+                $type,
+                $src,
+                $request->query->get('id'),
+                $src,
+            );
+        }
+
+        $blnShowThumb = false;
+        $src = '';
+
+        // Generate icon/thumbnail
+        if (Config::get('thumbnails') && null !== $filesModel) {
+            $blnShowThumb = true;
+
+            $src = (new Image(new File($filesModel->path)))
+                ->setTargetWidth(100)
+                ->setResizeMode('center_center')
+                ->executeResize()->getResizedPath();
+        }
+
+        $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($filesModel->path), $file->width, $file->height, $this->getReadableSize($file->filesize));
+        $return .= $hasMovie;
+        $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
+        $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['caption']));
+
+        return $return;
     }
 
     /**
@@ -322,6 +330,8 @@ class GalleryCreatorPictures extends Backend
         if (null === $objSourceAlbum || null === $objPictureToMove) {
             return;
         }
+
+        $objTargetAlbum = null;
 
         if (1 === (int) $request->query->get('mode')) {
             // Paste after existing file
@@ -412,7 +422,7 @@ class GalleryCreatorPictures extends Backend
         $picturesModel->video_href_social = $objSocial ? $objSocial->path : '';
         $picturesModel->video_href_local = $objLocal ? $objLocal->path : '';
         $picturesModel->path = $filesModel->path;
-        $picturesModel->filename = basename((string) $filesModel->path);
+        $picturesModel->filename = basename($filesModel->path);
         $picturesModel->date_formatted = Date::parse('Y-m-d', $picturesModel->date);
         $picturesModel->owner_name = '' === $userModel->name ? '---' : $userModel->name;
 
@@ -487,7 +497,7 @@ class GalleryCreatorPictures extends Backend
                 $file = new File($filesModel->path);
                 $file->delete();
             }
-        } elseif (!$this->User->isAdmin && (int) $picturesModel->owner !== (int) $this->User->id) {
+        } elseif (!$this->User->isAdmin) {
             Message::addError('No permission to delete picture with ID '.$intDel.'.');
             $this->redirect('contao');
         }
@@ -547,7 +557,13 @@ class GalleryCreatorPictures extends Backend
 
         // Check if user is allowed to toggle visibility
         if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
-            $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
+            if ($this->logger) {
+                $this->logger->info(
+                    sprintf('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "%s"', $intId),
+                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)]
+                );
+            }
+
             $this->redirect('contao?act=error');
         }
 
@@ -577,7 +593,13 @@ class GalleryCreatorPictures extends Backend
         );
 
         $objVersions->create();
-        $this->log('A new version of record "tl_gallery_creator_pictures.id='.$intId.'" has been created.', __METHOD__, TL_GENERAL);
+
+        if ($this->logger) {
+            $this->logger->info(
+                sprintf('A new version of record "tl_gallery_creator_pictures.id=%s" has been created.', $intId),
+                ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)]
+            );
+        }
     }
 
     /**

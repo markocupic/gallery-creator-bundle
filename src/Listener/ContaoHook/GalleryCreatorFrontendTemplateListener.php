@@ -20,6 +20,8 @@ use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorCont
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 /**
+ * This is a demo class!
+ *
  * @Hook(GalleryCreatorFrontendTemplateListener::HOOK, priority=100)
  */
 class GalleryCreatorFrontendTemplateListener

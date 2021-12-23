@@ -6,8 +6,8 @@
         {% if has_album_thumbs %}
             <ul id="gcPreviewThumbList" style="display:flex;flex-wrap:wrap">
                 {% for thumb in album_thumbs %}
-                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename }}">
-                        <input type="radio" name="thumb" value="{{ thumb.id }}"{{ thumb.attr_checked }}>
+                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename | escape }}">
+                        <input type="radio" name="thumb" value="{{ thumb.id }}" aria-label="{{ thumb.filename | escape }}"{{ thumb.attr_checked }}>
                         {{ thumb.image|raw }}
                     </li>
                 {% endfor %}
@@ -18,8 +18,8 @@
             <h3>{{ trans.child_albums }}</h3>
             <ul id="gcPreviewThumbListSub" style="display:flex;flex-wrap:wrap">
                 {% for thumb in child_album_thumbs %}
-                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename }}">
-                        <input type="radio" name="thumb" value="{{ thumb.id }}"{{ thumb.attr_checked }}>
+                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename | escape }}">
+                        <input type="radio" name="thumb" value="{{ thumb.id }}" aria-label="{{ thumb.filename | escape }}"{{ thumb.attr_checked }}>
                         {{ thumb.image|raw }}
                     </li>
                 {% endfor %}
@@ -39,17 +39,17 @@
         /** sort album with drag and drop */
         new Sortables("#gcPreviewThumbList", {
             onComplete: function () {
-                var ids = [];
+                let ids = [];
                 $$("#gcPreviewThumbList > li").each(function (el) {
                     ids.push(el.getProperty("data-id"));
                 });
                 // ajax request
                 if (ids.length > 0) {
-                    var myRequest = new Request({
+                    let myRequest = new Request({
                         url: document.URL + "&isAjaxRequest=true&pictureSorting=" + ids.join(),
                         method: "get"
                     });
-                    // fire request (resort album)
+                    // fire request (re-sort album)
                     myRequest.send();
                 }
             }

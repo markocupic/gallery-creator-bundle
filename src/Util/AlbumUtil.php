@@ -22,6 +22,8 @@ use Contao\Date;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+use Doctrine\DBAL\Exception;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
@@ -42,6 +44,9 @@ class AlbumUtil
         $this->connection = $connection;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
     {
         global $objPage;
@@ -80,7 +85,7 @@ class AlbumUtil
 
         $arrCssClasses = [];
         $arrCssClasses[] = 'gc-level-'.$this->getAlbumLevelFromPid((int) $albumModel->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($albumModel->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
         $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
 
         // Add formatted date to the album model
@@ -91,7 +96,7 @@ class AlbumUtil
             'meta' => new Metadata($arrMeta),
             'href' => $href,
             'countPictures' => $countPictures,
-            'hasChildAlbums' => $childAlbumCount ? true : false,
+            'hasChildAlbums' => (bool) $childAlbumCount,
             'countChildAlbums' => $childAlbumCount,
             'cssClass' => implode(' ', array_filter($arrCssClasses)),
             'figureUuid' => $previewImage ? $previewImage->uuid : null,
@@ -103,6 +108,10 @@ class AlbumUtil
         ];
     }
 
+    /**
+     * @throws Exception
+     * @throws DoctrineDBALDriverException
+     */
     public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
     {
         $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
@@ -192,18 +201,18 @@ class AlbumUtil
         $level = 0;
 
         if (0 === $pid) {
-            return $level;
+            return 0;
         }
+
         $hasParent = true;
 
         while ($hasParent) {
             ++$level;
             $parentAlbumModel = GalleryCreatorAlbumsModel::findByPk($pid);
 
-            if ($parentAlbumModel->pid < 1) {
+            if (0 === ($pid = (int) $parentAlbumModel->pid)) {
                 $hasParent = false;
             }
-            $pid = $parentAlbumModel->pid;
         }
 
         return $level;

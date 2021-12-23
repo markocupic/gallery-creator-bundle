@@ -109,6 +109,7 @@ class Content extends Backend
                 [
                     'list' => $this->getChildAlbumsAsUnorderedList((int) $dc->activeRecord->id, 0),
                     'trans' => [
+                        'selectAll' => $translator->trans('MSC.selectAll', [], 'contao_default'),
                         'gcPublishAlbums' => [
                             $translator->trans('tl_content.gcPublishAlbums.0', [], 'contao_default'),
                             $translator->trans('tl_content.gcPublishAlbums.1', [], 'contao_default'),

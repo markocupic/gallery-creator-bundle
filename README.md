@@ -53,7 +53,7 @@ namespace App\EventListener;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Template;
-use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\AbstractContentElementController;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 /**

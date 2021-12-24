@@ -65,7 +65,8 @@ class GalleryCreatorAlbumsModel extends Model
             $arrChildAlbumsIds[] = $objAlbums->id;
 
             $arrChildChildAlbumsIds = static::getChildAlbumsIds((int) $objAlbums->id, $strSorting, $depth);
-            if($arrChildChildAlbumsIds){
+
+            if ($arrChildChildAlbumsIds) {
                 $arrChildAlbumsIds = array_merge($arrChildAlbumsIds, $arrChildChildAlbumsIds);
             }
         }
@@ -77,7 +78,7 @@ class GalleryCreatorAlbumsModel extends Model
     {
         $arrChildren = static::getChildAlbumsIds($id);
 
-        if ($arrChildren) {
+        if (!empty($arrChildren)) {
             return true;
         }
 

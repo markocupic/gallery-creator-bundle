@@ -157,10 +157,10 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         if (Input::get('items')) {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
-            if (null !== $this->activeAlbum) {
+            if (null !== $this->activeAlbum && $this->activeAlbum->published) {
                 $this->viewMode = self::GC_VIEW_MODE_DETAIL;
             } else {
-                return new Response('', Response::HTTP_NO_CONTENT);
+                return new Response('aa', Response::HTTP_NO_CONTENT);
             }
 
             // Check if user is authorized.

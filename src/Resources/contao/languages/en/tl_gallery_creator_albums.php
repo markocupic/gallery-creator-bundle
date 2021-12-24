@@ -46,7 +46,6 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['insertArticlePost'] = ['Insert
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['fileUpload'] = ['File Upload', 'Browse your local computer and select the files you want to upload to the server.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'] = ['Uploader', 'Please choose the uploader.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'] = ['Image width', 'During the upload process the image resolution will be scaled to the selected value.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'] = ['Image quality/compression', 'During the upload process the image will be compressed. (100 = best quality)'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'] = ['Preserve the original filename', 'Otherwise the filename will be generated automatically.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitors'] = ['Number of visitors'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitorsDetails'] = ['Visitors details (ip, browser type, etc.)'];

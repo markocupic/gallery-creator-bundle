@@ -248,13 +248,6 @@ class Version200Update extends AbstractMigration
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_gallery_creator_albums',
-                'old' => 'img_quality',
-                'new' => 'imageQuality',
-                'sql' => 'smallint(3)',
-            ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_gallery_creator_albums',
                 'old' => 'preserve_filename',
                 'new' => 'preserveFilename',
                 'sql' => 'char(1)',

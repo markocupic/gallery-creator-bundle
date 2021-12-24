@@ -111,7 +111,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
     'palettes'    => [
         '__selector__'               => ['protected'],
         'default'                    => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
-        'fileUpload'                 => '{upload_settings},preserveFilename,imageResolution,imageQuality;{uploader_legend},fileUpload',
+        'fileUpload'                 => '{upload_settings},preserveFilename,imageResolution;{uploader_legend},fileUpload',
         'importImagesFromFilesystem' => '{upload_settings},preserveFilename,multiSRC',
         'restrictedUser'             => '{albumInfo},link_edit_images,albumInfo',
         'reviseDatabase'             => '{maintenance},reviseDatabase',
@@ -222,12 +222,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'options'   => array_merge(['no_scaling'], range(100, 9000, 50)),
             'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reference'],
             'sql'       => "smallint(5) unsigned NOT NULL default '1600'",
-        ],
-        'imageQuality'      => [
-            'eval'      => ['doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true],
-            'inputType' => 'select',
-            'options'   => range(10, 100, 10),
-            'sql'       => "smallint(3) unsigned NOT NULL default '100'",
         ],
         'preserveFilename'  => [
             'eval'      => ['doNotShow' => true, 'submitOnChange' => true],

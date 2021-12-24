@@ -446,7 +446,6 @@ class FileUtil
         if ($request->request->get('imageResolution', 0) > 1) {
             Config::set('imageWidth', $request->request->get('imageResolution'));
             Config::set('imageHeight', 999999999);
-            Config::set('jpgQuality', $request->request->get('imageQuality', 100));
         } else {
             Config::set('maxImageWidth', 999999999);
         }

@@ -30,7 +30,6 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected'][0] = 'Proteggi alb
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups'][0] = 'Gruppi frontend autorizzati';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'][0] = 'Larghezza immagine';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'][1] = "Durante il processo di caricamento la risoluzione dell'immagine verrà scalata al valore selezionato.";
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'][0] = 'Qualità / compressione immagine';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'][0] = 'Mantieni il nome file originale';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'][1] = 'In caso contrario il nome file sarà generato automaticamente.';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new'][0] = 'Nuovo album';

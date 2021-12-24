@@ -47,8 +47,6 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'][0] = 'Uploader';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploader'][1] = 'Bitte wählen Sie zwischen den verschiedenen Datei-Uploadern aus.';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'][0] = 'Bildbreite in Pixeln';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'][1] = 'Die Auflösung des Bildes wird während des Uploadvorganges auf folgenden Wert skaliert.';
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'][0] = 'Bildqualität/Kompressionsrate';
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'][1] = 'Das Bild wird während des Uploadvorganges komprimiert. (100 = beste Qualität)';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'][0] = 'Original-Dateinamen beibehalten';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'][1] = 'Alternativ wird der Dateinamen vom System automatisch generiert.';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['visitors'][0] = 'Anzahl Albumzugriffe';

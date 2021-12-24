@@ -31,8 +31,6 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected'][0] = 'Bescherm alb
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups'][0] = 'Toon dit album alleen aan bepaalde gebruikersgroepen.';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'][0] = 'Afbeeldingsbreedte';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageResolution'][1] = 'Tijdens het uploaden wordt de afbeelding geschaald naar deze waarde.';
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'][0] = 'Beeldkwaliteit/compressie';
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['imageQuality'][1] = 'Tijdens het uploaden wordt de afbeelding gecomprimeerd (100=beste kwaliteit/laagste compressie).';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'][0] = 'Behoud de bestandsnaam';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['preserveFilename'][1] = 'Anders wordt de bestandsnaam automatisch gegenereerd.';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new'][0] = 'Nieuw album';

@@ -92,7 +92,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         );
 
         // Return empty response if the album doesn't exist
-        if (null === $this->activeAlbum) {
+        if (null === $this->activeAlbum || !$this->activeAlbum->published) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 

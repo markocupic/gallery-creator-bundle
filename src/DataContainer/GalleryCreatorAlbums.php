@@ -55,7 +55,7 @@ class GalleryCreatorAlbums extends Backend
 {
     private RequestStack $requestStack;
 
-    private FileUtil$fileUtil;
+    private FileUtil $fileUtil;
 
     private Connection $connection;
 
@@ -201,7 +201,7 @@ class GalleryCreatorAlbums extends Backend
      */
     public function buttonCbDelete(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
     {
-        $href .= '&amp;='.$row['id'];
+        $href .= '&amp;id='.$row['id'];
 
         if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
             return sprintf(
@@ -409,15 +409,7 @@ class GalleryCreatorAlbums extends Backend
         return $label;
     }
 
-    /**
-     * Load callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.imageQuality.load")
-     */
-    public function loadCbImageQuality(): string
-    {
-        return $this->User->gcImageQuality;
-    }
+
 
     /**
      * Load callback.
@@ -461,7 +453,7 @@ class GalleryCreatorAlbums extends Backend
     /**
      * Ondelete callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="config.ondelete", priority=100)
+     * @Callback(table="tl_gallery_creator_albums", target="config.ondelete", priority=9999)
      *
      * @throws DoctrineDBALException
      */
@@ -484,8 +476,8 @@ class GalleryCreatorAlbums extends Backend
             }
 
             // Also delete child albums
-            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbumsIds((int) $dc->activeRecord->id);
-            $arrDeletedAlbums = array_merge([$dc->activeRecord->id], $arrDeletedAlbums);
+            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbumsIds((int) $dc->id);
+            $arrDeletedAlbums = array_merge([$dc->id], $arrDeletedAlbums ?? []);
 
             foreach ($arrDeletedAlbums as $idDelAlbum) {
                 $albumsModel = GalleryCreatorAlbumsModel::findByPk($idDelAlbum);
@@ -686,13 +678,6 @@ class GalleryCreatorAlbums extends Backend
 
         // Create the file uploader palette
         if ('fileUpload' === $request->query->get('key')) {
-            if ('no_scaling' === $this->User->gcImageResolution) {
-                PaletteManipulator::create()
-                    ->removeField('imageQuality')
-                    ->applyToPalette('fileUpload', 'tl_gallery_creator_albums')
-                    ;
-            }
-
             $dca['palettes']['default'] = $dca['palettes']['fileUpload'];
 
             return;
@@ -1044,17 +1029,7 @@ class GalleryCreatorAlbums extends Backend
         return $strAlias;
     }
 
-    /**
-     * Save callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.imageQuality.save")
-     *
-     * @throws DoctrineDBALException
-     */
-    public function saveCbImageQuality(string $value): void
-    {
-        $this->connection->update('tl_user', ['gcImageQuality' => $value], ['id' => $this->User->id]);
-    }
+
 
     /**
      * Save callback.

@@ -6,7 +6,7 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
 ?>
 
 <div class="long widget">
-    <h3><?= $this->trans('tl_files.fileUpload.0') ?></h3>
+    <h3><?= $this->trans('tl_files.fileupload.0') ?></h3>
     <input type="hidden" name="action" value="fileUpload">
     <div class="fallback">
         <input type="file" name="<?= $this->strName ?>[]" multiple>

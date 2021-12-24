@@ -17,16 +17,11 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 use Contao\Config;
 use Contao\ContentModel;
 use Contao\Controller;
-use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
-use Contao\Date;
 use Contao\Environment;
-use Contao\FilesModel;
-use Contao\FrontendUser;
 use Contao\Input;
-use Contao\MemberModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
@@ -43,31 +38,28 @@ use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Security;
 
 /**
  * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements")
  */
-class GalleryCreatorController extends AbstractContentElementController
+class GalleryCreatorController extends AbstractGalleryCreatorController
 {
     public const TYPE = 'gallery_creator';
     public const GC_VIEW_MODE_LIST = 'list_view';
     public const GC_VIEW_MODE_DETAIL = 'detail_view';
     public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
-    private Security $security;
+    private AlbumUtil $albumUtil;
+
+    private Connection $connection;
+
+    private PictureUtil $pictureUtil;
 
     private RequestStack $requestStack;
 
     private ScopeMatcher $scopeMatcher;
 
-    private Connection $connection;
-
     private SecurityUtil $securityUtil;
-
-    private AlbumUtil $albumUtil;
-
-    private PictureUtil $pictureUtil;
 
     private ?string $viewMode = null;
 
@@ -79,15 +71,16 @@ class GalleryCreatorController extends AbstractContentElementController
 
     private ?PageModel $pageModel;
 
-    public function __construct(Security $security, RequestStack $requestStack, ScopeMatcher $scopeMatcher, Connection $connection, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, ScopeMatcher $scopeMatcher, SecurityUtil $securityUtil)
     {
-        $this->security = $security;
+        $this->albumUtil = $albumUtil;
+        $this->connection = $connection;
+        $this->pictureUtil = $pictureUtil;
         $this->requestStack = $requestStack;
         $this->scopeMatcher = $scopeMatcher;
-        $this->connection = $connection;
         $this->securityUtil = $securityUtil;
-        $this->albumUtil = $albumUtil;
-        $this->pictureUtil = $pictureUtil;
+
+        parent::__construct($albumUtil, $connection, $pictureUtil, $scopeMatcher);
     }
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
@@ -104,10 +97,6 @@ class GalleryCreatorController extends AbstractContentElementController
         $this->model = $model;
         $this->pageModel = $pageModel;
         $session = $request->getSession();
-
-        if ($this->security->getUser() instanceof FrontendUser) {
-            $this->user = MemberModel::findByPk($this->security->getUser()->id);
-        }
 
         // Get items url param from session
         if ($session->has('gc_redirect_to_album')) {
@@ -231,19 +220,19 @@ class GalleryCreatorController extends AbstractContentElementController
                 $itemsTotal = \count($this->arrSelectedAlbums);
                 $perPage = (int) $this->model->gcAlbumsPerPage;
 
-                $objPagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
+                $pagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
 
-                if ($objPagination->isOutOfRange()) {
+                if ($pagination->isOutOfRange()) {
                     throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
                 }
 
                 // Paginate the result
                 $arrItems = $this->arrSelectedAlbums;
-                $arrItems = \array_slice($arrItems, $objPagination->getOffset(), $objPagination->getLimit());
+                $arrItems = \array_slice($arrItems, $pagination->getOffset(), $pagination->getLimit());
 
-                $template->pagination = $objPagination->generate();
+                $template->pagination = $pagination->generate();
 
-                $template->arrAlbums = array_map(
+                $template->albums = array_map(
                     function ($id) {
                         $albumModel = GalleryCreatorAlbumsModel::findByPk($id);
 
@@ -252,91 +241,32 @@ class GalleryCreatorController extends AbstractContentElementController
                     $arrItems
                 );
 
+                $template->content = $this->model->row();
+
                 // Trigger gcGenerateFrontendTemplateHook
                 $this->triggerGenerateFrontendTemplateHook($template);
                 break;
 
             case self::GC_VIEW_MODE_DETAIL:
 
-                // Get child albums
-                if ($this->model->gcShowChildAlbums) {
-                    $arrChildAlbums = $this->albumUtil->getChildAlbums($this->activeAlbum, $this->model);
-                    $template->childAlbums = \count($arrChildAlbums) ? $arrChildAlbums : null;
-                    $template->hasChildAlbums = (bool) \count($arrChildAlbums);
-                }
+                // Add the picture collection and the pagination to the template.
+                $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
 
-                // Count items
-                $itemsTotal = $this->connection->fetchOne(
-                    'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
-                    ['1', $this->activeAlbum->id]
-                );
-
-                $perPage = (int) $this->model->gcThumbsPerPage;
-
-                $objPagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
-
-                if ($objPagination->isOutOfRange()) {
-                    throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
-                }
-
-                $template->pagination = $objPagination->generate();
-
-                // Picture sorting
-                $arrSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$this->model->gcPictureSorting, $this->model->gcPictureSortingDirection];
-
-                // Sort by name will be done below
-                $arrSorting[0] = str_replace('name', 'id', $arrSorting[0]);
-
-                $stmt = $this->connection->createQueryBuilder()
-                    ->select('*')
-                    ->from('tl_gallery_creator_pictures', 't')
-                    ->where('t.pid = :pid')
-                    ->andWhere('t.published = :published')
-                    ->orderBy(...$arrSorting)
-                    ->setParameter('published', '1')
-                    ->setParameter('pid', $this->activeAlbum->id)
-                    ->setFirstResult($objPagination->getOffset())
-                    ->setMaxResults($objPagination->getLimit())
-                    ->execute()
-                ;
-
-                $arrPictures = [];
-
-                while (false !== ($rowPicture = $stmt->fetchAssociative())) {
-                    $filesModel = FilesModel::findByUuid($rowPicture['uuid']);
-                    $basename = 'undefined';
-
-                    if (null !== $filesModel) {
-                        $basename = $filesModel->name;
-                    }
-
-                    if (null !== ($picturesModel = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
-                        // Prevent overriding items with same basename
-                        $arrPictures[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picturesModel, $this->model);
-                    }
-                }
-
-                // Sort by name
-                if ('name' === $this->model->gcPictureSorting) {
-                    if ('ASC' === $this->model->gcPictureSortingDirection) {
-                        uksort($arrPictures, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
-                    } else {
-                        uksort($arrPictures, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
-                    }
-                }
-
-                // Add pictures to the template
-                $arrPictures = array_values($arrPictures);
-                $template->arrPictures = $arrPictures;
-
-                // Augment template with more properties
-                $this->getAlbumTemplateVars($this->activeAlbum, $template);
+                // Augment template with more properties.
+                $this->addAlbumToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
 
                 // Count views
                 $this->albumUtil->countAlbumViews($this->activeAlbum);
 
+                // Add content model to template.
+                $template->content = $model->row();
+
+                // Add meta tags to the page header.
+                $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
+
                 // Trigger gcGenerateFrontendTemplateHook
                 $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
+
                 break;
 
             case self::GC_VIEW_MODE_SINGLE_IMAGE:
@@ -423,10 +353,16 @@ class GalleryCreatorController extends AbstractContentElementController
                 $template->arrPictures = $arrPictures;
 
                 // Augment template with more properties
-                $this->getAlbumTemplateVars($this->activeAlbum, $template);
+                $this->addAlbumToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
 
                 // Count views
                 $this->albumUtil->countAlbumViews($this->activeAlbum);
+
+                // Add content model to template.
+                $template->content = $model->row();
+
+                // Add meta tags to the page header
+                $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
 
                 // Trigger gcGenerateFrontendTemplateHook
                 $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
@@ -434,7 +370,7 @@ class GalleryCreatorController extends AbstractContentElementController
                 break;
         }
 
-        // end switch
+        // End switch
         return $template->getResponse();
     }
 
@@ -489,35 +425,19 @@ class GalleryCreatorController extends AbstractContentElementController
         return false !== $arrAlbumIDS ? array_map('intval', $arrAlbumIDS) : [];
     }
 
-    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
-    {
-        // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
-        if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
-            foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
-                System::importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
-            }
-        }
-    }
-
     /**
-     * Set the template-vars to the template object for the selected album.
+     * Augment template with some more properties of the active album.
      */
-    protected function getAlbumTemplateVars(GalleryCreatorAlbumsModel $albumModel, Template $template): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, $contentModel, Template $template, $pageModel): void
     {
-        // Add formatted date string to the album model
-        $albumModel->dateFormatted = Date::parse(Config::get('dateFormat'), $albumModel->date);
-        $template->album = $albumModel->row();
-
-        // Add meta tags to the page object
-        if ($this->scopeMatcher->isFrontendRequest($this->requestStack->getCurrentRequest()) && self::GC_VIEW_MODE_DETAIL === $this->viewMode) {
-            $this->pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : $this->pageModel->description;
-            $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($albumModel->keywords), ',');
-        }
+        parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
 
         // Back link
         $template->backLink = $this->generateBackLink($albumModel);
+
         // In the detail view, an article can optionally be added in front of the album
         $template->insertArticlePre = $albumModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : null;
+
         // In the detail view, an article can optionally be added right after the album
         $template->insertArticlePost = $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : null;
     }

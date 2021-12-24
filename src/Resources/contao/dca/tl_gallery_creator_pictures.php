@@ -60,9 +60,9 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                 'icon'       => 'delete.svg',
             ],
             'cut'         => [
-                'attributes' => 'onclick="Backend.getScrollOffset();"',
-                'href'       => 'act=paste&mode=cut',
+                'href'       => 'act=paste&amp;mode=cut',
                 'icon'       => 'cut.svg',
+                'attributes' => 'onclick="Backend.getScrollOffset()"',
             ],
             'imagerotate' => [
                 'attributes' => 'data-icon="gc-op-icon" onclick="Backend.getScrollOffset();"',

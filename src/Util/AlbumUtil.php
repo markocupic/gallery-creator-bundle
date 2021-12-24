@@ -44,15 +44,17 @@ class AlbumUtil
         $this->connection = $connection;
     }
 
+
     /**
+     * @param GalleryCreatorAlbumsModel $albumModel
+     * @param ContentModel $contentElementModel
+     * @return array
+     * @throws DoctrineDBALDriverException
      * @throws Exception
      */
     public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
     {
         global $objPage;
-        $request = $this->requestStack->getCurrentRequest();
-
-        $childAlbumCount = \count(GalleryCreatorAlbumsModel::getChildAlbums((int) $albumModel->id));
 
         // Count images
         $countPictures = $this->connection
@@ -66,53 +68,53 @@ class AlbumUtil
         $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
         $arrSize = !empty($size) && \is_array($size) ? $size : null;
 
-        $href = null;
-
-        if ($request && $this->scopeMatcher->isFrontendRequest($request)) {
-            $href = sprintf(
-                StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language)),
-                $albumModel->alias,
-            );
-        }
+        $href = sprintf(
+            StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language)),
+            $albumModel->alias,
+        );
 
         /** @var FilesModel $previewImage */
         $previewImage = $this->getAlbumPreviewThumb($albumModel);
-
-        $arrMeta = [];
-        $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
-        $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcShowChildAlbums && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
 
         $arrCssClasses = [];
         $arrCssClasses[] = 'gc-level-'.$this->getAlbumLevelFromPid((int) $albumModel->pid);
         $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
         $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
 
-        // Add formatted date to the album model
-        $albumModel->dateFormatted = Date::parse(Config::get('dateFormat'), $albumModel->date);
+        $childAlbums = $this->getChildAlbums($albumModel, $contentElementModel);
+        $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
-        return [
-            'row' => $albumModel->row(),
-            'meta' => new Metadata($arrMeta),
-            'href' => $href,
-            'countPictures' => $countPictures,
-            'hasChildAlbums' => (bool) $childAlbumCount,
-            'countChildAlbums' => $childAlbumCount,
-            'cssClass' => implode(' ', array_filter($arrCssClasses)),
-            'figureUuid' => $previewImage ? $previewImage->uuid : null,
-            'figureSize' => !empty($arrSize) ? $arrSize : null,
-            'figureOptions' => [
-                'metadata' => new Metadata($arrMeta),
-                'linkHref' => $href,
-            ],
+        $arrMeta = [];
+        $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
+        $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
+        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcShowChildAlbums && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
+
+        $arrAlbum = $albumModel->row();
+        $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
+        $arrAlbum['meta'] = new Metadata($arrMeta);
+        $arrAlbum['href'] = $href;
+        $arrAlbum['countPictures'] = $countPictures;
+
+        $arrAlbum['cssClass'] = implode(' ', array_filter($arrCssClasses));
+        $arrAlbum['figureUuid'] = $previewImage ? $previewImage->uuid : null;
+        $arrAlbum['figureSize'] = !empty($arrSize) ? $arrSize : null;
+        $arrAlbum['figureOptions'] = [
+            'metadata' => new Metadata($arrMeta),
+            'linkHref' => $href,
         ];
+
+        $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
+        $arrAlbum['countChildAlbums'] = $childAlbums ? \count($childAlbums) : 0;
+        $arrAlbum['childAlbums'] = $childAlbums;
+
+        return $arrAlbum;
     }
 
     /**
      * @throws Exception
      * @throws DoctrineDBALDriverException
      */
-    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
+    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): ?array
     {
         $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
 
@@ -139,7 +141,7 @@ class AlbumUtil
             }
         }
 
-        return $arrChildAlbums;
+        return !empty($arrChildAlbums) ? $arrChildAlbums : null;
     }
 
     public function countAlbumViews(GalleryCreatorAlbumsModel $albumModel): void

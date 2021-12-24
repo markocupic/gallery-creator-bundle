@@ -5,30 +5,30 @@
 
     <div class="gc-album-list-facts">
         <?php if ($this->album['href']): ?><a href="<?= $this->album['href'] ?>" title="<?= \Contao\StringUtil::specialchars(($this->album['meta'])->getTitle()) ?>" class="gc-album-list-link"><?php endif; ?>
-        <h4 class="gc-album-list-name"><?= $this->album['row']['name'] ?></h4>
+        <h4 class="gc-album-list-name"><?= $this->album['name'] ?></h4>
         <?php if ($this->album['href']): ?></a><?php endif; ?>
 
-        <p class="gc-album-list-date">{{date::Y-m-d::<?= $this->album['row']['date'] ?>}}</p>
+        <p class="gc-album-list-date">{{date::Y-m-d::<?= $this->album['date'] ?>}}</p>
 
-        <?php if ($this->album['row']['eventLocation']): ?>
-        <p class="gc-album-list-location"><?= $this->trans('GALLERY_CREATOR.eventLocation') ?>: <?= $this->album['row']['eventLocation'] ?></p>
+        <?php if ($this->album['eventLocation']): ?>
+        <p class="gc-album-list-location"><?= $this->trans('GALLERY_CREATOR.eventLocation') ?>: <?= $this->album['eventLocation'] ?></p>
         <?php endif; ?>
 
-        <?php if ($this->album['row']['photographer']): ?>
-        <p class="gc-album-list-photographer"><?= $this->trans('GALLERY_CREATOR.photographerName') ?>: <?= $this->album['row']['photographer'] ?></p>
+        <?php if ($this->album['photographer']): ?>
+        <p class="gc-album-list-photographer"><?= $this->trans('GALLERY_CREATOR.photographerName') ?>: <?= $this->album['photographer'] ?></p>
         <?php endif; ?>
 
-        <p class="gc-album-list-count-pictures"><?= $this->album['countPictures'] ?> <?= $this->trans('GALLERY_CREATOR.pictures') ?></p>
+        <p class="gc-album-list-pictures-count"><?= $this->album['countPictures'] ?> <?= $this->trans('GALLERY_CREATOR.pictures') ?></p>
 
-        <p class="gc-album-list-visitors"><?= $this->album['row']['visitors'] ?> <?= $this->trans('GALLERY_CREATOR.visitors') ?></p>
-
-        <?php if ($this->album['countChildAlbums']): ?>
-        <p class="gc-count-pics"><?= $this->album['countChildAlbums'] ?> <?= $this->trans('GALLERY_CREATOR.childAlbums') ?></p>
+        <p class="gc-album-list-visitors-count"><?= $this->album['visitors'] ?> <?= $this->trans('GALLERY_CREATOR.visitors') ?></p>
+        
+        <?php if ($this->content['gcShowChildAlbums'] && $this->album['hasChildAlbums']): ?>
+        <p class="gc-album-list-child-albums-count"><?= $this->album['countChildAlbums'] ?> <?= $this->trans('GALLERY_CREATOR.childAlbums') ?></p>
         <?php endif; ?>
 
-        <?php if ($this->album['row']['caption']): ?>
+        <?php if ($this->album['caption']): ?>
         <div class="gc-album-list-caption">
-            <p><?= nl2br($this->album['row']['caption']) ?></p>
+            <p><?= nl2br($this->album['caption']) ?></p>
         </div>
         <?php endif; ?>
     </div>

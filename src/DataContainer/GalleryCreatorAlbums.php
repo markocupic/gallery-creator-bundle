@@ -94,7 +94,7 @@ class GalleryCreatorAlbums extends Backend
 
         if (isset($bag['CLIPBOARD']['tl_gallery_creator_albums']['mode'])) {
             if ('copyAll' === $bag['CLIPBOARD']['tl_gallery_creator_albums']['mode']) {
-                $this->redirect('contao?do=gallery_creator&clipboard=1');
+                $this->redirect('contao?do=gallery_creator&amp;clipboard=1');
             }
         }
     }
@@ -148,7 +148,7 @@ class GalleryCreatorAlbums extends Backend
      */
     public function buttonCbCutPicture(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
     {
-        $href .= '&id='.$row['id'];
+        $href .= '&amp;id='.$row['id'];
 
         if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
             return sprintf(
@@ -188,10 +188,10 @@ class GalleryCreatorAlbums extends Backend
         $return = '';
 
         if ($row['id'] > 0) {
-            $return = $disablePA ? Image::getHtml('pasteafter_.svg', '', 'class="blink"').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&mode=1&pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&id='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteAfter.'</a> ';
+            $return = $disablePA ? Image::getHtml('pasteafter_.svg', '', 'class="blink"').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=1&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteAfter.'</a> ';
         }
 
-        return $return.($disablePI ? Image::getHtml('pasteinto_.svg', '', 'class="blink"').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&mode=2&pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&id='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteInto.'</a> ');
+        return $return.($disablePI ? Image::getHtml('pasteinto_.svg', '', 'class="blink"').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteInto.'</a> ');
     }
 
     /**
@@ -201,7 +201,7 @@ class GalleryCreatorAlbums extends Backend
      */
     public function buttonCbDelete(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
     {
-        $href .= '&id='.$row['id'];
+        $href .= '&amp;='.$row['id'];
 
         if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
             return sprintf(
@@ -339,7 +339,7 @@ class GalleryCreatorAlbums extends Backend
             if ($request->query->has('pictureSorting')) {
                 $sorting = 10;
 
-                foreach (explode(',', $request->query->get('pictureSorting')) as $pictureId) {
+                foreach (StringUtil::trimsplit(',', $request->query->get('pictureSorting')) as $pictureId) {
                     $picturesModel = GalleryCreatorPicturesModel::findByPk($pictureId);
 
                     if (null !== $picturesModel) {
@@ -402,7 +402,7 @@ class GalleryCreatorAlbums extends Backend
         $label = str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
         $image = $row['published'] ? 'album.svg' : '_album.svg';
         $label = str_replace('#icon#', $image, $label);
-        $href = sprintf('contao?do=gallery_creator&table=tl_gallery_creator_albums&id=%s&act=edit&rt=%s&ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
+        $href = sprintf('contao?do=gallery_creator&amp;table=tl_gallery_creator_albums&amp;=%s&amp;act=edit&amp;rt=%s&amp;ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit_album'][1], $row['id']), $label);
 
@@ -484,7 +484,7 @@ class GalleryCreatorAlbums extends Backend
             }
 
             // Also delete child albums
-            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums((int) $dc->activeRecord->id);
+            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbumsIds((int) $dc->activeRecord->id);
             $arrDeletedAlbums = array_merge([$dc->activeRecord->id], $arrDeletedAlbums);
 
             foreach ($arrDeletedAlbums as $idDelAlbum) {
@@ -644,7 +644,7 @@ class GalleryCreatorAlbums extends Backend
             $albumsModel->save();
 
             // Comma separated list with folder uuid's => 10585872-5f1f-11e3-858a-0025900957c8,105e9de0-5f1f-11e3-858a-0025900957c8,105e9dd6-5f1f-11e3-858a-0025900957c8
-            $arrMultiSRC = explode(',', (string) $request->request->get('multiSRC'));
+            $arrMultiSRC = StringUtil::trimsplit(',', (string) $request->request->get('multiSRC'));
 
             if (!empty($arrMultiSRC)) {
                 $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['preserveFilename']['eval']['submitOnChange'] = false;
@@ -652,7 +652,7 @@ class GalleryCreatorAlbums extends Backend
                 // Import Images from filesystem and write entries to tl_gallery_creator_pictures
                 $this->fileUtil->importFromFilesystem($albumsModel, $arrMultiSRC);
 
-                throw new RedirectResponseException('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$albumsModel->id.'&filesImported=true');
+                throw new RedirectResponseException('contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;='.$albumsModel->id.'&amp;filesImported=true');
             }
         }
 
@@ -784,7 +784,7 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Get all child albums
-        $arrChildIds = GalleryCreatorAlbumsModel::getChildAlbums((int) $request->query->get('id'));
+        $arrChildIds = GalleryCreatorAlbumsModel::getChildAlbumsIds((int) $request->query->get('id'));
 
         if (!empty($arrChildIds)) {
             $stmt = $this->connection->executeQuery(

@@ -75,8 +75,9 @@ class GalleryCreatorPictures extends Backend
         switch ($request->query->get('act')) {
             case 'create':
                 // New images can only be implemented via an image upload
-                $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$request->query->get('pid'));
+                $this->redirect('contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;id='.$request->query->get('pid'));
 
+                // no break
             case 'select':
                 if (!$this->User->isAdmin) {
                     // Only list pictures where user is owner
@@ -152,7 +153,7 @@ class GalleryCreatorPictures extends Backend
                     $this->fileUtil->imageRotate($file, 270);
                     Dbafs::addResource($filesModel->path, true);
 
-                    $this->redirect('contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$request->query->get('id'));
+                    $this->redirect('contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;id='.$request->query->get('id'));
                 }
                 break;
 
@@ -227,7 +228,7 @@ class GalleryCreatorPictures extends Backend
         if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&imgId='.$row['id']),
+                $this->addToUrl($href.'&amp;imgId='.$row['id']),
                 StringUtil::specialchars($title),
                 $attributes,
                 Image::getHtml($icon, $label),
@@ -489,10 +490,10 @@ class GalleryCreatorPictures extends Backend
             $filesModel = FilesModel::findByUuid($uuid);
 
             $albumsModel = GalleryCreatorAlbumsModel::findByPk($pid);
-            $oFolder = FilesModel::findByUuid($albumsModel->assignedDir);
+            $folderModel = FilesModel::findByUuid($albumsModel->assignedDir);
 
             // Only delete images if they are located in the directory assigned to the album
-            if (null !== $oFolder && null !== $filesModel && strstr($filesModel->path, $oFolder->path)) {
+            if (null !== $folderModel && null !== $filesModel && strstr($filesModel->path, $folderModel->path)) {
                 // Delete file from filesystem
                 $file = new File($filesModel->path);
                 $file->delete();

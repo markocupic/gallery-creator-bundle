@@ -5,9 +5,9 @@
 	<?= $this->pagination ?>
 
 	<ul class="gc-album-list">
-		<?php foreach ($this->arrAlbums as $album): ?>
-		<li class="gc-album-list-item<?php if(isset($this->album['cssClass'])): ?> <?= $this->album['cssClass'] ?><?php endif; ?>" data-id="<?= $album['row']['id'] ?>">
-		<?php $this->insert('gallery_creator_album', ['album' => $album]); ?>
+		<?php foreach ($this->albums as $album): ?>
+		<li class="gc-album-list-item<?php if(isset($this->album['cssClass'])): ?> <?= $this->album['cssClass'] ?><?php endif; ?>" data-id="<?= $album['id'] ?>">
+		<?php $this->insert('gallery_creator_album', ['content' => $this->content, 'album' => $album]); ?>
 		</li>
 		<?php endforeach; ?>
 	</ul>

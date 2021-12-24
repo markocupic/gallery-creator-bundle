@@ -41,9 +41,9 @@ class GalleryCreatorAlbumsModel extends Model
         return $albumsModel->getRelated('pid');
     }
 
-    public static function getChildAlbums(int $parentId, string $strSorting = '', int $iterationDepth = null): array
+    public static function getChildAlbumsIds(int $parentId, string $strSorting = '', int $iterationDepth = null): ?array
     {
-        $arrChildAlbums = [];
+        $arrChildAlbumsIds = [];
 
         if ('' === $strSorting) {
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid= ? ORDER BY sorting';
@@ -60,20 +60,24 @@ class GalleryCreatorAlbumsModel extends Model
 
         while ($objAlbums->next()) {
             if ($depth < 0 && null !== $iterationDepth) {
-                return $arrChildAlbums;
+                return $arrChildAlbumsIds;
             }
-            $arrChildAlbums[] = $objAlbums->id;
-            $arrChildAlbums = array_merge($arrChildAlbums, static::getChildAlbums((int) $objAlbums->id, $strSorting, $depth));
+            $arrChildAlbumsIds[] = $objAlbums->id;
+
+            $arrChildChildAlbumsIds = static::getChildAlbumsIds((int) $objAlbums->id, $strSorting, $depth);
+            if($arrChildChildAlbumsIds){
+                $arrChildAlbumsIds = array_merge($arrChildAlbumsIds, $arrChildChildAlbumsIds);
+            }
         }
 
-        return $arrChildAlbums;
+        return !empty($arrChildAlbumsIds) ? $arrChildAlbumsIds : null;
     }
 
     public static function hasChildAlbums(int $id): bool
     {
-        $arrChildren = static::getChildAlbums($id);
+        $arrChildren = static::getChildAlbumsIds($id);
 
-        if (\count($arrChildren) > 0) {
+        if ($arrChildren) {
             return true;
         }
 

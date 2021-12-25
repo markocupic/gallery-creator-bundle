@@ -37,12 +37,12 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbumsOf'] = 'Child albums of';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] = 'pictures';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'] = 'contains';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['visitors'] = 'visitors';
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthentificationError'] = ['Authentification error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthenticationError'] = ['Authentication error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['photographerName'] = 'Photographers name';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
 
 /*
  * Backend
  */
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['localMedia'] = 'Play local movie/sound';
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['socialMedia'] = 'Play social media';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['localMedia'] = 'Replace image with a movie or sound from the Contao filesystem.';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['socialMedia'] = 'Replace image with a social media.';

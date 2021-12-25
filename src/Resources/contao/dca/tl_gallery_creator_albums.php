@@ -110,10 +110,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
     ],
     'palettes'    => [
         '__selector__'               => ['protected'],
-        'default'                    => '{albumInfo},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection:hide},protected',
-        'fileUpload'                 => '{upload_settings},preserveFilename,imageResolution;{uploader_legend},fileUpload',
-        'importImagesFromFilesystem' => '{upload_settings},preserveFilename,multiSRC',
-        'restrictedUser'             => '{albumInfo},link_edit_images,albumInfo',
+        'default'                    => '{album_inf_legend},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection_legend:hide},protected',
+        'fileUpload'                 => '{upload_settings_legend},preserveFilename,imageResolution;{uploader_legend},fileUpload',
+        'importImagesFromFilesystem' => '{upload_settings_legend},preserveFilename,multiSRC',
+        'restrictedUser'             => '{album_inf_legend},link_edit_images,albumInfo',
         'reviseDatabase'             => '{maintenance},reviseDatabase',
     ],
     'subpalettes' => [
@@ -220,7 +220,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'eval'      => ['doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true],
             'inputType' => 'select',
             'options'   => array_merge(['no_scaling'], range(100, 9000, 50)),
-            'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reference'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
             'sql'       => "smallint(5) unsigned NOT NULL default '1600'",
         ],
         'preserveFilename'  => [

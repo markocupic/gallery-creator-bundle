@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<xliff version="1.1">
+  <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/modules.php" source-language="en" target-language="nl">
+    <body>
+      <trans-unit id="MOD.gallery_creator.0">
+        <source>Gallery Creator</source>
+        <target>Gallery Creator</target>
+      </trans-unit>
+      <trans-unit id="MOD.gallery_creator.1">
+        <source>Create and edit album-galleries.</source>
+        <target>Maak en verander albums/galerijen.</target>
+      </trans-unit>
+      <trans-unit id="CTE.gallery_creator_elements">
+        <source>Gallery Creator</source>
+        <target>Gallery Creator</target>
+      </trans-unit>
+      <trans-unit id="CTE.gallery_creator.0">
+        <source>Gallery Creator</source>
+        <target>Gallery Creator</target>
+      </trans-unit>
+      <trans-unit id="CTE.gallery_creator.1">
+        <source>Include gallery creator albums.</source>
+        <target>Toon Gallery Creator albums als frontend inhoudselement.</target>
+      </trans-unit>
+      <trans-unit id="CTE.gallery_creator_news.0">
+        <source>Gallery Creator News</source>
+        <target>Gallery Creator News</target>
+      </trans-unit>
+      <trans-unit id="CTE.gallery_creator_news.1">
+        <source>Include a gallery creator album.</source>
+        <target>Toon Gallery Creator albums als frontend inhoudselement.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+

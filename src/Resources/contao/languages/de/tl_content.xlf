@@ -1,0 +1,183 @@
+<?xml version="1.0" ?>
+<xliff version="1.1">
+  <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_content.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_content.pagination_legend">
+        <source>Pagination settings</source>
+        <target>Pagination Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.miscellaneous_legend">
+        <source>Miscellaneous settings</source>
+        <target>Allgemeine Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.album_listing_legend">
+        <source>Album listing legend</source>
+        <target>Einstellungen für die Albenauflistung</target>
+      </trans-unit>
+      <trans-unit id="tl_content.picture_listing_legend">
+        <source>Picture listing legend</source>
+        <target>Einstellungen für die Bildauflistung (Detailansicht)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAlbums.0">
+        <source>Select one or more albums</source>
+        <target>Diese Alben im Frontend anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAlbums.1">
+        <source>Selected albums will be displayed in the frontend.</source>
+        <target>Geben Sie an, welche Alben angezeigt werden sollen.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.0">
+        <source>Select one album</source>
+        <target>Album auswählen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.1">
+        <source>The selected album will be displayed in the frontend.</source>
+        <target>Das ausgewählte Album wird im Frontend angezeigt.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAllAlbums.0">
+        <source>Publish all given albums</source>
+        <target>Alle angelegten Alben im Frontend zeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAllAlbums.1">
+        <source>Publish all albums on the front end.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowChildAlbums.0">
+        <source>Show child albums</source>
+        <target>Kindalben anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowChildAlbums.1">
+        <source>Show child albums too.</source>
+        <target>Alben und Kindalben</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcRedirectSingleAlb.0">
+        <source>Redirection in case of a single album</source>
+        <target>Weiterleitung bei einzelnem Album</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcRedirectSingleAlb.1">
+        <source>Should be automatically redirected to the detail-view, in case of single-album-choice?</source>
+        <target>Soll, wenn nur ein Album ausgewählt wurde, automatisch zur Detailansicht weitergeleitet weden?</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAlbumsPerPage.0">
+        <source>Items per page in the album listing</source>
+        <target>Anzahl Alben pro Seite in der Albenübersicht</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAlbumsPerPage.1">
+        <source>The number of items per page in the album listing. Set to 0 to disable pagination.</source>
+        <target>Die Anzahl an Alben pro Seite in der Albenübersicht. Geben Sie 0 ein, um den automatischen Seitenumbruch zu deaktivieren.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcThumbsPerPage.0">
+        <source>Thumbs per page in the detail view</source>
+        <target>Anzahl Bilder pro Seite in der Detailansicht</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcThumbsPerPage.1">
+        <source>The number of thumbnails per page in the detail view. Set to 0 to disable pagination.</source>
+        <target>Anzahl Bilder pro Seite in der Detailansicht. Geben Sie 0 ein, um den automatischen Seitenumbruch zu deaktivieren.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSorting.0">
+        <source>Album sorting</source>
+        <target>Sortierung der Alben</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSorting.1">
+        <source>According to which field the albums should be sorted?</source>
+        <target>Nach welchem Feld sollen die Alben im Frontend sortiert werden?</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingDirection.0">
+        <source>Sort sequence</source>
+        <target>Sortierrichtung</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingDirection.1">
+        <source>DESC: descending, ASC: ascending</source>
+        <target>DESC: absteigend, ASC: aufsteigend</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingDirection.DESC">
+        <source>Ascending</source>
+        <target>Absteigend</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingDirection.ASC">
+        <source>Descending</source>
+        <target>Aufsteigend</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSorting.0">
+        <source>Picture sorting</source>
+        <target>Sortierung der Bilder</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSorting.1">
+        <source>The pictures will be sorted according to the selected field.</source>
+        <target>Geben Sie an, nach welchem Kriterium die Bilder in der Detailansicht sortiert werden sollen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSortingDirection.0">
+        <source>Sort sequence</source>
+        <target>Sortierrichtung</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSortingDirection.1">
+        <source>DESC: descending, ASC: ascending</source>
+        <target>DESC: absteigend, ASC: aufsteigend</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSizeDetailView.0">
+        <source>Detail view: Thumbnail width and height</source>
+        <target>Detailansicht: Thumbnailbreite und Thumbnailhöhe</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSizeDetailView.1">
+        <source>Here you can set the image dimensions and the resize mode.</source>
+        <target>Hier können Sie die Abmessungen des Bildes und den Skalierungsmodus festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSizeAlbumListing.0">
+        <source>Album list: Thumbnail width and height</source>
+        <target>Albumauflistung: Thumbnailbreite und Thumbnailhöhe</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSizeAlbumListing.1">
+        <source>Here you can set the image dimensions and the resize mode.</source>
+        <target>Hier können Sie die Abmessungen des Bildes und den Skalierungsmodus festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcFullSize.0">
+        <source>Full-size view/new window</source>
+        <target>Großansicht/Neues Fenster</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcFullSize.1">
+        <source>Open the full-size image in a lightbox or in a new browser window.</source>
+        <target>Großansicht des Bildes in einer Lightbox bzw. den Link in einem neuem Browserfenster öffnen.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.sorting">
+        <source>Backend-module sorting (sorting)</source>
+        <target>Backend-Modul Reihenfolge (sorting)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.id">
+        <source>ID</source>
+        <target>ID</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.date">
+        <source>Date of creation (date)</source>
+        <target>Erstellungsdatum (date)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.name">
+        <source>Name (name)</source>
+        <target>Name (name)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.owner">
+        <source>Owner (owner)</source>
+        <target>Albumbesitzer (owner)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.caption">
+        <source>Caption (caption)</source>
+        <target>Beschreibungstext (caption)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.title">
+        <source>Image-title (title)</source>
+        <target>Bildtitel (title)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.tstamp">
+        <source>Revision date (tstamp)</source>
+        <target>Änderungsdatum (tstamp)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.alias">
+        <source>Album alias (alias)</source>
+        <target>Albumalias (alias)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.visitors">
+        <source>Number of visitors (visitors)</source>
+        <target>Besucherzahl (visitors)</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+

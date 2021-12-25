@@ -24,28 +24,28 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['expert_legend'] = 'Expert Se
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['id'] = ['Image ID'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['pid'] = ['Album ID', 'Note that changing the album ID can break data integrity!'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileID'] = ['File ID'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imageInfo'] = ['Image information'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['published'] = ['Publish image'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['date'] = ['Date of creation'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imageInfo'] = ['Image information','This is the image review.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['published'] = ['Publish image', 'Publish or unpublish the picture.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['date'] = ['Date of creation', 'Set the date of creation.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['picture'] = ['Image'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['owner'] = ['Image-owner'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['name'] = ['Filename'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['addCustomThumb'] = ['Add a custom thumbnail'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['customThumb'] = ['Custom thumbnail.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['title'] = ['Image title'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['caption'] = ['Image-caption'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['name'] = ['File name', 'Set the file name.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['addCustomThumb'] = ['Add a custom thumbnail', 'Here you can select a custom image.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['customThumb'] = ['Custom thumbnail.','Select a custom image.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['title'] = ['Image title', 'Set the image title.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['caption'] = ['Image caption', 'Add the image caption.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['sorting'] = ['Sort sequence'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename'] = ['Filename'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename'] = ['File name'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path'] = ['Path'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = ['Embed movies/sounds located on a social-media-platform', 'Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&wmode=transparent'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC'] = ['Embed movies/sounds located on the contao-file-system'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = ['Embed a movie or a sound located on a social-media-platform', 'Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&wmode=transparent'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC'] = ['Embed a movie or a sound located on the contao file system.', 'Select a file from the Contao file system.'];
 
 /*
  * Buttons
  */
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['edit'] = ['edit image settings', 'Edit image with ID %s.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['delete'] = ['delete image', 'Delete image with ID %s.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cut'] = ['change order', 'Move image with ID %s.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['paste'] = ['paste below', 'Paste below image with ID %s.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imagerotate'] = ['rotate image', 'Rotate image by 90°.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileUpload'] = ['upload images', 'upload images'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['edit'] = ['Edit image settings', 'Edit image with ID %s.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['delete'] = ['Delete image', 'Delete image with ID %s.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['cut'] = ['Change the sorting order', 'Move image with ID %s.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['paste'] = ['Paste below', 'Paste below image with ID %s.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imagerotate'] = ['Rotate image clockwise', 'Rotate image clockwise by 90°.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileUpload'] = ['Upload images', 'Upload images.'];

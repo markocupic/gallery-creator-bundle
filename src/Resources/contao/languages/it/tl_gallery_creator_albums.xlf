@@ -1,0 +1,299 @@
+<?xml version="1.0" ?>
+<xliff version="1.1">
+  <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en" target-language="it">
+    <body>
+      <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
+        <source>Album information</source>
+        <target>Informazioni sull&amp;#039;album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.protection_legend">
+        <source>Protect album</source>
+        <target>Proteggi album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.upload_settings_legend">
+        <source>Image settings</source>
+        <target>Impostazioni immagine</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.id.0">
+        <source>Album-ID</source>
+        <target>ID album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.alias.0">
+        <source>Album alias</source>
+        <target>Alias album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.alias.1">
+        <source>The album alias defines although the album folder name.</source>
+        <target>L&amp;#039;alias album definisce anche il nome della cartella dell&amp;#039;album.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.published.0">
+        <source>Publish album</source>
+        <target>Pubblica l&amp;#039;album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.date.0">
+        <source>Date of creation</source>
+        <target>Data di creazione</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.owner.0">
+        <source>Album owner</source>
+        <target>Proprietario album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name.0">
+        <source>Album name</source>
+        <target>Nome album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name.1">
+        <source>Here you can define the album name.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.ownersName.0">
+        <source>Album owner</source>
+        <target>Proprietario album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.caption.0">
+        <source>Album-caption</source>
+        <target>captiono album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.thumb.0">
+        <source>Select the thumbnail which represents the Album in the listview</source>
+        <target>Miniatura anteprima</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.thumb.1">
+        <source>Drag the items to re-order them.</source>
+        <target>Quale immagine dev&amp;#039;essere mostrata nell&amp;#039;anteprima dell&amp;#039;album?</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.protected.0">
+        <source>Protect album</source>
+        <target>Proteggi album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.protected.1">
+        <source>Allow the album to logged in front end users only.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.groups.0">
+        <source>Allowed frontend groups</source>
+        <target>Gruppi frontend autorizzati</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.groups.1">
+        <source>Allow watching the album to these member groups only.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.imageResolution.0">
+        <source>Image width</source>
+        <target>Larghezza immagine</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.imageResolution.1">
+        <source>During the upload process the image resolution will be scaled to the selected value.</source>
+        <target>Durante il processo di caricamento la risoluzione dell&amp;#039;immagine verrà scalata al valore selezionato.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.preserveFilename.0">
+        <source>Preserve the original filename</source>
+        <target>Mantieni il nome file originale</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.preserveFilename.1">
+        <source>Otherwise the filename will be generated automatically.</source>
+        <target>In caso contrario il nome file sarà generato automaticamente.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.new.0">
+        <source>New album</source>
+        <target>Nuovo album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.new.1">
+        <source>Create a new album.</source>
+        <target>Crea un nuovo album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.edit.0">
+        <source>Edit and list pictures</source>
+        <target>Modifica album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.edit.1">
+        <source>Edit and list pictures of album with ID %s.</source>
+        <target>Modifica l&amp;#039;album con l&amp;#039;ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.delete.0">
+        <source>Delete album</source>
+        <target>Cancella album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.delete.1">
+        <source>Delete album with ID %s.</source>
+        <target>Cancella l&amp;#039;album con l&amp;#039;ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploadImages.0">
+        <source>Upload images</source>
+        <target>Carica immagini</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploadImages.1">
+        <source>Upload images to album with ID %s.</source>
+        <target>Carica immagini all&amp;#039;album con ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.importImagesFromFilesystem.0">
+        <source>Import images from the Contao file system</source>
+        <target>Copia le immagini da una directory sul server</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.importImagesFromFilesystem.1">
+        <source>Import images from the Contao filesystem on to the album with ID %s</source>
+        <target>Copia le immagini da una directory sul server nell&amp;#039;album con ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cut.0">
+        <source>Move album</source>
+        <target>Muovi l&amp;#039;album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cut.1">
+        <source>Move album with ID %s</source>
+        <target>Muovi l&amp;#039;album con ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pasteafter.0">
+        <source>Paste after</source>
+        <target>Copia dopo</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pasteafter.1">
+        <source>Paste after album ID %s</source>
+        <target>Copia dopo l&amp;#039;album con ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pasteinto.0">
+        <source>Paste into</source>
+        <target>Copia dentro</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pasteinto.1">
+        <source>Paste into album ID %s</source>
+        <target>Copia dentro l&amp;#039;album con ID %s</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insert_article">
+        <source>Insert articles before or after the album</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploader_legend">
+        <source>Uploader</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.maintenance">
+        <source>Revise tables</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.album_preview_thumb_legend">
+        <source>Picture and sorting settings</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.eventLocation.0">
+        <source>Event location</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.eventLocation.1">
+        <source>Set the event location.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.description.0">
+        <source>Meta page description</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.description.1">
+        <source>Here you can enter a short description of the page which will be evaluated by search engines like Google or Yahoo. Search engines usually indicate between 150 and 300 characters.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.keywords.0">
+        <source>Meta keywords</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.keywords.1">
+        <source>Here you can enter a list of comma separated keywords. Keywords, however, are no longer relevant to most search engines (including Google).</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.albumInfo.0">
+        <source>Album information</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.albumInfo.1">
+        <source>Get some album information.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.photographer.0">
+        <source>Photographers names</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.photographer.1">
+        <source>Please add photographers names.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePre.0">
+        <source>Insert article optionally before the album</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePre.1">
+        <source>Insert the id of the article that you optionally like have displayed in the detail view.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePost.0">
+        <source>Insert article optionally after the album</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePost.1">
+        <source>Insert the id of the article that you optionally like have displayed in the detail view.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.fileUpload.0">
+        <source>File Upload</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.fileUpload.1">
+        <source>Browse your local computer and select the files you want to upload to the server.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploader.0">
+        <source>Uploader</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploader.1">
+        <source>Please choose the uploader.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.visitors.0">
+        <source>Number of visitors</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.visitors.1">
+        <source>Set the number of album visitors.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.sortBy.0">
+        <source>Re-order images by</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.sortBy.1">
+        <source>Please choose the sort order.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.assignedDir.0">
+        <source>Assigned directory</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.assignedDir.1">
+        <source>New images will be uploaded to this directory.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.filePrefix.0">
+        <source>Rename all pictures and use a prefix</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.filePrefix.1">
+        <source>Enter a valid file prefix to rename all pictures of this album (e.g. &amp;quot;me-in-paris-2012&amp;quot;).</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.0">
+        <source>Accepted files</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.1">
+        <source>Accepted files: %s.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseTablesBtn.0">
+        <source>Revise database</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseDatabase.0">
+        <source>Revise tables</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseDatabase.1">
+        <source>Remove orphaned/incorrect entries</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.editheader.0">
+        <source>change album settings</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.editheader.1">
+        <source>Change the album settings with ID %s.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.toggle.0">
+        <source>Toggle album</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.toggle.1">
+        <source>Toggle visibility of album ID %s</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.no_scaling">
+        <source>Do not scale images during the upload process.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name_asc">
+        <source>File name (ascending)</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name_desc">
+        <source>File name (descending)</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.date_asc">
+        <source>Date (ascending)</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.date_desc">
+        <source>Date (descending)</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.custom">
+        <source>Custom order</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.messages.reviseDatabase">
+        <source>Revise tables: Clean the database from damaged/invalid/orphaned entries.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+

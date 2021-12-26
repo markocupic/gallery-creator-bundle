@@ -1,22 +1,18 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_content.php" source-language="en" target-language="it">
     <body>
+      <trans-unit id="tl_content.pagination_legend">
+        <source>Pagination settings</source>
+      </trans-unit>
       <trans-unit id="tl_content.miscellaneous_legend">
         <source>Miscellaneous settings</source>
         <target>Altri settaggi</target>
       </trans-unit>
-      <trans-unit id="tl_content.sorting_legend">
-        <source>Opzioni di ordinamento lista album</source>
-        <target>Opzioni di ordinamento lista album</target>
+      <trans-unit id="tl_content.album_listing_legend">
+        <source>Album listing legend</source>
       </trans-unit>
-      <trans-unit id="tl_content.picture_sorting_legend">
-        <source>Opzioni di ordinamento immagini</source>
-        <target>Opzioni di ordinamento immagini</target>
-      </trans-unit>
-      <trans-unit id="tl_content.thumb_legend">
-        <source>Impostazioni miniature</source>
-        <target>Impostazioni miniature</target>
+      <trans-unit id="tl_content.picture_listing_legend">
+        <source>Picture listing legend</source>
       </trans-unit>
       <trans-unit id="tl_content.gcPublishAlbums.0">
         <source>Select one or more albums</source>
@@ -25,6 +21,24 @@
       <trans-unit id="tl_content.gcPublishAlbums.1">
         <source>Selected albums will be displayed in the frontend.</source>
         <target>L&amp;#039;album selezionato verrà mostrato nel frontend.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.0">
+        <source>Select one album</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.1">
+        <source>The selected album will be displayed in the frontend.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAllAlbums.0">
+        <source>Publish all given albums</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAllAlbums.1">
+        <source>Publish all albums on the front end.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowChildAlbums.0">
+        <source>Show child albums</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowChildAlbums.1">
+        <source>Show child albums too.</source>
       </trans-unit>
       <trans-unit id="tl_content.gcRedirectSingleAlb.0">
         <source>Redirection in case of a single album</source>
@@ -111,33 +125,6 @@
         <source>Open the full-size image in a lightbox or in a new browser window.</source>
         <target>Apri l&amp;#039;immagine a dimensione intera in una lightbox oppure il link in una nuova finestra del browser</target>
       </trans-unit>
-      <trans-unit id="tl_content.pagination_legend">
-        <source>Pagination settings</source>
-      </trans-unit>
-      <trans-unit id="tl_content.album_listing_legend">
-        <source>Album listing legend</source>
-      </trans-unit>
-      <trans-unit id="tl_content.picture_listing_legend">
-        <source>Picture listing legend</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishSingleAlbum.0">
-        <source>Select one album</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishSingleAlbum.1">
-        <source>The selected album will be displayed in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.0">
-        <source>Publish all given albums</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.1">
-        <source>Publish all albums on the front end.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.0">
-        <source>Show child albums</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.1">
-        <source>Show child albums too.</source>
-      </trans-unit>
       <trans-unit id="tl_content.gcSortingField.sorting">
         <source>Backend-module sorting (sorting)</source>
       </trans-unit>
@@ -171,4 +158,3 @@
     </body>
   </file>
 </xliff>
-

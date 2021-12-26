@@ -1,5 +1,4 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_comment.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_comment.tl_gallery_creator_albums">
@@ -9,4 +8,3 @@
     </body>
   </file>
 </xliff>
-

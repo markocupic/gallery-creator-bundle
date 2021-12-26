@@ -1,10 +1,33 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_pictures.php" source-language="en" target-language="it">
     <body>
+      <trans-unit id="tl_gallery_creator_pictures.media_integration">
+        <source>Embed a movie or a sound</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.expert_legend">
+        <source>Expert Settings</source>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.id.0">
         <source>Image ID</source>
         <target>ID immagine</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.id.1">
+        <source>This is the image id.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.pid.0">
+        <source>Album ID</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.pid.1">
+        <source>Note that changing the album ID can break data integrity!</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.fileID.0">
+        <source>File ID</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.imageInfo.0">
+        <source>Image information</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.imageInfo.1">
+        <source>This is the image review.</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.published.0">
         <source>Publish image</source>
@@ -20,9 +43,17 @@
       <trans-unit id="tl_gallery_creator_pictures.date.1">
         <source>Set the date of creation.</source>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.picture.0">
+        <source>Image</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.picture.1">
+        <source>This is the image.</source>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.owner.0">
-        <source>Image-owner</source>
-        <target>Proprietario immagine</target>
+        <source>Image owner</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.owner.1">
+        <source>Here you can define the image owner.</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.name.0">
         <source>File name</source>
@@ -71,6 +102,18 @@
         <source>Path</source>
         <target>Percorso</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.0">
+        <source>Embed a movie or a sound located on a social-media-platform</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.1">
+        <source>Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&amp;amp;wmode=transparent</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.localMediaSRC.0">
+        <source>Embed a movie or a sound located on the contao file system.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_pictures.localMediaSRC.1">
+        <source>Select a file from the Contao file system.</source>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.edit.0">
         <source>Edit image settings</source>
         <target>Modifica le impostazioni dell&amp;#039;immagine</target>
@@ -111,50 +154,6 @@
         <source>Rotate image clockwise by 90°.</source>
         <target>Ruota l&amp;#039;immagine di 90°</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.jumpLoader.0">
-        <source>Carica immagini</source>
-        <target>Carica immagini</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.jumpLoader.1">
-        <source>Carica immagini</source>
-        <target>Carica immagini</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.media_integration">
-        <source>Embed a movie or a sound</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.expert_legend">
-        <source>Expert Settings</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.pid.0">
-        <source>Album ID</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.pid.1">
-        <source>Note that changing the album ID can break data integrity!</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.fileID.0">
-        <source>File ID</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.imageInfo.0">
-        <source>Image information</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.imageInfo.1">
-        <source>This is the image review.</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.picture.0">
-        <source>Image</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.0">
-        <source>Embed a movie or a sound located on a social-media-platform</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.1">
-        <source>Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&amp;amp;wmode=transparent</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.localMediaSRC.0">
-        <source>Embed a movie or a sound located on the contao file system.</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.localMediaSRC.1">
-        <source>Select a file from the Contao file system.</source>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.fileUpload.0">
         <source>Upload images</source>
       </trans-unit>
@@ -164,4 +163,3 @@
     </body>
   </file>
 </xliff>
-

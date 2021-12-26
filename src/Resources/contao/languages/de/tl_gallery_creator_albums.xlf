@@ -1,5 +1,4 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
@@ -60,6 +59,7 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.eventLocation.1">
         <source>Set the event location.</source>
+        <target>Fügen Sie eine Standortangabe hinzu.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.description.0">
         <source>Meta page description</source>
@@ -83,10 +83,27 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.name.1">
         <source>Here you can define the album name.</source>
+        <target>Hie können Sie den Albumnamen angeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.albumInfo.0">
+        <source>Album information</source>
+        <target>Albuminformationen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.albumInfo.1">
+        <source>Get some album information.</source>
+        <target>Hier sehen Sie Informationen zum Album.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.ownersName.0">
         <source>Album owner</source>
         <target>Albumbesitzer</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.photographer.0">
+        <source>Photographers names</source>
+        <target>Fotografen-Namen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.photographer.1">
+        <source>Please add photographers names.</source>
+        <target>Bitte geben Sie den/die Namen des/der Fotografen an.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption.0">
         <source>Album-caption</source>
@@ -106,6 +123,7 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protected.1">
         <source>Allow the album to logged in front end users only.</source>
+        <target>Machen Sie das Album nur für bestimmte Mitgliedergruppen zugänglich.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.groups.0">
         <source>Allowed frontend groups</source>
@@ -113,6 +131,7 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.groups.1">
         <source>Allow watching the album to these member groups only.</source>
+        <target>Wählen Sie die Mitgliedergruppen aus, welche Zugang zum Album erhalten sollen.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.insertArticlePre.0">
         <source>Insert article optionally before the album</source>
@@ -168,10 +187,7 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.visitors.1">
         <source>Set the number of album visitors.</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.visitorsDetails.0">
-        <source>Besucher-Details (IP, Browserdetails, Zugriffszeit, etc.)</source>
-        <target>Besucher-Details (IP, Browserdetails, Zugriffszeit, etc.)</target>
+        <target>Legen Sie die Besucherzahl fest.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.sortBy.0">
         <source>Re-order images by</source>
@@ -197,7 +213,15 @@
         <source>Enter a valid file prefix to rename all pictures of this album (e.g. &amp;quot;me-in-paris-2012&amp;quot;).</source>
         <target>Geben Sie ein gültiges Präfix ein, um alle Bilder dieses Albums umzubenennen (z.B. &amp;quot;me-in-paris-2012&amp;quot;).</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.reviseTablesBtn.0">
+      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.0">
+        <source>Accepted files</source>
+        <target>Dateitypen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.1">
+        <source>Accepted files: %s.</source>
+        <target>Akzeptierte Dateiendungen: %s.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseTablesBtn">
         <source>Revise database</source>
         <target>Datenbank bereinigen</target>
       </trans-unit>
@@ -217,21 +241,21 @@
         <source>Create a new album.</source>
         <target>Ein neues Album anlegen</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.list_pictures.0">
-        <source>Albuminhalt auflisten</source>
-        <target>Albuminhalt auflisten</target>
+      <trans-unit id="tl_gallery_creator_albums.edit.0">
+        <source>Edit and list pictures</source>
+        <target>Bilder auflisten und bearbeiten.</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.list_pictures.1">
-        <source>Bilder des Albums mit ID %s auflisten.</source>
-        <target>Bilder des Albums mit ID %s auflisten.</target>
+      <trans-unit id="tl_gallery_creator_albums.edit.1">
+        <source>Edit and list pictures of album with ID %s.</source>
+        <target>Bild mit ID %s anzeigen und bearbeiten.</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.edit_album.0">
-        <source>Album bearbeiten</source>
-        <target>Album bearbeiten</target>
+      <trans-unit id="tl_gallery_creator_albums.editheader.0">
+        <source>Change album settings</source>
+        <target>Albumeinstellungen ändern.</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.edit_album.1">
-        <source>Album mit ID %s bearbeiten.</source>
-        <target>Album mit ID %s bearbeiten.</target>
+      <trans-unit id="tl_gallery_creator_albums.editheader.1">
+        <source>Change the album settings with ID %s.</source>
+        <target>Einstellungen für Album mit ID: %s ändern.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.delete.0">
         <source>Delete album</source>
@@ -242,8 +266,8 @@
         <target>Album mit ID %s löschen.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.toggle.0">
-        <source>Toggle album</source>
-        <target>Album veröffentlichen/unveröffentlichen</target>
+        <source>Toggle visibility</source>
+        <target>Album veröffentlichen oder verbergen.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.toggle.1">
         <source>Toggle visibility of album ID %s</source>
@@ -317,41 +341,6 @@
         <source>Revise tables: Clean the database from damaged/invalid/orphaned entries.</source>
         <target>Datenbank bereinigen: Beschädigte/ungültige/verwaiste Datenbankeinträge entfernen.</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.0">
-        <source>Accepted files</source>
-        <target>Dateitypen</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.1">
-        <source>Accepted files: %s.</source>
-        <target>Akzeptierte Dateiendungen: %s.</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.photographer.0">
-        <source>Photographers names</source>
-        <target>Fotografen-Namen</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.photographer.1">
-        <source>Please add photographers names.</source>
-        <target>Bitte geben Sie den/die Namen des/der Fotografen an.</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.albumInfo.0">
-        <source>Album information</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.albumInfo.1">
-        <source>Get some album information.</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.edit.0">
-        <source>Edit and list pictures</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.edit.1">
-        <source>Edit and list pictures of album with ID %s.</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.editheader.0">
-        <source>change album settings</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.editheader.1">
-        <source>Change the album settings with ID %s.</source>
-      </trans-unit>
     </body>
   </file>
 </xliff>
-

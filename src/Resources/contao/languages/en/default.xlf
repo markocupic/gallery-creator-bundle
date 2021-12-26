@@ -1,9 +1,11 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/default.php" source-language="en">
     <body>
       <trans-unit id="ERR.fileNotFound">
         <source>The file &amp;quot;%s&amp;quot; doesn&amp;#039;t exist on your server!</source>
+      </trans-unit>
+      <trans-unit id="ERR.linkToNotExistingFile">
+        <source>The db-entry with ID %s in &amp;quot;tl_gallery_pictures&amp;quot; links to a not existing file. &amp;lt;br&amp;gt;Please clean up the database or check the existence of %s in the album with alias: %s!</source>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
         <source>The file &amp;quot;%s&amp;quot; could not been uploaded!</source>
@@ -11,20 +13,26 @@
       <trans-unit id="ERR.dirNotWriteable">
         <source>The directory &amp;quot;%s&amp;quot; is not writeable! Check chmod settings!</source>
       </trans-unit>
-      <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in &amp;quot;tl_gallery_pictures&amp;quot; links to a not existing file. &amp;lt;br&amp;gt;Please clean up the database or check the existence of %s in the album with alias: %s!</source>
-      </trans-unit>
       <trans-unit id="ERR.rejectWriteAccessToAlbum">
         <source>You are not allowed to edit the album: &amp;quot;%s&amp;quot;.</source>
       </trans-unit>
       <trans-unit id="ERR.notAllowedFilenameOrExtension">
         <source>Invalid file name or extension: =&amp;gt; %s. Please check the list of supported file extensions (%s).</source>
       </trans-unit>
+      <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
+        <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too!!!</source>
+      </trans-unit>
+      <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
+        <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too!!!</source>
+      </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backToOverview">
-        <source>back to general view</source>
+        <source>Back to general view</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.childAlbums">
-        <source>child albums</source>
+        <source>Child albums</source>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.childAlbumsOf">
+        <source>Child albums of</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.pictures">
         <source>pictures</source>
@@ -32,17 +40,14 @@
       <trans-unit id="GALLERY_CREATOR.contains">
         <source>contains</source>
       </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.visitors">
+        <source>visitors</source>
+      </trans-unit>
       <trans-unit id="GALLERY_CREATOR.feAuthenticationError.0">
         <source>Authentication error</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.feAuthenticationError.1">
         <source>You tried to enter a protected album. Please log in as a frontend user or check your member-rights.</source>
-      </trans-unit>
-      <trans-unit id="GALLERY_CREATOR.childAlbumsOf">
-        <source>Child albums of</source>
-      </trans-unit>
-      <trans-unit id="GALLERY_CREATOR.visitors">
-        <source>visitors</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.photographerName">
         <source>Photographers name</source>
@@ -56,13 +61,6 @@
       <trans-unit id="GALLERY_CREATOR.socialMedia">
         <source>Replace image with a social media.</source>
       </trans-unit>
-      <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
-        <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too!!!</source>
-      </trans-unit>
-      <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
-        <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too!!!</source>
-      </trans-unit>
     </body>
   </file>
 </xliff>
-

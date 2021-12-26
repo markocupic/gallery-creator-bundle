@@ -1,18 +1,18 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_content.php" source-language="en" target-language="nl">
     <body>
+      <trans-unit id="tl_content.pagination_legend">
+        <source>Pagination settings</source>
+      </trans-unit>
       <trans-unit id="tl_content.miscellaneous_legend">
         <source>Miscellaneous settings</source>
         <target>Diverse instellingen</target>
       </trans-unit>
-      <trans-unit id="tl_content.picture_sorting_legend">
-        <source>Sorteer opties</source>
-        <target>Sorteer opties</target>
+      <trans-unit id="tl_content.album_listing_legend">
+        <source>Album listing legend</source>
       </trans-unit>
-      <trans-unit id="tl_content.thumb_legend">
-        <source>Thumbnail instellingen</source>
-        <target>Thumbnail instellingen</target>
+      <trans-unit id="tl_content.picture_listing_legend">
+        <source>Picture listing legend</source>
       </trans-unit>
       <trans-unit id="tl_content.gcPublishAlbums.0">
         <source>Select one or more albums</source>
@@ -21,6 +21,24 @@
       <trans-unit id="tl_content.gcPublishAlbums.1">
         <source>Selected albums will be displayed in the frontend.</source>
         <target>Geselecteerde albums worden weergegeven in het frontend.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.0">
+        <source>Select one album</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.1">
+        <source>The selected album will be displayed in the frontend.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAllAlbums.0">
+        <source>Publish all given albums</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishAllAlbums.1">
+        <source>Publish all albums on the front end.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowChildAlbums.0">
+        <source>Show child albums</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowChildAlbums.1">
+        <source>Show child albums too.</source>
       </trans-unit>
       <trans-unit id="tl_content.gcRedirectSingleAlb.0">
         <source>Redirection in case of a single album</source>
@@ -68,6 +86,18 @@
       <trans-unit id="tl_content.gcSortingDirection.ASC">
         <source>Descending</source>
       </trans-unit>
+      <trans-unit id="tl_content.gcPictureSorting.0">
+        <source>Picture sorting</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSorting.1">
+        <source>The pictures will be sorted according to the selected field.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSortingDirection.0">
+        <source>Sort sequence</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSortingDirection.1">
+        <source>DESC: descending, ASC: ascending</source>
+      </trans-unit>
       <trans-unit id="tl_content.gcSizeDetailView.0">
         <source>Detail view: Thumbnail width and height</source>
         <target>Detailweergave: thumbnail breedte en hoogte</target>
@@ -91,45 +121,6 @@
       <trans-unit id="tl_content.gcFullSize.1">
         <source>Open the full-size image in a lightbox or in a new browser window.</source>
         <target>Open de afbeelding op ware grootte in een lightbox of de link in een nieuw browser venster.</target>
-      </trans-unit>
-      <trans-unit id="tl_content.pagination_legend">
-        <source>Pagination settings</source>
-      </trans-unit>
-      <trans-unit id="tl_content.album_listing_legend">
-        <source>Album listing legend</source>
-      </trans-unit>
-      <trans-unit id="tl_content.picture_listing_legend">
-        <source>Picture listing legend</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishSingleAlbum.0">
-        <source>Select one album</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishSingleAlbum.1">
-        <source>The selected album will be displayed in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.0">
-        <source>Publish all given albums</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.1">
-        <source>Publish all albums on the front end.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.0">
-        <source>Show child albums</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.1">
-        <source>Show child albums too.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPictureSorting.0">
-        <source>Picture sorting</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPictureSorting.1">
-        <source>The pictures will be sorted according to the selected field.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPictureSortingDirection.0">
-        <source>Sort sequence</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPictureSortingDirection.1">
-        <source>DESC: descending, ASC: ascending</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.sorting">
         <source>Backend-module sorting (sorting)</source>
@@ -164,4 +155,3 @@
     </body>
   </file>
 </xliff>
-

@@ -434,7 +434,7 @@ class GalleryCreatorAlbums extends Backend
             // Remove buttons
             unset($arrButtons['saveNcreate'], $arrButtons['saveNclose']);
 
-            $arrButtons['save'] = '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'][0].'</button>';
+            $arrButtons['save'] = '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'].'</button>';
         }
 
         if ('fileUpload' === $request->query->get('key')) {

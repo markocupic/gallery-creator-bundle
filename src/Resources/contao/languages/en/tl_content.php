@@ -12,13 +12,17 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-//Legends
+/**
+ * Legends
+ */
 $GLOBALS['TL_LANG']['tl_content']['pagination_legend'] = 'Pagination settings';
 $GLOBALS['TL_LANG']['tl_content']['miscellaneous_legend'] = 'Miscellaneous settings';
 $GLOBALS['TL_LANG']['tl_content']['album_listing_legend'] = 'Album listing legend';
 $GLOBALS['TL_LANG']['tl_content']['picture_listing_legend'] = 'Picture listing legend';
 
-//Fields
+/**
+ * Fields
+ */
 $GLOBALS['TL_LANG']['tl_content']['gcPublishAlbums'] = ['Select one or more albums', 'Selected albums will be displayed in the frontend.'];
 $GLOBALS['TL_LANG']['tl_content']['gcPublishSingleAlbum'] = ['Select one album', 'The selected album will be displayed in the frontend.'];
 $GLOBALS['TL_LANG']['tl_content']['gcPublishAllAlbums'] = ['Publish all given albums', 'Publish all albums on the front end.'];
@@ -34,7 +38,9 @@ $GLOBALS['TL_LANG']['tl_content']['gcSizeDetailView'] = ['Detail view: Thumbnail
 $GLOBALS['TL_LANG']['tl_content']['gcSizeAlbumListing'] = ['Album list: Thumbnail width and height', 'Here you can set the image dimensions and the resize mode.'];
 $GLOBALS['TL_LANG']['tl_content']['gcFullSize'] = ['Full-size view/new window', 'Open the full-size image in a lightbox or in a new browser window.'];
 
-// References
+/**
+ * References
+ */
 $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['DESC'] = 'Ascending';
 $GLOBALS['TL_LANG']['tl_content']['gcSortingDirection']['ASC'] = 'Descending';
 $GLOBALS['TL_LANG']['tl_content']['gcSortingField']['sorting'] = 'Backend-module sorting (sorting)';

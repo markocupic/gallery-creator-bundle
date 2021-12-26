@@ -1,5 +1,4 @@
-<?xml version="1.0" ?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_content.php" source-language="en">
     <body>
       <trans-unit id="tl_content.pagination_legend">
@@ -45,16 +44,16 @@
         <source>Should be automatically redirected to the detail-view, in case of single-album-choice?</source>
       </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.0">
-        <source>Items per page in the albumlisting</source>
+        <source>Items per page in the album listing</source>
       </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.1">
-        <source>The number of items per page in the albumlisting. Set to 0 to disable pagination.</source>
+        <source>The number of items per page in the album listing. Set to 0 to disable pagination.</source>
       </trans-unit>
       <trans-unit id="tl_content.gcThumbsPerPage.0">
-        <source>Thumbs per page in the detailview</source>
+        <source>Thumbs per page in the detail view</source>
       </trans-unit>
       <trans-unit id="tl_content.gcThumbsPerPage.1">
-        <source>The number of thumbnails per page in the detailview. Set to 0 to disable pagination.</source>
+        <source>The number of thumbnails per page in the detail view. Set to 0 to disable pagination.</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSorting.0">
         <source>Album sorting</source>
@@ -120,7 +119,7 @@
         <source>Owner (owner)</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.caption">
-        <source>caption/Caption (caption)</source>
+        <source>Caption (caption)</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.title">
         <source>Image-title (title)</source>
@@ -129,7 +128,7 @@
         <source>Revision date (tstamp)</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.alias">
-        <source>Albumalias (alias)</source>
+        <source>Album alias (alias)</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.visitors">
         <source>Number of visitors (visitors)</source>
@@ -137,4 +136,3 @@
     </body>
   </file>
 </xliff>
-

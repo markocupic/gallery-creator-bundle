@@ -24,5 +24,5 @@ $GLOBALS['TL_LANG']['MOD']['gallery_creator'] = ['Gallery Creator', 'Create and 
  * Front end content elements
  */
 $GLOBALS['TL_LANG']['CTE']['gallery_creator_elements'] = 'Gallery Creator';
-$GLOBALS['TL_LANG']['CTE'][GalleryCreatorController::TYPE] = ['Gallery Creator', 'Include gallery creator albums.'];
+$GLOBALS['TL_LANG']['CTE'][GalleryCreatorController::TYPE] = ['Gallery Creator', 'Include a Gallery Creator content element to your article.'];
 $GLOBALS['TL_LANG']['CTE'][GalleryCreatorNewsController::TYPE] = ['Gallery Creator News', 'Include a gallery creator album.'];

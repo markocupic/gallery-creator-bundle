@@ -58,14 +58,13 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['acceptedFiles'] = ['Accepted f
  * Buttons
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'] = ['Revise tables'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase'][0] = 'Revise tables';
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase'][1] = 'Remove orphaned/incorrect entries';
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'][0] = 'Revise database';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseDatabase'] = ['Revise tables', 'Remove orphaned/incorrect entries'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'] = 'Revise database';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['new'] = ['New album', 'Create a new album.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['edit'] = ['Edit and list pictures', 'Edit and list pictures of album with ID %s.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['editheader'] = ['Change album settings', 'Change the album settings with ID %s.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['delete'] = ['Delete album', 'Delete album with ID %s.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['toggle'] = ['Toggle album', 'Toggle visibility of album ID %s'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['toggle'] = ['Toggle visibility', 'Toggle visibility of album ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploadImages'] = ['Upload images', 'Upload images to album with ID %s.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['importImagesFromFilesystem'] = ['Import images from the Contao file system', 'Import images from the Contao filesystem on to the album with ID %s'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['cut'] = ['Move album', 'Move album with ID %s'];

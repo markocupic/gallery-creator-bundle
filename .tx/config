@@ -1,0 +1,44 @@
+[main]
+host = https://www.transifex.com
+
+[gallery-creator-bundle.default-xlf]
+file_filter = src/Resources/contao/languages/<lang>/default.xlf
+minimum_perc = 0
+source_file = src/Resources/contao/languages/en/default.xlf
+source_lang = en
+type = XLIFF
+
+[gallery-creator-bundle.modules-xlf]
+file_filter = src/Resources/contao/languages/<lang>/modules.xlf
+minimum_perc = 0
+source_file = src/Resources/contao/languages/en/modules.xlf
+source_lang = en
+type = XLIFF
+
+[gallery-creator-bundle.tl_comment-xlf]
+file_filter = src/Resources/contao/languages/<lang>/tl_comment.xlf
+minimum_perc = 0
+source_file = src/Resources/contao/languages/en/tl_comment.xlf
+source_lang = en
+type = XLIFF
+
+[gallery-creator-bundle.tl_content-xlf]
+file_filter = src/Resources/contao/languages/<lang>/tl_content.xlf
+minimum_perc = 0
+source_file = src/Resources/contao/languages/en/tl_content.xlf
+source_lang = en
+type = XLIFF
+
+[gallery-creator-bundle.tl_gallery_creator_albums-xlf]
+file_filter = src/Resources/contao/languages/<lang>/tl_gallery_creator_albums.xlf
+minimum_perc = 0
+source_file = src/Resources/contao/languages/en/tl_gallery_creator_albums.xlf
+source_lang = en
+type = XLIFF
+
+[gallery-creator-bundle.tl_gallery_creator_pictures-xlf]
+file_filter = src/Resources/contao/languages/<lang>/tl_gallery_creator_pictures.xlf
+minimum_perc = 0
+source_file = src/Resources/contao/languages/en/tl_gallery_creator_pictures.xlf
+source_lang = en
+type = XLIFF

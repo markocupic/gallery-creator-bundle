@@ -44,11 +44,7 @@ class AlbumUtil
         $this->connection = $connection;
     }
 
-
     /**
-     * @param GalleryCreatorAlbumsModel $albumModel
-     * @param ContentModel $contentElementModel
-     * @return array
      * @throws DoctrineDBALDriverException
      * @throws Exception
      */

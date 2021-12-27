@@ -47,7 +47,7 @@
       </trans-unit>
       <trans-unit id="tl_content.gcShowChildAlbums.1">
         <source>Show child albums too.</source>
-        <target>Alben und Kindalben</target>
+        <target>Alben und Kindalben anzeigen.</target>
       </trans-unit>
       <trans-unit id="tl_content.gcRedirectSingleAlb.0">
         <source>Redirection in case of a single album</source>

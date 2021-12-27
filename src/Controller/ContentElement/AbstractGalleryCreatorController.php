@@ -20,7 +20,6 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Environment;
 use Contao\FilesModel;
-use Contao\FrontendTemplate;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
@@ -33,7 +32,6 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
@@ -42,7 +40,6 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     private Connection $connection;
 
     private PictureUtil $pictureUtil;
-
 
     private ScopeMatcher $scopeMatcher;
 
@@ -84,11 +81,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     }
 
     /**
-     * @param GalleryCreatorAlbumsModel $albumsModel
-     * @param ContentModel $contentModel
      * @param $template
-     * @param PageModel $pageModel
-     * @return void
+     *
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */

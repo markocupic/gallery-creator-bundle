@@ -26,6 +26,7 @@ use Doctrine\DBAL\Driver\Exception;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment as TwigEnvironment;
 
 /**
  * Class Content.
@@ -38,11 +39,14 @@ class Content extends Backend
 
     private RequestStack $requestStack;
 
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, RequestStack $requestStack)
+    private TwigEnvironment $twig;
+
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, RequestStack $requestStack, TwigEnvironment $twig)
     {
         $this->albumUtil = $albumUtil;
         $this->connection = $connection;
         $this->requestStack = $requestStack;
+        $this->twig = $twig;
     }
 
     /**
@@ -99,12 +103,11 @@ class Content extends Backend
         }
 
         $translator = System::getContainer()->get('translator');
-        $twig = System::getContainer()->get('twig');
 
         Controller::loadLanguageFile('tl_content');
 
         return (new Response(
-            $twig->render(
+            $this->twig->render(
                 '@MarkocupicGalleryCreator/Backend/album_selector_form_field.html.twig',
                 [
                     'list' => $this->getChildAlbumsAsUnorderedList((int) $dc->activeRecord->id, 0),

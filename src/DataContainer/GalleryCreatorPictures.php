@@ -38,6 +38,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment as TwigEnvironment;
 
 class GalleryCreatorPictures extends Backend
 {
@@ -53,11 +54,13 @@ class GalleryCreatorPictures extends Backend
 
     private bool $galleryCreatorBackendWriteProtection;
 
+    private TwigEnvironment $twig;
+
     private ?LoggerInterface $logger;
 
     private bool $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, LoggerInterface $logger = null)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;
@@ -65,6 +68,7 @@ class GalleryCreatorPictures extends Backend
         $this->translator = $translator;
         $this->projectDir = $projectDir;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
+        $this->twig = $twig;
         $this->logger = $logger;
 
         $request = $this->requestStack->getCurrentRequest();
@@ -383,8 +387,6 @@ class GalleryCreatorPictures extends Backend
      */
     public function inputFieldCbPicture(DataContainer $dc): string
     {
-        $twig = System::getContainer()->get('twig');
-
         $objImg = GalleryCreatorPicturesModel::findByPk($dc->id);
         $filesModel = FilesModel::findByUuid($objImg->uuid);
 
@@ -395,7 +397,7 @@ class GalleryCreatorPictures extends Backend
                 ->executeResize()->getResizedPath();
 
             return (new Response(
-                $twig->render(
+                $this->twig->render(
                     '@MarkocupicGalleryCreator/Backend/picture.html.twig',
                     [
                         'basename' => basename($filesModel->path),
@@ -428,10 +430,9 @@ class GalleryCreatorPictures extends Backend
         $picturesModel->owner_name = '' === $userModel->name ? '---' : $userModel->name;
 
         $translator = System::getContainer()->get('translator');
-        $twig = System::getContainer()->get('twig');
 
         return (new Response(
-            $twig->render(
+            $this->twig->render(
                 '@MarkocupicGalleryCreator/Backend/image_information.html.twig',
                 [
                     'model' => $picturesModel->row(),

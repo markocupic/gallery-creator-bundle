@@ -19,8 +19,8 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
@@ -52,9 +52,6 @@ class GalleryCreatorAjax
     }
 
     /**
-     * @param int $pictureId
-     * @param int $contentId
-     * @return Response
      * @throws \Exception
      *
      * @Route("/_gallery_creator/get_image/{pictureId}/{contentId}", name="GalleryCreatorAjax::class\getImage", defaults={"_scope" = "frontend"})
@@ -74,12 +71,7 @@ class GalleryCreatorAjax
         return new JsonResponse($arrPicture);
     }
 
-
-
     /**
-     * @param int $pid
-     * @param int $contentId
-     * @return Response
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      *
@@ -126,7 +118,8 @@ class GalleryCreatorAjax
             }
 
             $localMediaModel = null;
-            if (!empty($arrPicture['localMediaSRC'])){
+
+            if (!empty($arrPicture['localMediaSRC'])) {
                 $localMediaModel = FilesModel::findByUuid($arrPicture['localMediaSRC']);
             }
 

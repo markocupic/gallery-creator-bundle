@@ -3,6 +3,7 @@
     <body>
       <trans-unit id="tl_comment.tl_gallery_creator_albums">
         <source>Gallery Creator Album</source>
+        <target>Gallery Creator Album</target>
       </trans-unit>
     </body>
   </file>

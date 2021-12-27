@@ -18,7 +18,6 @@ use Contao\Dbafs;
 use Contao\FilesModel;
 use Contao\Folder;
 use Contao\StringUtil;
-use Contao\System;
 use Contao\UserModel;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
@@ -36,7 +35,6 @@ class ReviseAlbumDatabase
     private string $projectDir;
 
     private string $galleryCreatorUploadPath;
-
 
     public function __construct(RequestStack $requestStack, Connection $connection, string $projectDir, string $galleryCreatorUploadPath)
     {

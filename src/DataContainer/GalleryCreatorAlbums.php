@@ -18,7 +18,6 @@ use Contao\Automator;
 use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Config;
-use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Monolog\ContaoContext;
@@ -47,6 +46,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment as TwigEnvironment;
 
 /**
  * Class GalleryCreatorAlbums.
@@ -69,11 +69,13 @@ class GalleryCreatorAlbums extends Backend
 
     private array $galleryCreatorValidExtensions;
 
-    private bool $restrictedUser = false;
+    private TwigEnvironment $twig;
 
     private ?LoggerInterface $logger;
 
-    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, ?LoggerInterface $logger)
+    private bool $restrictedUser = false;
+
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, TwigEnvironment $twig, ?LoggerInterface $logger)
     {
         $this->requestStack = $requestStack;
         $this->fileUtil = $fileUtil;
@@ -83,6 +85,7 @@ class GalleryCreatorAlbums extends Backend
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
+        $this->twig = $twig;
         $this->logger = $logger;
 
         parent::__construct();
@@ -242,10 +245,9 @@ class GalleryCreatorAlbums extends Backend
     public function inputFieldCbReviseDatabase(): string
     {
         $translator = System::getContainer()->get('translator');
-        $twig = System::getContainer()->get('twig');
 
         return (new Response(
-            $twig->render(
+            $this->twig->render(
                 '@MarkocupicGalleryCreator/Backend/revise_database.html.twig',
                 [
                     'trans' => [
@@ -278,10 +280,9 @@ class GalleryCreatorAlbums extends Backend
         $this->checkUserRole($dc->activeRecord->id);
 
         $translator = System::getContainer()->get('translator');
-        $twig = System::getContainer()->get('twig');
 
         return (new Response(
-            $twig->render(
+            $this->twig->render(
                 '@MarkocupicGalleryCreator/Backend/album_information.html.twig',
                 [
                     'restricted' => $this->restrictedUser,
@@ -408,8 +409,6 @@ class GalleryCreatorAlbums extends Backend
 
         return $label;
     }
-
-
 
     /**
      * Load callback.
@@ -825,10 +824,9 @@ class GalleryCreatorAlbums extends Backend
         }
 
         $translator = System::getContainer()->get('translator');
-        $twig = System::getContainer()->get('twig');
 
         return (new Response(
-            $twig->render(
+            $this->twig->render(
                 '@MarkocupicGalleryCreator/Backend/album_thumbnail_list.html.twig',
                 [
                     'album_thumbs' => $arrContainer[0],
@@ -1028,8 +1026,6 @@ class GalleryCreatorAlbums extends Backend
 
         return $strAlias;
     }
-
-
 
     /**
      * Save callback.

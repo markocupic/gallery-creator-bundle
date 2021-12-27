@@ -18,7 +18,6 @@ use Contao\ContentModel;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\PageModel;
-use Contao\System;
 use Contao\Template;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
@@ -30,6 +29,7 @@ use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment as TwigEnvironment;
 
 /**
  * @ContentElement(GalleryCreatorNewsController::TYPE, category="gallery_creator_elements")
@@ -50,13 +50,15 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 
     private ScopeMatcher $scopeMatcher;
 
+    private TwigEnvironment $twig;
+
     private ?GalleryCreatorAlbumsModel $activeAlbum = null;
 
     private ?ContentModel $model = null;
 
     private ?PageModel $pageModel = null;
 
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher)
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, TwigEnvironment $twig)
     {
         $this->albumUtil = $albumUtil;
         $this->connection = $connection;
@@ -64,6 +66,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         $this->requestStack = $requestStack;
         $this->securityUtil = $securityUtil;
         $this->scopeMatcher = $scopeMatcher;
+        $this->twig = $twig;
 
         parent::__construct($albumUtil, $connection, $pictureUtil, $scopeMatcher);
     }
@@ -72,10 +75,8 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
     {
         // Do not parse the content element in the backend
         if ($this->scopeMatcher->isBackendRequest($request)) {
-            $twig = System::getContainer()->get('twig');
-
             return new Response(
-                $twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', [])
+                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', [])
             );
         }
 

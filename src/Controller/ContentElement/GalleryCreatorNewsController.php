@@ -38,38 +38,19 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 {
     public const TYPE = 'gallery_creator_news';
 
-    private AlbumUtil $albumUtil;
+    protected TwigEnvironment $twig;
+    protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
+    protected ?ContentModel $model = null;
+    protected ?PageModel $pageModel = null;
 
-    private Connection $connection;
-
-    private PictureUtil $pictureUtil;
-
-    private RequestStack $requestStack;
-
-    private SecurityUtil $securityUtil;
-
-    private ScopeMatcher $scopeMatcher;
-
-    private TwigEnvironment $twig;
-
-    private ?GalleryCreatorAlbumsModel $activeAlbum = null;
-
-    private ?ContentModel $model = null;
-
-    private ?PageModel $pageModel = null;
-
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, TwigEnvironment $twig)
+    public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig)
     {
-        $this->albumUtil = $albumUtil;
-        $this->connection = $connection;
-        $this->pictureUtil = $pictureUtil;
-        $this->requestStack = $requestStack;
-        $this->securityUtil = $securityUtil;
-        $this->scopeMatcher = $scopeMatcher;
         $this->twig = $twig;
 
-        parent::__construct($albumUtil, $connection, $pictureUtil, $scopeMatcher);
+        parent::__construct($dependencyAggregate);
     }
+
+
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {

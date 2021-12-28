@@ -52,41 +52,19 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     public const GC_VIEW_MODE_DETAIL = 'detail_view';
     public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
+    private TwigEnvironment $twig;
     protected ?string $viewMode = null;
-
     protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
-
     protected array $arrAlbums = [];
-
     protected ?ContentModel $model;
-
     protected ?PageModel $pageModel;
 
-    private AlbumUtil $albumUtil;
 
-    private Connection $connection;
 
-    private PictureUtil $pictureUtil;
-
-    private RequestStack $requestStack;
-
-    private SecurityUtil $securityUtil;
-
-    private ScopeMatcher $scopeMatcher;
-
-    private TwigEnvironment $twig;
-
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, TwigEnvironment $twig)
+    public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig)
     {
-        $this->albumUtil = $albumUtil;
-        $this->connection = $connection;
-        $this->pictureUtil = $pictureUtil;
-        $this->requestStack = $requestStack;
-        $this->securityUtil = $securityUtil;
-        $this->scopeMatcher = $scopeMatcher;
+        parent::__construct($dependencyAggregate);
         $this->twig = $twig;
-
-        parent::__construct($albumUtil, $connection, $pictureUtil, $securityUtil, $scopeMatcher);
     }
 
     /**
@@ -129,11 +107,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             $this->arrAlbums = $this->getAllAlbums($this->activeAlbum->pid);
 
-            // Check if user is authorized.
-            // If not, show empty page.
-            if (!$this->securityUtil->isAuthorized($this->activeAlbum)) {
-                return new Response('', Response::HTTP_NO_CONTENT);
-            }
         }
 
         // Abort if no album is selected
@@ -143,13 +116,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $this->viewMode = $this->viewMode ?: self::GC_VIEW_MODE_LIST;
         $this->viewMode = !empty(Input::get('img')) ? self::GC_VIEW_MODE_SINGLE_IMAGE : $this->viewMode;
-
-        if (self::GC_VIEW_MODE_DETAIL === $this->viewMode) {
-            // For security reasons...
-            if (!\in_array($this->activeAlbum->id, $this->arrAlbums, false)) {
-                return new Response('', Response::HTTP_NO_CONTENT);
-            }
-        }
 
         return parent::__invoke($request, $this->model, $section, $classes);
     }
@@ -321,9 +287,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): ?string
     {
-        if ($this->scopeMatcher->isBackendRequest($this->requestStack->getCurrentRequest())) {
-            return null;
-        }
+
 
         // Generates the link to the parent album
         if ($this->model->gcShowChildAlbums && null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
@@ -355,7 +319,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
             $albumModel = GalleryCreatorAlbumsModel::findByPk($arrAlbum['id']);
 
-            // Show only albums with the right pid
+            // Show only albums with the correct pid or in other words: $this->activeAlbum->id
             if ((int) $pid !== (int) $albumModel->pid) {
                 continue;
             }

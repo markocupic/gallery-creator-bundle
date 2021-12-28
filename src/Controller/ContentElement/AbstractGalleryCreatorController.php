@@ -40,23 +40,23 @@ use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
-    private AlbumUtil $albumUtil;
+    protected AlbumUtil $albumUtil;
 
-    private Connection $connection;
+    protected Connection $connection;
 
-    private PictureUtil $pictureUtil;
+    protected PictureUtil $pictureUtil;
 
-    private SecurityUtil $securityUtil;
+    protected SecurityUtil $securityUtil;
 
-    private ScopeMatcher $scopeMatcher;
+    protected ScopeMatcher $scopeMatcher;
 
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher)
+    public function __construct(DependencyAggregate $dependencyAggregate)
     {
-        $this->albumUtil = $albumUtil;
-        $this->connection = $connection;
-        $this->pictureUtil = $pictureUtil;
-        $this->securityUtil = $securityUtil;
-        $this->scopeMatcher = $scopeMatcher;
+        $this->albumUtil = $dependencyAggregate->albumUtil;
+        $this->connection = $dependencyAggregate->connection;
+        $this->pictureUtil = $dependencyAggregate->pictureUtil;
+        $this->securityUtil = $dependencyAggregate->securityUtil;
+        $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
     }
 
     public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): ?FilesModel

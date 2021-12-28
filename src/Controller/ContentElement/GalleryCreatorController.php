@@ -17,25 +17,19 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\Exception\PageNotFoundException;
-use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\Environment;
 use Contao\Input;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\Template;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Doctrine\DBAL\ParameterType;
 use Haste\Util\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
-use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
-use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
-use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
 use Twig\Error\LoaderError;
@@ -52,14 +46,12 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     public const GC_VIEW_MODE_DETAIL = 'detail_view';
     public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
-    private TwigEnvironment $twig;
+    protected TwigEnvironment $twig;
     protected ?string $viewMode = null;
     protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
     protected array $arrAlbums = [];
     protected ?ContentModel $model;
     protected ?PageModel $pageModel;
-
-
 
     public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig)
     {
@@ -106,7 +98,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             }
 
             $this->arrAlbums = $this->getAllAlbums($this->activeAlbum->pid);
-
         }
 
         // Abort if no album is selected
@@ -287,8 +278,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): ?string
     {
-
-
         // Generates the link to the parent album
         if ($this->model->gcShowChildAlbums && null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
             return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));

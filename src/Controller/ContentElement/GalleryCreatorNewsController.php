@@ -15,19 +15,13 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\ContentModel;
-use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\PageModel;
 use Contao\Template;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
-use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
-use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
 
@@ -49,8 +43,6 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 
         parent::__construct($dependencyAggregate);
     }
-
-
 
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {

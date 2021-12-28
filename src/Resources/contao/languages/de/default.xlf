@@ -73,6 +73,10 @@
         <source>Location</source>
         <target>Location</target>
       </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.selectAllAlbums">
+        <source>Select all albums.</source>
+        <target>Alle Alben auswählen</target>
+      </trans-unit>
       <trans-unit id="GALLERY_CREATOR.localMedia">
         <source>Replace image with a movie or sound from the Contao filesystem.</source>
         <target>Ersetze das Bild mit einer Video- oder Tondatei aus dem Contao Dateisystem.</target>

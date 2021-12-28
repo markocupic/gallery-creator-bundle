@@ -62,6 +62,9 @@
       <trans-unit id="GALLERY_CREATOR.eventLocation">
         <source>Location</source>
       </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.selectAllAlbums">
+        <source>Select all albums.</source>
+      </trans-unit>
       <trans-unit id="GALLERY_CREATOR.localMedia">
         <source>Replace image with a movie or sound from the Contao filesystem.</source>
       </trans-unit>

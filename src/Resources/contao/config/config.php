@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Widget\Backend\AlbumTreeWidget;
 
 /*
  * Back end module
@@ -29,3 +30,6 @@ $GLOBALS['BE_MOD']['content']['gallery_creator'] = [
 // Register contao models
 $GLOBALS['TL_MODELS']['tl_gallery_creator_albums'] = GalleryCreatorAlbumsModel::class;
 $GLOBALS['TL_MODELS']['tl_gallery_creator_pictures'] = GalleryCreatorPicturesModel::class;
+
+// Backend widgets
+$GLOBALS['BE_FFL'][AlbumTreeWidget::NAME] = AlbumTreeWidget::class;

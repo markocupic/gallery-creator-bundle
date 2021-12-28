@@ -1,4 +1,4 @@
-<div class="widget long gc-preview_thumb">
+<div class="widget long gc-preview-thumb">
     <h3><label for="ctrl_thumb">{{ trans.album_thumb }}</label></h3>
     <p style="margin-top:.5rem">{{ trans.drag_items_hint }}</p>
 
@@ -31,8 +31,8 @@
 
 <script>
     window.addEvent("domready", function () {
-        $$(".gc-preview_thumb input").addEvent("click", function () {
-            $$(".gc-preview_thumb li").removeClass("checked");
+        $$(".gc-preview-thumb input").addEvent("click", function () {
+            $$(".gc-preview-thumb li").removeClass("checked");
             this.getParent("li").addClass("checked");
         });
 

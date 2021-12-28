@@ -403,7 +403,7 @@ class GalleryCreatorAlbums extends Backend
         $label = str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
         $image = $row['published'] ? 'album.svg' : '_album.svg';
         $label = str_replace('#icon#', $image, $label);
-        $href = sprintf('contao?do=gallery_creator&amp;table=tl_gallery_creator_albums&amp;=%s&amp;act=edit&amp;rt=%s&amp;ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
+        $href = sprintf('contao?do=gallery_creator&amp;table=tl_gallery_creator_albums&amp;id=%s&amp;act=edit&amp;rt=%s&amp;ref=%s', $row['id'], REQUEST_TOKEN, TL_REFERER_ID);
         $label = str_replace('#href#', $href, $label);
         $label = str_replace('#title#', sprintf($GLOBALS['TL_LANG']['tl_gallery_creator_albums']['editheader'][1], $row['id']), $label);
 

@@ -16,7 +16,6 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
-use Contao\Controller;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
@@ -26,9 +25,10 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\Template;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+use Doctrine\DBAL\Exception as DoctrineDBALException;
+use Doctrine\DBAL\ParameterType;
 use Haste\Util\Pagination;
-use Haste\Util\Url;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
@@ -38,6 +38,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements")
@@ -49,6 +52,16 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     public const GC_VIEW_MODE_DETAIL = 'detail_view';
     public const GC_VIEW_MODE_SINGLE_IMAGE = 'single_image';
 
+    protected ?string $viewMode = null;
+
+    protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
+
+    protected array $arrAlbums = [];
+
+    protected ?ContentModel $model;
+
+    protected ?PageModel $pageModel;
+
     private AlbumUtil $albumUtil;
 
     private Connection $connection;
@@ -57,35 +70,31 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
     private RequestStack $requestStack;
 
-    private ScopeMatcher $scopeMatcher;
-
     private SecurityUtil $securityUtil;
+
+    private ScopeMatcher $scopeMatcher;
 
     private TwigEnvironment $twig;
 
-    private ?string $viewMode = null;
-
-    private ?GalleryCreatorAlbumsModel $activeAlbum = null;
-
-    private array $arrSelectedAlbums = [];
-
-    private ?ContentModel $model;
-
-    private ?PageModel $pageModel;
-
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, ScopeMatcher $scopeMatcher, SecurityUtil $securityUtil, TwigEnvironment $twig)
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, RequestStack $requestStack, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, TwigEnvironment $twig)
     {
         $this->albumUtil = $albumUtil;
         $this->connection = $connection;
         $this->pictureUtil = $pictureUtil;
         $this->requestStack = $requestStack;
-        $this->scopeMatcher = $scopeMatcher;
         $this->securityUtil = $securityUtil;
+        $this->scopeMatcher = $scopeMatcher;
         $this->twig = $twig;
 
-        parent::__construct($albumUtil, $connection, $pictureUtil, $scopeMatcher);
+        parent::__construct($albumUtil, $connection, $pictureUtil, $securityUtil, $scopeMatcher);
     }
 
+    /**
+     * @throws DoctrineDBALException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
     public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
     {
         // Do not parse the content element in the backend
@@ -97,13 +106,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $this->model = $model;
         $this->pageModel = $pageModel;
-        $session = $request->getSession();
-
-        // Get items url param from session
-        if ($session->has('gc_redirect_to_album')) {
-            Input::setGet('items', $session->get('gc_redirect_to_album'));
-            $session->remove('gc_redirect_to_album');
-        }
 
         // Set the item from the auto_item parameter
         if (Config::get('useAutoItem') && isset($_GET['auto_item'])) {
@@ -114,48 +116,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $this->viewMode = self::GC_VIEW_MODE_DETAIL;
         }
 
-        // Remove or store the pagination variable "page" in the current session
         if (!Input::get('items')) {
-            $session->remove('gc_pagination');
-        }
-
-        if (Input::get('page') && self::GC_VIEW_MODE_DETAIL !== $this->viewMode) {
-            $session->set('gc_pagination', Input::get('page'));
-        }
-
-        if ($this->model->gcPublishAllAlbums) {
-            // If all albums should be shown
-            $this->arrSelectedAlbums = $this->listAllAlbums();
+            $this->arrAlbums = $this->getAllAlbums(0);
         } else {
-            // If only selected albums should be shown
-            $this->arrSelectedAlbums = StringUtil::deserialize($this->model->gcPublishAlbums, true);
-        }
-
-        // Clean array from unpublished or empty or protected albums
-        foreach ($this->arrSelectedAlbums as $key => $albumId) {
-            // Remove id from $this->arrSelectedAlbums if user is not allowed
-            $albumsModel = GalleryCreatorAlbumsModel::findByPk($albumId);
-
-            if (null !== $albumsModel) {
-                if ($albumsModel->protected) {
-                    if (!$this->securityUtil->isAuthorized($albumsModel)) {
-                        unset($this->arrSelectedAlbums[$key]);
-                    }
-                }
-            } else {
-                unset($this->arrSelectedAlbums[$key]);
-            }
-        }
-
-        // Build the new array
-        $this->arrSelectedAlbums = array_values($this->arrSelectedAlbums);
-
-        // Abort if no album is selected
-        if (empty($this->arrSelectedAlbums)) {
-            return new Response('', Response::HTTP_NO_CONTENT);
-        }
-
-        if (Input::get('items')) {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
             if (null !== $this->activeAlbum && $this->activeAlbum->published) {
@@ -164,42 +127,26 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 return new Response('aa', Response::HTTP_NO_CONTENT);
             }
 
+            $this->arrAlbums = $this->getAllAlbums($this->activeAlbum->pid);
+
             // Check if user is authorized.
             // If not, show empty page.
             if (!$this->securityUtil->isAuthorized($this->activeAlbum)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
         }
+
+        // Abort if no album is selected
+        if (empty($this->arrAlbums)) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
+
         $this->viewMode = $this->viewMode ?: self::GC_VIEW_MODE_LIST;
         $this->viewMode = !empty(Input::get('img')) ? self::GC_VIEW_MODE_SINGLE_IMAGE : $this->viewMode;
 
-        if (self::GC_VIEW_MODE_LIST === $this->viewMode) {
-            // Redirect to detail view if there is only one album in the selection
-            if (1 === \count($this->arrSelectedAlbums) && $this->model->gcRedirectSingleAlb) {
-                $session->set('gc_redirect_to_album', GalleryCreatorAlbumsModel::findByPk($this->arrSelectedAlbums[0])->alias);
-                Controller::reload();
-            }
-
-            // Show child albums? Yes or no?
-            if ($this->model->gcShowChildAlbums) {
-                foreach ($this->arrSelectedAlbums as $k => $albumId) {
-                    $albumModel = GalleryCreatorAlbumsModel::findByPk($albumId);
-
-                    if ($albumModel->pid > 0) {
-                        unset($this->arrSelectedAlbums[$k]);
-                    }
-                }
-                $this->arrSelectedAlbums = array_values($this->arrSelectedAlbums);
-
-                if (empty($this->arrSelectedAlbums)) {
-                    return new Response('', Response::HTTP_NO_CONTENT);
-                }
-            }
-        }
-
         if (self::GC_VIEW_MODE_DETAIL === $this->viewMode) {
             // For security reasons...
-            if (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false)) {
+            if (!\in_array($this->activeAlbum->id, $this->arrAlbums, false)) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
         }
@@ -208,8 +155,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     }
 
     /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @throws DoctrineDBALDriverException
+     * @throws DoctrineDBALException
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
@@ -218,7 +165,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         switch ($this->viewMode) {
             case self::GC_VIEW_MODE_LIST:
 
-                $itemsTotal = \count($this->arrSelectedAlbums);
+                $itemsTotal = \count($this->arrAlbums);
                 $perPage = (int) $this->model->gcAlbumsPerPage;
 
                 $pagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
@@ -228,7 +175,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 }
 
                 // Paginate the result
-                $arrItems = $this->arrSelectedAlbums;
+                $arrItems = $this->arrAlbums;
                 $arrItems = \array_slice($arrItems, $pagination->getOffset(), $pagination->getLimit());
 
                 $template->pagination = $pagination->generate();
@@ -237,7 +184,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                     function ($id) {
                         $albumModel = GalleryCreatorAlbumsModel::findByPk($id);
 
-                        return null !== $albumModel ? $this->albumUtil->getAlbumData($albumModel, $this->model) : [];
+                        return null !== $albumModel ? $this->getAlbumData($albumModel, $this->model) : [];
                     },
                     $arrItems
                 );
@@ -284,12 +231,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 }
 
                 $activePictureId = $arrActivePicture['id'];
-                $published = $arrActivePicture['published'] && $this->activeAlbum->published;
-
-                // For security reasons...
-                if (!$published || (!$this->model->gcPublishAllAlbums && !\in_array($this->activeAlbum->id, $this->arrSelectedAlbums, false))) {
-                    throw new \Exception('Picture with id '.$activePictureId." is either not published or not available or you haven't got enough permission to watch it!!!");
-                }
 
                 // Picture sorting
                 $strSorting = empty($this->model->gcPictureSorting) || empty($this->model->gcPictureSortingDirection) ? 'sorting ASC' : $this->model->gcPictureSorting.' '.$this->model->gcPictureSortingDirection;
@@ -376,8 +317,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     }
 
     /**
-     * Generates the back link.
-     *
      * @throws \Exception
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): ?string
@@ -391,45 +330,62 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
         }
 
-        // Generates the link to the startup overview taking into account the pagination
+        // Generate the link to the startup overview taking into account the pagination
         $url = $this->pageModel->getFrontendUrl();
-        $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
-
-        if ($session->has('gc_pagination')) {
-            $url = Url::addQueryString('page_g='.$session->get('gc_pagination'), $url);
-        }
 
         return StringUtil::ampersand($url);
     }
 
-    protected function listAllAlbums(int $pid = 0): array
+    /**
+     * @throws DoctrineDBALException
+     */
+    protected function getAllAlbums($pid = 0): array
     {
-        $strSorting = empty($this->model->gcSorting) || empty($this->model->gcSortingDirection) ? 'date DESC' : $this->model->gcSorting.' '.$this->model->gcSortingDirection;
+        $arrIDS = [];
+        $strSorting = empty($this->model->gcSorting) || empty($this->model->gcSortingDirection) ? 't.date DESC' : $this->model->gcSorting.' '.$this->model->gcSortingDirection;
 
-        if ($this->model->showChildAlbums) {
-            $arrAlbumIDS = $this->connection
-                ->fetchFirstColumn(
-                    'SELECT id FROM tl_gallery_creator_albums WHERE published = ? ORDER BY '.$strSorting,
-                    ['1']
-                )
-            ;
-        } else {
-            $arrAlbumIDS = $this->connection
-                ->fetchFirstColumn(
-                    'SELECT id FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting,
-                    [$pid, '1']
-                )
-            ;
+        $stmt = $this->connection
+            ->executeQuery(
+                'SELECT id,pid FROM tl_gallery_creator_albums AS t WHERE t.published = ? ORDER BY '.$strSorting,
+                ['1'],
+                [ParameterType::STRING],
+            )
+       ;
+
+        while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
+            $albumModel = GalleryCreatorAlbumsModel::findByPk($arrAlbum['id']);
+
+            // Show only albums with the right pid
+            if ((int) $pid !== (int) $albumModel->pid) {
+                continue;
+            }
+
+            // If selection has been activated then do only show selected albums
+            if ($this->model->gcShowAlbumSelection) {
+                $arrSelection = StringUtil::deserialize($this->model->gcAlbumSelection, true);
+
+                if (!\in_array($arrAlbum['id'], $arrSelection, false)) {
+                    continue;
+                }
+            }
+
+            // Do not show protected albums to unauthorized users.
+            if (!$this->securityUtil->isAuthorized($albumModel)) {
+                continue;
+            }
+
+            $arrIDS[] = (int) $arrAlbum['id'];
         }
 
-        return false !== $arrAlbumIDS ? array_map('intval', $arrAlbumIDS) : [];
+        return $arrIDS;
     }
 
     /**
      * Augment template with some more properties of the active album.
+     *
+     * @throws DoctrineDBALException
      */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, $contentModel, Template $template, $pageModel): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
     {
         parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
 

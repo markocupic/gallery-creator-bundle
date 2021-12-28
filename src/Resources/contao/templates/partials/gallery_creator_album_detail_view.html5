@@ -25,13 +25,12 @@
     <p class="gc-album-detail-location"><?= $this->album['eventLocation'] ?></p>
     <?php endif; ?>
 
-    <?php if ($this->content['gcShowChildAlbums'] && $this->album['hasChildAlbums']): ?>
+    <?php if ($this->album['hasChildAlbums']): ?>
     <div class="gc-album-detail-child-albums">
       <h3><?= $this->trans('GALLERY_CREATOR.childAlbumsOf',[]) ?>: <?= $this->album['name'] ?></h3>
 
       <ul class="gc-album-list">
         <?php foreach ($this->album['childAlbums'] as $childAlbum): ?>
-        <?php //die($childAlbum['cssClass'] . ' ' . $childAlbum['id']); ?>
         <li class="gc-album-list-item<?php if(isset($childAlbum['cssClass'])): ?> <?= $childAlbum['cssClass'] ?><?php endif; ?>" data-id="<?= $childAlbum['id'] ?>">
         <?php $this->insert('gallery_creator_album', ['content' => $this->content, 'album' => $childAlbum]); ?>
         </li>

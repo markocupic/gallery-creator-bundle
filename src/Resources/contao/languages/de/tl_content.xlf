@@ -17,11 +17,19 @@
         <source>Picture listing legend</source>
         <target>Einstellungen für die Bildauflistung (Detailansicht)</target>
       </trans-unit>
-      <trans-unit id="tl_content.gcPublishAlbums.0">
+      <trans-unit id="tl_content.gcShowAlbumSelection.0">
+        <source>Show a selection</source>
+        <target>Zeige nur eine Auswahl an Alben</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowAlbumSelection.1">
+        <source>Show a selection of albums.</source>
+        <target>Zeigen Sie den Besuchern nur ausgewählte Alben.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAlbumSelection.0">
         <source>Select one or more albums</source>
         <target>Diese Alben im Frontend anzeigen</target>
       </trans-unit>
-      <trans-unit id="tl_content.gcPublishAlbums.1">
+      <trans-unit id="tl_content.gcAlbumSelection.1">
         <source>Selected albums will be displayed in the frontend.</source>
         <target>Geben Sie an, welche Alben angezeigt werden sollen.</target>
       </trans-unit>
@@ -33,14 +41,6 @@
         <source>The selected album will be displayed in the frontend.</source>
         <target>Das ausgewählte Album wird im Frontend angezeigt.</target>
       </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.0">
-        <source>Publish all given albums</source>
-        <target>Alle angelegten Alben im Frontend zeigen</target>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.1">
-        <source>Publish all albums on the front end.</source>
-        <target>Zeige alle verfügbaren und veröffentlichten Alben.</target>
-      </trans-unit>
       <trans-unit id="tl_content.gcShowChildAlbums.0">
         <source>Show child albums</source>
         <target>Kindalben anzeigen</target>
@@ -48,14 +48,6 @@
       <trans-unit id="tl_content.gcShowChildAlbums.1">
         <source>Show child albums too.</source>
         <target>Alben und Kindalben anzeigen.</target>
-      </trans-unit>
-      <trans-unit id="tl_content.gcRedirectSingleAlb.0">
-        <source>Redirection in case of a single album</source>
-        <target>Weiterleitung bei einzelnem Album</target>
-      </trans-unit>
-      <trans-unit id="tl_content.gcRedirectSingleAlb.1">
-        <source>Should be automatically redirected to the detail-view, in case of single-album-choice?</source>
-        <target>Soll, wenn nur ein Album ausgewählt wurde, automatisch zur Detailansicht weitergeleitet weden?</target>
       </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.0">
         <source>Items per page in the album listing</source>

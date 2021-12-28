@@ -14,10 +14,13 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
+use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\CoreBundle\File\Metadata;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
 use Contao\PageModel;
@@ -26,12 +29,14 @@ use Contao\System;
 use Contao\Template;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Haste\Util\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
+use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
@@ -41,14 +46,135 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
     private PictureUtil $pictureUtil;
 
+    private SecurityUtil $securityUtil;
+
     private ScopeMatcher $scopeMatcher;
 
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, ScopeMatcher $scopeMatcher)
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher)
     {
         $this->albumUtil = $albumUtil;
         $this->connection = $connection;
         $this->pictureUtil = $pictureUtil;
+        $this->securityUtil = $securityUtil;
         $this->scopeMatcher = $scopeMatcher;
+    }
+
+    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): ?FilesModel
+    {
+        if (null === ($pictureModel = GalleryCreatorPicturesModel::findByPk($albumModel->thumb))) {
+            $pictureModel = GalleryCreatorPicturesModel::findOneByPid($albumModel->id);
+        }
+
+        if (null !== $pictureModel && null !== ($filesModel = FilesModel::findByUuid($pictureModel->uuid))) {
+            return $filesModel;
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws DoctrineDBALDriverException
+     * @throws Exception
+     */
+    public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
+    {
+        global $objPage;
+
+        // Count images
+        $countPictures = $this->connection
+            ->fetchOne(
+                'SELECT COUNT(id) AS countPictures FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
+                [$albumModel->id, '1'],
+            )
+        ;
+
+        // Image size
+        $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
+        $arrSize = !empty($size) && \is_array($size) ? $size : null;
+
+        $href = sprintf(
+            StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language)),
+            $albumModel->alias,
+        );
+
+        /** @var FilesModel $previewImage */
+        $previewImage = $this->getAlbumPreviewThumb($albumModel);
+
+        $arrCssClasses = [];
+        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $albumModel->pid);
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
+
+        // Do not show child albums, if they are not allowed/selected
+        $childAlbums = $this->getChildAlbums($albumModel, $contentElementModel, true);
+
+        $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
+
+        // Meta
+        $arrMeta = [];
+        $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
+        $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
+        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcShowChildAlbums && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
+
+        $arrAlbum = $albumModel->row();
+        $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
+        $arrAlbum['meta'] = new Metadata($arrMeta);
+        $arrAlbum['href'] = $href;
+        $arrAlbum['countPictures'] = $countPictures;
+
+        $arrAlbum['cssClass'] = implode(' ', array_filter($arrCssClasses));
+        $arrAlbum['figureUuid'] = $previewImage ? $previewImage->uuid : null;
+        $arrAlbum['figureSize'] = !empty($arrSize) ? $arrSize : null;
+        $arrAlbum['figureOptions'] = [
+            'metadata' => new Metadata($arrMeta),
+            'linkHref' => $href,
+        ];
+
+        $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
+        $arrAlbum['countChildAlbums'] = $childAlbums ? \count($childAlbums) : 0;
+        $arrAlbum['childAlbums'] = $childAlbums;
+
+        return $arrAlbum;
+    }
+
+    /**
+     * @throws Exception
+     * @throws DoctrineDBALDriverException
+     */
+    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel, bool $blnOnlyAllowed = false): ?array
+    {
+        $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
+
+        $stmt = $this->connection->executeQuery(
+            'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting,
+            [$albumModel->id, '1']
+        );
+
+        $arrChildAlbums = [];
+
+        while (false !== ($objChildAlbums = $stmt->fetchAssociative())) {
+            $objChildAlbum = GalleryCreatorAlbumsModel::findByPk($objChildAlbums['id']);
+
+            if ($blnOnlyAllowed) {
+                if ($contentElementModel->gcShowAlbumSelection) {
+                    $arrAllowed = StringUtil::deserialize($contentElementModel->gcAlbumSelection, true);
+
+                    if (!\in_array($objChildAlbum->id, $arrAllowed, false)) {
+                        continue;
+                    }
+
+                    if (!$this->securityUtil->isAuthorized($objChildAlbum)) {
+                        continue;
+                    }
+                }
+            }
+
+            if (null !== $objChildAlbum) {
+                $arrChildAlbums[] = $this->getAlbumData($objChildAlbum, $contentElementModel);
+            }
+        }
+
+        return !empty($arrChildAlbums) ? $arrChildAlbums : null;
     }
 
     /**
@@ -77,7 +203,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      */
     protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
     {
-        $template->album = $this->albumUtil->getAlbumData($albumModel, $contentModel);
+        $template->album = $this->getAlbumData($albumModel, $contentModel);
     }
 
     /**

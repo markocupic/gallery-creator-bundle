@@ -23,11 +23,10 @@ $GLOBALS['TL_LANG']['tl_content']['picture_listing_legend'] = 'Picture listing l
 /*
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_content']['gcPublishAlbums'] = ['Select one or more albums', 'Selected albums will be displayed in the frontend.'];
+$GLOBALS['TL_LANG']['tl_content']['gcShowAlbumSelection'] = ['Show a selection', 'Show a selection of albums.'];
+$GLOBALS['TL_LANG']['tl_content']['gcAlbumSelection'] = ['Select one or more albums', 'Selected albums will be displayed in the frontend.'];
 $GLOBALS['TL_LANG']['tl_content']['gcPublishSingleAlbum'] = ['Select one album', 'The selected album will be displayed in the frontend.'];
-$GLOBALS['TL_LANG']['tl_content']['gcPublishAllAlbums'] = ['Publish all given albums', 'Publish all albums on the front end.'];
 $GLOBALS['TL_LANG']['tl_content']['gcShowChildAlbums'] = ['Show child albums', 'Show child albums too.'];
-$GLOBALS['TL_LANG']['tl_content']['gcRedirectSingleAlb'] = ['Redirection in case of a single album', 'Should be automatically redirected to the detail-view, in case of single-album-choice?'];
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumsPerPage'] = ['Items per page in the album listing', 'The number of items per page in the album listing. Set to 0 to disable pagination.'];
 $GLOBALS['TL_LANG']['tl_content']['gcThumbsPerPage'] = ['Thumbs per page in the detail view', 'The number of thumbnails per page in the detail view. Set to 0 to disable pagination.'];
 $GLOBALS['TL_LANG']['tl_content']['gcSorting'] = ['Album sorting', 'According to which field the albums should be sorted?'];

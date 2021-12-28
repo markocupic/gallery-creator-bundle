@@ -1,0 +1,23 @@
+<div id="{{ id }}" class="tl_checkbox_container tl_gc_album_tree_widget">
+    <input type="hidden" name="{{ input.name | escape }}" value="">
+
+    {% if input.multiple %}
+    <div class="tl_select_trigger">
+        <label for="tl_select_trigger" class="tl_select_label">{{ 'MSC.selectAll'|trans({}, 'contao_default') }}</label> <input type="checkbox" id="tl_select_trigger" onclick="Backend.toggleCheckboxGroup(this,'{{ id }}')" class="tl_checkbox">
+    </div>
+    <br>
+    {% endif %}
+
+    <div class="gc-item-picker">
+
+        {{ picker | raw }}
+
+        {% if not input.multiple %}
+        <div class="tl_radio_reset">
+            <label for="tl_radio_reset" class="tl_radio_label">{{ 'MSC.resetSelected'|trans({}, 'contao_default') }}</label> <input type="radio" name="{{ input.name }}" id="tl_radio_reset" value="" class="tl_tree_radio">
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+

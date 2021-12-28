@@ -146,6 +146,11 @@ class ReviseAlbumDatabase
             $arrAlbums = StringUtil::deserialize($arrContent['gcPublishAlbums'], true);
 
             foreach ($arrAlbums as $AlbumId) {
+                if (0 === (int) $AlbumId) {
+                    // "0" means: "show them all"
+                    continue;
+                }
+
                 $id = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id = ?', [$AlbumId]);
 
                 if (false !== $id) {

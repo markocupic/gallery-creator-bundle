@@ -44,5 +44,6 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
 /*
  * Backend
  */
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['selectAllAlbums'] = 'Select all albums.';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['localMedia'] = 'Replace image with a movie or sound from the Contao filesystem.';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['socialMedia'] = 'Replace image with a social media.';

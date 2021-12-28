@@ -14,19 +14,11 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Util;
 
-use Contao\Config;
-use Contao\ContentModel;
-use Contao\CoreBundle\File\Metadata;
 use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\Date;
-use Contao\FilesModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
-use Doctrine\DBAL\Exception;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class AlbumUtil
@@ -42,102 +34,6 @@ class AlbumUtil
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
         $this->connection = $connection;
-    }
-
-    /**
-     * @throws DoctrineDBALDriverException
-     * @throws Exception
-     */
-    public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
-    {
-        global $objPage;
-
-        // Count images
-        $countPictures = $this->connection
-            ->fetchOne(
-                'SELECT COUNT(id) AS countPictures FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
-                [$albumModel->id, '1'],
-            )
-        ;
-
-        // Image size
-        $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
-        $arrSize = !empty($size) && \is_array($size) ? $size : null;
-
-        $href = sprintf(
-            StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language)),
-            $albumModel->alias,
-        );
-
-        /** @var FilesModel $previewImage */
-        $previewImage = $this->getAlbumPreviewThumb($albumModel);
-
-        $arrCssClasses = [];
-        $arrCssClasses[] = 'gc-level-'.$this->getAlbumLevelFromPid((int) $albumModel->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
-        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
-
-        $childAlbums = $this->getChildAlbums($albumModel, $contentElementModel);
-        $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
-
-        $arrMeta = [];
-        $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
-        $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcShowChildAlbums && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
-
-        $arrAlbum = $albumModel->row();
-        $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
-        $arrAlbum['meta'] = new Metadata($arrMeta);
-        $arrAlbum['href'] = $href;
-        $arrAlbum['countPictures'] = $countPictures;
-
-        $arrAlbum['cssClass'] = implode(' ', array_filter($arrCssClasses));
-        $arrAlbum['figureUuid'] = $previewImage ? $previewImage->uuid : null;
-        $arrAlbum['figureSize'] = !empty($arrSize) ? $arrSize : null;
-        $arrAlbum['figureOptions'] = [
-            'metadata' => new Metadata($arrMeta),
-            'linkHref' => $href,
-        ];
-
-        $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
-        $arrAlbum['countChildAlbums'] = $childAlbums ? \count($childAlbums) : 0;
-        $arrAlbum['childAlbums'] = $childAlbums;
-
-        return $arrAlbum;
-    }
-
-    /**
-     * @throws Exception
-     * @throws DoctrineDBALDriverException
-     */
-    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): ?array
-    {
-        $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
-
-        $stmt = $this->connection->executeQuery(
-            'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting,
-            [$albumModel->id, '1']
-        );
-
-        $arrChildAlbums = [];
-
-        while (false !== ($objChildAlbums = $stmt->fetchAssociative())) {
-            // If it is a content element only
-            if ($contentElementModel->gcPublishAlbums) {
-                if (!$contentElementModel->gcPublishAllAlbums) {
-                    if (!\in_array($objChildAlbums['id'], StringUtil::deserialize($contentElementModel->gcPublishAlbums), false)) {
-                        continue;
-                    }
-                }
-            }
-            $objChildAlbum = GalleryCreatorAlbumsModel::findByPk($objChildAlbums['id']);
-
-            if (null !== $objChildAlbum) {
-                $arrChildAlbums[] = $this->getAlbumData($objChildAlbum, $contentElementModel);
-            }
-        }
-
-        return !empty($arrChildAlbums) ? $arrChildAlbums : null;
     }
 
     public function countAlbumViews(GalleryCreatorAlbumsModel $albumModel): void
@@ -177,29 +73,16 @@ class AlbumUtil
         $albumModel->save();
     }
 
-    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): ?FilesModel
-    {
-        if (null === ($pictureModel = GalleryCreatorPicturesModel::findByPk($albumModel->thumb))) {
-            $pictureModel = GalleryCreatorPicturesModel::findOneByPid($albumModel->id);
-        }
-
-        if (null !== $pictureModel && null !== ($filesModel = FilesModel::findByUuid($pictureModel->uuid))) {
-            return $filesModel;
-        }
-
-        return null;
-    }
-
     /**
      * Return the level of an album or child album
-     * (level_0, level_1, level_2,...).
+     * (level_1, level_2, level_3,...).
      */
     public function getAlbumLevelFromPid(int $pid): int
     {
-        $level = 0;
+        $level = 1;
 
         if (0 === $pid) {
-            return 0;
+            return $level;
         }
 
         $hasParent = true;

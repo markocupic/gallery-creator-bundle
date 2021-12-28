@@ -339,7 +339,7 @@ class GalleryCreatorPictures extends Backend
         $objTargetAlbum = null;
 
         if (1 === (int) $request->query->get('mode')) {
-            // Paste after existing file
+            // Paste into after existing file
             $objTargetAlbum = GalleryCreatorPicturesModel::findByPk($request->query->get('pid'))->getRelated('pid');
         } elseif (2 === (int) $request->query->get('mode')) {
             // Paste to the top

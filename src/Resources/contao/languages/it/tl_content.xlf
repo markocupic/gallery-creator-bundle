@@ -14,11 +14,17 @@
       <trans-unit id="tl_content.picture_listing_legend">
         <source>Picture listing legend</source>
       </trans-unit>
-      <trans-unit id="tl_content.gcPublishAlbums.0">
+      <trans-unit id="tl_content.gcShowAlbumSelection.0">
+        <source>Show a selection</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowAlbumSelection.1">
+        <source>Show a selection of albums.</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAlbumSelection.0">
         <source>Select one or more albums</source>
         <target>Pubblica questi album</target>
       </trans-unit>
-      <trans-unit id="tl_content.gcPublishAlbums.1">
+      <trans-unit id="tl_content.gcAlbumSelection.1">
         <source>Selected albums will be displayed in the frontend.</source>
         <target>L&amp;#039;album selezionato verrà mostrato nel frontend.</target>
       </trans-unit>
@@ -28,25 +34,11 @@
       <trans-unit id="tl_content.gcPublishSingleAlbum.1">
         <source>The selected album will be displayed in the frontend.</source>
       </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.0">
-        <source>Publish all given albums</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcPublishAllAlbums.1">
-        <source>Publish all albums on the front end.</source>
-      </trans-unit>
       <trans-unit id="tl_content.gcShowChildAlbums.0">
         <source>Show child albums</source>
       </trans-unit>
       <trans-unit id="tl_content.gcShowChildAlbums.1">
         <source>Show child albums too.</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcRedirectSingleAlb.0">
-        <source>Redirection in case of a single album</source>
-        <target>Redirezione in caso di album singolo</target>
-      </trans-unit>
-      <trans-unit id="tl_content.gcRedirectSingleAlb.1">
-        <source>Should be automatically redirected to the detail-view, in case of single-album-choice?</source>
-        <target>Dev&amp;#039;essere reindirizzato automaticamente alla vista-dettaglio in caso di album singolo?</target>
       </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.0">
         <source>Items per page in the album listing</source>

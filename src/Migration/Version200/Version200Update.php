@@ -148,13 +148,6 @@ class Version200Update extends AbstractMigration
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
-                'old' => 'gc_redirectSingleAlb',
-                'new' => 'gcRedirectSingleAlb',
-                'sql' => 'char(1)',
-            ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
                 'old' => 'gc_AlbumsPerPage',
                 'new' => 'gcAlbumsPerPage',
                 'sql' => 'smallint(5)',
@@ -200,13 +193,6 @@ class Version200Update extends AbstractMigration
                 'old' => 'gc_publish_single_album',
                 'new' => 'gcPublishSingleAlbum',
                 'sql' => 'blob',
-            ],
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
-                'old' => 'gc_publish_all_albums',
-                'new' => 'gcPublishAllAlbums',
-                'sql' => 'char(1)',
             ],
             // tl_user
             [

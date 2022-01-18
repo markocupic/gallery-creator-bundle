@@ -1,4 +1,5 @@
-<?xml version="1.0" ?><xliff version="1.1">
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en">
     <body>
       <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
@@ -158,7 +159,7 @@
         <source>Rename all pictures and use a prefix</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.filePrefix.1">
-        <source>Enter a valid file prefix to rename all pictures of this album (e.g. &amp;quot;me-in-paris-2012&amp;quot;).</source>
+        <source>Enter a valid file prefix to rename all pictures of this album (e.g. "me-in-paris-2012").</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.acceptedFiles.0">
         <source>Accepted files</source>

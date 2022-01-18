@@ -21,7 +21,7 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['expert_legend'] = 'Expert Se
 /*
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['id'] = ['Image ID', 'This is the image id.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['id'] = ['Image ID', 'This is the image ID.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['pid'] = ['Album ID', 'Note that changing the album ID can break data integrity!'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['fileID'] = ['File ID'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['imageInfo'] = ['Image information', 'This is the image review.'];

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -84,7 +84,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                             'icon'  => 'visible.svg',
                         ],
                     ],
-                    'check_permission_callback' => [GalleryCreatorAlbums::class, 'checkPermissionCbToggle'],
+                    'check_permission_callback' => [
+                        GalleryCreatorAlbums::class,
+                        'checkPermissionCbToggle',
+                    ],
                 ],
             ],
             'uploadImages'               => [
@@ -123,7 +126,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         'id'                => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
         'pid'               => [
             'foreignKey' => 'tl_gallery_creator_albums.alias',
-            'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
+            'relation'   => [
+                'type' => 'belongsTo',
+                'load' => 'lazy',
+            ],
             'sql'        => "int(10) unsigned NOT NULL default '0'",
         ],
         'sorting'           => [
@@ -139,74 +145,133 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'date'              => [
             'default'   => time(),
-            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'w50 wizard', 'submitOnChange' => false],
+            'eval'      => [
+                'mandatory'      => true,
+                'datepicker'     => true,
+                'rgxp'           => 'date',
+                'tl_class'       => 'w50 wizard',
+                'submitOnChange' => false,
+            ],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'owner'             => [
             'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'w50'],
+            'eval'       => [
+                'chosen'             => true,
+                'includeBlankOption' => true,
+                'blankOptionLabel'   => 'noName',
+                'doNotShow'          => true,
+                'nospace'            => true,
+                'tl_class'           => 'w50',
+            ],
             'foreignKey' => 'tl_user.name',
             'inputType'  => 'select',
-            'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
+            'relation'   => [
+                'type' => 'hasOne',
+                'load' => 'eager',
+            ],
             'sql'        => "int(10) unsigned NOT NULL default '0'",
         ],
         'assignedDir'       => [
-            'eval'      => ['mandatory' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'],
+            'eval'      => [
+                'mandatory' => false,
+                'fieldType' => 'radio',
+                'tl_class'  => 'clr',
+            ],
             'exclude'   => true,
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
         'ownersName'        => [
             'default' => BackendUser::getInstance()->name,
-            'eval'    => ['doNotShow' => true, 'tl_class' => 'w50 gc-readonly'],
+            'eval'    => [
+                'doNotShow' => true,
+                'tl_class'  => 'w50 gc-readonly',
+            ],
             'sql'     => 'text NULL',
         ],
         'photographer'      => [
-            'eval'      => ['mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'eval'      => [
+                'mandatory'      => false,
+                'tl_class'       => 'w50',
+                'submitOnChange' => false,
+            ],
             'exclude'   => true,
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'eventLocation'     => [
-            'eval'      => ['mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'eval'      => [
+                'mandatory'      => false,
+                'tl_class'       => 'w50',
+                'submitOnChange' => false,
+            ],
             'exclude'   => true,
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'name'              => [
-            'eval'      => ['mandatory' => true, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'eval'      => [
+                'mandatory'      => true,
+                'tl_class'       => 'w50',
+                'submitOnChange' => false,
+            ],
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'alias'             => [
-            'eval'      => ['doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true],
+            'eval'      => [
+                'doNotShow' => false,
+                'doNotCopy' => true,
+                'maxlength' => 50,
+                'tl_class'  => 'w50',
+                'unique'    => true,
+            ],
             'inputType' => 'text',
             'sql'       => "varchar(255) BINARY NOT NULL default ''",
         ],
         'description'       => [
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'eval'      => [
+                'decodeEntities' => true,
+                'tl_class'       => 'clr',
+            ],
             'exclude'   => true,
             'inputType' => 'textarea',
             'search'    => true,
             'sql'       => 'text NULL',
         ],
         'keywords'          => [
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'eval'      => [
+                'decodeEntities' => true,
+                'tl_class'       => 'clr',
+            ],
             'exclude'   => true,
             'inputType' => 'textarea',
             'search'    => true,
             'sql'       => 'text NULL',
         ],
         'caption'           => [
-            'eval'      => ['tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'eval'      => [
+                'tl_class'  => 'clr long',
+                'allowHtml' => false,
+                'wrap'      => 'soft',
+            ],
             'exclude'   => true,
             'inputType' => 'textarea',
             'search'    => true,
             'sql'       => 'text NULL',
         ],
         'thumb'             => [
-            'eval'      => ['doNotShow' => true, 'includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true],
+            'eval'      => [
+                'doNotShow'          => true,
+                'includeBlankOption' => true,
+                'nospace'            => true,
+                'rgxp'               => 'digit',
+                'maxlength'          => 64,
+                'tl_class'           => 'clr',
+                'submitOnChange'     => true,
+            ],
             'inputType' => 'radio',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
@@ -217,42 +282,73 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'eval' => ['doNotShow' => true],
         ],
         'imageResolution'   => [
-            'eval'      => ['doNotShow' => true, 'tl_class' => 'w50', 'submitOnChange' => true],
+            'eval'      => [
+                'doNotShow'      => true,
+                'tl_class'       => 'w50',
+                'submitOnChange' => true,
+            ],
             'inputType' => 'select',
             'options'   => array_merge(['no_scaling'], range(100, 9000, 50)),
             'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
             'sql'       => "smallint(5) unsigned NOT NULL default '1600'",
         ],
         'preserveFilename'  => [
-            'eval'      => ['doNotShow' => true, 'submitOnChange' => true],
+            'eval'      => [
+                'doNotShow'      => true,
+                'submitOnChange' => true,
+            ],
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default '1'",
         ],
         'multiSRC'          => [
-            'eval'      => ['doNotShow' => true, 'multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
+            'eval'      => [
+                'doNotShow'  => true,
+                'multiple'   => true,
+                'fieldType'  => 'checkbox',
+                'files'      => true,
+                'mandatory'  => true,
+                'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions'),
+            ],
             'exclude'   => true,
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
         'protected'         => [
-            'eval'      => ['doNotShow' => true, 'submitOnChange' => true, 'tl_class' => 'clr'],
+            'eval'      => [
+                'doNotShow'      => true,
+                'submitOnChange' => true,
+                'tl_class'       => 'clr',
+            ],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default ''",
         ],
         'groups'            => [
-            'eval'       => ['doNotShow' => true, 'mandatory' => true, 'multiple' => true, 'tl_class' => 'clr'],
+            'eval'       => [
+                'doNotShow' => true,
+                'mandatory' => true,
+                'multiple'  => true,
+                'tl_class'  => 'clr',
+            ],
             'foreignKey' => 'tl_member_group.name',
             'inputType'  => 'checkbox',
             'sql'        => 'blob NULL',
         ],
         'insertArticlePre'  => [
-            'eval'      => ['doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'eval'      => [
+                'doNotShow' => false,
+                'rgxp'      => 'digit',
+                'tl_class'  => 'w50',
+            ],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'insertArticlePost' => [
-            'eval'      => ['doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'eval'      => [
+                'doNotShow' => false,
+                'rgxp'      => 'digit',
+                'tl_class'  => 'w50',
+            ],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
@@ -264,20 +360,39 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => 'blob NULL',
         ],
         'visitors'          => [
-            'eval'      => ['maxlength' => 10, 'tl_class' => 'w50', 'rgxp' => 'digit'],
+            'eval'      => [
+                'maxlength' => 10,
+                'tl_class'  => 'w50',
+                'rgxp'      => 'digit',
+            ],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'sortBy'            => [
-            'eval'      => ['chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'eval'      => [
+                'chosen'         => true,
+                'submitOnChange' => true,
+                'tl_class'       => 'w50',
+            ],
             'exclude'   => true,
             'inputType' => 'select',
-            'options'   => ['----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'],
+            'options'   => [
+                '----',
+                'name_asc',
+                'name_desc',
+                'date_asc',
+                'date_desc',
+            ],
             'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
             'sql'       => "varchar(32) NOT NULL default ''",
         ],
         'filePrefix'        => [
-            'eval'      => ['mandatory' => false, 'tl_class' => 'clr', 'rgxp' => 'alnum', 'nospace' => true],
+            'eval'      => [
+                'mandatory' => false,
+                'tl_class'  => 'clr',
+                'rgxp'      => 'alnum',
+                'nospace'   => true,
+            ],
             'exclude'   => true,
             'inputType' => 'text',
             'sql'       => "varchar(32) NOT NULL default ''",

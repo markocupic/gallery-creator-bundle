@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -33,7 +33,14 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     'list'        => [
         'sorting'           => [
             'fields'       => ['sorting'],
-            'headerFields' => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
+            'headerFields' => [
+                'id',
+                'date',
+                'ownersName',
+                'name',
+                'caption',
+                'thumb',
+            ],
             'mode'         => 4,
             'panelLayout'  => 'filter;search,limit',
         ],
@@ -92,7 +99,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         'pid'            => [
             'eval'       => ['doNotShow' => true],
             'foreignKey' => 'tl_gallery_creator_albums.alias',
-            'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
+            'relation'   => [
+                'type' => 'belongsTo',
+                'load' => 'lazy',
+            ],
             'sql'        => "int(10) unsigned NOT NULL default '0'",
         ],
         'path'           => [
@@ -108,7 +118,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
         'published'      => [
-            'eval'      => ['isBoolean' => true, 'submitOnChange' => true, 'tl_class' => 'long'],
+            'eval'      => [
+                'isBoolean'      => true,
+                'submitOnChange' => true,
+                'tl_class'       => 'long',
+            ],
             'filter'    => true,
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default '1'",
@@ -117,7 +131,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'eval' => ['tl_class' => 'clr'],
         ],
         'title'          => [
-            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
+            'eval'      => [
+                'allowHtml'      => false,
+                'decodeEntities' => true,
+                'rgxp'           => 'alnum',
+            ],
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'text',
@@ -129,7 +147,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'caption'        => [
             'cols'      => 20,
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'eval'      => [
+                'decodeEntities' => true,
+                'tl_class'       => 'clr',
+            ],
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'textarea',
@@ -146,7 +167,13 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'default'   => time(),
             'filter'    => true,
             'search'    => true,
-            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'clr wizard ', 'submitOnChange' => false],
+            'eval'      => [
+                'mandatory'      => true,
+                'datepicker'     => true,
+                'rgxp'           => 'date',
+                'tl_class'       => 'clr wizard ',
+                'submitOnChange' => false,
+            ],
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'addCustomThumb' => [
@@ -157,18 +184,32 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'       => "char(1) NOT NULL default ''",
         ],
         'customThumb'    => [
-            'eval'      => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
+            'eval'      => [
+                'fieldType'  => 'radio',
+                'files'      => true,
+                'filesOnly'  => true,
+                'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions'),
+            ],
             'exclude'   => true,
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
         'owner'          => [
             'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'clr w50'],
+            'eval'       => [
+                'includeBlankOption' => true,
+                'blankOptionLabel'   => 'noName',
+                'doNotShow'          => true,
+                'nospace'            => true,
+                'tl_class'           => 'clr w50',
+            ],
             'filter'     => true,
             'foreignKey' => 'tl_user.name',
             'inputType'  => 'select',
-            'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
+            'relation'   => [
+                'type' => 'hasOne',
+                'load' => 'eager',
+            ],
             'search'     => true,
             'sql'        => "int(10) NOT NULL default '0'",
         ],
@@ -181,7 +222,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'localMediaSRC'  => [
-            'eval'      => ['files' => true, 'filesOnly' => true, 'fieldType' => 'radio'],
+            'eval'      => [
+                'files'     => true,
+                'filesOnly' => true,
+                'fieldType' => 'radio',
+            ],
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'fileTree',

@@ -1,24 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.1">
+<?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/default.php" source-language="en">
     <body>
       <trans-unit id="ERR.fileNotFound">
-        <source>The file "%s" doesn't exist on your server!</source>
+        <source>The file &amp;quot;%s&amp;quot; doesn&amp;#039;t exist on your server!</source>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. &amp;lt;br&gt;Please clean up the database or check the existence of %s in the album with alias: %s!</source>
+        <source>The db-entry with ID %s in &amp;quot;tl_gallery_pictures&amp;quot; links to a not existing file. &amp;lt;br&amp;gt;Please clean up the database or check the existence of %s in the album with alias: %s!</source>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
-        <source>The file "%s" could not been uploaded!</source>
+        <source>The file &amp;quot;%s&amp;quot; could not been uploaded!</source>
       </trans-unit>
       <trans-unit id="ERR.dirNotWriteable">
-        <source>The directory "%s" is not writeable! Check chmod settings!</source>
+        <source>The directory &amp;quot;%s&amp;quot; is not writeable! Check chmod settings!</source>
       </trans-unit>
       <trans-unit id="ERR.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album: "%s".</source>
+        <source>You are not allowed to edit the album: &amp;quot;%s&amp;quot;.</source>
       </trans-unit>
       <trans-unit id="ERR.notAllowedFilenameOrExtension">
-        <source>Invalid file name or extension: =&gt; %s. Please check the list of supported file extensions (%s).</source>
+        <source>Invalid file name or extension: =&amp;gt; %s. Please check the list of supported file extensions (%s).</source>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
         <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too!!!</source>

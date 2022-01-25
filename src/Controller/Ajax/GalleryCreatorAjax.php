@@ -96,7 +96,7 @@ class GalleryCreatorAjax
         }
 
         if (!$this->securityUtil->isAuthorized($albumModel)) {
-            $json['status'] = 'Forbidden!';
+            $json['status'] = 'forbidden';
 
             return new JsonResponse($json, Response::HTTP_FORBIDDEN);
         }

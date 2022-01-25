@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -44,57 +44,104 @@ $GLOBALS['TL_DCA']['tl_content']['subpalettes']['gcShowAlbumSelection'] = 'gcAlb
 
 // Fields
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcShowChildAlbums'] = [
-    'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr'],
+    'eval'      => [
+        'submitOnChange' => true,
+        'tl_class'       => 'clr',
+    ],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSorting'] = [
-    'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+    'eval'      => [
+        'tl_class'       => 'w50',
+        'submitOnChange' => true,
+    ],
     'exclude'   => true,
     'inputType' => 'select',
-    'options'   => ['date', 'sorting', 'id', 'tstamp', 'name', 'alias', 'caption', 'visitors'],
+    'options'   => [
+        'date',
+        'sorting',
+        'id',
+        'tstamp',
+        'name',
+        'alias',
+        'caption',
+        'visitors',
+    ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
     'sql'       => "varchar(64) NOT NULL default 'date'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSortingDirection'] = [
-    'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+    'eval'      => [
+        'tl_class'       => 'w50',
+        'submitOnChange' => true,
+    ],
     'exclude'   => true,
     'inputType' => 'select',
-    'options'   => ['DESC', 'ASC'],
+    'options'   => [
+        'DESC',
+        'ASC',
+    ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection'],
     'sql'       => "varchar(64) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSorting'] = [
-    'eval'      => ['tl_class' => 'w50', 'submitOnChange' => false],
+    'eval'      => [
+        'tl_class'       => 'w50',
+        'submitOnChange' => false,
+    ],
     'exclude'   => true,
     'inputType' => 'select',
-    'options'   => ['sorting', 'id', 'date', 'name', 'owner', 'caption', 'title'],
+    'options'   => [
+        'sorting',
+        'id',
+        'date',
+        'name',
+        'owner',
+        'caption',
+        'title',
+    ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
     'sql'       => "varchar(64) NOT NULL default 'date'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSortingDirection'] = [
-    'eval'      => ['tl_class' => 'w50', 'submitOnChange' => false],
+    'eval'      => [
+        'tl_class'       => 'w50',
+        'submitOnChange' => false,
+    ],
     'exclude'   => true,
     'inputType' => 'select',
-    'options'   => ['DESC', 'ASC'],
+    'options'   => [
+        'DESC',
+        'ASC',
+    ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection'],
     'sql'       => "varchar(64) NOT NULL default 'DESC'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumsPerPage'] = [
-    'eval'      => ['rgxp' => 'digit', 'tl_class' => 'clr'],
+    'eval'      => [
+        'rgxp'     => 'digit',
+        'tl_class' => 'clr',
+    ],
     'exclude'   => true,
     'inputType' => 'text',
     'sql'       => "smallint(5) unsigned NOT NULL default '0'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = [
-    'eval'             => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
+    'eval'             => [
+        'rgxp'               => 'natural',
+        'includeBlankOption' => true,
+        'nospace'            => true,
+        'helpwizard'         => true,
+        'tl_class'           => 'w50',
+    ],
     'exclude'          => true,
     'inputType'        => 'imageSize',
     'options_callback' => static fn() => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
@@ -103,7 +150,13 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
-    'eval'             => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
+    'eval'             => [
+        'rgxp'               => 'natural',
+        'includeBlankOption' => true,
+        'nospace'            => true,
+        'helpwizard'         => true,
+        'tl_class'           => 'w50',
+    ],
     'exclude'          => true,
     'inputType'        => 'imageSize',
     'options_callback' => static fn() => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
@@ -119,28 +172,42 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcFullSize'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcThumbsPerPage'] = [
-    'eval'      => ['rgxp' => 'digit', 'tl_class' => 'clr'],
+    'eval'      => [
+        'rgxp'     => 'digit',
+        'tl_class' => 'clr',
+    ],
     'exclude'   => true,
     'inputType' => 'text',
     'sql'       => "smallint(5) unsigned NOT NULL default '0'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcShowAlbumSelection'] = [
-    'eval'      => ['tl_class' => 'clr', 'submitOnChange' => true],
+    'eval'      => [
+        'tl_class'       => 'clr',
+        'submitOnChange' => true,
+    ],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumSelection'] = [
-    'eval'      => ['mandatory' => true, 'multiple' => true, 'tl_class' => 'w50 clr'],
+    'eval'      => [
+        'mandatory' => true,
+        'multiple'  => true,
+        'tl_class'  => 'w50 clr',
+    ],
     'exclude'   => true,
     'inputType' => 'gcAlbumTree',
     'sql'       => 'blob NULL',
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPublishSingleAlbum'] = [
-    'eval'      => ['mandatory' => false, 'multiple' => false, 'tl_class' => 'clr'],
+    'eval'      => [
+        'mandatory' => false,
+        'multiple'  => false,
+        'tl_class'  => 'clr',
+    ],
     'exclude'   => true,
     'inputType' => 'radio',
     'sql'       => 'blob NULL',

@@ -44,23 +44,23 @@ $GLOBALS['TL_DCA']['tl_content']['subpalettes']['gcShowAlbumSelection'] = 'gcAlb
 
 // Fields
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcShowChildAlbums'] = [
-    'eval'      => [
+    'eval' => [
         'submitOnChange' => true,
-        'tl_class'       => 'clr',
+        'tl_class' => 'clr',
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'checkbox',
-    'sql'       => "char(1) NOT NULL default ''",
+    'sql' => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSorting'] = [
-    'eval'      => [
-        'tl_class'       => 'w50',
+    'eval' => [
+        'tl_class' => 'w50',
         'submitOnChange' => true,
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'select',
-    'options'   => [
+    'options' => [
         'date',
         'sorting',
         'id',
@@ -71,32 +71,32 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSorting'] = [
         'visitors',
     ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
-    'sql'       => "varchar(64) NOT NULL default 'date'",
+    'sql' => "varchar(64) NOT NULL default 'date'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSortingDirection'] = [
-    'eval'      => [
-        'tl_class'       => 'w50',
+    'eval' => [
+        'tl_class' => 'w50',
         'submitOnChange' => true,
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'select',
-    'options'   => [
+    'options' => [
         'DESC',
         'ASC',
     ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection'],
-    'sql'       => "varchar(64) NOT NULL default ''",
+    'sql' => "varchar(64) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSorting'] = [
-    'eval'      => [
-        'tl_class'       => 'w50',
+    'eval' => [
+        'tl_class' => 'w50',
         'submitOnChange' => false,
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'select',
-    'options'   => [
+    'options' => [
         'sorting',
         'id',
         'date',
@@ -106,109 +106,109 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSorting'] = [
         'title',
     ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
-    'sql'       => "varchar(64) NOT NULL default 'date'",
+    'sql' => "varchar(64) NOT NULL default 'date'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSortingDirection'] = [
-    'eval'      => [
-        'tl_class'       => 'w50',
+    'eval' => [
+        'tl_class' => 'w50',
         'submitOnChange' => false,
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'select',
-    'options'   => [
+    'options' => [
         'DESC',
         'ASC',
     ],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingDirection'],
-    'sql'       => "varchar(64) NOT NULL default 'DESC'",
+    'sql' => "varchar(64) NOT NULL default 'DESC'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumsPerPage'] = [
-    'eval'      => [
-        'rgxp'     => 'digit',
+    'eval' => [
+        'rgxp' => 'digit',
         'tl_class' => 'clr',
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'text',
-    'sql'       => "smallint(5) unsigned NOT NULL default '0'",
+    'sql' => "smallint(5) unsigned NOT NULL default '0'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = [
-    'eval'             => [
-        'rgxp'               => 'natural',
+    'eval' => [
+        'rgxp' => 'natural',
         'includeBlankOption' => true,
-        'nospace'            => true,
-        'helpwizard'         => true,
-        'tl_class'           => 'w50',
+        'nospace' => true,
+        'helpwizard' => true,
+        'tl_class' => 'w50',
     ],
-    'exclude'          => true,
-    'inputType'        => 'imageSize',
-    'options_callback' => static fn() => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
-    'reference'        => &$GLOBALS['TL_LANG']['MSC'],
-    'sql'              => "varchar(255) NOT NULL default ''",
+    'exclude' => true,
+    'inputType' => 'imageSize',
+    'options_callback' => static fn () => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
+    'reference' => &$GLOBALS['TL_LANG']['MSC'],
+    'sql' => "varchar(255) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
-    'eval'             => [
-        'rgxp'               => 'natural',
+    'eval' => [
+        'rgxp' => 'natural',
         'includeBlankOption' => true,
-        'nospace'            => true,
-        'helpwizard'         => true,
-        'tl_class'           => 'w50',
+        'nospace' => true,
+        'helpwizard' => true,
+        'tl_class' => 'w50',
     ],
-    'exclude'          => true,
-    'inputType'        => 'imageSize',
-    'options_callback' => static fn() => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
-    'reference'        => &$GLOBALS['TL_LANG']['MSC'],
-    'sql'              => "varchar(255) NOT NULL default ''",
+    'exclude' => true,
+    'inputType' => 'imageSize',
+    'options_callback' => static fn () => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
+    'reference' => &$GLOBALS['TL_LANG']['MSC'],
+    'sql' => "varchar(255) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcFullSize'] = [
-    'eval'      => ['tl_class' => 'clr'],
-    'exclude'   => true,
+    'eval' => ['tl_class' => 'clr'],
+    'exclude' => true,
     'inputType' => 'checkbox',
-    'sql'       => "char(1) NOT NULL default '1'",
+    'sql' => "char(1) NOT NULL default '1'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcThumbsPerPage'] = [
-    'eval'      => [
-        'rgxp'     => 'digit',
+    'eval' => [
+        'rgxp' => 'digit',
         'tl_class' => 'clr',
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'text',
-    'sql'       => "smallint(5) unsigned NOT NULL default '0'",
+    'sql' => "smallint(5) unsigned NOT NULL default '0'",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcShowAlbumSelection'] = [
-    'eval'      => [
-        'tl_class'       => 'clr',
+    'eval' => [
+        'tl_class' => 'clr',
         'submitOnChange' => true,
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'checkbox',
-    'sql'       => "char(1) NOT NULL default ''",
+    'sql' => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumSelection'] = [
-    'eval'      => [
+    'eval' => [
         'mandatory' => true,
-        'multiple'  => true,
-        'tl_class'  => 'w50 clr',
+        'multiple' => true,
+        'tl_class' => 'w50 clr',
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'gcAlbumTree',
-    'sql'       => 'blob NULL',
+    'sql' => 'blob NULL',
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPublishSingleAlbum'] = [
-    'eval'      => [
+    'eval' => [
         'mandatory' => false,
-        'multiple'  => false,
-        'tl_class'  => 'clr',
+        'multiple' => false,
+        'tl_class' => 'clr',
     ],
-    'exclude'   => true,
+    'exclude' => true,
     'inputType' => 'radio',
-    'sql'       => 'blob NULL',
+    'sql' => 'blob NULL',
 ];

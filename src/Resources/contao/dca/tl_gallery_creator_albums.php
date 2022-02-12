@@ -38,7 +38,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'label'             => [
             'fields' => ['name'],
-            'format' => '<span><a href="#href#" title="#title#"><img width="18" height="18" data-icon="#icon#" src="bundles/markocupicgallerycreator/images/#icon#"></span> %s <span style="color:#b3b3b3; padding-left:3px;">[#datum#] [#count_pics# images]</span></a>',
+            'format' => '#icon# %s [#datum#] [#count_pics# images]',
         ],
         'global_operations' => [
             'all'            => [

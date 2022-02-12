@@ -16,9 +16,6 @@ namespace Markocupic\GalleryCreatorBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-/**
- * Class MarkocupicGalleryCreatorBundle.
- */
 class MarkocupicGalleryCreatorBundle extends Bundle
 {
 }

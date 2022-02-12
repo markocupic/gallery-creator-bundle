@@ -31,7 +31,6 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
-use Patchwork\Utf8;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -41,17 +40,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class FileUtil
 {
     private RequestStack $requestStack;
-
     private Connection $connection;
-
     private TranslatorInterface $translator;
-
     private ?LoggerInterface $logger;
-
     private string $projectDir;
-
     private bool $galleryCreatorCopyImagesOnImport;
-
     private array $galleryCreatorValidExtensions;
 
     public function __construct(RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, ?LoggerInterface $logger, string $projectDir, bool $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions)
@@ -215,7 +208,6 @@ class FileUtil
         $dirname = \dirname($strPath);
         $filename = basename($strPath);
         $filename = StringUtil::sanitizeFileName($filename);
-        $filename = Utf8::toAscii($filename);
         $strPath = $dirname.'/'.$filename;
 
         if (preg_match('/\.$/', $strPath)) {
@@ -266,7 +258,7 @@ class FileUtil
 
         while ($filesModel->next()) {
             // Continue if the file has been processed or does not exist
-            if (isset($images[$filesModel->path]) || !file_exists($filesModel->getAbsolutePath())) {
+            if (isset($images[$filesModel->path]) || !file_exists($this->projectDir.'/'.$filesModel->path)) {
                 continue;
             }
 
@@ -276,9 +268,11 @@ class FileUtil
                     continue;
                 }
 
-                if (!$this->isValidFileName($file->path)) {
+                if (!$this->isValidFileName($file->name)) {
                     Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $file->extension));
                 }
+
+                $images[$file->path] = ['uuid' => $filesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
             } else {
                 // If resource is a directory
                 $subFilesModel = FilesModel::findMultipleFilesByFolder($filesModel->path);
@@ -297,7 +291,7 @@ class FileUtil
                         continue;
                     }
 
-                    if (!$this->isValidFileName($file->path)) {
+                    if (!$this->isValidFileName($file->name)) {
                         continue;
                     }
 

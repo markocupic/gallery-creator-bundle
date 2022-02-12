@@ -29,11 +29,8 @@ use Twig\Environment as TwigEnvironment;
 class Content extends Backend
 {
     private AlbumUtil $albumUtil;
-
     private Connection $connection;
-
     private RequestStack $requestStack;
-
     private TwigEnvironment $twig;
 
     public function __construct(AlbumUtil $albumUtil, Connection $connection, RequestStack $requestStack, TwigEnvironment $twig)

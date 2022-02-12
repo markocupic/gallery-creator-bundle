@@ -19,6 +19,7 @@ $GLOBALS['TL_LANG']['tl_content']['pagination_legend'] = 'Pagination settings';
 $GLOBALS['TL_LANG']['tl_content']['miscellaneous_legend'] = 'Miscellaneous settings';
 $GLOBALS['TL_LANG']['tl_content']['album_listing_legend'] = 'Album listing legend';
 $GLOBALS['TL_LANG']['tl_content']['picture_listing_legend'] = 'Picture listing legend';
+$GLOBALS['TL_LANG']['tl_content']['album_selection_legend'] = 'Album selection legend';
 
 /*
  * Fields

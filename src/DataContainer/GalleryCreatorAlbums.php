@@ -54,25 +54,15 @@ use Twig\Environment as TwigEnvironment;
 class GalleryCreatorAlbums extends Backend
 {
     private RequestStack $requestStack;
-
     private FileUtil $fileUtil;
-
     private Connection $connection;
-
     private ReviseAlbumDatabase $reviseAlbumDatabase;
-
     private string $projectDir;
-
     private string $galleryCreatorUploadPath;
-
     private bool $galleryCreatorBackendWriteProtection;
-
     private array $galleryCreatorValidExtensions;
-
     private TwigEnvironment $twig;
-
     private ?LoggerInterface $logger;
-
     private bool $restrictedUser = false;
 
     public function __construct(RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, TwigEnvironment $twig, ?LoggerInterface $logger)

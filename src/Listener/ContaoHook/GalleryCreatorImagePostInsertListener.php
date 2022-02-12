@@ -27,7 +27,7 @@ use Symfony\Component\Security\Core\Security;
 class GalleryCreatorImagePostInsertListener
 {
     public const HOOK = 'galleryCreatorImagePostInsert';
-
+    
     private Security $security;
 
     public function __construct(Security $security)

@@ -24,9 +24,7 @@ use Symfony\Component\Security\Core\Security;
 class SecurityUtil
 {
     private Security $security;
-
     private ScopeMatcher $scopeMatcher;
-
     private RequestStack $requestStack;
 
     public function __construct(Security $security, ScopeMatcher $scopeMatcher, RequestStack $requestStack)

@@ -24,9 +24,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class AlbumUtil
 {
     private ScopeMatcher $scopeMatcher;
-
     private RequestStack $requestStack;
-
     private Connection $connection;
 
     public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection)

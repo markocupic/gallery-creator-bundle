@@ -43,21 +43,13 @@ use Twig\Environment as TwigEnvironment;
 class GalleryCreatorPictures extends Backend
 {
     private RequestStack $requestStack;
-
     private Connection $connection;
-
     private FileUtil $fileUtil;
-
     private TranslatorInterface $translator;
-
     private string $projectDir;
-
     private bool $galleryCreatorBackendWriteProtection;
-
     private TwigEnvironment $twig;
-
     private ?LoggerInterface $logger;
-
     private bool $restrictedUser = false;
 
     public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, LoggerInterface $logger = null)

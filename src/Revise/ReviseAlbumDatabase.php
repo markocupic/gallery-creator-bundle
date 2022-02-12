@@ -29,11 +29,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ReviseAlbumDatabase
 {
     private RequestStack $requestStack;
-
     private Connection $connection;
-
     private string $projectDir;
-
     private string $galleryCreatorUploadPath;
 
     public function __construct(RequestStack $requestStack, Connection $connection, string $projectDir, string $galleryCreatorUploadPath)

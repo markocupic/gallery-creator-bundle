@@ -247,7 +247,7 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.edit.1">
         <source>Edit and list pictures of album with ID %s.</source>
-        <target>Bild mit ID %s anzeigen und bearbeiten.</target>
+        <target>Bilder des Albums ID %s anzeigen und bearbeiten.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.editheader.0">
         <source>Change album settings</source>

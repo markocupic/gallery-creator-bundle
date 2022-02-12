@@ -16,222 +16,177 @@ use Contao\BackendUser;
 use Contao\System;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
-    'config' => [
-        'ptable' => 'tl_gallery_creator_albums',
-        'closed' => true,
-        'notCopyable' => true,
-        'notCreatable' => true,
+    'config'      => [
+        'ptable'           => 'tl_gallery_creator_albums',
+        'closed'           => true,
+        'notCopyable'      => true,
+        'notCreatable'     => true,
         'enableVersioning' => true,
-        'dataContainer' => 'Table',
-        'sql' => [
+        'dataContainer'    => 'Table',
+        'sql'              => [
             'keys' => [
-                'id' => 'primary',
+                'id'  => 'primary',
                 'pid' => 'index',
             ],
         ],
     ],
-    'list' => [
-        'sorting' => [
-            'fields' => ['sorting'],
-            'headerFields' => [
-                'id',
-                'date',
-                'ownersName',
-                'name',
-                'caption',
-                'thumb',
-            ],
-            'mode' => 4,
-            'panelLayout' => 'filter;search,limit',
+    'list'        => [
+        'sorting'           => [
+            'fields'       => ['sorting'],
+            'headerFields' => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
+            'mode'         => 4,
+            'panelLayout'  => 'filter;search,limit',
         ],
         'global_operations' => [
             'fileUpload' => [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-                'class' => 'gc-gop-icon gc-gop-upload-img',
-                'href' => 'act=edit&table=tl_gallery_creator_albums&key=fileUpload',
+                'class'      => 'gc-gop-icon gc-gop-upload-img',
+                'href'       => 'act=edit&table=tl_gallery_creator_albums&key=fileUpload',
             ],
-            'all' => [
+            'all'        => [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-                'class' => 'header_edit_all',
-                'href' => 'act=select',
+                'class'      => 'header_edit_all',
+                'href'       => 'act=select',
             ],
         ],
-        'operations' => [
-            'edit' => [
+        'operations'        => [
+            'edit'        => [
                 'href' => 'act=edit',
                 'icon' => 'edit.svg',
             ],
-            'delete' => [
+            'delete'      => [
                 'attributes' => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'].'\')) return false; Backend.getScrollOffset();"',
-                'href' => 'act=delete',
-                'icon' => 'delete.svg',
+                'href'       => 'act=delete',
+                'icon'       => 'delete.svg',
             ],
-            'cut' => [
-                'href' => 'act=paste&amp;mode=cut',
-                'icon' => 'cut.svg',
+            'cut'         => [
+                'href'       => 'act=paste&amp;mode=cut',
+                'icon'       => 'cut.svg',
                 'attributes' => 'onclick="Backend.getScrollOffset()"',
             ],
             'imagerotate' => [
                 'attributes' => 'data-icon="gc-op-icon" onclick="Backend.getScrollOffset();"',
-                'href' => 'key=imagerotate',
-                'icon' => 'bundles/markocupicgallerycreator/images/rotate.svg',
+                'href'       => 'key=imagerotate',
+                'icon'       => 'bundles/markocupicgallerycreator/images/rotate.svg',
             ],
-            'toggle' => [
+            'toggle'      => [
                 'attributes' => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-                'icon' => 'visible.svg',
+                'icon'       => 'visible.svg',
             ],
-            'show' => [
+            'show'        => [
                 'href' => 'act=show',
                 'icon' => 'show.svg',
             ],
         ],
     ],
-    'palettes' => [
-        '__selector__' => ['addCustomThumb'],
-        'default' => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+    'palettes'    => [
+        '__selector__'   => ['addCustomThumb'],
+        'default'        => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
         'restrictedUser' => 'imageInfo,picture',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',
     ],
-    'fields' => [
-        'id' => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
-        'pid' => [
-            'eval' => ['doNotShow' => true],
+    'fields'      => [
+        'id'             => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
+        'pid'            => [
+            'eval'       => ['doNotShow' => true],
             'foreignKey' => 'tl_gallery_creator_albums.alias',
-            'relation' => [
-                'type' => 'belongsTo',
-                'load' => 'lazy',
-            ],
-            'sql' => "int(10) unsigned NOT NULL default '0'",
+            'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
+            'sql'        => "int(10) unsigned NOT NULL default '0'",
         ],
-        'path' => [
+        'path'           => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
-        'uuid' => [
+        'uuid'           => [
             'sql' => 'binary(16) NULL',
         ],
-        'sorting' => [
+        'sorting'        => [
             'sql' => 'int(10) unsigned NOT NULL default 0',
         ],
-        'tstamp' => [
+        'tstamp'         => [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'published' => [
-            'eval' => [
-                'isBoolean' => true,
-                'submitOnChange' => true,
-                'tl_class' => 'long',
-            ],
-            'filter' => true,
+        'published'      => [
+            'eval'      => ['isBoolean' => true, 'submitOnChange' => true, 'tl_class' => 'long'],
+            'filter'    => true,
             'inputType' => 'checkbox',
-            'sql' => "char(1) NOT NULL default '1'",
+            'sql'       => "char(1) NOT NULL default '1'",
         ],
-        'imageInfo' => [
+        'imageInfo'      => [
             'eval' => ['tl_class' => 'clr'],
         ],
-        'title' => [
-            'eval' => [
-                'allowHtml' => false,
-                'decodeEntities' => true,
-                'rgxp' => 'alnum',
-            ],
-            'exclude' => true,
-            'filter' => true,
+        'title'          => [
+            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
+            'exclude'   => true,
+            'filter'    => true,
             'inputType' => 'text',
-            'search' => true,
-            'sql' => "varchar(255) NOT NULL default ''",
+            'search'    => true,
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'externalFile' => [
+        'externalFile'   => [
             'sql' => "char(1) NOT NULL default ''",
         ],
-        'caption' => [
-            'cols' => 20,
-            'eval' => [
-                'decodeEntities' => true,
-                'tl_class' => 'clr',
-            ],
-            'exclude' => true,
-            'filter' => true,
+        'caption'        => [
+            'cols'      => 20,
+            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'exclude'   => true,
+            'filter'    => true,
             'inputType' => 'textarea',
-            'rows' => 6,
-            'search' => true,
-            'sql' => 'text NULL',
+            'rows'      => 6,
+            'search'    => true,
+            'sql'       => 'text NULL',
         ],
-        'picture' => [
+        'picture'        => [
             'eval' => ['tl_class' => 'clr'],
         ],
-        'date' => [
+        'date'           => [
             'inputType' => 'text',
             // A new uploaded image inherits the date of the parent album.
-            'default' => time(),
-            'filter' => true,
-            'search' => true,
-            'eval' => [
-                'mandatory' => true,
-                'datepicker' => true,
-                'rgxp' => 'date',
-                'tl_class' => 'clr wizard ',
-                'submitOnChange' => false,
-            ],
-            'sql' => "int(10) unsigned NOT NULL default '0'",
+            'default'   => time(),
+            'filter'    => true,
+            'search'    => true,
+            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'clr wizard ', 'submitOnChange' => false],
+            'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'addCustomThumb' => [
-            'eval' => ['submitOnChange' => true],
-            'exclude' => true,
-            'filter' => true,
+            'eval'      => ['submitOnChange' => true],
+            'exclude'   => true,
+            'filter'    => true,
             'inputType' => 'checkbox',
-            'sql' => "char(1) NOT NULL default ''",
+            'sql'       => "char(1) NOT NULL default ''",
         ],
-        'customThumb' => [
-            'eval' => [
-                'fieldType' => 'radio',
-                'files' => true,
-                'filesOnly' => true,
-                'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions'),
-            ],
-            'exclude' => true,
+        'customThumb'    => [
+            'eval'      => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
+            'exclude'   => true,
             'inputType' => 'fileTree',
-            'sql' => 'blob NULL',
+            'sql'       => 'blob NULL',
         ],
-        'owner' => [
-            'default' => BackendUser::getInstance()->id,
-            'eval' => [
-                'includeBlankOption' => true,
-                'blankOptionLabel' => 'noName',
-                'doNotShow' => true,
-                'nospace' => true,
-                'tl_class' => 'clr w50',
-            ],
-            'filter' => true,
+        'owner'          => [
+            'default'    => BackendUser::getInstance()->id,
+            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'clr w50'],
+            'filter'     => true,
             'foreignKey' => 'tl_user.name',
-            'inputType' => 'select',
-            'relation' => [
-                'type' => 'hasOne',
-                'load' => 'eager',
-            ],
-            'search' => true,
-            'sql' => "int(10) NOT NULL default '0'",
+            'inputType'  => 'select',
+            'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
+            'search'     => true,
+            'sql'        => "int(10) NOT NULL default '0'",
         ],
         'socialMediaSRC' => [
-            'eval' => ['tl_class' => 'clr'],
-            'exclude' => true,
-            'filter' => true,
+            'eval'      => ['tl_class' => 'clr'],
+            'exclude'   => true,
+            'filter'    => true,
             'inputType' => 'text',
-            'search' => true,
-            'sql' => "varchar(255) NOT NULL default ''",
+            'search'    => true,
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'localMediaSRC' => [
-            'eval' => [
-                'files' => true,
-                'filesOnly' => true,
-                'fieldType' => 'radio',
-            ],
-            'exclude' => true,
-            'filter' => true,
+        'localMediaSRC'  => [
+            'eval'      => ['files' => true, 'filesOnly' => true, 'fieldType' => 'radio'],
+            'exclude'   => true,
+            'filter'    => true,
             'inputType' => 'fileTree',
-            'search' => true,
-            'sql' => 'binary(16) NULL',
+            'search'    => true,
+            'sql'       => 'binary(16) NULL',
         ],
     ],
 ];

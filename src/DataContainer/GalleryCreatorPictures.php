@@ -52,7 +52,7 @@ class GalleryCreatorPictures extends Backend
     private ?LoggerInterface $logger;
     private bool $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, ?LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, LoggerInterface $logger = null)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;

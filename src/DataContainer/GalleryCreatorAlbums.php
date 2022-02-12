@@ -390,14 +390,13 @@ class GalleryCreatorAlbums extends Backend
         $countImages = $this->connection->fetchOne('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid = ?', [$row['id']]);
 
         $icon = $row['published'] ? 'album.svg' : '_album.svg';
-        $icon = 'bundles/markocupicgallerycreator/images/' . $icon;
+        $icon = 'bundles/markocupicgallerycreator/images/'.$icon;
         $icon = sprintf('<img height="18" width="18" data-icon="%s" src="%s">', $icon, $icon);
 
         $label = str_replace('#icon#', $icon, $label);
         $label = str_replace('#count_pics#', (string) $countImages, $label);
-        $label = str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
 
-        return $label;
+        return str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
     }
 
     /**

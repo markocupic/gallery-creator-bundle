@@ -176,7 +176,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         'alias'             => [
             'eval'      => ['doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true],
             'inputType' => 'text',
-            'sql'       => "varchar(255) BINARY NOT NULL default ''",
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'description'       => [
             'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],

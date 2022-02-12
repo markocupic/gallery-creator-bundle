@@ -389,7 +389,7 @@ class GalleryCreatorAlbums extends Backend
     {
         $countImages = $this->connection->fetchOne('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid = ?', [$row['id']]);
 
-        $label = str_replace('#count_pics#', $countImages, $label);
+        $label = str_replace('#count_pics#', (string) $countImages, $label);
         $label = str_replace('#datum#', Date::parse(Config::get('dateFormat'), $row['date']), $label);
         $image = $row['published'] ? 'album.svg' : '_album.svg';
         $label = str_replace('#icon#', $image, $label);

@@ -197,7 +197,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = array(
             'inputType'     => 'text',
             'eval'          => array('doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true),
             'save_callback' => array(array('tl_gallery_creator_albums', 'saveCbGenerateAlias')),
-            'sql'           => "varchar(128) COLLATE utf8_bin NOT NULL default ''",
+            'sql'       => "varchar(255) NOT NULL default ''",
         ),
         'description'         => array(
             'label'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['description'],

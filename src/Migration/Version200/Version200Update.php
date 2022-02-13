@@ -313,7 +313,7 @@ class Version200Update extends AbstractMigration
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_gallery_creator_pictures',
-                'old' => 'caption',
+                'old' => 'comment',
                 'new' => 'caption',
                 'sql' => 'text',
             ],

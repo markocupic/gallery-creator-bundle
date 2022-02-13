@@ -111,8 +111,8 @@
         <target>Albumbeschreibung</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.0">
-        <source>Select the thumbnail which represents the Album in the listview</source>
-        <target>Album-Vorschaubild per Radiobutton auswählen</target>
+        <source>Thumbnail</source>
+        <target>Album-Vorschaubild</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.1">
         <source>Drag the items to re-order them.</source>

@@ -47,7 +47,7 @@ class FileUtil
     private array $galleryCreatorValidExtensions;
     private ?LoggerInterface $logger;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions, LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions, ?LoggerInterface $logger = null)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;

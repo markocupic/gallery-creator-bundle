@@ -21,8 +21,8 @@
         <p class="gc-album-list-pictures-count"><?= $this->album['countPictures'] ?> <?= $this->trans('GALLERY_CREATOR.pictures') ?></p>
 
         <p class="gc-album-list-visitors-count"><?= $this->album['visitors'] ?> <?= $this->trans('GALLERY_CREATOR.visitors') ?></p>
-        
-        <?php if ($this->content['gcShowChildAlbums'] && $this->album['hasChildAlbums']): ?>
+
+        <?php if ($this->album['hasChildAlbums']): ?>
         <p class="gc-album-list-child-albums-count"><?= $this->album['countChildAlbums'] ?> <?= $this->trans('GALLERY_CREATOR.childAlbums') ?></p>
         <?php endif; ?>
 

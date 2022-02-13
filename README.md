@@ -41,7 +41,7 @@ contao:
 Use the "galleryCreatorGenerateFrontendTemplate" hook to adapt the frontend output.
 
 The "galleryCreatorGenerateFrontendTemplate" hook is triggered before the gallery creator front end template is parsed.
- It passes the content element object, the template object and the album object.
+ It passes the content element object, the template object and the album object of the active album (if there is one).
  The "galleryCreatorGenerateFrontendTemplate" hook expects no return value.
 
 ```php
@@ -63,7 +63,7 @@ class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
-    public function __invoke(AbstractContentElementController $contentElement, Template $template, GalleryCreatorAlbumsModel $albumsModel)
+    public function __invoke(AbstractContentElementController $contentElement, Template $template, ?GalleryCreatorAlbumsModel $activeAlbum = null)
     {
         $template->foo = 'bar';
     }

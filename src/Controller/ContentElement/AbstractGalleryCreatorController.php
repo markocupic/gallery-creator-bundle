@@ -106,7 +106,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
 
         // Do not show child albums, in news elements
-        if (GalleryCreatorNewsController::TYPE !== $contentElementModel->type) {
+        if (GalleryCreatorNewsController::TYPE === $contentElementModel->type) {
             $childAlbums = null;
         } else {
             $childAlbums = $this->getChildAlbums($albumModel, $contentElementModel, true);
@@ -118,7 +118,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
         $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($contentElementModel->gcShowChildAlbums && $childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
+        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
 
         $arrAlbum = $albumModel->row();
         $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
@@ -190,7 +190,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($albumModel->keywords), ',');
     }
 
-    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
+    protected function triggerGenerateFrontendTemplateHook(Template $template, ?GalleryCreatorAlbumsModel $albumModel = null): void
     {
         // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
         if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
@@ -227,13 +227,13 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $perPage = (int) $contentModel->gcThumbsPerPage;
 
         // Use Haste\Util\Pagination to generate the pagination.
-        $pagination = new Pagination($itemsTotal, $perPage, 'page_g'.$contentModel->id);
+        $pagination = new Pagination($itemsTotal, $perPage, 'page_d'.$contentModel->id);
 
         if ($pagination->isOutOfRange()) {
             throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
         }
 
-        $template->pagination = $pagination->generate();
+        $template->detailPagination = $pagination->generate();
 
         // Picture sorting
         $arrSorting = empty($contentModel->gcPictureSorting) || empty($contentModel->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$contentModel->gcPictureSorting, $contentModel->gcPictureSortingDirection];

@@ -27,7 +27,6 @@ $GLOBALS['TL_LANG']['tl_content']['album_selection_legend'] = 'Album selection l
 $GLOBALS['TL_LANG']['tl_content']['gcShowAlbumSelection'] = ['Show a selection', 'Show a selection of albums.'];
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumSelection'] = ['Select one or more albums', 'Selected albums will be displayed in the frontend.'];
 $GLOBALS['TL_LANG']['tl_content']['gcPublishSingleAlbum'] = ['Select one album', 'The selected album will be displayed in the frontend.'];
-$GLOBALS['TL_LANG']['tl_content']['gcShowChildAlbums'] = ['Show child albums', 'Show child albums too.'];
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumsPerPage'] = ['Items per page in the album listing', 'The number of items per page in the album listing. Set to 0 to disable pagination.'];
 $GLOBALS['TL_LANG']['tl_content']['gcThumbsPerPage'] = ['Thumbs per page in the detail view', 'The number of thumbnails per page in the detail view. Set to 0 to disable pagination.'];
 $GLOBALS['TL_LANG']['tl_content']['gcSorting'] = ['Album sorting', 'According to which field the albums should be sorted?'];

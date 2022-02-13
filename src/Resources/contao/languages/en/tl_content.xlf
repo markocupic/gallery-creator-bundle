@@ -35,12 +35,6 @@
       <trans-unit id="tl_content.gcPublishSingleAlbum.1">
         <source>The selected album will be displayed in the frontend.</source>
       </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.0">
-        <source>Show child albums</source>
-      </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.1">
-        <source>Show child albums too.</source>
-      </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.0">
         <source>Items per page in the album listing</source>
       </trans-unit>

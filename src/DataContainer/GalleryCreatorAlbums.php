@@ -445,7 +445,7 @@ class GalleryCreatorAlbums extends Backend
      *
      * @throws DoctrineDBALException
      */
-    public function ondeleteCb(DataContainer $dc): void
+    public function ondeleteCb(DataContainer $dc, int $undoId): void
     {
         $request = $this->requestStack->getCurrentRequest();
 

@@ -62,15 +62,12 @@ class Version200Update extends AbstractMigration
         if ($schemaManager->tablesExist(['tl_content'])) {
             $columns = $schemaManager->listTableColumns('tl_content');
 
-            if(isset($columns['type']))
-            {
-                if($this->connection->fetchOne('SELECT id FROM tl_content WHERE type = ?', ['gallery_creator_ce']))
-                {
+            if (isset($columns['type'])) {
+                if ($this->connection->fetchOne('SELECT id FROM tl_content WHERE type = ?', ['gallery_creator_ce'])) {
                     $doMigration = true;
                 }
 
-                if($this->connection->fetchOne('SELECT id FROM tl_content WHERE type = ?', ['gallery_creator_ce_news']))
-                {
+                if ($this->connection->fetchOne('SELECT id FROM tl_content WHERE type = ?', ['gallery_creator_ce_news'])) {
                     $doMigration = true;
                 }
             }
@@ -126,14 +123,12 @@ class Version200Update extends AbstractMigration
         if ($schemaManager->tablesExist(['tl_content'])) {
             $columns = $schemaManager->listTableColumns('tl_content');
 
-            if(isset($columns['type']))
-            {
+            if (isset($columns['type'])) {
                 $set = [
                     'type' => 'gallery_creator',
                 ];
 
-                if($this->connection->update('tl_content', $set, ['tl_content.type' => 'gallery_creator_ce']))
-                {
+                if ($this->connection->update('tl_content', $set, ['tl_content.type' => 'gallery_creator_ce'])) {
                     $resultMessages[] = 'Rename tl_content.type from gallery_creator_ce to gallery_creator WHERE tl_content.type = gallery_creaor_ce.';
                 }
 
@@ -141,8 +136,7 @@ class Version200Update extends AbstractMigration
                     'type' => 'gallery_creator_news',
                 ];
 
-                if($this->connection->update('tl_content', $set, ['tl_content.type' => 'gallery_creator_ce_news']))
-                {
+                if ($this->connection->update('tl_content', $set, ['tl_content.type' => 'gallery_creator_ce_news'])) {
                     $resultMessages[] = 'Rename tl_content.type from gallery_creator_ce_news to gallery_creator_news WHERE tl_content.type = gallery_creaor_ce_news.';
                 }
             }
@@ -154,13 +148,6 @@ class Version200Update extends AbstractMigration
     private function getAlterationData(): array
     {
         return [
-            [
-                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
-                'table' => 'tl_content',
-                'old' => 'gc_hierarchicalOutput',
-                'new' => 'gcShowChildAlbums',
-                'sql' => 'char(1)',
-            ],
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',

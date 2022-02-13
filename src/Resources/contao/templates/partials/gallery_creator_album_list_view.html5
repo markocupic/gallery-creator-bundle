@@ -2,7 +2,7 @@
 
 <!-- indexer::stop -->
 <div class="gc-album-list-view">
-	<?= $this->pagination ?>
+	<?= $this->listPagination ?>
 
 	<ul class="gc-album-list">
 		<?php foreach ($this->albums as $album): ?>

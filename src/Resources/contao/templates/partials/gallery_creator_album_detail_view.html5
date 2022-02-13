@@ -26,25 +26,14 @@
     <?php endif; ?>
 
     <?php if ($this->album['hasChildAlbums']): ?>
-    <div class="gc-album-detail-child-albums">
-      <h3><?= $this->trans('GALLERY_CREATOR.childAlbumsOf',[]) ?>: <?= $this->album['name'] ?></h3>
-
-      <ul class="gc-album-list">
-        <?php foreach ($this->album['childAlbums'] as $childAlbum): ?>
-        <li class="gc-album-list-item<?php if(isset($childAlbum['cssClass'])): ?> <?= $childAlbum['cssClass'] ?><?php endif; ?>" data-id="<?= $childAlbum['id'] ?>">
-        <?php $this->insert('gallery_creator_album', ['content' => $this->content, 'album' => $childAlbum]); ?>
-        </li>
-        <?php endforeach; ?>
-      </ul>
-    </div>
-    <hr>
+    <p class="gc-album-detail-child-albums"><?= $this->album['countChildAlbums'] ?> <?= $this->trans('GALLERY_CREATOR.childAlbums') ?></p>
     <?php endif; ?>
 
     <?php if ($this->album['caption']): ?>
     <div class="gc-album-detail-caption"><?= nl2br($this->album['caption']) ?></div>
     <?php endif; ?>
 
-    <?= $this->pagination ?>
+    <?= $this->detailPagination ?>
 
     <?php if ($this->arrPictures): ?>
     <ul class="gc-album-detail-picture-list">

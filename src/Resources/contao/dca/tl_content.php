@@ -42,14 +42,6 @@ $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorNewsController::TYPE]
 // Subpalettes
 $GLOBALS['TL_DCA']['tl_content']['subpalettes']['gcShowAlbumSelection'] = 'gcAlbumSelection';
 
-// Fields
-$GLOBALS['TL_DCA']['tl_content']['fields']['gcShowChildAlbums'] = [
-    'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr'],
-    'exclude'   => true,
-    'inputType' => 'checkbox',
-    'sql'       => "char(1) NOT NULL default ''",
-];
-
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSorting'] = [
     'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
     'exclude'   => true,

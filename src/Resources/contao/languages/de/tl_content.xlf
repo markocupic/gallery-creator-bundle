@@ -46,14 +46,6 @@
         <source>The selected album will be displayed in the frontend.</source>
         <target>Das ausgewählte Album wird im Frontend angezeigt.</target>
       </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.0">
-        <source>Show child albums</source>
-        <target>Kindalben anzeigen</target>
-      </trans-unit>
-      <trans-unit id="tl_content.gcShowChildAlbums.1">
-        <source>Show child albums too.</source>
-        <target>Alben und Kindalben anzeigen.</target>
-      </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.0">
         <source>Items per page in the album listing</source>
         <target>Anzahl Alben pro Seite in der Albenübersicht</target>

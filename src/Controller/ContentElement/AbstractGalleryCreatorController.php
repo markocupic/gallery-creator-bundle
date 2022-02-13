@@ -190,7 +190,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($albumModel->keywords), ',');
     }
 
-    protected function triggerGenerateFrontendTemplateHook(Template $template, ?GalleryCreatorAlbumsModel $albumModel = null): void
+    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
     {
         // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
         if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
@@ -218,6 +218,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      */
     protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumsModel, ContentModel $contentModel, $template, PageModel $pageModel): void
     {
+
         // Count items
         $itemsTotal = $this->connection->fetchOne(
             'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
@@ -278,6 +279,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
                 uksort($arrPictures, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
             }
         }
+
 
         // Add pictures to the template.
         $template->arrPictures = array_values($arrPictures);

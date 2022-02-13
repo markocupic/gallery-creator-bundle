@@ -86,7 +86,12 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         } else {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
-            if (null !== $this->activeAlbum && $this->activeAlbum->published) {
+            if (
+                null !== $this->activeAlbum &&
+                $this->activeAlbum->published && 
+                $this->securityUtil->isAuthorized($this->activeAlbum) &&
+                $this->isInSelection($this->activeAlbum)
+            ) {
                 $this->showAlbumDetail = true;
 
                 // Show album listing if active album contains child albums
@@ -98,17 +103,12 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $this->arrAlbumListing = $this->getAlbumsByPid($this->activeAlbum->id);
         }
 
-        // Abort if no album is selected
-        if ($this->showAlbumListing && empty($this->arrAlbumListing)) {
-            return new Response('', Response::HTTP_NO_CONTENT);
-        }
-
         return parent::__invoke($request, $this->model, $section, $classes);
     }
 
     /**
      * If an album contains child albums, we have both,
-     * "$this->showAlbumListing" and "$this->showAlbumDetail"
+     * "$this->showAlbumListing" and "$this->showAlbumDetail".
      *
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
@@ -207,12 +207,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $albumModel = GalleryCreatorAlbumsModel::findByPk($arrAlbum['id']);
 
             // If selection has been activated then do only show selected albums
-            if ($this->model->gcShowAlbumSelection) {
-                $arrSelection = StringUtil::deserialize($this->model->gcAlbumSelection, true);
-
-                if (!\in_array($arrAlbum['id'], $arrSelection, false)) {
-                    continue;
-                }
+            if(!$this->isInSelection($albumModel))
+            {
+                continue;
             }
 
             // Do not show protected albums to unauthorized users.
@@ -224,6 +221,24 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         }
 
         return $arrIDS;
+    }
+
+
+
+    protected function isInSelection(GalleryCreatorAlbumsModel $albumModel): bool
+    {
+
+
+        // If selection has been activated then do only show selected albums
+        if ($this->model->gcShowAlbumSelection) {
+            $arrSelection = StringUtil::deserialize($this->model->gcAlbumSelection, true);
+
+            if (!\in_array($albumModel->id, $arrSelection, false)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -123,8 +123,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
-        if($this->model->gcAddBreadcrumb)
-        {
+        if ($this->model->gcAddBreadcrumb) {
             $template->hasBreadcrumb = true;
             $template->breadcrumb = $this->generateBreadcrumb();
         }
@@ -277,8 +276,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
     protected function generateBreadcrumb()
     {
-
-
         $items = [];
 
         $template = new FrontendTemplate('mod_breadcrumb');
@@ -286,9 +283,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $album = $this->activeAlbum;
 
         while (null !== $album) {
-
-            if(!$this->isInSelection($album) || !$this->securityUtil->isAuthorized($album))
-            {
+            if (!$this->isInSelection($album) || !$this->securityUtil->isAuthorized($album)) {
                 break;
             }
 
@@ -312,46 +307,42 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $item['class'] = 'gc-breadcrumb-item gc-breadcrumb-root-item';
         $item['name'] = $this->pageModel->title;
         $item['link'] = $this->pageModel->title;
-        if($this->activeAlbum){
+
+        if ($this->activeAlbum) {
             $item['title'] = StringUtil::specialchars($this->pageModel->title);
             $item['href'] = StringUtil::ampersand($this->pageModel->getFrontendUrl());
-        }else{
+        } else {
             $item['isActive'] = true;
         }
 
         $items[] = $item;
 
-
-
         $items = array_reverse($items);
 
-
-        $template->getSchemaOrgData = static function () use ($items): array
-        {
-            $jsonLd = array(
+        $template->getSchemaOrgData = static function () use ($items): array {
+            $jsonLd = [
                 '@type' => 'BreadcrumbList',
-                'itemListElement' => array()
-            );
+                'itemListElement' => [],
+            ];
 
             $position = 0;
 
             $htmlDecoder = false;
 
             // Contao >= 4.13
-            if(System::getContainer()->has('contao.string.html_decoder')) {
+            if (System::getContainer()->has('contao.string.html_decoder')) {
                 $htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
             }
 
-            foreach ($items as $item)
-            {
-                $jsonLd['itemListElement'][] = array(
+            foreach ($items as $item) {
+                $jsonLd['itemListElement'][] = [
                     '@type' => 'ListItem',
                     'position' => ++$position,
-                    'item' => array(
-                        '@id' => $item['href'] ?: './',
+                    'item' => [
+                        '@id' => isset($item['href']) ?: './',
                         'name' => $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($item['link']) : StringUtil::inputEncodedToPlainText($item['link']),
-                    )
-                );
+                    ],
+                ];
             }
 
             return $jsonLd;

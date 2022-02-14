@@ -339,7 +339,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                     '@type' => 'ListItem',
                     'position' => ++$position,
                     'item' => [
-                        '@id' => isset($item['href']) ?: './',
+                        '@id' => isset($item['href']) ?: './', 
                         'name' => $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($item['link']) : StringUtil::inputEncodedToPlainText($item['link']),
                     ],
                 ];

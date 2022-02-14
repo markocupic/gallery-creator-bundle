@@ -220,7 +220,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 'SELECT id,pid FROM tl_gallery_creator_albums AS t WHERE t.pid = ? AND t.published = ? ORDER BY '.$strSorting,
                 [$pid, '1'],
             )
-       ;
+        ;
 
         while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
             $albumModel = GalleryCreatorAlbumsModel::findByPk($arrAlbum['id']);
@@ -307,6 +307,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $item['class'] = 'gc-breadcrumb-item gc-breadcrumb-root-item';
         $item['name'] = $this->pageModel->title;
         $item['link'] = $this->pageModel->title;
+        $item['isActive'] = false;
+        $item['href'] = null;
+        $item['title'] = null;
 
         if ($this->activeAlbum) {
             $item['title'] = StringUtil::specialchars($this->pageModel->title);
@@ -339,7 +342,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                     '@type' => 'ListItem',
                     'position' => ++$position,
                     'item' => [
-                        '@id' => isset($item['href']) ?: './', 
+                        '@id' => isset($item['href']) ?: './',
                         'name' => $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($item['link']) : StringUtil::inputEncodedToPlainText($item['link']),
                     ],
                 ];

@@ -510,8 +510,12 @@ class GalleryCreatorAlbums extends Backend
                         }
                     }
 
-                    // Remove the album from the database
-                    $albumsModel->delete();
+                    // Do not delete the album entity and let Contao do this job, otherwise we run into an error.
+                    if((int) $dc->id !== (int) $albumsModel->id)
+                    {
+                        // Remove the album entity
+                        $albumsModel->delete();
+                    }
                 } else {
                     // Do not delete albums that are not owned by the currently logged-in user.
                     $this->connection->update('tl_gallery_creator_albums', ['pid' => 0], ['id' => $idDelAlbum]);

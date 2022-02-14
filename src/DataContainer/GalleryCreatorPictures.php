@@ -479,7 +479,8 @@ class GalleryCreatorPictures extends Backend
 
             // Delete data record
             $uuid = $picturesModel->uuid;
-            $picturesModel->delete();
+            // Do not delete the picture entity and let Contao do this job, otherwise we run into an error.
+            // $picturesModel->delete();
             $filesModel = FilesModel::findByUuid($uuid);
 
             $albumsModel = GalleryCreatorAlbumsModel::findByPk($pid);

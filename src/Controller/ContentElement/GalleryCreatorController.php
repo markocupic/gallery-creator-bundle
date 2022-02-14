@@ -334,7 +334,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             );
 
             $position = 0;
-            $htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
+
+            $htmlDecoder = false;
+
+            // Contao >= 4.13
+            if(System::getContainer()->has('contao.string.html_decoder')) {
+                $htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
+            }
 
             foreach ($items as $item)
             {
@@ -343,7 +349,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                     'position' => ++$position,
                     'item' => array(
                         '@id' => $item['href'] ?: './',
-                        'name' => $htmlDecoder->inputEncodedToPlainText($item['link'])
+                        'name' => $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($item['link']) : StringUtil::inputEncodedToPlainText($item['link']),
                     )
                 );
             }

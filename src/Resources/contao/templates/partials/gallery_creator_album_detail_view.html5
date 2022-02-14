@@ -1,5 +1,5 @@
 <!-- gallery_creator_album_detail_view.html5 -->
-<div class="gc-album-detail-view">
+<div class="gc-album-detail-view" data-album-level="<?= $this->level ?>">
   <div class="gc-album-detail-inner">
 
     <?php if ($this->insertArticlePre):?>
@@ -10,7 +10,9 @@
     <?php endif; ?>
 
     <?php if ($this->backLink !== null): ?>
-    <div class="gc-album-detail-back-link"><a href="<?= $this->backLink ?>" title="<?= $this->trans('GALLERY_CREATOR.backLink',[]) ?>"><?= $this->trans('GALLERY_CREATOR.backLink',[]) ?></a></div>
+    <div class="gc-album-detail-back-link">
+      <a href="<?= $this->backLink ?>" title="<?= $this->trans('GALLERY_CREATOR.backLink',[]) ?>"><?= $this->trans('GALLERY_CREATOR.backLink',[]) ?></a>
+    </div>
     <?php endif; ?>
 
     <?php if ($this->album['name']): ?>

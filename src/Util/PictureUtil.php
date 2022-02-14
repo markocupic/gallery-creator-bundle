@@ -65,8 +65,8 @@ class PictureUtil
         // Meta
         $arrMeta = Frontend::getMetaData($filesModel->meta, $objPage->language);
 
-        if (empty($arrMeta['title'])) {
-            $arrMeta['title'] = $filesModel->name;
+        if (!isset($arrMeta['title'])) {
+            $arrMeta['title'] = '';
         }
 
         $arrMeta['title'] = $pictureModel->caption ?? $arrMeta['title'];

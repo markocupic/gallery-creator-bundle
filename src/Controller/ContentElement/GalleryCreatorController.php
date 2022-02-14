@@ -90,6 +90,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', StringUtil::deserialize($model->gcAlbumSelection)).') ORDER BY pid ASC');
                 $this->arrAlbumListing = $this->getAlbumsByPid($pid);
             }
+
             $this->showAlbumListing = true;
         } else {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
@@ -173,6 +174,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             // Add content model to template.
             $template->content = $model->row();
 
+            // Get the album level
+            $template->level = $this->albumUtil->getAlbumLevelFromPid((int) $this->activeAlbum->pid);
+
             // Add meta tags to the page header.
             $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
         }
@@ -188,18 +192,19 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): string
     {
-        // Generates the link to the parent album
-        if (null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
+
+        // Generate the link to the parent album
+        if (null !== ($parentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
             if ($this->model->gcShowAlbumSelection) {
-                if ($this->isInSelection($objParentAlbum)) {
-                    return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
+                if ($this->isInSelection($parentAlbum)) {
+                    return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$parentAlbum->alias));
                 }
             } else {
-                return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
+                return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$parentAlbum->alias));
             }
         }
 
-        // Generate the link to the startup overview taking into account the pagination
+        // Generate the link to the startup overview
         $url = $this->pageModel->getFrontendUrl();
 
         return StringUtil::ampersand($url);

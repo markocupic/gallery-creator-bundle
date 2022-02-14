@@ -274,7 +274,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $template->insertArticlePost = $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : null;
     }
 
-    protected function generateBreadcrumb()
+    protected function generateBreadcrumb(): string
     {
         $htmlDecoder = false;
 
@@ -296,7 +296,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             $item = [];
             $item['class'] = 'gc-breadcrumb-item';
-            $item['link'] = $album->name;
+            $item['link'] = $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($album->name) : StringUtil::inputEncodedToPlainText($album->name);
+            $item['name'] = $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($album->name) : StringUtil::inputEncodedToPlainText($album->name);
 
             if ($album->id === $this->activeAlbum->id) {
                 $item['isActive'] = true;
@@ -314,9 +315,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $item['class'] = 'gc-breadcrumb-item gc-breadcrumb-root-item';
         $item['name'] = $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($this->pageModel->title) : StringUtil::inputEncodedToPlainText($this->pageModel->title);
         $item['link'] = $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($this->pageModel->title) : StringUtil::inputEncodedToPlainText($this->pageModel->title);
-        $item['isActive'] = false;
-        $item['href'] = null;
         $item['title'] = null;
+        $item['href'] = null;
+        $item['isActive'] = false;
 
         if ($this->activeAlbum) {
             $item['title'] = StringUtil::specialchars($this->pageModel->title);
@@ -337,8 +338,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             $position = 0;
 
-
-
             foreach ($items as $item) {
                 $jsonLd['itemListElement'][] = [
                     '@type' => 'ListItem',
@@ -355,6 +354,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $template->items = $items;
 
-        return $template->parse();
+        return $template->getResponse()->getContent();
     }
 }

@@ -3,7 +3,9 @@
 <?php $this->block('content'); ?>
 
 <?php if ($this->hasBreadcrumb): ?>
-<?= $this->breadcrumb ?>
+<nav class="gc-breadcrumb-nav">
+  <?= $this->breadcrumb ?>
+</nav>
 <?php endif; ?>
 
 <?php if ($this->showAlbumDetail): ?>

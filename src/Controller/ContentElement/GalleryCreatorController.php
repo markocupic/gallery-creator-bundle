@@ -86,7 +86,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             if (!$model->gcShowAlbumSelection) {
                 $this->arrAlbumListing = $this->getAlbumsByPid(0);
             } else {
-                // Find root album
+                // Find the pid of the root album
                 $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', StringUtil::deserialize($model->gcAlbumSelection)).') ORDER BY pid ASC');
                 $this->arrAlbumListing = $this->getAlbumsByPid($pid);
             }
@@ -180,7 +180,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         // Trigger gcGenerateFrontendTemplateHook
         $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
 
-        // End switch
         return $template->getResponse();
     }
 
@@ -225,13 +224,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
             $albumModel = GalleryCreatorAlbumsModel::findByPk($arrAlbum['id']);
 
-            // If selection has been activated then do only show selected albums
-            if (!$this->isInSelection($albumModel)) {
-                continue;
-            }
-
-            // Do not show protected albums to unauthorized users.
-            if (!$this->securityUtil->isAuthorized($albumModel)) {
+            // #1 Do only show selected albums, if album selector has been activated in the CE settings
+            // #2 Do not show protected albums to unauthorized users.
+            if (!$this->isInSelection($albumModel) || !$this->securityUtil->isAuthorized($albumModel)) {
                 continue;
             }
 

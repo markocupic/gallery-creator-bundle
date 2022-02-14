@@ -276,6 +276,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
     protected function generateBreadcrumb()
     {
+        $htmlDecoder = false;
+
+        // Contao >= 4.13
+        if (System::getContainer()->has('contao.string.html_decoder')) {
+            $htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
+        }
+
         $items = [];
 
         $template = new FrontendTemplate('mod_breadcrumb');
@@ -305,8 +312,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         // Add root
         $item = [];
         $item['class'] = 'gc-breadcrumb-item gc-breadcrumb-root-item';
-        $item['name'] = $this->pageModel->title;
-        $item['link'] = $this->pageModel->title;
+        $item['name'] = $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($this->pageModel->title) : StringUtil::inputEncodedToPlainText($this->pageModel->title);
+        $item['link'] = $htmlDecoder ? $htmlDecoder->inputEncodedToPlainText($this->pageModel->title) : StringUtil::inputEncodedToPlainText($this->pageModel->title);
         $item['isActive'] = false;
         $item['href'] = null;
         $item['title'] = null;
@@ -322,7 +329,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $items = array_reverse($items);
 
-        $template->getSchemaOrgData = static function () use ($items): array {
+        $template->getSchemaOrgData = static function () use ($items, $htmlDecoder): array {
             $jsonLd = [
                 '@type' => 'BreadcrumbList',
                 'itemListElement' => [],
@@ -330,12 +337,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             $position = 0;
 
-            $htmlDecoder = false;
 
-            // Contao >= 4.13
-            if (System::getContainer()->has('contao.string.html_decoder')) {
-                $htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
-            }
 
             foreach ($items as $item) {
                 $jsonLd['itemListElement'][] = [

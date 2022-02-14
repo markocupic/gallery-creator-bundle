@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][] = 'gcShowAlbumSel
 
 // Palettes
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
-{miscellaneous_legend},gcAddBreadcrumb,gcPublishAlbums;
+{miscellaneous_legend},gcAddBreadcrumb;
 {album_selection_legend},gcShowAlbumSelection;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage,gcRootAlbum;
 {album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing;

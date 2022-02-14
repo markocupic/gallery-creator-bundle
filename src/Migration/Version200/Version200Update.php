@@ -215,7 +215,7 @@ class Version200Update extends AbstractMigration
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_content',
                 'old' => 'gc_publish_albums',
-                'new' => 'gcPublishAlbums',
+                'new' => 'gcAlbumSelection',
                 'sql' => 'blob',
             ],
             [

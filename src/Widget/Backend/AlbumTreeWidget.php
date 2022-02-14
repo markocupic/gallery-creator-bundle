@@ -42,7 +42,6 @@ class AlbumTreeWidget extends Widget
     public function generate(): string
     {
         Controller::loadLanguageFile('tl_content');
-        $translator = System::getContainer()->get('translator');
         $twig = System::getContainer()->get('twig');
 
         $factory = new MenuFactory();
@@ -64,13 +63,6 @@ class AlbumTreeWidget extends Widget
                         'multiple' => $this->multiple ? '1' : '',
                         'mandatory' => $this->mandatory ? '1' : '',
                         'name' => $this->strName,
-                    ],
-                    'trans' => [
-                        'selectAll' => $translator->trans('MSC.selectAll', [], 'contao_default'),
-                        'gcPublishAlbums' => [
-                            $translator->trans('tl_content.gcPublishAlbums.0', [], 'contao_default'),
-                            $translator->trans('tl_content.gcPublishAlbums.1', [], 'contao_default'),
-                        ],
                     ],
                 ]
             )

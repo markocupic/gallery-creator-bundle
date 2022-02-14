@@ -132,7 +132,7 @@ class ReviseAlbumDatabase
         }
 
         /**
-         * Ensures that there are no orphaned AlbumId's in the gcPublishAlbums field in tl_content.
+         * Ensures that there are no orphaned AlbumId's in the gcAlbumSelection field in tl_content.
          * Checks whether the albums defined in the content element still exist.
          * If not, these are removed from the array.
          */
@@ -140,7 +140,7 @@ class ReviseAlbumDatabase
 
         while (false !== ($arrContent = $stmtContent->fetchAssociative())) {
             $newArr = [];
-            $arrAlbums = StringUtil::deserialize($arrContent['gcPublishAlbums'], true);
+            $arrAlbums = StringUtil::deserialize($arrContent['gcAlbumSelection'], true);
 
             foreach ($arrAlbums as $AlbumId) {
                 if (0 === (int) $AlbumId) {
@@ -157,7 +157,7 @@ class ReviseAlbumDatabase
 
             $this->connection->update(
                 'tl_content',
-                ['tl_content.gcPublishAlbums' => serialize($newArr)],
+                ['tl_content.gcAlbumSelection' => serialize($newArr)],
                 ['tl_content.id' => $arrContent['id']],
             );
         }

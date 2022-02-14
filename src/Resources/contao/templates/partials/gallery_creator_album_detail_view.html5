@@ -10,7 +10,7 @@
     <?php endif; ?>
 
     <?php if ($this->backLink !== null): ?>
-    <div class="gc-album-detail-back-link"><a href="<?= $this->backLink ?>" title="<?= $this->trans('GALLERY_CREATOR.backToOverview',[]) ?>"><?= $this->trans('GALLERY_CREATOR.backToOverview',[]) ?></a></div>
+    <div class="gc-album-detail-back-link"><a href="<?= $this->backLink ?>" title="<?= $this->trans('GALLERY_CREATOR.backLink',[]) ?>"><?= $this->trans('GALLERY_CREATOR.backLink',[]) ?></a></div>
     <?php endif; ?>
 
     <?php if ($this->album['name']): ?>

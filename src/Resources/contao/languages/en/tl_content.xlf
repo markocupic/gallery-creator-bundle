@@ -17,6 +17,12 @@
       <trans-unit id="tl_content.album_selection_legend">
         <source>Album selection legend</source>
       </trans-unit>
+      <trans-unit id="tl_content.gcAddBreadcrumb.0">
+        <source>Display a breadcrumb</source>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAddBreadcrumb.1">
+        <source>Display a breadcrumb.</source>
+      </trans-unit>
       <trans-unit id="tl_content.gcShowAlbumSelection.0">
         <source>Show a selection</source>
       </trans-unit>

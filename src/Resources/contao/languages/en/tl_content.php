@@ -24,6 +24,7 @@ $GLOBALS['TL_LANG']['tl_content']['album_selection_legend'] = 'Album selection l
 /*
  * Fields
  */
+$GLOBALS['TL_LANG']['tl_content']['gcAddBreadcrumb'] = ['Display a breadcrumb', 'Display a breadcrumb.'];
 $GLOBALS['TL_LANG']['tl_content']['gcShowAlbumSelection'] = ['Show a selection', 'Show a selection of albums.'];
 $GLOBALS['TL_LANG']['tl_content']['gcAlbumSelection'] = ['Select one or more albums', 'Selected albums will be displayed in the frontend.'];
 $GLOBALS['TL_LANG']['tl_content']['gcPublishSingleAlbum'] = ['Select one album', 'The selected album will be displayed in the frontend.'];

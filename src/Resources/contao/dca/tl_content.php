@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][] = 'gcShowAlbumSel
 
 // Palettes
 $GLOBALS['TL_DCA']['tl_content']['palettes'][GalleryCreatorController::TYPE] = 'name,type,headline;
-{miscellaneous_legend},gcPublishAlbums;
+{miscellaneous_legend},gcAddBreadcrumb,gcPublishAlbums;
 {album_selection_legend},gcShowAlbumSelection;
 {pagination_legend},gcAlbumsPerPage,gcThumbsPerPage,gcRootAlbum;
 {album_listing_legend},gcSorting,gcSortingDirection,gcSizeAlbumListing;
@@ -132,8 +132,15 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumSelection'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcPublishSingleAlbum'] = [
-    'eval'      => ['mandatory' => false, 'multiple' => false, 'tl_class' => 'clr'],
+    'eval'      => ['mandatory' => false, 'tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'radio',
     'sql'       => 'blob NULL',
+];
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['gcAddBreadcrumb'] = [
+    'eval'      => ['tl_class' => 'clr'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'sql'       => "char(1) NOT NULL default ''",
 ];

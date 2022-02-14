@@ -19,9 +19,11 @@ use Contao\ContentModel;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\Environment;
+use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Template;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
@@ -81,14 +83,20 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         }
 
         if (!Input::get('items')) {
-            $this->arrAlbumListing = $this->getAlbumsByPid(0);
+            if (!$model->gcShowAlbumSelection) {
+                $this->arrAlbumListing = $this->getAlbumsByPid(0);
+            } else {
+                // Find root album
+                $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', StringUtil::deserialize($model->gcAlbumSelection)).') ORDER BY pid ASC');
+                $this->arrAlbumListing = $this->getAlbumsByPid($pid);
+            }
             $this->showAlbumListing = true;
         } else {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
             if (
                 null !== $this->activeAlbum &&
-                $this->activeAlbum->published && 
+                $this->activeAlbum->published &&
                 $this->securityUtil->isAuthorized($this->activeAlbum) &&
                 $this->isInSelection($this->activeAlbum)
             ) {
@@ -115,6 +123,12 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
+        if($this->model->gcAddBreadcrumb)
+        {
+            $template->hasBreadcrumb = true;
+            $template->breadcrumb = $this->generateBreadcrumb();
+        }
+
         if ($this->showAlbumListing) {
             $template->showAlbumListing = true;
 
@@ -174,11 +188,17 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     /**
      * @throws \Exception
      */
-    protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): ?string
+    protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): string
     {
         // Generates the link to the parent album
         if (null !== ($objParentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
-            return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
+            if ($this->model->gcShowAlbumSelection) {
+                if ($this->isInSelection($objParentAlbum)) {
+                    return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
+                }
+            } else {
+                return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$objParentAlbum->alias));
+            }
         }
 
         // Generate the link to the startup overview taking into account the pagination
@@ -207,8 +227,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $albumModel = GalleryCreatorAlbumsModel::findByPk($arrAlbum['id']);
 
             // If selection has been activated then do only show selected albums
-            if(!$this->isInSelection($albumModel))
-            {
+            if (!$this->isInSelection($albumModel)) {
                 continue;
             }
 
@@ -223,12 +242,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         return $arrIDS;
     }
 
-
-
     protected function isInSelection(GalleryCreatorAlbumsModel $albumModel): bool
     {
-
-
         // If selection has been activated then do only show selected albums
         if ($this->model->gcShowAlbumSelection) {
             $arrSelection = StringUtil::deserialize($this->model->gcAlbumSelection, true);
@@ -258,5 +273,86 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         // In the detail view, an article can optionally be added right after the album
         $template->insertArticlePost = $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : null;
+    }
+
+    protected function generateBreadcrumb()
+    {
+
+
+        $items = [];
+
+        $template = new FrontendTemplate('mod_breadcrumb');
+
+        $album = $this->activeAlbum;
+
+        while (null !== $album) {
+
+            if(!$this->isInSelection($album) || !$this->securityUtil->isAuthorized($album))
+            {
+                break;
+            }
+
+            $item = [];
+            $item['class'] = 'gc-breadcrumb-item';
+            $item['link'] = $album->name;
+
+            if ($album->id === $this->activeAlbum->id) {
+                $item['isActive'] = true;
+            } else {
+                $item['title'] = StringUtil::specialchars($album->name);
+                $item['href'] = StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$album->alias));
+            }
+            $items[] = $item;
+
+            $album = GalleryCreatorAlbumsModel::getParentAlbum($album);
+        }
+
+        // Add root
+        $item = [];
+        $item['class'] = 'gc-breadcrumb-item gc-breadcrumb-root-item';
+        $item['name'] = $this->pageModel->title;
+        $item['link'] = $this->pageModel->title;
+        if($this->activeAlbum){
+            $item['title'] = StringUtil::specialchars($this->pageModel->title);
+            $item['href'] = StringUtil::ampersand($this->pageModel->getFrontendUrl());
+        }else{
+            $item['isActive'] = true;
+        }
+
+        $items[] = $item;
+
+
+
+        $items = array_reverse($items);
+
+
+        $template->getSchemaOrgData = static function () use ($items): array
+        {
+            $jsonLd = array(
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => array()
+            );
+
+            $position = 0;
+            $htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
+
+            foreach ($items as $item)
+            {
+                $jsonLd['itemListElement'][] = array(
+                    '@type' => 'ListItem',
+                    'position' => ++$position,
+                    'item' => array(
+                        '@id' => $item['href'] ?: './',
+                        'name' => $htmlDecoder->inputEncodedToPlainText($item['link'])
+                    )
+                );
+            }
+
+            return $jsonLd;
+        };
+
+        $template->items = $items;
+
+        return $template->parse();
     }
 }

@@ -31,7 +31,7 @@ $GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Do you really want t
 /*
  * Frontend
  */
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['backToOverview'] = 'Back to general view';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['backLink'] = 'back';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'] = 'Child albums';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbumsOf'] = 'Child albums of';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] = 'pictures';

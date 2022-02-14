@@ -34,9 +34,9 @@
         <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too!!!</source>
         <target>Soll das Bild mit der ID %s gelöscht werden? \r\nAchtung! Dabei wird wird auch die Bilddatei im Dateisystem gelöscht.</target>
       </trans-unit>
-      <trans-unit id="GALLERY_CREATOR.backToOverview">
-        <source>Back to general view</source>
-        <target>Zurück zur Übersicht</target>
+      <trans-unit id="GALLERY_CREATOR.backLink">
+        <source>back</source>
+        <target>zurück</target>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.childAlbums">
         <source>Child albums</source>

@@ -2,6 +2,10 @@
 
 <?php $this->block('content'); ?>
 
+<?php if ($this->hasBreadcrumb): ?>
+<?= $this->breadcrumb ?>
+<?php endif; ?>
+
 <?php if ($this->showAlbumDetail): ?>
 <?php $this->insert('gallery_creator_album_detail_view', $this->getData()); ?>
 <?php endif; ?>

@@ -22,6 +22,8 @@ $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not write
 $GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album: "%s".';
 $GLOBALS['TL_LANG']['ERR']['notAllowedFilenameOrExtension'] = 'Invalid file name or extension: => %s. Please check the list of supported file extensions (%s).';
 $GLOBALS['TL_LANG']['ERR']['rotateImageError'] = 'Error while trying to rotate picture "%s".';
+$GLOBALS['TL_LANG']['ERR']['notAllowedToDeleteAlbum'] = 'Not enough permissions to delete album with ID %d.';
+$GLOBALS['TL_LANG']['ERR']['notAllowedToDeletePicture'] = 'Not enough permissions to delete picture with ID %d.';
 
 /*
  * Confirm

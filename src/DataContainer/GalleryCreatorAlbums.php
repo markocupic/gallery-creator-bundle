@@ -51,6 +51,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment as TwigEnvironment;
 
 /**
@@ -62,6 +63,7 @@ class GalleryCreatorAlbums
     private FileUtil $fileUtil;
     private Connection $connection;
     private Security $security;
+    private TranslatorInterface $translator;
     private TwigEnvironment $twig;
     private ReviseAlbumDatabase $reviseAlbumDatabase;
     private MarkdownUtil $markdownUtil;
@@ -71,12 +73,13 @@ class GalleryCreatorAlbums
     private array $galleryCreatorValidExtensions;
     private ?LoggerInterface $logger;
 
-    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, MarkdownUtil $markdownUtil, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, ?LoggerInterface $logger)
+    public function __construct(RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, MarkdownUtil $markdownUtil, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, ?LoggerInterface $logger)
     {
         $this->requestStack = $requestStack;
         $this->fileUtil = $fileUtil;
         $this->connection = $connection;
         $this->security = $security;
+        $this->translator = $translator;
         $this->reviseAlbumDatabase = $reviseAlbumDatabase;
         $this->markdownUtil = $markdownUtil;
         $this->projectDir = $projectDir;
@@ -184,9 +187,9 @@ class GalleryCreatorAlbums
             if ($album) {
                 if (!$user->isAdmin && (int) $album['owner'] !== (int) $user->id && $this->galleryCreatorBackendWriteProtection) {
                     $hasPermission = false;
-                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'], $album['name']));
+                    Message::addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$album['name']], 'contao_default'));
 
-                    Controller::redirect('contao?do=gallery_creator');
+                    Controller::redirect(System::getReferer());
                 }
             }
         }
@@ -236,17 +239,18 @@ class GalleryCreatorAlbums
         }
 
         // Return the buttons
-        $imagePasteAfter = Image::getHtml('pasteafter.svg', sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id']), 'class="blink"');
-        $imagePasteInto = Image::getHtml('pasteinto.svg', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id']), 'class="blink"');
+        $imagePasteAfter = Image::getHtml('pasteafter.svg', $this->translator->trans('DCA.pasteafter.1', [$row['id']], 'contao_default'), 'class="blink"');
+        $imagePasteInto = Image::getHtml('pasteinto.svg', $this->translator->trans('DCA.pasteafter.1', [$row['id']], 'contao_default'), 'class="blink"');
 
         $return = '';
 
         if ($row['id'] > 0) {
-            $return = $disablePA ? Image::getHtml('pasteafter_.svg', '', 'class="blink"').' ' : '<a href="'.Backend::addToUrl('act='.$arrClipboard['mode'].'&amp;mode=1&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteAfter.'</a> ';
+            $return = $disablePA ? Image::getHtml('pasteafter_.svg', '', 'class="blink"').' ' : '<a href="'.Backend::addToUrl('act='.$arrClipboard['mode'].'&amp;mode=1&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars($this->translator->trans('DCA.pasteafter.1', [$row['id']], 'contao_default')).'" onclick="Backend.getScrollOffset();">'.$imagePasteAfter.'</a> ';
         }
 
-        return $return.($disablePI ? Image::getHtml('pasteinto_.svg', '', 'class="blink"').' ' : '<a href="'.Backend::addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'" onclick="Backend.getScrollOffset();">'.$imagePasteInto.'</a> ');
+        return $return.($disablePI ? Image::getHtml('pasteinto_.svg', '', 'class="blink"').' ' : '<a href="'.Backend::addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.StringUtil::specialchars($this->translator->trans('DCA.pasteinto.1', [$row['id']], 'contao_default')).'" onclick="Backend.getScrollOffset();">'.$imagePasteInto.'</a> ');
     }
+
 
     /**
      * Button callback.
@@ -499,7 +503,7 @@ class GalleryCreatorAlbums
             // Remove buttons
             unset($arrButtons['saveNcreate'], $arrButtons['saveNclose']);
 
-            $arrButtons['save'] = '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['reviseTablesBtn'].'</button>';
+            $arrButtons['save'] = '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">'.$this->translator->trans('tl_gallery_creator_albums.reviseTablesBtn',[], 'contao_default').'</button>';
         }
 
         if ('fileUpload' === $request->query->get('key')) {
@@ -533,14 +537,9 @@ class GalleryCreatorAlbums
 
         if ('deleteAll' !== $request->query->get('act')) {
             if ($this->isRestrictedUser($dc->id)) {
-                if ($this->logger) {
-                    $this->logger->info(
-                        sprintf('An unauthorized user tried to delete an entry from tl_gallery_creator_albums with ID %s.', $dc->id),
-                        ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
-                    );
-                }
 
-                Controller::redirect('contao?do=error');
+                Message::addError($this->translator->trans('ERR.notAllowedToDeleteAlbum',[$dc->id],'contao_default'));
+                Controller::redirect(System::getReferer());
             }
 
             // Also delete child albums

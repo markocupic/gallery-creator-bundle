@@ -384,8 +384,7 @@ class GalleryCreatorPictures
             return;
         }
 
-        $intDel = $dc->id;
-        $picturesModel = GalleryCreatorPicturesModel::findByPk($intDel);
+        $picturesModel = GalleryCreatorPicturesModel::findByPk($dc->id);
 
         if (null === $picturesModel) {
             return;
@@ -411,7 +410,7 @@ class GalleryCreatorPictures
                 $file->delete();
             }
         } else {
-            Message::addError('No permission to delete picture with ID '.$intDel.'.');
+            Message::addError($this->translator->trans('ERR.notAllowedToDeletePicture', [$dc->id], 'contao_default'));
             Controller::redirect(System::getReferer());
         }
     }
@@ -472,7 +471,7 @@ class GalleryCreatorPictures
         $objVersions->initialize();
 
         // Trigger the save_callback
-        if (\is_array($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['published']['save_callback'])) {
+        if (isset($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['published']['save_callback']) && \is_array($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['published']['save_callback'])) {
             foreach ($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['published']['save_callback'] as $callback) {
                 if (\is_array($callback)) {
                     $callback = System::importStatic($callback[0]);

@@ -164,7 +164,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'owner'          => [
             'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'clr w50'],
+            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'nospace' => true, 'tl_class' => 'clr w50'],
             'filter'     => true,
             'foreignKey' => 'tl_user.name',
             'inputType'  => 'select',

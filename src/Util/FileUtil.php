@@ -59,11 +59,13 @@ class FileUtil
     }
 
     /**
-     * @param int $angle the rotation angle is interpreted as the number of degrees to rotate the image anticlockwise
+     * @param int $angle number of degrees to rotate the image anticlockwise
      */
     public function imageRotate(File $file, int $angle): bool
     {
+
         if (!is_file($this->projectDir.'/'.$file->path) || !$file->isGdImage) {
+            Message::addError($this->translator->trans('ERR.rotateImageError',[$file->path], 'contao_default'));
             return false;
         }
 
@@ -85,7 +87,11 @@ class FileUtil
 
         $imgSrc = $this->projectDir.'/'.$file->path;
 
-        $source = imagecreatefromjpeg($imgSrc);
+        if(false === ($source = imagecreatefromjpeg($imgSrc)))
+        {
+            Message::addError($this->translator->trans('ERR.rotateImageError',[$file->path], 'contao_default'));
+            return false;
+        }
 
         // Rotate
         $imgTmp = imagerotate($source, $angle, 0);

@@ -3,7 +3,13 @@
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en">
     <body>
       <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
-        <source>Album information</source>
+        <source>Album settings</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.caption_legend">
+        <source>Album caption settings</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploadDir_legend">
+        <source>Upload directory settings</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protection_legend">
         <source>Protect album</source>
@@ -11,7 +17,7 @@
       <trans-unit id="tl_gallery_creator_albums.upload_settings_legend">
         <source>Image settings</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.insert_article">
+      <trans-unit id="tl_gallery_creator_albums.insert_article_legend">
         <source>Insert articles before or after the album</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.uploader_legend">
@@ -53,12 +59,6 @@
       <trans-unit id="tl_gallery_creator_albums.description.1">
         <source>Here you can enter a short description of the page which will be evaluated by search engines like Google or Yahoo. Search engines usually indicate between 150 and 300 characters.</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.keywords.0">
-        <source>Meta keywords</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.keywords.1">
-        <source>Here you can enter a list of comma separated keywords. Keywords, however, are no longer relevant to most search engines (including Google).</source>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.name.0">
         <source>Album name</source>
       </trans-unit>
@@ -80,8 +80,20 @@
       <trans-unit id="tl_gallery_creator_albums.photographer.1">
         <source>Please add photographers names.</source>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.captionType.0">
+        <source>Album caption type</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.captionType.1">
+        <source>Select the caption type, please.</source>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption.0">
         <source>Album-caption</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.markdownCaption.0">
+        <source>Album-caption (markdown)</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.markdownCaption.1">
+        <source>Use markdown to style the text. https://www.markdownguide.org/basic-syntax</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.0">
         <source>Thumbnail</source>

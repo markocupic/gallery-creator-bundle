@@ -3,8 +3,16 @@
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
-        <source>Album information</source>
+        <source>Album settings</source>
         <target>Albuminformationen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.caption_legend">
+        <source>Album caption settings</source>
+        <target>Albumbeschreibung</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploadDir_legend">
+        <source>Upload directory settings</source>
+        <target>Bildupload-Verzeichnis</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protection_legend">
         <source>Protect album</source>
@@ -14,7 +22,7 @@
         <source>Image settings</source>
         <target>Bildeinstellungen</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.insert_article">
+      <trans-unit id="tl_gallery_creator_albums.insert_article_legend">
         <source>Insert articles before or after the album</source>
         <target>Artikel vor oder nach dem Album einfügen</target>
       </trans-unit>
@@ -70,14 +78,6 @@
         <source>Here you can enter a short description of the page which will be evaluated by search engines like Google or Yahoo. Search engines usually indicate between 150 and 300 characters.</source>
         <target>Hier können Sie eine kurze Beschreibung der Seite eingeben, die von Suchmaschinen ausgewertet wird. Suchmaschinen indizieren normalerweise zwischen 150 und 300 Zeichen.</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.keywords.0">
-        <source>Meta keywords</source>
-        <target>Suchbegriffe</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.keywords.1">
-        <source>Here you can enter a list of comma separated keywords. Keywords, however, are no longer relevant to most search engines (including Google).</source>
-        <target>Hier können Sie eine kommagetrennte Liste von Suchbegriffen eingeben. Suchbegriffe sind jedoch für die meisten Suchmaschinen (inklusive Google) nicht mehr relevant.</target>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.name.0">
         <source>Album name</source>
         <target>Albumname</target>
@@ -106,9 +106,25 @@
         <source>Please add photographers names.</source>
         <target>Bitte geben Sie den/die Namen des/der Fotografen an.</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.captionType.0">
+        <source>Album caption type</source>
+        <target>Eingabemethode für Bildbeschreibung auswählen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.captionType.1">
+        <source>Select the caption type, please.</source>
+        <target>Wählen Sie die Eingabemethode für Bildbeschreibung aus.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption.0">
         <source>Album-caption</source>
         <target>Albumbeschreibung</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.markdownCaption.0">
+        <source>Album-caption (markdown)</source>
+        <target>Bildbeschreibung (markdown)</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.markdownCaption.1">
+        <source>Use markdown to style the text. https://www.markdownguide.org/basic-syntax</source>
+        <target>Nutzen Sie die Markdown-Syntax für die Albumbeschreibung. https://www.markdownguide.org/basic-syntax</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.0">
         <source>Thumbnail</source>

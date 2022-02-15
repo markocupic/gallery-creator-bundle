@@ -104,7 +104,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
     ],
     'palettes'    => [
         '__selector__'               => ['protected'],
-        'default'                    => '{album_inf_legend},published,name,alias,description,keywords,assignedDir,albumInfo,owner,photographer,date,eventLocation,filePrefix,sortBy,caption,visitors;{album_preview_thumb_legend},thumb;{insert_article},insertArticlePre,insertArticlePost;{protection_legend:hide},protected',
+        'default'                    => '{album_inf_legend},published,name,alias,description,albumInfo,owner,photographer,date,eventLocation,visitors;{caption_legend},captionType,caption,markdownCaption;{album_preview_thumb_legend},sortBy,filePrefix,thumb;{insert_article_legend},insertArticlePre,insertArticlePost;{uploadDir_legend},assignedDir;{protection_legend:hide},protected',
         'fileUpload'                 => '{upload_settings_legend},preserveFilename,imageResolution;{uploader_legend},fileUpload',
         'importImagesFromFilesystem' => '{upload_settings_legend},preserveFilename,multiSRC',
         'restrictedUser'             => '{album_inf_legend},link_edit_images,albumInfo',
@@ -185,12 +185,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'search'    => true,
             'sql'       => 'text NULL',
         ],
-        'keywords'          => [
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
-            'exclude'   => true,
-            'inputType' => 'textarea',
-            'search'    => true,
-            'sql'       => 'text NULL',
+        'captionType'       => [
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr'],
+            'inputType' => 'select',
+            'options'   => ['text', 'markdown'],
+            'sql'       => "varchar(64) NOT NULL default 'text'",
         ],
         'caption'           => [
             'eval'      => ['tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
@@ -198,6 +197,28 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'inputType' => 'textarea',
             'search'    => true,
             'sql'       => 'text NULL',
+        ],
+        'markdownCaption'   => [
+            'exclude'     => true,
+            'search'      => true,
+            'inputType'   => 'textarea',
+            'eval'        => ['mandatory' => true, 'preserveTags' => true, 'decodeEntities' => true, 'class' => 'monospace', 'rte' => 'ace', 'helpwizard' => true, 'tl_class' => 'clr'],
+            'explanation' => 'insertTags',
+            'sql'         => 'text NULL',
+        ],
+        'sortBy'            => [
+            'eval'      => ['chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'options'   => ['----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
+            'sql'       => "varchar(32) NOT NULL default ''",
+        ],
+        'filePrefix'        => [
+            'eval'      => ['mandatory' => false, 'rgxp' => 'alnum', 'nospace' => true, 'tl_class' => 'w50'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'sql'       => "varchar(32) NOT NULL default ''",
         ],
         'thumb'             => [
             'eval'      => ['doNotShow' => true, 'includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true],
@@ -261,20 +282,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'eval'      => ['maxlength' => 10, 'tl_class' => 'w50', 'rgxp' => 'digit'],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
-        ],
-        'sortBy'            => [
-            'eval'      => ['chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'select',
-            'options'   => ['----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'],
-            'reference' => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
-            'sql'       => "varchar(32) NOT NULL default ''",
-        ],
-        'filePrefix'        => [
-            'eval'      => ['mandatory' => false, 'tl_class' => 'clr', 'rgxp' => 'alnum', 'nospace' => true],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'sql'       => "varchar(32) NOT NULL default ''",
         ],
     ],
 ];

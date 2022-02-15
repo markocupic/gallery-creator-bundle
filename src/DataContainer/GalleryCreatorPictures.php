@@ -37,6 +37,7 @@ use Markocupic\GalleryCreatorBundle\Util\FileUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment as TwigEnvironment;
 
@@ -45,18 +46,19 @@ class GalleryCreatorPictures extends Backend
     private RequestStack $requestStack;
     private Connection $connection;
     private FileUtil $fileUtil;
+    private Security $security;
     private TranslatorInterface $translator;
     private string $projectDir;
     private bool $galleryCreatorBackendWriteProtection;
     private TwigEnvironment $twig;
     private ?LoggerInterface $logger;
-    private bool $restrictedUser = false;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, LoggerInterface $logger = null)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;
         $this->fileUtil = $fileUtil;
+        $this->security = $security;
         $this->translator = $translator;
         $this->projectDir = $projectDir;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
@@ -161,11 +163,11 @@ class GalleryCreatorPictures extends Backend
     /**
      * Button callback.
      *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.delete.button", priority=100)
+     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.cut.button", priority=100)
      */
-    public function buttonCbDeletePicture(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
+    public function buttonCbCutPicture(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
-        if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
+        if (!$this->isRestrictedUser($row['id'])) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->addToUrl($href.'&amp;id='.$row['id']),
@@ -177,6 +179,7 @@ class GalleryCreatorPictures extends Backend
 
         return Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
+
 
     /**
      * Button callback.
@@ -185,7 +188,7 @@ class GalleryCreatorPictures extends Backend
      */
     public function buttonCbEdit(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
-        if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
+        if (!$this->isRestrictedUser($row['id'])) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->addToUrl($href.'&amp;id='.$row['id']),
@@ -201,18 +204,25 @@ class GalleryCreatorPictures extends Backend
     /**
      * Button callback.
      *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.cut.button", priority=80)
+     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.delete.button", priority=90)
      */
-    public function buttonCbCut(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
+    public function buttonCbDelete(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
-        return sprintf(
-            '<a href="%s" title="%s"%s>%s</a> ',
-            $this->addToUrl($href),
-            StringUtil::specialchars($title),
-            $attributes,
-            Image::getHtml($icon, $label),
-        );
+        if (!$this->isRestrictedUser($row['id'])) {
+            return sprintf(
+                '<a href="%s" title="%s"%s>%s</a> ',
+                $this->addToUrl($href.'&amp;id='.$row['id']),
+                StringUtil::specialchars($title),
+                $attributes,
+                Image::getHtml($icon, $label),
+            );
+        }
+
+        return Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
+
+
+
 
     /**
      * Button callback.
@@ -221,7 +231,7 @@ class GalleryCreatorPictures extends Backend
      */
     public function buttonCbImagerotate(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
-        if ($this->User->isAdmin || (int) $this->User->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
+        if (!$this->isRestrictedUser($row['id'])) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->addToUrl($href.'&amp;imgId='.$row['id']),
@@ -304,12 +314,14 @@ class GalleryCreatorPictures extends Backend
     }
 
     /**
-     * Oncut callback.
+     * Move file to the correct directory, when cutting & pasting images
+     * from one album into another.
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.oncut", priority=100)
      */
     public function onCutCb(DataContainer $dc): void
     {
+
         $request = $this->requestStack->getCurrentRequest();
         $session = $request->getSession();
 
@@ -474,11 +486,12 @@ class GalleryCreatorPictures extends Backend
             return;
         }
 
-        if ((int) $picturesModel->owner === (int) $this->User->id || $this->User->isAdmin || !$this->galleryCreatorBackendWriteProtection) {
+        if (!$this->isRestrictedUser($dc->id)) {
             $pid = $picturesModel->pid;
 
             // Delete data record
             $uuid = $picturesModel->uuid;
+
             // Do not delete the picture entity and let Contao do this job, otherwise we run into an error.
             // $picturesModel->delete();
             $filesModel = FilesModel::findByUuid($uuid);
@@ -492,7 +505,7 @@ class GalleryCreatorPictures extends Backend
                 $file = new File($filesModel->path);
                 $file->delete();
             }
-        } elseif (!$this->User->isAdmin) {
+        } else {
             Message::addError('No permission to delete picture with ID '.$intDel.'.');
             $this->redirect('contao');
         }
@@ -503,9 +516,9 @@ class GalleryCreatorPictures extends Backend
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=80)
      */
-    public function onloadCbSetUpPalettes(): void
+    public function setPalettes(DataContainer $dc): void
     {
-        if ($this->restrictedUser) {
+        if ($this->isRestrictedUser($dc->id)) {
             $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['restrictedUser'];
         }
 
@@ -528,18 +541,13 @@ class GalleryCreatorPictures extends Backend
             $this->redirect($this->getReferer());
         }
 
-        // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
-            return '';
-        }
-
         $href .= '&amp;tid='.$row['id'].'&amp;state='.($row['published'] ? '' : 1);
 
         if (!$row['published']) {
             $icon = 'invisible.svg';
         }
 
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
+        if ($this->isRestrictedUser($row['id'])) {
             return Image::getHtml($icon).' ';
         }
 
@@ -551,7 +559,7 @@ class GalleryCreatorPictures extends Backend
         $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
 
         // Check if user is allowed to toggle visibility
-        if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && $this->galleryCreatorBackendWriteProtection) {
+        if ($this->isRestrictedUser($intId)) {
             if ($this->logger) {
                 $this->logger->info(
                     sprintf('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "%s"', $intId),
@@ -598,33 +606,26 @@ class GalleryCreatorPictures extends Backend
     }
 
     /**
-     * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=70)
+     * Checks if the current user has full access or only restricted access to the active picture.
      */
-    public function onLoadCbCheckUserRole(): void
+    private function isRestrictedUser($id): bool
     {
-        $request = $this->requestStack->getCurrentRequest();
+        $user = $this->security->getUser();
+        $owner = $this->connection->fetchOne('SELECT owner FROM tl_gallery_creator_pictures WHERE id = ?', [$id]);
 
-        $this->restrictedUser = false;
-
-        // Only admin and the picture owner get full access
-        if ($this->User->isAdmin) {
-            return;
+        if (!$owner) {
+            return false;
         }
 
-        if ('edit' === $request->query->get('act')) {
-            $ownerId = $this->connection
-                ->fetchOne('SELECT owner FROM tl_gallery_creator_pictures WHERE id = ?', $request->query->get('id'))
-            ;
-
-            if (!$this->galleryCreatorBackendWriteProtection) {
-                return;
-            }
-
-            if ((int) $ownerId !== (int) $this->User->id) {
-                $this->restrictedUser = true;
-            }
+        if ($user->isAdmin || !$this->galleryCreatorBackendWriteProtection) {
+            return false;
         }
+
+        if ((int) $owner !== (int) $user->id) {
+            return true;
+        }
+
+        // The current user is the album owner
+        return false;
     }
 }

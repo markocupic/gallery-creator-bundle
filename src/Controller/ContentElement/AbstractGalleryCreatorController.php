@@ -35,12 +35,14 @@ use Haste\Util\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
+use Markocupic\GalleryCreatorBundle\Util\MarkdownUtil;
 use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
     protected AlbumUtil $albumUtil;
+    protected MarkdownUtil $markdownUtil;
     protected Connection $connection;
     protected PictureUtil $pictureUtil;
     protected SecurityUtil $securityUtil;
@@ -49,6 +51,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     public function __construct(DependencyAggregate $dependencyAggregate)
     {
         $this->albumUtil = $dependencyAggregate->albumUtil;
+        $this->markdownUtil = $dependencyAggregate->markdownUtil;
         $this->connection = $dependencyAggregate->connection;
         $this->pictureUtil = $dependencyAggregate->pictureUtil;
         $this->securityUtil = $dependencyAggregate->securityUtil;
@@ -110,13 +113,16 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
+        $markdown = $albumModel->captionType === 'markdown' ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
+
         // Meta
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
-        $arrMeta['caption'] = StringUtil::toHtml5(nl2br((string) $albumModel->caption));
+        $arrMeta['caption'] = $markdown ?: StringUtil::toHtml5(nl2br((string) $albumModel->caption));
         $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
 
         $arrAlbum = $albumModel->row();
+        $arrAlbum['markdownCaption'] = $markdown;
         $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
         $arrAlbum['meta'] = new Metadata($arrMeta);
         $arrAlbum['href'] = $href;
@@ -183,7 +189,6 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $albumModel): void
     {
         $pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : StringUtil::specialchars($this->pageModel->description);
-        $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($albumModel->keywords), ',');
     }
 
     protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void

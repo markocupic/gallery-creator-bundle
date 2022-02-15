@@ -1,41 +1,30 @@
-{% if restricted %}
-    <div class="widget long gc-album-info-table">
-        <p>&nbsp;</p>
-        <table>
-            <tr class="odd">
-                <td style="width:25%"><strong>{{ trans.album_id }}: </strong></td>
-                <td>{{ model.id }}</td>
-            </tr>
-        </table>
-    </div>
-{% else %}
-    <div class="widget long gc-album-info-table">
-        <p>&nbsp;</p>
-        <table>
-            <tr class="odd">
-                <td style="width:25%"><strong>{{ trans.album_id }}: </strong></td>
-                <td>{{ model.id }}</td>
-            </tr>
-            <tr class="even">
-                <td><strong>{{ trans.album_date }}: </strong></td>
-                <td>{{ model.date_formatted }}</td>
-            </tr>
-            <tr class="odd">
-                <td><strong>{{ trans.album_owners_name }}: </strong></td>
-                <td>{{ model.ownersName }}</td>
-            </tr>
-            <tr class="even">
-                <td><strong>{{ trans.album_name }}: </strong></td>
-                <td>{{ model.name }}</td>
-            </tr>
-            <tr class="odd">
-                <td><strong>{{ trans.album_caption|raw }}: </strong></td>
-                <td>{{ model.caption }}</td>
-            </tr>
-            <tr class="even">
-                <td><strong>{{ trans.album_thumb }}: </strong></td>
-                <td>{{ model.thumb }}</td>
-            </tr>
-        </table>
-    </div>
-{% endif %}
+<div class="widget long gc-album-info-table">
+    <p>&nbsp;</p>
+    <table>
+        <tr class="odd">
+            <td style="width:25%"><strong>{{ trans.album_id }}: </strong></td>
+            <td>{{ album_id }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.album_date }}: </strong></td>
+            <td>{{ album_date_formatted }}</td>
+        </tr>
+        <tr class="odd">
+            <td><strong>{{ trans.album_owners_name }}: </strong></td>
+            <td>{{ album_owners_name }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.album_name }}: </strong></td>
+            <td>{{ album_name }}</td>
+        </tr>
+        <tr class="odd">
+            <td><strong>{{ trans.album_caption }}: </strong></td>
+            <td>{{ album_caption|raw }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.album_thumb }}: </strong></td>
+            <td>{{ album_thumb }}</td>
+        </tr>
+    </table>
+</div>
+

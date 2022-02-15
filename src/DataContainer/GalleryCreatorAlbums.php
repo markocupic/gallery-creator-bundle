@@ -32,6 +32,7 @@ use Contao\FilesModel;
 use Contao\FileUpload;
 use Contao\Folder;
 use Contao\Image;
+use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
@@ -1041,56 +1042,53 @@ class GalleryCreatorAlbums
      *
      * @throws DoctrineDBALException
      */
-    public function saveCbAlias(string $strAlias, DataContainer $dc): string
+    public function setAliasAndUploadFolder(string $strAlias, DataContainer $dc): string
     {
         $request = $this->requestStack->getCurrentRequest();
 
         $blnDoNotCreateDir = false;
 
         // Get current row
-        $albumsModel = GalleryCreatorAlbumsModel::findByPk($dc->id);
+        $objAlbum = GalleryCreatorAlbumsModel::findByPk($dc->id);
 
-        // Save assigned directory if it has been defined.
-        if ($request->request->has('FORM_SUBMIT') && $request->request->has('assignedDir')) {
-            $albumsModel->assignedDir = $request->request->get('assignedDir');
-            $albumsModel->save();
+        // Save assigned dir if it has been defined
+        if ($request->request->has('FORM_SUBMIT') && \strlen((string) $request->request->get('assignedDir'))) {
+            $objAlbum->assignedDir = $request->request->get('assignedDir');
+            $objAlbum->save();
             $blnDoNotCreateDir = true;
         }
 
         $strAlias = StringUtil::standardize($strAlias);
 
-        // If there isn't an existing album alias, generate one based on the album name
+        // Generate the album alias from the album name
         if (!\strlen($strAlias)) {
             $strAlias = StringUtil::standardize($dc->activeRecord->name);
         }
 
-        // Limit alias to 50 characters.
+        // Limit alias to 50 characters
         $strAlias = substr($strAlias, 0, 43);
 
-        // Remove invalid characters.
+        // Remove invalid characters
         $strAlias = preg_replace('/[^a-z0-9\\_\\-]/', '', $strAlias);
 
-        // If alias already exists, append the album id to the alias.
-        $albumCount = $this->connection->fetchOne(
-            'SELECT COUNT(id) AS albumCount FROM tl_gallery_creator_albums WHERE id != ? AND alias = ?',
-            [$dc->activeRecord->id, $strAlias]
-        );
+        // If alias already exists add the album-id to the alias
+        $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id != ? AND alias = ?', [$dc->activeRecord->id, $strAlias]);
 
-        if ($albumCount > 0) {
+        if ($result) {
             $strAlias = 'id-'.$dc->id.'-'.$strAlias;
         }
 
-        // Create default upload folder.
+        // Create the default upload folder
         if (false === $blnDoNotCreateDir) {
-            // Create the new folder and register it in tl_files
+            // Create the new folder and register it in the dbafs
             $objFolder = new Folder($this->galleryCreatorUploadPath.'/'.$strAlias);
             $objFolder->unprotect();
             $oFolder = Dbafs::addResource($objFolder->path, true);
-            $albumsModel->assignedDir = $oFolder->uuid;
-            $albumsModel->save();
+            $objAlbum->assignedDir = $oFolder->uuid;
+            $objAlbum->save();
 
             // Important
-            $request->request->set('assignedDir', StringUtil::binToUuid($albumsModel->assignedDir));
+            Input::setPost('assignedDir', StringUtil::binToUuid($objAlbum->assignedDir));
         }
 
         return $strAlias;

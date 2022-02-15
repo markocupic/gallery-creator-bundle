@@ -16,6 +16,7 @@ namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\Backend;
 use Contao\Config;
+use Contao\Controller;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
@@ -41,46 +42,57 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment as TwigEnvironment;
 
-class GalleryCreatorPictures extends Backend
+class GalleryCreatorPictures
 {
     private RequestStack $requestStack;
     private Connection $connection;
     private FileUtil $fileUtil;
     private Security $security;
     private TranslatorInterface $translator;
+    private TwigEnvironment $twig;
     private string $projectDir;
     private bool $galleryCreatorBackendWriteProtection;
-    private TwigEnvironment $twig;
+    private string $galleryCreatorUploadPath;
     private ?LoggerInterface $logger;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorBackendWriteProtection, TwigEnvironment $twig, LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, string $projectDir, bool $galleryCreatorBackendWriteProtection, string $galleryCreatorUploadPath, LoggerInterface $logger = null)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;
         $this->fileUtil = $fileUtil;
         $this->security = $security;
         $this->translator = $translator;
+        $this->twig = $twig;
         $this->projectDir = $projectDir;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
-        $this->twig = $twig;
+        $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->logger = $logger;
+    }
 
+    /**
+     * Onload callback.
+     *
+     * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=110)
+     */
+    public function setPermissions(): void
+    {
+        $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
-
-        $this->import('BackendUser', 'User');
 
         switch ($request->query->get('act')) {
             case 'create':
                 // New images can only be implemented via an image upload
-                $this->redirect('contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;id='.$request->query->get('pid'));
+                Controller::redirect(sprintf(
+                    'contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;id=%s',
+                    $request->query->get('pid')
+                ));
 
                 // no break
             case 'select':
-                if (!$this->User->isAdmin) {
-                    // Only list pictures where user is owner
+                if (!$user->isAdmin) {
+                    // Only list pictures where user is the picture owner
                     if ($this->galleryCreatorBackendWriteProtection) {
-                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner = ?', $this->User->id]];
+                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner = ?', $user->id]];
                     }
                 }
 
@@ -89,17 +101,6 @@ class GalleryCreatorPictures extends Backend
             default:
                 break;
         }
-
-        // Get the source album when copy & pasting pictures from one album into another
-        if ('paste' === $request->query->get('act') && 'cut' === $request->query->get('mode')) {
-            $objPicture = GalleryCreatorPicturesModel::findByPk($request->query->get('id'));
-
-            if (null !== $objPicture) {
-                $session->set('gc_source_album_id', $objPicture->pid);
-            }
-        }
-
-        parent::__construct();
     }
 
     /**
@@ -107,7 +108,7 @@ class GalleryCreatorPictures extends Backend
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=100)
      */
-    public function onLoadCbSetCorrectReferer(): void
+    public function setCorrectReferer(): void
     {
         $request = $this->requestStack->getCurrentRequest();
         $session = $request->getSession();
@@ -128,11 +129,11 @@ class GalleryCreatorPictures extends Backend
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=90)
      */
-    public function onLoadCbHandleOperations(): void
+    public function route(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!$request->query->has('key')) {
+        if (!$dc || !$request->query->has('key')) {
             return;
         }
 
@@ -141,18 +142,21 @@ class GalleryCreatorPictures extends Backend
         switch ($key) {
             case 'imagerotate':
 
-                $picturesModel = GalleryCreatorPicturesModel::findByPk($request->query->get('imgId'));
-                $filesModel = FilesModel::findByUuid($picturesModel->uuid);
+                if (!$this->isRestrictedUser($dc->id)) {
+                    $picturesModel = GalleryCreatorPicturesModel::findByPk($dc->id);
+                    $filesModel = FilesModel::findByUuid($picturesModel->uuid);
 
-                if (null !== $picturesModel && null !== $filesModel) {
-                    $file = new File($filesModel->path);
+                    if (null !== $picturesModel && null !== $filesModel) {
+                        $file = new File($filesModel->path);
 
-                    // Rotate image anticlockwise
-                    $this->fileUtil->imageRotate($file, 270);
-                    Dbafs::addResource($filesModel->path, true);
+                        // Rotate image anticlockwise
+                        $this->fileUtil->imageRotate($file, 270);
+                        Dbafs::addResource($filesModel->path, true);
 
-                    $this->redirect('contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;id='.$request->query->get('id'));
+                        Controller::redirect(System::getReferer());
+                    }
                 }
+
                 break;
 
             default:
@@ -163,78 +167,17 @@ class GalleryCreatorPictures extends Backend
     /**
      * Button callback.
      *
+     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.edit.button", priority=100)
+     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.delete.button", priority=100)
      * @Callback(table="tl_gallery_creator_pictures", target="list.operations.cut.button", priority=100)
+     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.imagerotate.button", priority=100)
      */
-    public function buttonCbCutPicture(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
+    public function buttonCallback(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
         if (!$this->isRestrictedUser($row['id'])) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&amp;id='.$row['id']),
-                StringUtil::specialchars($title),
-                $attributes,
-                Image::getHtml($icon, $label),
-            );
-        }
-
-        return Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
-    }
-
-
-    /**
-     * Button callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.edit.button", priority=90)
-     */
-    public function buttonCbEdit(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
-    {
-        if (!$this->isRestrictedUser($row['id'])) {
-            return sprintf(
-                '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&amp;id='.$row['id']),
-                StringUtil::specialchars($title),
-                $attributes,
-                Image::getHtml($icon, $label),
-            );
-        }
-
-        return Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
-    }
-
-    /**
-     * Button callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.delete.button", priority=90)
-     */
-    public function buttonCbDelete(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
-    {
-        if (!$this->isRestrictedUser($row['id'])) {
-            return sprintf(
-                '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&amp;id='.$row['id']),
-                StringUtil::specialchars($title),
-                $attributes,
-                Image::getHtml($icon, $label),
-            );
-        }
-
-        return Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
-    }
-
-
-
-
-    /**
-     * Button callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.imagerotate.button", priority=60)
-     */
-    public function buttonCbImagerotate(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
-    {
-        if (!$this->isRestrictedUser($row['id'])) {
-            return sprintf(
-                '<a href="%s" title="%s"%s>%s</a> ',
-                $this->addToUrl($href.'&amp;imgId='.$row['id']),
+                Backend::addToUrl($href.'&amp;id='.$row['id']),
                 StringUtil::specialchars($title),
                 $attributes,
                 Image::getHtml($icon, $label),
@@ -305,7 +248,7 @@ class GalleryCreatorPictures extends Backend
                 ->executeResize()->getResizedPath();
         }
 
-        $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($filesModel->path), $file->width, $file->height, $this->getReadableSize($file->filesize));
+        $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($filesModel->path), $file->width, $file->height, Backend::getReadableSize($file->filesize));
         $return .= $hasMovie;
         $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
         $return .= sprintf('<div class="limit_height%s block">%s</div>', (Config::get('thumbnails') ? ' h64' : ''), StringUtil::specialchars($arrRow['caption']));
@@ -321,66 +264,28 @@ class GalleryCreatorPictures extends Backend
      */
     public function onCutCb(DataContainer $dc): void
     {
+        $picture = GalleryCreatorPicturesModel::findByPk($dc->id);
 
-        $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
+        $album = $picture->getRelated('pid');
 
-        if (!$session->has('gc_source_album_id')) {
-            return;
-        }
+        $sourcePath = FilesModel::findByUuid($picture->uuid)->path;
+        $targetPath = FilesModel::findByUuid($album->assignedDir)->path.'/'.basename($sourcePath);
 
-        // Get source album
-        $objSourceAlbum = GalleryCreatorAlbumsModel::findByPk($session->get('gc_source_album_id'));
-        $session->remove('gc_source_album_id');
-
-        // Get target album
-        $objPictureToMove = GalleryCreatorPicturesModel::findByPk($request->query->get('id'));
-
-        if (null === $objSourceAlbum || null === $objPictureToMove) {
-            return;
-        }
-
-        $objTargetAlbum = null;
-
-        if (1 === (int) $request->query->get('mode')) {
-            // Paste into after existing file
-            $objTargetAlbum = GalleryCreatorPicturesModel::findByPk($request->query->get('pid'))->getRelated('pid');
-        } elseif (2 === (int) $request->query->get('mode')) {
-            // Paste to the top
-            $objTargetAlbum = GalleryCreatorAlbumsModel::findByPk($request->query->get('pid'));
-        }
-
-        if (null === $objTargetAlbum) {
-            return;
-        }
-
-        if ((int) $objSourceAlbum->id === (int) $objTargetAlbum->id) {
-            return;
-        }
-
-        $filesModel = FilesModel::findByUuid($objPictureToMove->uuid);
-        $objTargetFolder = FilesModel::findByUuid($objTargetAlbum->assignedDir);
-        $objSourceFolder = FilesModel::findByUuid($objSourceAlbum->assignedDir);
-
-        if (null === $filesModel || null === $objTargetFolder || null === $objSourceFolder) {
+        if ($sourcePath === $targetPath) {
             return;
         }
 
         // Return if it is an external file
-        if (false === strpos($filesModel->path, $objSourceFolder->path)) {
+        if (false === strpos($sourcePath, $this->galleryCreatorUploadPath)) {
             return;
         }
 
-        $strDestination = $objTargetFolder->path.'/'.basename($filesModel->path);
+        $file = new File($sourcePath);
 
-        if ($strDestination !== $filesModel->path) {
-            $file = new File($filesModel->path);
-
-            // Move file to the target folder
-            if ($file->renameTo($strDestination)) {
-                $objPictureToMove->path = $strDestination;
-                $objPictureToMove->save();
-            }
+        // Move file to the target folder
+        if ($file->renameTo($targetPath)) {
+            $picture->path = $targetPath;
+            $picture->save();
         }
     }
 
@@ -507,7 +412,7 @@ class GalleryCreatorPictures extends Backend
             }
         } else {
             Message::addError('No permission to delete picture with ID '.$intDel.'.');
-            $this->redirect('contao');
+            Controller::redirect(System::getReferer());
         }
     }
 
@@ -521,10 +426,6 @@ class GalleryCreatorPictures extends Backend
         if ($this->isRestrictedUser($dc->id)) {
             $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['restrictedUser'];
         }
-
-        if ($this->User->isAdmin) {
-            $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['owner']['eval']['doNotShow'] = false;
-        }
     }
 
     /**
@@ -532,13 +433,17 @@ class GalleryCreatorPictures extends Backend
      *
      * @Callback(table="tl_gallery_creator_pictures", target="list.operations.toggle.button", priority=50)
      */
-    public function buttonCbToggle(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
+    public function buttonCallbackToggle(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
+        if ($this->isRestrictedUser($row['id'])) {
+            return ' ';
+        }
+
         $request = $this->requestStack->getCurrentRequest();
 
         if (!empty($request->query->get('tid'))) {
             $this->toggleVisibility((int) $request->query->get('tid'), 1 === (int) $request->query->get('state'));
-            $this->redirect($this->getReferer());
+            Controller::redirect(System::getReferer());
         }
 
         $href .= '&amp;tid='.$row['id'].'&amp;state='.($row['published'] ? '' : 1);
@@ -547,27 +452,20 @@ class GalleryCreatorPictures extends Backend
             $icon = 'invisible.svg';
         }
 
-        if ($this->isRestrictedUser($row['id'])) {
-            return Image::getHtml($icon).' ';
-        }
-
-        return '<a href="'.$this->addToUrl($href).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
+        return sprintf(
+            '<a href="%s" title="%s"%s>%s</a> ',
+            Backend::addToUrl($href.'&amp;id='.$row['id']),
+            StringUtil::specialchars($title),
+            $attributes,
+            Image::getHtml($icon, $label),
+        );
     }
 
     public function toggleVisibility(int $intId, bool $blnVisible): void
     {
-        $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
-
         // Check if user is allowed to toggle visibility
         if ($this->isRestrictedUser($intId)) {
-            if ($this->logger) {
-                $this->logger->info(
-                    sprintf('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "%s"', $intId),
-                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)]
-                );
-            }
-
-            $this->redirect('contao?act=error');
+            return;
         }
 
         $objVersions = new Versions('tl_gallery_creator_pictures', $intId);
@@ -577,8 +475,8 @@ class GalleryCreatorPictures extends Backend
         if (\is_array($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['published']['save_callback'])) {
             foreach ($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['published']['save_callback'] as $callback) {
                 if (\is_array($callback)) {
-                    $this->import($callback[0]);
-                    $blnVisible = $this->$callback[0]->$callback[1]($blnVisible, $this);
+                    $callback = System::importStatic($callback[0]);
+                    $blnVisible = $callback->$callback[1]($blnVisible, $this);
                 } elseif (\is_callable($callback)) {
                     $blnVisible = $callback($blnVisible, $this);
                 }

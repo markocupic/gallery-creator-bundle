@@ -41,13 +41,9 @@ use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
     protected AlbumUtil $albumUtil;
-
     protected Connection $connection;
-
     protected PictureUtil $pictureUtil;
-
     protected SecurityUtil $securityUtil;
-
     protected ScopeMatcher $scopeMatcher;
 
     public function __construct(DependencyAggregate $dependencyAggregate)
@@ -216,13 +212,12 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */
-    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumsModel, ContentModel $contentModel, $template, PageModel $pageModel): void
+    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, $template, PageModel $pageModel): void
     {
-
         // Count items
         $itemsTotal = $this->connection->fetchOne(
             'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
-            ['1', $albumsModel->id]
+            ['1', $albumModel->id]
         );
 
         $perPage = (int) $contentModel->gcThumbsPerPage;
@@ -249,7 +244,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->andWhere('t.published = :published')
             ->orderBy(...$arrSorting)
             ->setParameter('published', '1')
-            ->setParameter('pid', $albumsModel->id)
+            ->setParameter('pid', $albumModel->id)
             ->setFirstResult($pagination->getOffset())
             ->setMaxResults($pagination->getLimit())
             ->execute()
@@ -279,7 +274,6 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
                 uksort($arrPictures, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
             }
         }
-
 
         // Add pictures to the template.
         $template->arrPictures = array_values($arrPictures);

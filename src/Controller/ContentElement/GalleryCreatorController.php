@@ -87,20 +87,24 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $this->arrAlbumListing = $this->getAlbumsByPid(0);
             } else {
                 // Find the pid of the root album
-                $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', StringUtil::deserialize($model->gcAlbumSelection)).') ORDER BY pid ASC');
-                $this->arrAlbumListing = $this->getAlbumsByPid($pid);
+                $arrIds = StringUtil::deserialize($model->gcAlbumSelection, true);
+                if(!empty($arrIds))
+                {
+                    $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', $arrIds).') ORDER BY pid ASC');
+                    $this->arrAlbumListing = $this->getAlbumsByPid($pid);
+                }else{
+                    return new Response('', Response::HTTP_NO_CONTENT);
+                }
             }
 
             $this->showAlbumListing = true;
         } else {
-            $this->activeAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
+            $this->activeAlbum = GalleryCreatorAlbumsModel::findOneBy(
+                ['tl_gallery_creator_albums.alias = ? AND tl_gallery_creator_albums.published = ?'],
+                [Input::get('items'), '1']
+            );
 
-            if (
-                null !== $this->activeAlbum &&
-                $this->activeAlbum->published &&
-                $this->securityUtil->isAuthorized($this->activeAlbum) &&
-                $this->isInSelection($this->activeAlbum)
-            ) {
+            if (null !== $this->activeAlbum && $this->securityUtil->isAuthorized($this->activeAlbum) && $this->isInSelection($this->activeAlbum)) {
                 $this->showAlbumDetail = true;
 
                 // Show album listing if active album contains child albums
@@ -192,7 +196,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): string
     {
-
         // Generate the link to the parent album
         if (null !== ($parentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
             if ($this->model->gcShowAlbumSelection) {

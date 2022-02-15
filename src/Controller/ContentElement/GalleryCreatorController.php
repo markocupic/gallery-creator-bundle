@@ -243,7 +243,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
     protected function isInSelection(GalleryCreatorAlbumsModel $albumModel): bool
     {
-        // If selection has been activated then do only show selected albums
+        //  Do only show selected albums, if selection has been activated then
         if ($this->model->gcShowAlbumSelection) {
             $arrSelection = StringUtil::deserialize($this->model->gcAlbumSelection, true);
 

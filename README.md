@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/markocupic"><img src="docs/logo.png" width="200"></a></p>
+<p><a href="https://github.com/markocupic"><img src="docs/logo.png" width="200"></a></p>
 
 # Gallery Creator Bundle
 
@@ -6,9 +6,10 @@
 
 Use this extension to create, display and manage photo albums in your [Contao](https://www.contao.org) installation.
  The Gallery Creator Bundle offers an album listing and an album detail view.
+ Since version 2.0.0 [markdown](https://www.markdownguide.org/) can be used to create the album description.
 
 ## Installation
-Please run the `composer require markocupic/gallery-creator-bundle` in your CLI to install the extension.
+Please use the Contao Manager or run `composer require markocupic/gallery-creator-bundle` in your CLI to install the extension.
 
 ## Lightbox
  As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/).

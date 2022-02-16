@@ -3,36 +3,52 @@
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/default.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="ERR.fileNotFound">
-        <source>The file "%s" doesn't exist on your server!</source>
-        <target>Die Datei "%s" wurde nicht auf dem Server gefunden!</target>
+        <source>Could not find file "%s".</source>
+        <target>Die Datei "%s" wurde nicht auf dem Server gefunden.</target>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s!</source>
+        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s.</source>
         <target>Der Datenbankeintrag zum Bild mit ID %s in "tl_gallery_creator_pictures" verweist auf eine nicht vorhandene Datei. Bitte bereinigen Sie die Datenbank oder überprüfen Sie die Existenz der Datei "%s" im Album mit dem Album-Alias: "%s".</target>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
-        <source>The file "%s" could not been uploaded!</source>
-        <target>Die Datei "%s" konnte nicht hochgeladen werden!</target>
+        <source>The file "%s" could not been uploaded</source>
+        <target>Die Datei "%s" konnte nicht hochgeladen werden.</target>
       </trans-unit>
       <trans-unit id="ERR.dirNotWriteable">
-        <source>The directory "%s" is not writeable! Check chmod settings!</source>
-        <target>Das Verzeichnis "%s" ist nicht beschreibbar! Bitte überprüfen Sie die CHMOD-Einstellungen.</target>
+        <source>The directory "%s" is not writeable. Check chmod settings.</source>
+        <target>Das Verzeichnis "%s" ist nicht beschreibbar. Bitte überprüfen Sie die CHMOD-Einstellungen.</target>
       </trans-unit>
       <trans-unit id="ERR.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album: "%s".</source>
+        <source>You are not allowed to edit the album with ID %d.</source>
         <target>Sie haben nicht die erforderlichen Rechte, das Album "%s" zu bearbeiten.</target>
+      </trans-unit>
+      <trans-unit id="ERR.rejectWriteAccessToPicture">
+        <source>You are not allowed to edit the picture with ID %d.</source>
+        <target>Nicht genügend Rechte um Bild mit ID %d zu bearbeiten.</target>
       </trans-unit>
       <trans-unit id="ERR.notAllowedFilenameOrExtension">
         <source>Invalid file name or extension: =&gt; %s. Please check the list of supported file extensions (%s).</source>
         <target>Ungültiger Dateiname oder nicht zulässige Dateiendung: %s. Bitte überprüfen Sie die erlaubten Dateiendungen: (%s).</target>
       </trans-unit>
+      <trans-unit id="ERR.rotateImageError">
+        <source>Error while trying to rotate picture "%s".</source>
+        <target>Beim Versuch das Bild "%s" zu drehen, ist es zu einem Fehler gekommen.</target>
+      </trans-unit>
+      <trans-unit id="ERR.notAllowedToDeleteAlbum">
+        <source>Not enough permissions to delete album with ID %d.</source>
+        <target>Nicht genügend Rechte um das Album mit ID %d zu löschen.</target>
+      </trans-unit>
+      <trans-unit id="ERR.notAllowedToDeletePicture">
+        <source>Not enough permissions to delete picture with ID %d.</source>
+        <target>Nicht genügend Rechte um das Bild mit ID %d zu löschen.</target>
+      </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
-        <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too.</source>
-        <target>Soll das Album mit der ID %s gelöscht werden? \r\nAchtung! Dadurch werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht.</target>
+        <source>Do you really want to delete album with ID %s? \r\nAttention. \nAll image-files in the assigned directory will be deleted too.</source>
+        <target>Soll das Album mit der ID %s gelöscht werden? \r\nAchtung. Dadurch werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht.</target>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
-        <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too.</source>
-        <target>Soll das Bild mit der ID %s gelöscht werden? \r\nAchtung! Dabei wird wird auch die Bilddatei im Dateisystem gelöscht.</target>
+        <source>Do you really want to delete picture with ID %s? \r\nAttention. \nThe image-file will be deleted too.</source>
+        <target>Soll das Bild mit der ID %s gelöscht werden? \r\nAchtung. Dabei wird wird auch die Bilddatei im Dateisystem gelöscht.</target>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backLink">
         <source>back</source>

@@ -23,8 +23,8 @@
         <target>Album-ID</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.pid.1">
-        <source>Note that changing the album ID can break data integrity!</source>
-        <target>Das Ändern der Album-ID kann die Konsistenz der Daten gefährden!</target>
+        <source>Note that changing the album ID can break data integrity.</source>
+        <target>Das Ändern der Album-ID kann die Konsistenz der Daten gefährden.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.fileID.0">
         <source>File ID</source>

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 use Contao\BackendUser;
 use Contao\System;
+use Markocupic\GalleryCreatorBundle\DataContainer\GalleryCreatorPictures;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     'config'      => [
@@ -70,8 +71,15 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                 'icon'       => 'bundles/markocupicgallerycreator/images/rotate.svg',
             ],
             'toggle'      => [
-                'attributes' => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-                'icon'       => 'visible.svg',
+                'attributes'           => 'onclick="Backend.getScrollOffset();"',
+                'haste_ajax_operation' => [
+                    'field'                     => 'published',
+                    'options'                   => [
+                        ['value' => '', 'icon' => 'invisible.svg'],
+                        ['value' => '1', 'icon' => 'visible.svg'],
+                    ],
+                    'check_permission_callback' => [GalleryCreatorPictures::class, 'checkPermissionCallbackToggle'],
+                ],
             ],
             'show'        => [
                 'href' => 'act=show',
@@ -81,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     ],
     'palettes'    => [
         '__selector__'   => ['addCustomThumb'],
-        'default'        => 'published,picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+        'default'        => 'picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
         'restrictedUser' => 'imageInfo,picture',
     ],
     'subpalettes' => [

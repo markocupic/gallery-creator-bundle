@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 18 15.9" width="18" height="15.9" xmlns="http://www.w3.org/2000/svg">
+  <g id="g444" transform="matrix(0.3,0,0,0.3,0,-1.05)" style="opacity: 0.33;">
+    <g id="g424">
+      <rect x="1" y="4.5" style="fill:#ecf0f1" width="55" height="42" id="rect420"/>
+      <path style="fill:#545e73" d="M 57,47.5 H 0 V 3.5 H 57 Z M 2,45.5 H 55 V 5.5 H 2 Z" id="path422"/>
+    </g>
+    <g id="g430">
+      <rect x="5" y="8.5" style="fill:#545e73" width="47" height="34" id="rect426"/>
+      <path style="fill:#ecf0f1" d="M 53,43.5 H 4 V 7.5 H 53 Z M 6,41.5 H 51 V 9.5 H 6 Z" id="path428"/>
+    </g>
+    <circle style="fill:#f3d55a" cx="15" cy="17.069" r="4.5689998" id="circle432"/>
+    <polygon style="fill:#11a085" points="51,32.611 50,31.5 38,20.5 27.5,32 32.983,37.483 37,41.5 51,41.5 " id="polygon434"/>
+    <polygon style="fill:#26b999" points="6,41.5 37,41.5 32.983,37.483 22.017,26.517 6,40.5 " id="polygon436"/>
+    <g id="g442">
+      <circle style="fill:#71c386" cx="48" cy="44.5" r="12" id="circle438"/>
+      <path style="fill:#ffffff" d="m 54,43.5 h -5 v -5 c 0,-0.552 -0.448,-1 -1,-1 -0.552,0 -1,0.448 -1,1 v 5 h -5 c -0.552,0 -1,0.448 -1,1 0,0.552 0.448,1 1,1 h 5 v 5 c 0,0.552 0.448,1 1,1 0.552,0 1,-0.448 1,-1 v -5 h 5 c 0.552,0 1,-0.448 1,-1 0,-0.552 -0.448,-1 -1,-1 z" id="path440"/>
+    </g>
+  </g>
+  <g id="g446" transform="translate(0,-3.4999972)"/>
+  <g id="g448" transform="translate(0,-3.4999972)"/>
+  <g id="g450" transform="translate(0,-3.4999972)"/>
+  <g id="g452" transform="translate(0,-3.4999972)"/>
+  <g id="g454" transform="translate(0,-3.4999972)"/>
+  <g id="g456" transform="translate(0,-3.4999972)"/>
+  <g id="g458" transform="translate(0,-3.4999972)"/>
+  <g id="g460" transform="translate(0,-3.4999972)"/>
+  <g id="g462" transform="translate(0,-3.4999972)"/>
+  <g id="g464" transform="translate(0,-3.4999972)"/>
+  <g id="g466" transform="translate(0,-3.4999972)"/>
+  <g id="g468" transform="translate(0,-3.4999972)"/>
+  <g id="g470" transform="translate(0,-3.4999972)"/>
+  <g id="g472" transform="translate(0,-3.4999972)"/>
+  <g id="g474" transform="translate(0,-3.4999972)"/>
+</svg>

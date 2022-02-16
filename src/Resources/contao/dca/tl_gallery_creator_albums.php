@@ -78,12 +78,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                         ['value' => '', 'icon' => 'invisible.svg'],
                         ['value' => '1', 'icon' => 'visible.svg'],
                     ],
-                    'check_permission_callback' => [GalleryCreatorAlbums::class, 'checkPermissionCbToggle'],
+                    'check_permission_callback' => [GalleryCreatorAlbums::class, 'checkPermissionCallbackToggle'],
                 ],
             ],
             'uploadImages'               => [
                 'attributes' => 'data-icon="gc-op-icon"',
-                'href'       => 'id=%s&act=edit&table=tl_gallery_creator_albums&key=fileUpload',
+                'href'       => 'act=edit&key=fileUpload',
                 'icon'       => 'bundles/markocupicgallerycreator/images/add_image.svg',
             ],
             'importImagesFromFilesystem' => [

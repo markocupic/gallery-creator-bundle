@@ -18,7 +18,7 @@
         <source>Album ID</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.pid.1">
-        <source>Note that changing the album ID can break data integrity!</source>
+        <source>Note that changing the album ID can break data integrity.</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.fileID.0">
         <source>File ID</source>

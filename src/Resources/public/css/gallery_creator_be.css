@@ -70,15 +70,7 @@ div.gc-readonly input {
  * Operations
  */
 [data-icon=gc-op-icon] > img {
-  width: 16px !important;
-  height: 16px !important;
-}
 
-/**
- * Label
- */
-img[data-icon="_album.svg"] {
-  filter: brightness(200%);
 }
 
 /**

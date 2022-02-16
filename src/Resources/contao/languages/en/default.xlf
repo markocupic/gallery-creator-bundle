@@ -3,19 +3,22 @@
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/default.php" source-language="en">
     <body>
       <trans-unit id="ERR.fileNotFound">
-        <source>The file "%s" doesn't exist on your server!</source>
+        <source>Could not find file "%s".</source>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s!</source>
+        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s.</source>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
-        <source>The file "%s" could not been uploaded!</source>
+        <source>The file "%s" could not been uploaded</source>
       </trans-unit>
       <trans-unit id="ERR.dirNotWriteable">
-        <source>The directory "%s" is not writeable! Check chmod settings!</source>
+        <source>The directory "%s" is not writeable. Check chmod settings.</source>
       </trans-unit>
       <trans-unit id="ERR.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album: "%s".</source>
+        <source>You are not allowed to edit the album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="ERR.rejectWriteAccessToPicture">
+        <source>You are not allowed to edit the picture with ID %d.</source>
       </trans-unit>
       <trans-unit id="ERR.notAllowedFilenameOrExtension">
         <source>Invalid file name or extension: =&gt; %s. Please check the list of supported file extensions (%s).</source>
@@ -30,10 +33,10 @@
         <source>Not enough permissions to delete picture with ID %d.</source>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
-        <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too.</source>
+        <source>Do you really want to delete album with ID %s? \r\nAttention. \nAll image-files in the assigned directory will be deleted too.</source>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
-        <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too.</source>
+        <source>Do you really want to delete picture with ID %s? \r\nAttention. \nThe image-file will be deleted too.</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backLink">
         <source>back</source>

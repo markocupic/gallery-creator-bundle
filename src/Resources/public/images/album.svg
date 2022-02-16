@@ -1,10 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
-<desc>Created with Fabric.js 1.7.22</desc>
-<defs>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   width="20.000002"
+   height="14.755557"
+   viewBox="0 0 20.000002 14.755557"
+   xml:space="preserve"
+   id="svg689"
+   sodipodi:docname="album.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview691"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="true"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:zoom="3.0078125"
+   inkscape:cx="-10.971429"
+   inkscape:cy="93.090909"
+   inkscape:window-width="1920"
+   inkscape:window-height="974"
+   inkscape:window-x="-11"
+   inkscape:window-y="-11"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg689" />
+<desc
+   id="desc679">Created with Fabric.js 1.7.22</desc>
+<defs
+   id="defs681">
 </defs>
-<g transform="translate(128 128) scale(0.72 0.72)" style="">
-	<g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(-175.05 -175.05000000000004) scale(3.89 3.89)" >
-	<path d="M 85.414 11.8 H 4.586 C 2.053 11.8 0 13.853 0 16.386 v 57.228 C 0 76.147 2.053 78.2 4.586 78.2 h 80.828 c 2.533 0 4.586 -2.053 4.586 -4.586 V 16.386 C 90 13.853 87.947 11.8 85.414 11.8 z M 36.475 25.917 c 3.922 0 7.101 3.179 7.101 7.101 c 0 3.922 -3.179 7.101 -7.101 7.101 c -3.922 0 -7.101 -3.179 -7.101 -7.101 C 29.375 29.096 32.554 25.917 36.475 25.917 z M 81.269 73.163 H 8.731 c -2.273 0 -4.116 -1.843 -4.116 -4.116 l 15.26 -18.195 c 2.753 -3.282 7.745 -3.448 10.71 -0.355 l 0.963 1.005 c 2.991 3.12 8.038 2.919 10.771 -0.43 l 7.714 -9.451 c 2.809 -3.441 8.034 -3.542 10.973 -0.21 l 24.38 27.637 C 85.385 71.32 83.542 73.163 81.269 73.163 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+<g
+   transform="matrix(0.05712654,0,0,0.05712654,10.000001,7.3777784)"
+   id="g687">
+	<g
+   style="opacity:1;fill:none;fill-rule:nonzero;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none"
+   transform="matrix(3.89,0,0,3.89,-175.05,-175.05)"
+   id="g685">
+	<path
+   d="M 85.414,11.8 H 4.586 C 2.053,11.8 0,13.853 0,16.386 V 73.614 C 0,76.147 2.053,78.2 4.586,78.2 H 85.414 C 87.947,78.2 90,76.147 90,73.614 V 16.386 C 90,13.853 87.947,11.8 85.414,11.8 Z M 36.475,25.917 c 3.922,0 7.101,3.179 7.101,7.101 0,3.922 -3.179,7.101 -7.101,7.101 -3.922,0 -7.101,-3.179 -7.101,-7.101 0.001,-3.922 3.18,-7.101 7.101,-7.101 z M 81.269,73.163 H 8.731 c -2.273,0 -4.116,-1.843 -4.116,-4.116 l 15.26,-18.195 c 2.753,-3.282 7.745,-3.448 10.71,-0.355 l 0.963,1.005 c 2.991,3.12 8.038,2.919 10.771,-0.43 l 7.714,-9.451 c 2.809,-3.441 8.034,-3.542 10.973,-0.21 l 24.38,27.637 c -10e-4,2.272 -1.844,4.115 -4.117,4.115 z"
+   style="opacity:1;fill:#000000;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none"
+   stroke-linecap="round"
+   id="path683" />
 </g>
 </g>
 </svg>

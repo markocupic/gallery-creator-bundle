@@ -111,7 +111,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function handleClipboard(DataContainer $dc): void
+    public function onloadCallbackHandleClipboard(DataContainer $dc): void
     {
         $session = $this->requestStack->getCurrentRequest()->getSession();
         $bag = $session->getBag('contao_backend');
@@ -128,7 +128,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function setPalettes(DataContainer $dc): void
+    public function onloadCallbackSetPalettes(DataContainer $dc): void
     {
         if (!$dc) {
             return;
@@ -153,7 +153,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function setPalettesForRestrictedUser(DataContainer $dc): void
+    public function onloadCallbackSetPalettesForRestrictedUser(DataContainer $dc): void
     {
         if (!$dc) {
             return;
@@ -175,7 +175,7 @@ class GalleryCreatorAlbums
      *
      * @throws DoctrineDBALException
      */
-    public function sortPictures(): void
+    public function onloadCallbackSortPictures(): void
     {
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
@@ -210,7 +210,6 @@ class GalleryCreatorAlbums
 
                     if (null !== $albumsModel) {
                         if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
-
                             // Delete damaged data records
                             $cleanDb = $user->isAdmin && $request->query->has('reviseTables');
 
@@ -236,44 +235,25 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Button callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.uploadImages.button")
-     */
-    public function buttonCbUploadImages(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
-    {
-        $href = sprintf($href, $row['id']);
-
-        return sprintf(
-            '<a href="%s" title="%s"%s>%s</a> ',
-            $this->backend->addToUrl($href),
-            $this->stringUtil->specialchars($title),
-            $attributes,
-            $this->image->getHtml($icon, $label),
-        );
-    }
-
-    /**
      * Check Permission callback (haste_ajax_operation).
      *
      * @throws DoctrineDBALException
      */
-    public function checkPermissionCbToggle(string $table, array $hasteAjaxOperationSettings, bool &$hasPermission): void
+    public function checkPermissionCallbackToggle(string $table, array $hasteAjaxOperationSettings, bool &$hasPermission): void
     {
-        $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
         $hasPermission = true;
 
         if ($request->request->has('id')) {
             $id = (int) $request->request->get('id');
-            $album = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id = ?', [$id]);
+            $result = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id = ?', [$id]);
 
-            if ($album) {
+            if ($result) {
                 if ($this->isRestrictedUser($id)) {
                     $hasPermission = false;
-                    $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$album['name']], 'contao_default'));
+                    $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$result['id']], 'contao_default'));
 
-                    $this->controller->redirect($this->system->getReferer());
+                    $this->controller->reload();
                 }
             }
         }
@@ -282,65 +262,25 @@ class GalleryCreatorAlbums
     /**
      * Button callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.cut.button")
-     */
-    public function buttonCbCutPicture(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
-    {
-        $user = $this->security->getUser();
-        $href .= '&amp;id='.$row['id'];
-
-        if (!$this->isRestrictedUser($row['id'])) {
-            return sprintf(
-                '<a href="%s" title="%s"%s>%s</a> ',
-                $this->backend->addToUrl($href),
-                $this->stringUtil->specialchars($title),
-                $attributes,
-                $this->image->getHtml($icon, $label),
-            );
-        }
-
-        return $this->image->getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
-    }
-
-
-    /**
-     * Button callback.
-     *
      * @Callback(table="tl_gallery_creator_albums", target="list.operations.delete.button")
-     */
-    public function buttonCbDelete(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
-    {
-        $href .= '&amp;id='.$row['id'];
-
-        if (!$this->isRestrictedUser($row['id'])) {
-            return sprintf(
-                '<a href="%s" title="%s"%s>%s</a> ',
-                $this->backend->addToUrl($href),
-                $this->stringUtil->specialchars($title),
-                $attributes,
-                $this->image->getHtml($icon, $label),
-            );
-        }
-
-        return $this->image->getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
-    }
-
-    /**
-     * Button callback.
-     *
+     * @Callback(table="tl_gallery_creator_albums", target="list.operations.uploadImages.button")
      * @Callback(table="tl_gallery_creator_albums", target="list.operations.importImagesFromFilesystem.button")
      */
-    public function buttonCbImportImages(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
+    public function buttonCallback(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
     {
-        $href = sprintf($href, $row['id']);
+        $href .= '&amp;id='.$row['id'];
 
-        return sprintf(
-            '<a href="%s" title="%s"%s>%s</a> ',
-            $this->backend->addToUrl($href),
-            $this->stringUtil->specialchars($title),
-            $attributes,
-            $this->image->getHtml($icon, $label),
-        );
+        if (!$this->isRestrictedUser($row['id'])) {
+            return sprintf(
+                '<a href="%s" title="%s"%s>%s</a> ',
+                $this->backend->addToUrl($href),
+                $this->stringUtil->specialchars($title),
+                $attributes,
+                $this->image->getHtml($icon, $label),
+            );
+        }
+
+        return $this->image->getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
     /**
@@ -348,7 +288,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.reviseDatabase.input_field")
      */
-    public function inputFieldCbReviseDatabase(): string
+    public function inputFieldCallbackReviseDatabase(): string
     {
         $translator = $this->system->getContainer()->get('translator');
 
@@ -372,7 +312,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.albumInfo.input_field")
      */
-    public function inputFieldCbAlbumInfo(DataContainer $dc): string
+    public function inputFieldCallbackAlbumInfo(DataContainer $dc): string
     {
         if (!$dc) {
             return '';
@@ -422,7 +362,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.fileUpload.input_field")
      */
-    public function inputFieldCbFileUpload(): string
+    public function inputFieldCallbackFileUpload(): string
     {
         // Create the template object
         $objTemplate = new BackendTemplate('be_gc_uploader');
@@ -470,7 +410,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.imageResolution.load")
      */
-    public function loadCbImageResolution(): string
+    public function loadCallbackImageResolution(): string
     {
         $user = $this->security->getUser();
 
@@ -482,7 +422,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="edit.buttons")
      */
-    public function buttonsCallback(array $arrButtons, DataContainer $dc): array
+    public function editButtonsCallback(array $arrButtons, DataContainer $dc): array
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -513,13 +453,12 @@ class GalleryCreatorAlbums
      *
      * @throws DoctrineDBALException
      */
-    public function ondeleteCb(DataContainer $dc, int $undoId): void
+    public function ondeleteCallback(DataContainer $dc, int $undoId): void
     {
         if (!$dc) {
             return;
         }
 
-        $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
         if ('deleteAll' !== $request->query->get('act')) {
@@ -595,7 +534,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function onloadCbCheckFolderSettings(DataContainer $dc): void
+    public function onloadCallbackCheckFolderSettings(DataContainer $dc): void
     {
         // Create the upload directory if it doesn't already exist
         $objFolder = new Folder($this->galleryCreatorUploadPath);
@@ -617,26 +556,29 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function onloadCbFileUpload(): void
+    public function onloadCallbackFileUpload(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if ('fileUpload' !== $request->query->get('key') || !$request->query->has('id')) {
+        if (!$dc || 'fileUpload' !== $request->query->get('key')) {
             return;
+        }
+
+        // Do not allow uploads to not authorized users
+        if ($this->isRestrictedUser($dc->id)) {
+            $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$dc->id], 'contao_default'));
+            $this->controller->redirect($this->system->getReferer());
         }
 
         // Load language file
         $this->controller->loadLanguageFile('tl_files');
 
-        // Album ID
-        $intAlbumId = (int) $request->query->get('id');
-
-        // Save uploaded files in $_FILES['file']
+        // Store uploaded files to $_FILES['file']
         $strName = 'file';
 
         // Return if there is no album
-        if (null === ($albumsModel = $this->albums->findById($intAlbumId))) {
-            $this->message->addError('Album with ID '.$intAlbumId.' does not exist.');
+        if (null === ($albumsModel = $this->albums->findById($dc->id))) {
+            $this->message->addError('Album with ID '.$dc->id.' not found.');
 
             return;
         }
@@ -657,7 +599,7 @@ class GalleryCreatorAlbums
             return;
         }
 
-        // Call the uploader script
+        // Call the file upload script
         $arrUpload = $this->fileUtil->uploadFile($albumsModel, $strName);
 
         foreach ($arrUpload as $strPath) {
@@ -680,7 +622,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function onloadCbImportFromFilesystem(): void
+    public function onloadCallbackImportFromFilesystem(): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -721,9 +663,8 @@ class GalleryCreatorAlbums
      *
      * @throws DoctrineDBALException
      */
-    public function onloadCbSetUpPalettes(): void
+    public function onloadCallbackSetUpPalettes(): void
     {
-
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
@@ -794,7 +735,7 @@ class GalleryCreatorAlbums
      * @throws DoctrineDBALException
      * @throws Exception
      */
-    public function inputFieldCbThumb(): string
+    public function inputFieldCallbackThumb(): string
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -911,7 +852,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.filePrefix.save")
      */
-    public function saveCbValidateFilePrefix(string $strPrefix, DataContainer $dc): string
+    public function saveCallbackValidateFilePrefix(string $strPrefix, DataContainer $dc): string
     {
         $i = 0;
 
@@ -967,7 +908,7 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="fields.sortBy.save")
      */
-    public function saveCbSortBy(string $varValue, DataContainer $dc): string
+    public function saveCallbackSortBy(string $varValue, DataContainer $dc): string
     {
         if ('----' === $varValue) {
             return $varValue;
@@ -1040,7 +981,7 @@ class GalleryCreatorAlbums
      *
      * @throws DoctrineDBALException
      */
-    public function setAliasAndUploadFolder(string $strAlias, DataContainer $dc): string
+    public function saveCallbackSetAliasAndUploadFolder(string $strAlias, DataContainer $dc): string
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -1103,7 +1044,7 @@ class GalleryCreatorAlbums
      *
      * @throws DoctrineDBALException
      */
-    public function saveCbImageResolution(string $value): void
+    public function saveCallbackImageResolution(string $value): void
     {
         $user = $this->security->getUser();
 

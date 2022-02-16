@@ -8,7 +8,7 @@ Use this extension to create, display and manage photo albums in your [Contao](h
  The Gallery Creator Bundle offers an album listing and an album detail view.
  Since version 2.0.0 [markdown](https://www.markdownguide.org/) can be used to create the album description.
  
-https://user-images.githubusercontent.com/1525166/154251206-85ac347a-3fe1-49ad-9a2d-4d6d9c6118cd.mp4
+https://user-images.githubusercontent.com/1525166/154361326-cc4dc4c0-60c5-41e3-a0dc-a41fcd3d242e.mp4
 
 ## Installation
 Please use the Contao Manager or run `composer require markocupic/gallery-creator-bundle` in your CLI to install the extension.

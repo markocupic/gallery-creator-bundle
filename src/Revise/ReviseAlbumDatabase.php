@@ -112,7 +112,7 @@ class ReviseAlbumDatabase
                 } elseif (!is_file($this->projectDir.'/'.$filesModel->path)) {
                     $arrError = $session->get('gc_error');
 
-                    // If there is data record for the file, but doesn't exist on the server anymore.
+                    // If there is a data record for the file, but the file doesn't exist in the fs anymore.
                     if (false !== $blnCleanDb) {
                         $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();

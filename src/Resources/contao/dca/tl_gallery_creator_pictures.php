@@ -36,7 +36,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'fields'       => ['sorting'],
             'headerFields' => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
             'mode'         => 4,
-            'panelLayout'  => 'filter;search,limit',
+            'panelLayout'  => 'filter;sorting,search,limit',
         ],
         'global_operations' => [
             'fileUpload' => [
@@ -127,23 +127,20 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         'title'          => [
             'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
             'exclude'   => true,
-            'filter'    => true,
-            'inputType' => 'text',
             'search'    => true,
+            'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'externalFile'   => [
             'sql' => "char(1) NOT NULL default ''",
         ],
         'caption'        => [
-            'cols'      => 20,
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'clr'],
-            'exclude'   => true,
-            'filter'    => true,
-            'inputType' => 'textarea',
-            'rows'      => 6,
-            'search'    => true,
-            'sql'       => 'text NULL',
+            'cols'    => 20,
+            'eval'    => ['decodeEntities' => true, 'tl_class' => 'clr'],
+            'exclude' => true,
+            'search'  => true,
+            'rows'    => 6,
+            'sql'     => 'text NULL',
         ],
         'picture'        => [
             'eval' => ['tl_class' => 'clr'],
@@ -153,7 +150,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             // A new uploaded image inherits the date of the parent album.
             'default'   => time(),
             'filter'    => true,
-            'search'    => true,
+            'sorting'   => true,
             'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'clr wizard ', 'submitOnChange' => false],
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
@@ -167,6 +164,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         'customThumb'    => [
             'eval'      => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
             'exclude'   => true,
+            'filter'    => true,
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
@@ -177,7 +175,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'foreignKey' => 'tl_user.name',
             'inputType'  => 'select',
             'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
-            'search'     => true,
             'sql'        => "int(10) NOT NULL default '0'",
         ],
         'socialMediaSRC' => [
@@ -185,7 +182,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'text',
-            'search'    => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'localMediaSRC'  => [
@@ -193,7 +189,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'fileTree',
-            'search'    => true,
             'sql'       => 'binary(16) NULL',
         ],
     ],

@@ -88,11 +88,11 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             } else {
                 // Find the pid of the root album
                 $arrIds = StringUtil::deserialize($model->gcAlbumSelection, true);
-                if(!empty($arrIds))
-                {
+
+                if (!empty($arrIds)) {
                     $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', $arrIds).') ORDER BY pid ASC');
                     $this->arrAlbumListing = $this->getAlbumsByPid($pid);
-                }else{
+                } else {
                     return new Response('', Response::HTTP_NO_CONTENT);
                 }
             }
@@ -136,6 +136,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         if ($this->showAlbumListing) {
             $template->showAlbumListing = true;
 
+            // Add a CSS class to the body tag
+            $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass. ' gc-listing-view';
+
             $itemsTotal = \count($this->arrAlbumListing);
             $perPage = (int) $this->model->gcAlbumsPerPage;
 
@@ -165,6 +168,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         if ($this->showAlbumDetail) {
             $template->showAlbumDetail = true;
+
+            // Add a CSS class to the body tag
+            $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass. ' gc-detail-view';
 
             // Add the picture collection and the pagination to the template.
             $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);

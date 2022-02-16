@@ -41,10 +41,10 @@
 
             let self = this;
 
-            // Run next check after 10'
+            // Run next check after 60'
             let now = Math.floor(new Date().getTime() / 1000);
             let doCheck = true;
-            let intervall = 600;
+            let intervall = 3600;
             let objCookie = null;
 
             if (Cookie.read('contao_gallery_creator_be')) {

@@ -55,7 +55,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                 'icon' => 'edit.svg',
             ],
             'delete'      => [
-                'attributes' => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'].'\')) return false; Backend.getScrollOffset();"',
+                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] ?? null).'\'))return false;Backend.getScrollOffset()"',
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
             ],

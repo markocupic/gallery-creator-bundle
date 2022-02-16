@@ -7,7 +7,7 @@
         <target>Die Datei "%s" wurde nicht auf dem Server gefunden!</target>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. &lt;br&gt;Please clean up the database or check the existence of %s in the album with alias: %s!</source>
+        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s!</source>
         <target>Der Datenbankeintrag zum Bild mit ID %s in "tl_gallery_creator_pictures" verweist auf eine nicht vorhandene Datei. Bitte bereinigen Sie die Datenbank oder überprüfen Sie die Existenz der Datei "%s" im Album mit dem Album-Alias: "%s".</target>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
@@ -27,11 +27,11 @@
         <target>Ungültiger Dateiname oder nicht zulässige Dateiendung: %s. Bitte überprüfen Sie die erlaubten Dateiendungen: (%s).</target>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
-        <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too!!!</source>
+        <source>Do you really want to delete album with ID %s? \r\nAttention! \nAll image-files in the assigned directory will be deleted too.</source>
         <target>Soll das Album mit der ID %s gelöscht werden? \r\nAchtung! Dadurch werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht.</target>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
-        <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too!!!</source>
+        <source>Do you really want to delete picture with ID %s? \r\nAttention! \nThe image-file will be deleted too.</source>
         <target>Soll das Bild mit der ID %s gelöscht werden? \r\nAchtung! Dabei wird wird auch die Bilddatei im Dateisystem gelöscht.</target>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backLink">

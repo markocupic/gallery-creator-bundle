@@ -265,11 +265,11 @@ class GalleryCreatorAlbums
         $hasPermission = true;
 
         if ($request->request->has('id')) {
-            $id = (int) $request->request->get('id', 0);
+            $id = (int) $request->request->get('id');
             $album = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id = ?', [$id]);
 
             if ($album) {
-                if (!$user->isAdmin && (int) $album['owner'] !== (int) $user->id && $this->galleryCreatorBackendWriteProtection) {
+                if ($this->isRestrictedUser($id)) {
                     $hasPermission = false;
                     $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$album['name']], 'contao_default'));
 
@@ -289,7 +289,7 @@ class GalleryCreatorAlbums
         $user = $this->security->getUser();
         $href .= '&amp;id='.$row['id'];
 
-        if ($user->isAdmin || !$this->isRestrictedUser($row['id'])) {
+        if (!$this->isRestrictedUser($row['id'])) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->backend->addToUrl($href),
@@ -302,38 +302,6 @@ class GalleryCreatorAlbums
         return $this->image->getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
-    /**
-     * Paste button callback.
-     *
-     * @param mixed|false $arrClipboard
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="list.sorting.paste_button")
-     */
-    public function buttonCbPastePicture(DataContainer $dc, array $row, string $table, bool $cr, $arrClipboard = false): string
-    {
-        $user = $this->security->getUser();
-
-        $disablePA = false;
-        $disablePI = false;
-
-        // Disable all buttons if there is a circular reference
-        if ($user->isAdmin && false !== $arrClipboard && ('cut' === $arrClipboard['mode'] && (1 === (int) $cr || (int) $arrClipboard['id'] === (int) $row['id']) || 'cutAll' === $arrClipboard['mode'] && (1 === (int) $cr || \in_array($row['id'], $arrClipboard['id'], false)))) {
-            $disablePA = true;
-            $disablePI = true;
-        }
-
-        // Return the buttons
-        $imagePasteAfter = $this->image->getHtml('pasteafter.svg', $this->translator->trans('DCA.pasteafter.1', [$row['id']], 'contao_default'), 'class="blink"');
-        $imagePasteInto = $this->image->getHtml('pasteinto.svg', $this->translator->trans('DCA.pasteafter.1', [$row['id']], 'contao_default'), 'class="blink"');
-
-        $return = '';
-
-        if ($row['id'] > 0) {
-            $return = $disablePA ? $this->image->getHtml('pasteafter_.svg', '', 'class="blink"').' ' : '<a href="'.$this->backend->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=1&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.$this->stringUtil->specialchars($this->translator->trans('DCA.pasteafter.1', [$row['id']], 'contao_default')).'" onclick="Backend.getScrollOffset();">'.$imagePasteAfter.'</a> ';
-        }
-
-        return $return.($disablePI ? $this->image->getHtml('pasteinto_.svg', '', 'class="blink"').' ' : '<a href="'.$this->backend->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!\is_array($arrClipboard['id']) ? '&amp;='.$arrClipboard['id'] : '')).'" title="'.$this->stringUtil->specialchars($this->translator->trans('DCA.pasteinto.1', [$row['id']], 'contao_default')).'" onclick="Backend.getScrollOffset();">'.$imagePasteInto.'</a> ');
-    }
 
     /**
      * Button callback.
@@ -342,10 +310,9 @@ class GalleryCreatorAlbums
      */
     public function buttonCbDelete(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
     {
-        $user = $this->security->getUser();
         $href .= '&amp;id='.$row['id'];
 
-        if ($user->isAdmin || (int) $user->id === (int) $row['owner'] || !$this->galleryCreatorBackendWriteProtection) {
+        if (!$this->isRestrictedUser($row['id'])) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->backend->addToUrl($href),
@@ -422,11 +389,8 @@ class GalleryCreatorAlbums
         }
 
         $user = $this->framework->getAdapter(UserModel::class);
-
         $objUser = $user->findByPk($objAlb->owner);
         $ownersName = null !== $objUser ? $objUser->name : 'no-name';
-        $date_formatted = date('Y-m-d', (int) $objAlb->date);
-        $name = $this->stringUtil->decodeEntities($objAlb->name);
 
         return (new Response(
             $this->twig->render(
@@ -436,9 +400,9 @@ class GalleryCreatorAlbums
                     'model' => $objAlb->row(),
                     'album_id' => $objAlb->id,
                     'album_thumb' => $objAlb->thumb,
-                    'album_name' => $name,
+                    'album_name' => $this->stringUtil->decodeEntities($objAlb->name),
                     'album_owners_name' => $ownersName,
-                    'album_date_formatted' => $date_formatted,
+                    'album_date_formatted' => date('Y-m-d', (int) $objAlb->date),
                     'album_caption' => $caption,
                     'trans' => [
                         'album_id' => $translator->trans('tl_gallery_creator_albums.id.0', [], 'contao_default'),
@@ -575,7 +539,7 @@ class GalleryCreatorAlbums
                     continue;
                 }
 
-                if ($user->isAdmin || (int) $albumsModel->owner === (int) $user->id || !$this->galleryCreatorBackendWriteProtection) {
+                if (!$this->isRestrictedUser($dc->id)) {
                     // Remove all pictures from the database
                     $picturesModel = $this->pictures->findByPid($idDelAlbum);
 
@@ -759,6 +723,7 @@ class GalleryCreatorAlbums
      */
     public function onloadCbSetUpPalettes(): void
     {
+
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
@@ -773,8 +738,8 @@ class GalleryCreatorAlbums
         }
 
         // For security reasons give only readonly rights to these fields
-        $dca['fields']['id']['eval']['style'] = '" readonly="readonly';
-        $dca['fields']['ownersName']['eval']['style'] = '" readonly="readonly';
+        $dca['fields']['id']['eval']['readonly'] = true;
+        $dca['fields']['ownersName']['eval']['readonly'] = true;
 
         // Create the file uploader palette
         if ('fileUpload' === $request->query->get('key')) {
@@ -783,7 +748,7 @@ class GalleryCreatorAlbums
             return;
         }
 
-        // Create the *importImagesFromFilesystem* palette
+        // Create the "importImagesFromFilesystem" palette
         if ('importImagesFromFilesystem' === $request->query->get('key')) {
             $dca['palettes']['default'] = $dca['palettes']['importImagesFromFilesystem'];
             $dca['fields']['preserveFilename']['eval']['submitOnChange'] = false;
@@ -808,10 +773,6 @@ class GalleryCreatorAlbums
 
                 return;
             }
-
-            $dca['fields']['owner']['eval']['doNotShow'] = false;
-            $dca['fields']['protected']['eval']['doNotShow'] = false;
-            $dca['fields']['groups']['eval']['doNotShow'] = false;
 
             return;
         }

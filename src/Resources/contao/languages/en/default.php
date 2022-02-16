@@ -16,7 +16,7 @@ declare(strict_types=1);
  * Error messages
  */
 $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'The file "%s" doesn\'t exist on your server!';
-$GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. <br>Please clean up the database or check the existence of %s in the album with alias: %s!';
+$GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s!';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded!';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
 $GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album: "%s".';
@@ -28,8 +28,8 @@ $GLOBALS['TL_LANG']['ERR']['notAllowedToDeletePicture'] = 'Not enough permission
 /*
  * Confirm
  */
-$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too!!!';
-$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too!!!';
+$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention! \\nAll image-files in the assigned directory will be deleted too.';
+$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? \\r\\nAttention! \\nThe image-file will be deleted too.';
 
 /*
  * Frontend

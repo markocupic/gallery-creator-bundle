@@ -139,7 +139,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'owner'             => [
             'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'doNotShow' => true, 'nospace' => true, 'tl_class' => 'w50'],
+            'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'nospace' => true, 'tl_class' => 'w50'],
             'foreignKey' => 'tl_user.name',
             'inputType'  => 'select',
             'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
@@ -153,7 +153,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'ownersName'        => [
             'default' => BackendUser::getInstance()->name,
-            'eval'    => ['doNotShow' => true, 'tl_class' => 'w50 gc-readonly'],
+            'eval'    => ['tl_class' => 'w50 gc-readonly'],
             'sql'     => 'text NULL',
         ],
         'photographer'      => [
@@ -174,7 +174,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'alias'             => [
-            'eval'      => ['doNotShow' => false, 'doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true],
+            'eval'      => ['doNotCopy' => true, 'maxlength' => 50, 'tl_class' => 'w50', 'unique' => true],
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
@@ -221,7 +221,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => "varchar(32) NOT NULL default ''",
         ],
         'thumb'             => [
-            'eval'      => ['doNotShow' => true, 'includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true],
+            'eval'      => ['includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true],
             'inputType' => 'radio',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
@@ -244,30 +244,30 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => "char(1) NOT NULL default '1'",
         ],
         'multiSRC'          => [
-            'eval'      => ['doNotShow' => true, 'multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
+            'eval'      => ['multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
             'exclude'   => true,
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
         'protected'         => [
-            'eval'      => ['doNotShow' => true, 'submitOnChange' => true, 'tl_class' => 'clr'],
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr'],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default ''",
         ],
         'groups'            => [
-            'eval'       => ['doNotShow' => true, 'mandatory' => true, 'multiple' => true, 'tl_class' => 'clr'],
+            'eval'       => ['mandatory' => true, 'multiple' => true, 'tl_class' => 'clr'],
             'foreignKey' => 'tl_member_group.name',
             'inputType'  => 'checkbox',
             'sql'        => 'blob NULL',
         ],
         'insertArticlePre'  => [
-            'eval'      => ['doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'eval'      => ['rgxp' => 'digit', 'tl_class' => 'w50'],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'insertArticlePost' => [
-            'eval'      => ['doNotShow' => false, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'eval'      => ['rgxp' => 'digit', 'tl_class' => 'w50'],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
@@ -275,8 +275,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'eval' => ['doNotShow' => true],
         ],
         'visitorsDetails'   => [
-            'inputType' => 'textarea',
-            'sql'       => 'blob NULL',
+            'sql' => 'blob NULL',
         ],
         'visitors'          => [
             'eval'      => ['maxlength' => 10, 'tl_class' => 'w50', 'rgxp' => 'digit'],

@@ -54,9 +54,6 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment as TwigEnvironment;
 
-/**
- * Class GalleryCreatorAlbums.
- */
 class GalleryCreatorAlbums
 {
     private RequestStack $requestStack;

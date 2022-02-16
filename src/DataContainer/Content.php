@@ -23,9 +23,6 @@ use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment as TwigEnvironment;
 
-/**
- * Class Content.
- */
 class Content extends Backend
 {
     private AlbumUtil $albumUtil;

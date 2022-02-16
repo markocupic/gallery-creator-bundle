@@ -32,7 +32,7 @@ class Version200Update extends AbstractMigration
 
     public function getName(): string
     {
-        return 'Gallery Creator Bundle 2.0.0 Update';
+        return 'Gallery Creator Bundle version 2.0.0 update';
     }
 
     public function shouldRun(): bool

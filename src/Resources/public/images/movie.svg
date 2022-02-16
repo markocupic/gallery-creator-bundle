@@ -1,38 +1,114 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-<rect x="47.008" y="439.248" width="416" height="32"/>
-<rect y="40.752" style="fill:#32BEA6;" width="512" height="362.064"/>
-<polygon style="fill:#FFFFFF;" points="197.92,138.672 342.128,221.936 197.92,305.184 "/>
-<g>
+
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 18.088446 12.79136"
+   xml:space="preserve"
+   sodipodi:docname="movie.svg"
+   width="18.088446"
+   height="12.79136"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs1103" /><sodipodi:namedview
+   id="namedview1101"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="true"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:zoom="17.014757"
+   inkscape:cx="11.343095"
+   inkscape:cy="15.868578"
+   inkscape:window-width="1920"
+   inkscape:window-height="974"
+   inkscape:window-x="-11"
+   inkscape:window-y="-11"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1" />
+
+<rect
+   y="0"
+   style="fill:#32bea6;stroke-width:0.0353293"
+   width="18.088446"
+   height="12.79136"
+   id="rect1066"
+   x="0" />
+<polygon
+   style="fill:#ffffff"
+   points="197.92,138.672 342.128,221.936 197.92,305.184 "
+   id="polygon1068"
+   transform="matrix(0.0390625,0,0,0.0390625,-0.82281517,-2.2383725)" />
+<g
+   id="g1070"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1072"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1074"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1076"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1078"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1080"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1082"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1084"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1086"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1088"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1090"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1092"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1094"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1096"
+   transform="translate(0,-40.751999)">
 </g>
-<g>
+<g
+   id="g1098"
+   transform="translate(0,-40.751999)">
 </g>
 </svg>

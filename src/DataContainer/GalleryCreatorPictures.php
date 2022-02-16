@@ -130,8 +130,7 @@ class GalleryCreatorPictures
      */
     public function onloadCallbackSetCorrectReferer(DataContainer $dc): void
     {
-        if(!$dc)
-        {
+        if (!$dc) {
             return;
         }
 
@@ -142,7 +141,7 @@ class GalleryCreatorPictures
         if ($request->query->has('filesImported')) {
             $arrReferer = $session->get('referer');
             $refererId = $request->attributes->get('_contao_referer_id');
-            $arrReferer[$refererId]['current'] = 'contao?do=gallery_creator&table=tl_gallery_creator_pictures&id=' . $dc->id;
+            $arrReferer[$refererId]['current'] = 'contao?do=gallery_creator&table=tl_gallery_creator_pictures&id='.$dc->id;
             $session->set('referer', $arrReferer);
         }
     }
@@ -260,7 +259,7 @@ class GalleryCreatorPictures
             $type = empty(trim((string) $arrRow['localMediaSRC'])) ? $this->translator->trans('GALLERY_CREATOR.localMedia', [], 'contao_default') : $this->translator->trans('GALLERY_CREATOR.socialMedia', [], 'contao_default');
             $iconSrc = 'bundles/markocupicgallerycreator/images/movie.svg';
             $hasMovie = sprintf(
-                '<div class="block"><img src="%s" width="18" height="18"> <span style="color:darkred; font-weight:500">%s:</span> <a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
+                '<div class="block" style="margin-bottom: 10px; line-height:1.7; display: flex; flex-wrap: wrap; align-items: center;"><img src="%s" style="margin-right: 6px;"> <span style="color:darkred; font-weight:500">%s:&nbsp;</span><a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
                 $iconSrc,
                 $type,
                 $src,

@@ -19,18 +19,20 @@ $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'Could not find file "%s".';
 $GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s.';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable. Check chmod settings.';
-$GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album with ID %d.';
-$GLOBALS['TL_LANG']['ERR']['rejectWriteAccessToPicture'] = 'You are not allowed to edit the picture with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['rejectWriteAccessToPicture'] = 'You are not allowed to edit the picture with ID %d.';
 $GLOBALS['TL_LANG']['ERR']['notAllowedFilenameOrExtension'] = 'Invalid file name or extension: => %s. Please check the list of supported file extensions (%s).';
 $GLOBALS['TL_LANG']['ERR']['rotateImageError'] = 'Error while trying to rotate picture "%s".';
-$GLOBALS['TL_LANG']['ERR']['notAllowedToDeleteAlbum'] = 'Not enough permissions to delete album with ID %d.';
-$GLOBALS['TL_LANG']['ERR']['notAllowedToDeletePicture'] = 'Not enough permissions to delete picture with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedToDeleteAlbum'] = 'Not enough permissions to delete album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedToDeletePicture'] = 'Not enough permissions to delete picture with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['useFileUploadForCreatingNewPicture'] = 'Use the file upload button to create a new entry.';
+$GLOBALS['TL_LANG']['MSC']['blockEditingForeignDataRecords'] = 'Editing of foreign data records has been blocked.';
 
 /*
  * Confirm
  */
-$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? \\r\\nAttention. \\nAll image-files in the assigned directory will be deleted too.';
-$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? \\r\\nAttention. \\nThe image-file will be deleted too.';
+$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmAlbum'] = 'Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.';
+$GLOBALS['TL_LANG']['CONFIRM']['gcDeleteConfirmPicture'] = 'Do you really want to delete picture with ID %s? Attention. The image-file will be deleted too.';
 
 /*
  * Frontend

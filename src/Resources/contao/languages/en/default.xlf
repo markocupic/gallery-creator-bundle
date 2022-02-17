@@ -14,29 +14,35 @@
       <trans-unit id="ERR.dirNotWriteable">
         <source>The directory "%s" is not writeable. Check chmod settings.</source>
       </trans-unit>
-      <trans-unit id="ERR.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album with ID %d.</source>
-      </trans-unit>
-      <trans-unit id="ERR.rejectWriteAccessToPicture">
-        <source>You are not allowed to edit the picture with ID %d.</source>
-      </trans-unit>
       <trans-unit id="ERR.notAllowedFilenameOrExtension">
         <source>Invalid file name or extension: =&gt; %s. Please check the list of supported file extensions (%s).</source>
       </trans-unit>
       <trans-unit id="ERR.rotateImageError">
         <source>Error while trying to rotate picture "%s".</source>
       </trans-unit>
-      <trans-unit id="ERR.notAllowedToDeleteAlbum">
+      <trans-unit id="MSC.rejectWriteAccessToAlbum">
+        <source>You are not allowed to edit the album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.rejectWriteAccessToPicture">
+        <source>You are not allowed to edit the picture with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedToDeleteAlbum">
         <source>Not enough permissions to delete album with ID %d.</source>
       </trans-unit>
-      <trans-unit id="ERR.notAllowedToDeletePicture">
+      <trans-unit id="MSC.notAllowedToDeletePicture">
         <source>Not enough permissions to delete picture with ID %d.</source>
       </trans-unit>
+      <trans-unit id="MSC.useFileUploadForCreatingNewPicture">
+        <source>Use the file upload button to create a new entry.</source>
+      </trans-unit>
+      <trans-unit id="MSC.blockEditingForeignDataRecords">
+        <source>Editing of foreign data records has been blocked.</source>
+      </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
-        <source>Do you really want to delete album with ID %s? \r\nAttention. \nAll image-files in the assigned directory will be deleted too.</source>
+        <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
-        <source>Do you really want to delete picture with ID %s? \r\nAttention. \nThe image-file will be deleted too.</source>
+        <source>Do you really want to delete picture with ID %s? Attention. The image-file will be deleted too.</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backLink">
         <source>back</source>

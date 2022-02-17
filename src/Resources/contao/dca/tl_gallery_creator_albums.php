@@ -167,7 +167,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'search'    => true,
             'inputType' => 'textarea',
             'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr'],
-            'sql'       => "text NULL",
+            'sql'       => 'text NULL',
         ],
         'date'              => [
             'sorting'   => true,
@@ -190,7 +190,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'search'    => true,
             'inputType' => 'textarea',
             'eval'      => ['style' => 'height:60px', 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
-            'sql'       => "text NULL",
+            'sql'       => 'text NULL',
         ],
         'owner'             => [
             'filter'     => true,

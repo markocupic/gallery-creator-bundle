@@ -17,6 +17,8 @@ namespace Markocupic\GalleryCreatorBundle\DataContainer;
 use Contao\Backend;
 use Contao\Config;
 use Contao\Controller;
+use Contao\CoreBundle\Exception\RedirectResponseException;
+use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
@@ -34,7 +36,7 @@ use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\Exception\RedirectionException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
@@ -53,9 +55,8 @@ class GalleryCreatorPictures
     private string $projectDir;
     private bool $galleryCreatorBackendWriteProtection;
     private string $galleryCreatorUploadPath;
-    private ?LoggerInterface $logger;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, string $projectDir, bool $galleryCreatorBackendWriteProtection, string $galleryCreatorUploadPath, LoggerInterface $logger = null)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, string $projectDir, bool $galleryCreatorBackendWriteProtection, string $galleryCreatorUploadPath)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -67,7 +68,6 @@ class GalleryCreatorPictures
         $this->projectDir = $projectDir;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
-        $this->logger = $logger;
 
         // Adapters
         $this->backend = $this->framework->getAdapter(Backend::class);
@@ -85,39 +85,76 @@ class GalleryCreatorPictures
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=110)
      */
-    public function onloadCallbackSetPermissions(DataContainer $dc): void
+    public function onloadCallbackCheckPermissions(DataContainer $dc): void
     {
         if (!$dc) {
             return;
         }
 
-        if ($this->isRestrictedUser($dc->id)) {
-            $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['config']['closed'] = true;
-            unset($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['global_operations']['fileUpload']);
-        }
-
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
-        switch ($request->query->get('act')) {
-            case 'create':
-                // New records can only be inserted with a file upload
-                $this->controller->redirect(sprintf(
-                    'contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;id=%s',
-                    $request->query->get('pid')
-                ));
+        if ($user->admin) {
+            return;
+        }
 
-                // no break
+        if ($this->isRestrictedUser($dc->id)) {
+            unset($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['global_operations']['fileUpload'], $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['operations']['cut']);
+        }
+
+        switch ($request->query->get('act')) {
+            case 'edit':
+            case 'delete':
+            case 'cut':
+            case 'imagerotate':
+            if ($this->isRestrictedUser($dc->id)) {
+                $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToPicture', [$dc->id], 'contao_default'));
+                $this->controller->redirect($this->system->getReferer());
+            }
+                break;
+
+            case 'paste':
+
+                // New records can only be inserted with a file upload
+                if ('create' === $request->query->get('mode')) {
+                    $this->message->addInfo($this->translator->trans('MSC.useFileUploadForCreatingNewPicture', [], 'contao_default'));
+                    $this->controller->redirect($this->system->getReferer());
+                }
+
+                break;
+
             case 'select':
-                if (!$user->isAdmin) {
-                    // Only list pictures where user is the picture owner
-                    if ($this->galleryCreatorBackendWriteProtection) {
+                // Do not allow selecting foreign data records
+                if ($this->galleryCreatorBackendWriteProtection) {
+                    $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_pictures WHERE owner != ? AND pid = ?', [$user->id, $dc->id]);
+
+                    if ($result) {
+                        $this->message->addInfo($this->translator->trans('MSC.blockEditingForeignDataRecords', [], 'contao_default'));
                         $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner = ?', $user->id]];
                     }
                 }
 
                 break;
 
+            case 'deleteAll':
+            case 'editAll':
+
+                if ($this->galleryCreatorBackendWriteProtection) {
+                    $session = $request->getSession();
+                    $current = $session->get('CURRENT');
+
+                    if (isset($current['IDS'])) {
+                        foreach ($current['IDS'] as $k => $id) {
+                            if ($this->isRestrictedUser($id)) {
+                                unset($current['IDS'][$k]);
+                            }
+                        }
+
+                        $session->set('CURRENT', $current);
+                    }
+                }
+
+                // no break
             default:
                 break;
         }
@@ -457,7 +494,7 @@ class GalleryCreatorPictures
                 $file->delete();
             }
         } else {
-            $this->message->addError($this->translator->trans('ERR.notAllowedToDeletePicture', [$dc->id], 'contao_default'));
+            $this->message->addInfo($this->translator->trans('MSC.notAllowedToDeletePicture', [$dc->id], 'contao_default'));
             $this->controller->redirect($this->system->getReferer());
         }
     }
@@ -479,8 +516,7 @@ class GalleryCreatorPictures
             if ($result) {
                 if ($this->isRestrictedUser($id)) {
                     $hasPermission = false;
-                    $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToPicture', [$result['id']], 'contao_default'));
-
+                    $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToPicture', [$result['id']], 'contao_default'));
                     $this->controller->reload();
                 }
             }
@@ -499,7 +535,7 @@ class GalleryCreatorPictures
             return false;
         }
 
-        if ($user->isAdmin || !$this->galleryCreatorBackendWriteProtection) {
+        if ($user->admin || !$this->galleryCreatorBackendWriteProtection) {
             return false;
         }
 

@@ -18,14 +18,6 @@
         <source>The directory "%s" is not writeable. Check chmod settings.</source>
         <target>Das Verzeichnis "%s" ist nicht beschreibbar. Bitte überprüfen Sie die CHMOD-Einstellungen.</target>
       </trans-unit>
-      <trans-unit id="ERR.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album with ID %d.</source>
-        <target>Sie haben nicht die erforderlichen Rechte, das Album "%s" zu bearbeiten.</target>
-      </trans-unit>
-      <trans-unit id="ERR.rejectWriteAccessToPicture">
-        <source>You are not allowed to edit the picture with ID %d.</source>
-        <target>Nicht genügend Rechte um Bild mit ID %d zu bearbeiten.</target>
-      </trans-unit>
       <trans-unit id="ERR.notAllowedFilenameOrExtension">
         <source>Invalid file name or extension: =&gt; %s. Please check the list of supported file extensions (%s).</source>
         <target>Ungültiger Dateiname oder nicht zulässige Dateiendung: %s. Bitte überprüfen Sie die erlaubten Dateiendungen: (%s).</target>
@@ -34,21 +26,37 @@
         <source>Error while trying to rotate picture "%s".</source>
         <target>Beim Versuch das Bild "%s" zu drehen, ist es zu einem Fehler gekommen.</target>
       </trans-unit>
-      <trans-unit id="ERR.notAllowedToDeleteAlbum">
+      <trans-unit id="MSC.rejectWriteAccessToAlbum">
+        <source>You are not allowed to edit the album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, das Album "%s" zu bearbeiten.</target>
+      </trans-unit>
+      <trans-unit id="MSC.rejectWriteAccessToPicture">
+        <source>You are not allowed to edit the picture with ID %d.</source>
+        <target>Nicht genügend Rechte um Bild mit ID %d zu bearbeiten.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedToDeleteAlbum">
         <source>Not enough permissions to delete album with ID %d.</source>
         <target>Nicht genügend Rechte um das Album mit ID %d zu löschen.</target>
       </trans-unit>
-      <trans-unit id="ERR.notAllowedToDeletePicture">
+      <trans-unit id="MSC.notAllowedToDeletePicture">
         <source>Not enough permissions to delete picture with ID %d.</source>
         <target>Nicht genügend Rechte um das Bild mit ID %d zu löschen.</target>
       </trans-unit>
+      <trans-unit id="MSC.useFileUploadForCreatingNewPicture">
+        <source>Use the file upload button to create a new entry.</source>
+        <target>Benutzen Sie den "Bilder hochladen" Button um ein neues Bild zu erstellen.</target>
+      </trans-unit>
+      <trans-unit id="MSC.blockEditingForeignDataRecords">
+        <source>Editing of foreign data records has been blocked.</source>
+        <target>Das Bearbeiten fremder Datensätze wurde geblockt.</target>
+      </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
-        <source>Do you really want to delete album with ID %s? \r\nAttention. \nAll image-files in the assigned directory will be deleted too.</source>
-        <target>Soll das Album mit der ID %s gelöscht werden? \r\nAchtung. Dadurch werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht.</target>
+        <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
+        <target>Soll das Album mit der ID %s gelöscht werden? Achtung. Dadurch werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht.</target>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
-        <source>Do you really want to delete picture with ID %s? \r\nAttention. \nThe image-file will be deleted too.</source>
-        <target>Soll das Bild mit der ID %s gelöscht werden? \r\nAchtung. Dabei wird wird auch die Bilddatei im Dateisystem gelöscht.</target>
+        <source>Do you really want to delete picture with ID %s? Attention. The image-file will be deleted too.</source>
+        <target>Soll das Bild mit der ID %s gelöscht werden? Achtung. Dabei wird auch die Bilddatei im Dateisystem gelöscht.</target>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backLink">
         <source>back</source>

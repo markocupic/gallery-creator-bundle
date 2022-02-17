@@ -35,7 +35,6 @@ use Contao\Image;
 use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
-use Contao\UserModel;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
@@ -43,7 +42,6 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
-use Markocupic\GalleryCreatorBundle\Util\MarkdownUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -63,7 +61,6 @@ class GalleryCreatorAlbums
     private TranslatorInterface $translator;
     private TwigEnvironment $twig;
     private ReviseAlbumDatabase $reviseAlbumDatabase;
-    private MarkdownUtil $markdownUtil;
     private string $projectDir;
     private string $galleryCreatorUploadPath;
     private bool $galleryCreatorBackendWriteProtection;
@@ -78,7 +75,7 @@ class GalleryCreatorAlbums
     private Adapter $albums;
     private Adapter $pictures;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, MarkdownUtil $markdownUtil, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions, ?LoggerInterface $logger)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -87,13 +84,11 @@ class GalleryCreatorAlbums
         $this->security = $security;
         $this->translator = $translator;
         $this->reviseAlbumDatabase = $reviseAlbumDatabase;
-        $this->markdownUtil = $markdownUtil;
         $this->projectDir = $projectDir;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
         $this->twig = $twig;
-        $this->logger = $logger;
 
         // Adapters
         $this->backend = $this->framework->getAdapter(Backend::class);
@@ -126,6 +121,82 @@ class GalleryCreatorAlbums
     /**
      * Onload callback.
      *
+     * @Callback(table="tl_gallery_creator_albums", target="config.onload", priority=110)
+     */
+    public function onloadCallbackCheckPermissions(DataContainer $dc): void
+    {
+        if (!$dc) {
+            return;
+        }
+
+        $user = $this->security->getUser();
+        $request = $this->requestStack->getCurrentRequest();
+
+        if ($user->admin) {
+            return;
+        }
+
+        switch ($request->query->get('act')) {
+            case 'edit':
+            case 'delete':
+            case 'paste':
+                if ($this->isRestrictedUser($dc->id)) {
+                    $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToAlbum', [$dc->id], 'contao_default'));
+                    $this->controller->redirect($this->system->getReferer());
+                }
+                break;
+            case 'cut':
+                // Do not allow pasting own album in a foreign album for restricted users
+                if($request->query->get('mode') === '2')
+                {
+                    $pid = $request->query->get('pid');
+
+                    if ($pid > 0 && $this->isRestrictedUser($pid)) {
+                        $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToAlbum', [$dc->id], 'contao_default'));
+                        $this->controller->redirect($this->system->getReferer());
+                    }
+                }
+                break;
+            case 'select':
+                // Do not allow selecting foreign data records
+                if ($this->galleryCreatorBackendWriteProtection) {
+                    $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE owner != ?', [$user->id]);
+
+                    if ($result) {
+                        $this->message->addInfo($this->translator->trans('MSC.blockEditingForeignDataRecords', [], 'contao_default'));
+                        $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['list']['sorting']['filter'] = [['owner = ?', $user->id]];
+                    }
+                }
+
+                break;
+
+            case 'deleteAll':
+            case 'editAll':
+
+                if ($this->galleryCreatorBackendWriteProtection) {
+                    $session = $request->getSession();
+                    $current = $session->get('CURRENT');
+
+                    if (isset($current['IDS'])) {
+                        foreach ($current['IDS'] as $k => $id) {
+                            if ($this->isRestrictedUser($id)) {
+                                unset($current['IDS'][$k]);
+                            }
+                        }
+
+                        $session->set('CURRENT', $current);
+                    }
+                }
+
+                // no break
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Onload callback.
+     *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
     public function onloadCallbackSetPalettes(DataContainer $dc): void
@@ -134,6 +205,11 @@ class GalleryCreatorAlbums
             return;
         }
 
+        $user = $this->security->getUser();
+
+        $request = $this->requestStack->getCurrentRequest();
+
+        // Handle markdown caption field
         $pm = $this->framework->createInstance(PaletteManipulator::class);
 
         $arrAlb = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id = ?', [$dc->id]);
@@ -145,7 +221,42 @@ class GalleryCreatorAlbums
         if ($arrAlb && 'text' === $arrAlb['captionType']) {
             $pm->removeField('markdownCaption');
         }
+
         $pm->applyToPalette('default', 'tl_gallery_creator_albums');
+
+        $dca = &$GLOBALS['TL_DCA']['tl_gallery_creator_albums'];
+
+        // Permit revise database to admins only
+        if (!$user->admin) {
+            unset(
+                $dca['list']['global_operations']['reviseDatabase']
+            );
+        } else {
+            // Global operation: revise database
+            $albumCount = $this->connection->fetchFirstColumn('SELECT COUNT(id) AS albumCount FROM tl_gallery_creator_albums');
+            $albumId = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums');
+
+            if ($albumCount > 0) {
+                $dca['list']['global_operations']['reviseDatabase']['href'] = sprintf($dca['list']['global_operations']['reviseDatabase']['href'], $albumId);
+            } else {
+                unset($dca['list']['global_operations']['reviseDatabase']);
+            }
+
+            if ('reviseDatabase' === $request->query->get('key')) {
+                $dca['palettes']['default'] = $dca['palettes']['reviseDatabase'];
+            }
+        }
+
+        // Create the file uploader palette
+        if ('fileUpload' === $request->query->get('key')) {
+            $dca['palettes']['default'] = $dca['palettes']['fileUpload'];
+        }
+
+        // Create the "importImagesFromFilesystem" palette
+        if ('importImagesFromFilesystem' === $request->query->get('key')) {
+            $dca['palettes']['default'] = $dca['palettes']['importImagesFromFilesystem'];
+            $dca['fields']['preserveFilename']['eval']['submitOnChange'] = false;
+        }
     }
 
     /**
@@ -192,7 +303,7 @@ class GalleryCreatorAlbums
                     if (null !== $albumsModel) {
                         if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
                             // Delete damaged data records
-                            $cleanDb = $user->isAdmin && $request->query->has('reviseTables');
+                            $cleanDb = $user->admin && $request->query->has('reviseTables');
 
                             $this->reviseAlbumDatabase->run($albumsModel, $cleanDb);
 
@@ -232,8 +343,7 @@ class GalleryCreatorAlbums
             if ($result) {
                 if ($this->isRestrictedUser($id)) {
                     $hasPermission = false;
-                    $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$result['id']], 'contao_default'));
-
+                    $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToAlbum', [$result['id']], 'contao_default'));
                     $this->controller->reload();
                 }
             }
@@ -243,6 +353,7 @@ class GalleryCreatorAlbums
     /**
      * Button callback.
      *
+     * @Callback(table="tl_gallery_creator_albums", target="list.operations.editheader.button")
      * @Callback(table="tl_gallery_creator_albums", target="list.operations.delete.button")
      * @Callback(table="tl_gallery_creator_albums", target="list.operations.uploadImages.button")
      * @Callback(table="tl_gallery_creator_albums", target="list.operations.importImagesFromFilesystem.button")
@@ -394,7 +505,7 @@ class GalleryCreatorAlbums
 
         if ('deleteAll' !== $request->query->get('act')) {
             if ($this->isRestrictedUser($dc->id)) {
-                $this->message->addError($this->translator->trans('ERR.notAllowedToDeleteAlbum', [$dc->id], 'contao_default'));
+                $this->message->addInfo($this->translator->trans('MSC.notAllowedToDeleteAlbum', [$dc->id], 'contao_default'));
                 $this->controller->redirect($this->system->getReferer());
             }
 
@@ -497,7 +608,7 @@ class GalleryCreatorAlbums
 
         // Do not allow uploads to not authorized users
         if ($this->isRestrictedUser($dc->id)) {
-            $this->message->addError($this->translator->trans('ERR.rejectWriteAccessToAlbum', [$dc->id], 'contao_default'));
+            $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToAlbum', [$dc->id], 'contao_default'));
             $this->controller->redirect($this->system->getReferer());
         }
 
@@ -585,61 +696,6 @@ class GalleryCreatorAlbums
         }
 
         throw new RedirectResponseException('contao?do=gallery_creator');
-    }
-
-    /**
-     * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
-     *
-     * @throws DoctrineDBALException
-     */
-    public function onloadCallbackSetUpPalettes(): void
-    {
-        $user = $this->security->getUser();
-        $request = $this->requestStack->getCurrentRequest();
-
-        $dca = &$GLOBALS['TL_DCA']['tl_gallery_creator_albums'];
-
-        // Permit global operations to admin only
-        if (!$user->isAdmin) {
-            unset(
-                $dca['list']['global_operations']['all'],
-                $dca['list']['global_operations']['reviseDatabase']
-            );
-        }
-
-        // Create the file uploader palette
-        if ('fileUpload' === $request->query->get('key')) {
-            $dca['palettes']['default'] = $dca['palettes']['fileUpload'];
-
-            return;
-        }
-
-        // Create the "importImagesFromFilesystem" palette
-        if ('importImagesFromFilesystem' === $request->query->get('key')) {
-            $dca['palettes']['default'] = $dca['palettes']['importImagesFromFilesystem'];
-            $dca['fields']['preserveFilename']['eval']['submitOnChange'] = false;
-
-            return;
-        }
-
-        // The palette for admins
-        if ($user->isAdmin) {
-            // Global operation: revise database
-            $albumCount = $this->connection->fetchFirstColumn('SELECT COUNT(id) AS albumCount FROM tl_gallery_creator_albums');
-            $albumId = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums');
-
-            if ($albumCount > 0) {
-                $dca['list']['global_operations']['reviseDatabase']['href'] = sprintf($dca['list']['global_operations']['reviseDatabase']['href'], $albumId);
-            } else {
-                unset($dca['list']['global_operations']['reviseDatabase']);
-            }
-
-            if ('reviseDatabase' === $request->query->get('key')) {
-                $dca['palettes']['default'] = $dca['palettes']['reviseDatabase'];
-            }
-        }
     }
 
     /**
@@ -925,7 +981,7 @@ class GalleryCreatorAlbums
         $strAlias = substr($strAlias, 0, 43);
 
         // Remove invalid characters
-        $strAlias = preg_replace('/[^a-z0-9\\_\\-]/', '', $strAlias);
+        $strAlias = preg_replace('/[^a-z0-9\_\-]/', '', $strAlias);
 
         // If alias already exists add the album-id to the alias
         $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id != ? AND alias = ?', [$dc->activeRecord->id, $strAlias]);
@@ -980,7 +1036,7 @@ class GalleryCreatorAlbums
             return false;
         }
 
-        if ($user->isAdmin || !$this->galleryCreatorBackendWriteProtection) {
+        if ($user->admin || !$this->galleryCreatorBackendWriteProtection) {
             return false;
         }
 

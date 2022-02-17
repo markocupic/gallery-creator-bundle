@@ -463,18 +463,6 @@ class GalleryCreatorPictures
     }
 
     /**
-     * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=80)
-     */
-    public function onloadCallbackSetPalettes(DataContainer $dc): void
-    {
-        if ($this->isRestrictedUser($dc->id)) {
-            $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['restrictedUser'];
-        }
-    }
-
-    /**
      * Check Permission callback (haste_ajax_operation).
      *
      * @throws DoctrineDBALException

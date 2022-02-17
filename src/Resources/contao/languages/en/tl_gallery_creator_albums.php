@@ -15,7 +15,9 @@ declare(strict_types=1);
 /*
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['album_inf_legend'] = 'Album settings';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['title_legend'] = 'Album settings';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['meta_legend'] = 'Metadata';
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['details_legend'] = 'Album details';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['caption_legend'] = 'Album caption settings';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['uploadDir_legend'] = 'Upload directory settings';
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protection_legend'] = 'Protect album';
@@ -30,18 +32,19 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['album_preview_thumb_legend'] =
  */
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id'] = ['Album-ID'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['alias'] = ['Album alias', 'The album alias defines although the album folder name.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['pageTitle'] = ['Page title', 'Here you can add a custom meta title to overwrite the default page title.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['robots'] = ['Robots tag', 'Here you can overwrite how search engines handle the event.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['published'] = ['Publish album'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['date'] = ['Date of creation'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['owner'] = ['Album owner'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['eventLocation'] = ['Event location', 'Set the event location.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['location'] = ['Event location', 'Set the event location.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['teaser'] = ['Event teaser','The event teaser can be shown in an album list instead of the full album-caption.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['description'] = ['Meta page description', 'Here you can enter a short description of the page which will be evaluated by search engines like Google or Yahoo. Search engines usually indicate between 150 and 300 characters.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['name'] = ['Album name', 'Here you can define the album name.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['albumInfo'] = ['Album information', 'Get some album information.'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['ownersName'] = ['Album owner'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'] = ['Photographers names', 'Please add photographers names.'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['photographer'] = ['Photographer', 'Please add photographers names.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['captionType'] = ['Album caption type', 'Select the caption type, please.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['caption'] = ['Album-caption'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['markdownCaption'] = ['Album-caption (markdown)', 'Use markdown to style the text. https://www.markdownguide.org/basic-syntax'];
+$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['markdownCaption'] = ['Album-caption (markdown)', 'Use markdown to style the album caption. https://www.markdownguide.org/basic-syntax'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['thumb'] = ['Thumbnail', 'Drag the items to re-order them.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['protected'] = ['Protect album', 'Allow the album to logged in front end users only.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_albums']['groups'] = ['Allowed frontend groups', 'Allow watching the album to these member groups only.'];

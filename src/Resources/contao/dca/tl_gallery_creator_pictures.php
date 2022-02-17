@@ -34,7 +34,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     'list'        => [
         'sorting'           => [
             'fields'       => ['sorting'],
-            'headerFields' => ['id', 'date', 'ownersName', 'name', 'caption', 'thumb'],
+            'headerFields' => ['date', 'name'],
             'mode'         => 4,
             'panelLayout'  => 'filter;sorting,search,limit',
         ],
@@ -88,9 +88,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
     ],
     'palettes'    => [
-        '__selector__'   => ['addCustomThumb'],
-        'default'        => 'picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
-        'restrictedUser' => 'imageInfo,picture',
+        '__selector__' => ['addCustomThumb'],
+        'default'      => 'picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',

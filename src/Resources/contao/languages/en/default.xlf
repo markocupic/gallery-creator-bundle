@@ -65,7 +65,7 @@
       <trans-unit id="GALLERY_CREATOR.photographerName">
         <source>Photographers name</source>
       </trans-unit>
-      <trans-unit id="GALLERY_CREATOR.eventLocation">
+      <trans-unit id="GALLERY_CREATOR.location">
         <source>Location</source>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.selectAllAlbums">

@@ -86,7 +86,7 @@
         <source>Photographers name</source>
         <target>Fotograf</target>
       </trans-unit>
-      <trans-unit id="GALLERY_CREATOR.eventLocation">
+      <trans-unit id="GALLERY_CREATOR.location">
         <source>Location</source>
         <target>Location</target>
       </trans-unit>

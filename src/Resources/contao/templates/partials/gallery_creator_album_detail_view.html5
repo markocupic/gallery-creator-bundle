@@ -23,8 +23,8 @@
     <p class="gc-album-detail-date"><?= $this->album['dateFormatted'] ?></p>
     <?php endif; ?>
 
-    <?php if ($this->album['eventLocation']): ?>
-    <p class="gc-album-detail-location"><?= $this->album['eventLocation'] ?></p>
+    <?php if ($this->album['location']): ?>
+    <p class="gc-album-detail-location"><?= $this->album['location'] ?></p>
     <?php endif; ?>
 
     <?php if ($this->album['hasChildAlbums']): ?>

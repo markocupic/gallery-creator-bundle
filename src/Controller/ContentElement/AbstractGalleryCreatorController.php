@@ -16,9 +16,12 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
+use Contao\Controller;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\File\Metadata;
+use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Date;
 use Contao\Environment;
@@ -47,6 +50,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     protected PictureUtil $pictureUtil;
     protected SecurityUtil $securityUtil;
     protected ScopeMatcher $scopeMatcher;
+    protected ResponseContextAccessor $responseContextAccessor;
 
     public function __construct(DependencyAggregate $dependencyAggregate)
     {
@@ -56,6 +60,41 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $this->pictureUtil = $dependencyAggregate->pictureUtil;
         $this->securityUtil = $dependencyAggregate->securityUtil;
         $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
+        $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
+    }
+
+    public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum){
+        // Overwrite the page meta data (see #2853, #4955 and #87)
+        $responseContext = $this->responseContextAccessor->getResponseContext();
+
+        if ($responseContext && $responseContext->has(HtmlHeadBag::class))
+        {
+            /** @var HtmlHeadBag $htmlHeadBag */
+            $htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
+
+            if ($objAlbum->pageTitle)
+            {
+                $htmlHeadBag->setTitle($objAlbum->pageTitle); // Already stored decoded
+            }
+            elseif ($objAlbum->title)
+            {
+                $htmlHeadBag->setTitle(StringUtil::inputEncodedToPlainText($objAlbum->title));
+            }
+
+            if ($objAlbum->description)
+            {
+                $htmlHeadBag->setMetaDescription(StringUtil::inputEncodedToPlainText($objAlbum->description));
+            }
+            elseif ($objAlbum->teaser)
+            {
+                $htmlHeadBag->setMetaDescription(StringUtil::htmlToPlainText($objAlbum->teaser));
+            }
+
+            if ($objAlbum->robots)
+            {
+                $htmlHeadBag->setMetaRobots($objAlbum->robots);
+            }
+        }
     }
 
     public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): ?FilesModel
@@ -113,15 +152,19 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
-        $markdown = $albumModel->captionType === 'markdown' ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
+        $teaser = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->teaser)));
+        $caption = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->caption)));
+        $markdown = 'markdown' === $albumModel->captionType ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
 
         // Meta
         $arrMeta = [];
         $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
-        $arrMeta['caption'] = $markdown ?: StringUtil::toHtml5(nl2br((string) $albumModel->caption));
-        $arrMeta['title'] = $albumModel->name.' ['.($countPictures ? $countPictures.' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['pictures'] : '').($childAlbumCount > 0 ? ' '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'].' '.$childAlbumCount.'  '.$GLOBALS['TL_LANG']['GALLERY_CREATOR']['childAlbums'].']' : ']');
+        $arrMeta['caption'] = $teaser;
+        $arrMeta['title'] = StringUtil::specialchars($albumModel->name);
 
         $arrAlbum = $albumModel->row();
+        $arrAlbum['teaser'] = $teaser;
+        $arrAlbum['caption'] = $caption;
         $arrAlbum['markdownCaption'] = $markdown;
         $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
         $arrAlbum['meta'] = new Metadata($arrMeta);

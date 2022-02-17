@@ -2,8 +2,14 @@
 <xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en">
     <body>
-      <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
+      <trans-unit id="tl_gallery_creator_albums.title_legend">
         <source>Album settings</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.meta_legend">
+        <source>Metadata</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.details_legend">
+        <source>Album details</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption_legend">
         <source>Album caption settings</source>
@@ -38,6 +44,18 @@
       <trans-unit id="tl_gallery_creator_albums.alias.1">
         <source>The album alias defines although the album folder name.</source>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pageTitle.0">
+        <source>Page title</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pageTitle.1">
+        <source>Here you can add a custom meta title to overwrite the default page title.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.robots.0">
+        <source>Robots tag</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.robots.1">
+        <source>Here you can overwrite how search engines handle the event.</source>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.published.0">
         <source>Publish album</source>
       </trans-unit>
@@ -47,11 +65,17 @@
       <trans-unit id="tl_gallery_creator_albums.owner.0">
         <source>Album owner</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.eventLocation.0">
+      <trans-unit id="tl_gallery_creator_albums.location.0">
         <source>Event location</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.eventLocation.1">
+      <trans-unit id="tl_gallery_creator_albums.location.1">
         <source>Set the event location.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.teaser.0">
+        <source>Event teaser</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.teaser.1">
+        <source>The event teaser can be shown in an album list instead of the full album-caption.</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.description.0">
         <source>Meta page description</source>
@@ -65,17 +89,8 @@
       <trans-unit id="tl_gallery_creator_albums.name.1">
         <source>Here you can define the album name.</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.albumInfo.0">
-        <source>Album information</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.albumInfo.1">
-        <source>Get some album information.</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.ownersName.0">
-        <source>Album owner</source>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.photographer.0">
-        <source>Photographers names</source>
+        <source>Photographer</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.photographer.1">
         <source>Please add photographers names.</source>
@@ -93,7 +108,7 @@
         <source>Album-caption (markdown)</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.markdownCaption.1">
-        <source>Use markdown to style the text. https://www.markdownguide.org/basic-syntax</source>
+        <source>Use markdown to style the album caption. https://www.markdownguide.org/basic-syntax</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.0">
         <source>Thumbnail</source>

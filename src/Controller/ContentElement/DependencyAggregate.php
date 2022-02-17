@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
@@ -29,8 +30,9 @@ final class DependencyAggregate
     public PictureUtil $pictureUtil;
     public SecurityUtil $securityUtil;
     public ScopeMatcher $scopeMatcher;
+    public ResponseContextAccessor $responseContextAccessor;
 
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, MarkdownUtil $markdownUtil, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher)
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, MarkdownUtil $markdownUtil, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, ResponseContextAccessor $responseContextAccessor)
     {
         $this->albumUtil = $albumUtil;
         $this->connection = $connection;
@@ -38,5 +40,6 @@ final class DependencyAggregate
         $this->pictureUtil = $pictureUtil;
         $this->securityUtil = $securityUtil;
         $this->scopeMatcher = $scopeMatcher;
+        $this->responseContextAccessor = $responseContextAccessor;
     }
 }

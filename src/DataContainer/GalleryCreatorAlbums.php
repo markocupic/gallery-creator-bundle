@@ -150,25 +150,6 @@ class GalleryCreatorAlbums
 
     /**
      * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
-     */
-    public function onloadCallbackSetPalettesForRestrictedUser(DataContainer $dc): void
-    {
-        if (!$dc) {
-            return;
-        }
-
-        if (!$this->isRestrictedUser($dc->id)) {
-            $this->framework->createInstance(PaletteManipulator::class)
-                ->removeField('albumInfo')
-                ->applyToPalette('default', 'tl_gallery_creator_albums')
-            ;
-        }
-    }
-
-    /**
-     * Onload callback.
      * Handle image sorting ajax requests.
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
@@ -301,56 +282,6 @@ class GalleryCreatorAlbums
                             $translator->trans('tl_gallery_creator_albums.reviseDatabase.0', [], 'contao_default'),
                             $translator->trans('tl_gallery_creator_albums.reviseDatabase.1', [], 'contao_default'),
                         ],
-                    ],
-                ]
-            )
-        ))->getContent();
-    }
-
-    /**
-     * Input field callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.albumInfo.input_field")
-     */
-    public function inputFieldCallbackAlbumInfo(DataContainer $dc): string
-    {
-        if (!$dc) {
-            return '';
-        }
-
-        $translator = $this->system->getContainer()->get('translator');
-
-        $objAlb = $this->albums->findByPk($dc->id);
-
-        $caption = $this->stringUtil->decodeEntities($objAlb->caption);
-
-        if ('markdown' === $objAlb->captionType) {
-            $caption = $this->markdownUtil->parse($objAlb->markdownCaption);
-        }
-
-        $user = $this->framework->getAdapter(UserModel::class);
-        $objUser = $user->findByPk($objAlb->owner);
-        $ownersName = null !== $objUser ? $objUser->name : 'no-name';
-
-        return (new Response(
-            $this->twig->render(
-                '@MarkocupicGalleryCreator/Backend/album_information.html.twig',
-                [
-                    'restricted' => $this->isRestrictedUser($objAlb->id),
-                    'model' => $objAlb->row(),
-                    'album_id' => $objAlb->id,
-                    'album_thumb' => $objAlb->thumb,
-                    'album_name' => $this->stringUtil->decodeEntities($objAlb->name),
-                    'album_owners_name' => $ownersName,
-                    'album_date_formatted' => date('Y-m-d', (int) $objAlb->date),
-                    'album_caption' => $caption,
-                    'trans' => [
-                        'album_id' => $translator->trans('tl_gallery_creator_albums.id.0', [], 'contao_default'),
-                        'album_name' => $translator->trans('tl_gallery_creator_albums.name.0', [], 'contao_default'),
-                        'album_date' => $translator->trans('tl_gallery_creator_albums.date.0', [], 'contao_default'),
-                        'album_owners_name' => $translator->trans('tl_gallery_creator_albums.owner.0', [], 'contao_default'),
-                        'album_caption' => $translator->trans('tl_gallery_creator_albums.caption.0', [], 'contao_default'),
-                        'album_thumb' => $translator->trans('tl_gallery_creator_albums.thumb.0', [], 'contao_default'),
                     ],
                 ]
             )
@@ -678,10 +609,6 @@ class GalleryCreatorAlbums
             );
         }
 
-        // For security reasons give only readonly rights to these fields
-        $dca['fields']['id']['eval']['readonly'] = true;
-        $dca['fields']['ownersName']['eval']['readonly'] = true;
-
         // Create the file uploader palette
         if ('fileUpload' === $request->query->get('key')) {
             $dca['palettes']['default'] = $dca['palettes']['fileUpload'];
@@ -711,17 +638,7 @@ class GalleryCreatorAlbums
 
             if ('reviseDatabase' === $request->query->get('key')) {
                 $dca['palettes']['default'] = $dca['palettes']['reviseDatabase'];
-
-                return;
             }
-
-            return;
-        }
-        $id = $request->query->get('id');
-
-        // Give write access on these fields to admins and album owners only.
-        if ($this->isRestrictedUser($id)) {
-            $dca['palettes']['default'] = $dca['palettes']['restrictedUser'];
         }
     }
 

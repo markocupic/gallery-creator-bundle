@@ -137,7 +137,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $template->showAlbumListing = true;
 
             // Add a CSS class to the body tag
-            $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass. ' gc-listing-view';
+            $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass.' gc-listing-view';
 
             $itemsTotal = \count($this->arrAlbumListing);
             $perPage = (int) $this->model->gcAlbumsPerPage;
@@ -170,7 +170,9 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $template->showAlbumDetail = true;
 
             // Add a CSS class to the body tag
-            $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass. ' gc-detail-view';
+            $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass.' gc-detail-view';
+
+            $this->overridePageMetaData($this->activeAlbum);
 
             // Add the picture collection and the pagination to the template.
             $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);

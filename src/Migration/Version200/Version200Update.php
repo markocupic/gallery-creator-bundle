@@ -244,15 +244,15 @@ class Version200Update extends AbstractMigration
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_gallery_creator_albums',
-                'old' => 'owners_name',
-                'new' => 'ownersName',
-                'sql' => 'TEXT',
+                'old' => 'event_location',
+                'new' => 'location',
+                'sql' => 'varchar(255)',
             ],
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_gallery_creator_albums',
-                'old' => 'event_location',
-                'new' => 'eventLocation',
+                'old' => 'eventLocation',
+                'new' => 'location',
                 'sql' => 'varchar(255)',
             ],
             [

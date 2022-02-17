@@ -63,9 +63,9 @@ class FileUtil
      */
     public function imageRotate(File $file, int $angle): bool
     {
-
         if (!is_file($this->projectDir.'/'.$file->path) || !$file->isGdImage) {
-            Message::addError($this->translator->trans('ERR.rotateImageError',[$file->path], 'contao_default'));
+            Message::addError($this->translator->trans('ERR.rotateImageError', [$file->path], 'contao_default'));
+
             return false;
         }
 
@@ -87,9 +87,9 @@ class FileUtil
 
         $imgSrc = $this->projectDir.'/'.$file->path;
 
-        if(false === ($source = imagecreatefromjpeg($imgSrc)))
-        {
-            Message::addError($this->translator->trans('ERR.rotateImageError',[$file->path], 'contao_default'));
+        if (false === ($source = imagecreatefromjpeg($imgSrc))) {
+            Message::addError($this->translator->trans('ERR.rotateImageError', [$file->path], 'contao_default'));
+
             return false;
         }
 

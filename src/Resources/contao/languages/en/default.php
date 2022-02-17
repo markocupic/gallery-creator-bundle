@@ -43,7 +43,7 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['contains'] = 'contains';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['visitors'] = 'visitors';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['feAuthenticationError'] = ['Authentication error', 'You tried to enter a protected album. Please log in as a frontend user or check your member-rights.'];
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['photographerName'] = 'Photographers name';
-$GLOBALS['TL_LANG']['GALLERY_CREATOR']['eventLocation'] = 'Location';
+$GLOBALS['TL_LANG']['GALLERY_CREATOR']['location'] = 'Location';
 
 /*
  * Backend

@@ -27,7 +27,6 @@ use League\CommonMark\MarkdownConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-
 class MarkdownUtil
 {
     private ContaoFramework $framework;
@@ -41,21 +40,18 @@ class MarkdownUtil
 
     public function parse(string $strMarkdown): string
     {
-
         $request = $this->requestStack->getCurrentRequest();
 
         /** @var Config $config */
         $config = $this->framework->getAdapter(Config::class);
 
         /** @var Input $input */
-        $input =  $this->framework->getAdapter(Input::class);
+        $input = $this->framework->getAdapter(Input::class);
 
         $html = $this->createConverter($request)->convertToHtml($strMarkdown);
-        $html = $input->stripTags($html, $config->get('allowedTags'), $config->get('allowedAttributes'));
 
-        return $html;
+        return $input->stripTags($html, $config->get('allowedTags'), $config->get('allowedAttributes'));
     }
-
 
     private function createConverter(Request $request): MarkdownConverter
     {
@@ -83,5 +79,4 @@ class MarkdownUtil
 
         return new MarkdownConverter($environment);
     }
-
 }

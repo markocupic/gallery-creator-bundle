@@ -2,7 +2,7 @@
 <xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en" target-language="it">
     <body>
-      <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
+      <trans-unit id="tl_gallery_creator_albums.title_legend">
         <source>Album settings</source>
         <target>Informazioni sull'album</target>
       </trans-unit>
@@ -41,10 +41,6 @@
       <trans-unit id="tl_gallery_creator_albums.name.0">
         <source>Album name</source>
         <target>Nome album</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.ownersName.0">
-        <source>Album owner</source>
-        <target>Proprietario album</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption.0">
         <source>Album-caption</source>

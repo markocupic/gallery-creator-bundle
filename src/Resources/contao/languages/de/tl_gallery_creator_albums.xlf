@@ -2,9 +2,17 @@
 <xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_gallery_creator_albums.php" source-language="en" target-language="de">
     <body>
-      <trans-unit id="tl_gallery_creator_albums.album_inf_legend">
+      <trans-unit id="tl_gallery_creator_albums.title_legend">
         <source>Album settings</source>
         <target>Albuminformationen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.meta_legend">
+        <source>Metadata</source>
+        <target>Metadaten</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.details_legend">
+        <source>Album details</source>
+        <target>Album Details</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption_legend">
         <source>Album caption settings</source>
@@ -50,6 +58,22 @@
         <source>The album alias defines although the album folder name.</source>
         <target>Der Albumalias ist zugleich auch Verzeichnisnamen der Bilder eines Albums.</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pageTitle.0">
+        <source>Page title</source>
+        <target>Meta Titel</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pageTitle.1">
+        <source>Here you can add a custom meta title to overwrite the default page title.</source>
+        <target>Hier können Sie einen individuellen Meta-Titel eingeben, um den Standard-Seitentitel zu überschreiben.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.robots.0">
+        <source>Robots tag</source>
+        <target>Robots-Tag</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.robots.1">
+        <source>Here you can overwrite how search engines handle the event.</source>
+        <target>Hier legen Sie fest, wie Suchmaschinen das Album behandeln.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.published.0">
         <source>Publish album</source>
         <target>Album veröffentlichen</target>
@@ -62,13 +86,21 @@
         <source>Album owner</source>
         <target>Besitzer/Ersteller</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.eventLocation.0">
+      <trans-unit id="tl_gallery_creator_albums.location.0">
         <source>Event location</source>
         <target>Veranstaltungsort</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.eventLocation.1">
+      <trans-unit id="tl_gallery_creator_albums.location.1">
         <source>Set the event location.</source>
         <target>Fügen Sie eine Standortangabe hinzu.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.teaser.0">
+        <source>Event teaser</source>
+        <target>Teasertext</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.teaser.1">
+        <source>The event teaser can be shown in an album list instead of the full album-caption.</source>
+        <target>Der Teasertext kann in einer Albumliste anstatt der Albumbeschreibung angezeigt werden.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.description.0">
         <source>Meta page description</source>
@@ -86,21 +118,9 @@
         <source>Here you can define the album name.</source>
         <target>Hie können Sie den Albumnamen angeben.</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.albumInfo.0">
-        <source>Album information</source>
-        <target>Albuminformationen</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.albumInfo.1">
-        <source>Get some album information.</source>
-        <target>Hier sehen Sie Informationen zum Album.</target>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.ownersName.0">
-        <source>Album owner</source>
-        <target>Albumbesitzer</target>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.photographer.0">
-        <source>Photographers names</source>
-        <target>Fotografen-Namen</target>
+        <source>Photographer</source>
+        <target>Fotograf</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.photographer.1">
         <source>Please add photographers names.</source>
@@ -108,11 +128,11 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.captionType.0">
         <source>Album caption type</source>
-        <target>Eingabemethode für Bildbeschreibung auswählen</target>
+        <target>Eingabemethode für die Albumbeschreibung auswählen</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.captionType.1">
         <source>Select the caption type, please.</source>
-        <target>Wählen Sie die Eingabemethode für Bildbeschreibung aus.</target>
+        <target>Wählen Sie die Eingabemethode für die Albumbeschreibung aus. Wählen Sie "markdown" aus, wenn Sie in der Gestaltung freier sein möchten.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption.0">
         <source>Album-caption</source>
@@ -120,10 +140,10 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.markdownCaption.0">
         <source>Album-caption (markdown)</source>
-        <target>Bildbeschreibung (markdown)</target>
+        <target>Albumbeschreibung (markdown)</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.markdownCaption.1">
-        <source>Use markdown to style the text. https://www.markdownguide.org/basic-syntax</source>
+        <source>Use markdown to style the album caption. https://www.markdownguide.org/basic-syntax</source>
         <target>Nutzen Sie die Markdown-Syntax für die Albumbeschreibung. https://www.markdownguide.org/basic-syntax</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.0">

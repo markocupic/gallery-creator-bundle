@@ -54,16 +54,6 @@ class ReviseAlbumDatabase
         // Create the upload directory if it doesn't exist.
         new Folder($this->galleryCreatorUploadPath);
 
-        // Check for a valid album owner
-        $objUser = UserModel::findByPk($albumModel->owner);
-
-        if (null !== $objUser) {
-            $owner = $objUser->name;
-        } else {
-            $owner = 'no-name';
-        }
-        $albumModel->ownersName = $owner;
-
         // Check for valid pid
         if ((int) $albumModel->pid > 0) {
             $objParentAlb = $albumModel->getRelated('pid');

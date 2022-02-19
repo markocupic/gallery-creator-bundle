@@ -28,6 +28,7 @@ use Contao\Template;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Haste\Util\Pagination;
+use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,6 +45,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     public const TYPE = 'gallery_creator';
 
     protected TwigEnvironment $twig;
+    protected ?SymfonyResponseTagger $responseTagger;
     protected ?string $viewMode = null;
     protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
     protected array $arrAlbumListing = [];
@@ -53,10 +55,11 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     private bool $showAlbumDetail = false;
     private bool $showAlbumListing = false;
 
-    public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig)
+    public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig, ?SymfonyResponseTagger $responseTagger)
     {
         parent::__construct($dependencyAggregate);
         $this->twig = $twig;
+        $this->responseTagger = $responseTagger;
     }
 
     /**
@@ -114,6 +117,20 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             }
 
             $this->arrAlbumListing = $this->getAlbumsByPid($this->activeAlbum->id);
+        }
+
+        // Tag the albums
+        if ($this->responseTagger)
+        {
+            $arrIds = $this->arrAlbumListing;
+
+            if($this->activeAlbum)
+            {
+                $arrIds[] = $this->activeAlbum->id;
+                $arrIds = array_unique($arrIds);
+            }
+
+            $this->responseTagger->addTags(array_map(static function ($id) { return 'contao.db.tl_gallery_creator_albums.' . $id; }, $arrIds));
         }
 
         return parent::__invoke($request, $this->model, $section, $classes);

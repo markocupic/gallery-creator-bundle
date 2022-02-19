@@ -2,58 +2,35 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="1355.7705"
-   height="399.44208"
-   viewBox="0 0 358.71428 105.68572"
+   width="1805.4607"
+   height="393.61081"
+   viewBox="0 0 477.69481 104.14286"
    version="1.1"
    id="svg1212"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
-   sodipodi:docname="be_content_element_logo2.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview1214"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="true"
-     inkscape:document-units="px"
-     showgrid="false"
-     units="px"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:zoom="0.68595679"
-     inkscape:cx="658.20472"
-     inkscape:cy="256.57593"
-     inkscape:window-width="1920"
-     inkscape:window-height="974"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
   <defs
-     id="defs1209" />
+     id="defs1209">
+    <rect
+       x="1300.4082"
+       y="202.39973"
+       width="243.86417"
+       height="42.525551"
+       id="rect10122" />
+  </defs>
   <g
-     inkscape:label="Ebene 1"
-     inkscape:groupmode="layer"
      id="layer1"
      transform="translate(30.47143,11.957143)">
     <rect
-       style="fill:#800000;fill-rule:evenodd;stroke-width:0.322419"
+       style="fill:#800000;fill-rule:evenodd;stroke-width:0.331436"
        id="rect1282"
-       width="358.71429"
-       height="105.68572"
+       width="477.69482"
+       height="104.14286"
        x="-30.47143"
        y="-11.957143" />
     <g
        aria-label="Gallery Creator"
-       transform="scale(0.94024171,1.0635563)"
+       transform="matrix(0.94024171,0,0,1.0635563,6.879167,0)"
        id="text4850"
        style="font-size:51.4691px;line-height:1.25;fill:#008080;stroke-width:0.268068">
       <path
@@ -112,6 +89,29 @@
          d="m 328.62285,49.688019 h -14.74674 v -5.751603 h 2.48922 v -6.788778 h -2.48922 v -5.751603 h 11.35235 v 4.582425 q 0.64116,-1.716053 1.98006,-2.960662 1.28232,-1.225751 2.60236,-1.602906 1.26347,-0.358296 3.71497,-0.358296 v 8.052244 q -0.32058,-0.01886 -0.79202,-0.01886 -2.90409,0 -4.31842,0.584589 -1.4709,0.603447 -1.99892,1.584048 -0.54687,1.018317 -0.56573,2.677796 h 2.77209 z"
          style="font-size:38.6206px"
          id="path34406" />
+    </g>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458334,0,0,0.26458334,-30.47143,-11.957143)"
+       id="text10120"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:85.3333px;line-height:1.25;font-family:'Gill Sans Ultra Bold Condensed';-inkscape-font-specification:'Gill Sans Ultra Bold Condensed, ';white-space:pre;shape-inside:url(#rect10122);fill:#000000;fill-opacity:1;stroke:none" />
+    <g
+       aria-label="&lt;/&gt;"
+       transform="scale(0.75640693,1.3220397)"
+       id="text12900"
+       style="font-size:67.1596px;line-height:1.25;font-family:'Gill Sans Ultra Bold Condensed';-inkscape-font-specification:'Gill Sans Ultra Bold Condensed, ';fill:#008080;stroke-width:0.349789">
+      <path
+         d="m 494.32598,41.687806 v 8.690085 L 457.4669,35.063666 v -7.345581 l 36.85908,-15.281433 v 8.690085 L 468.8132,31.390875 Z"
+         style="font-weight:800;font-family:'Rockwell Extra Bold';-inkscape-font-specification:'Rockwell Extra Bold,  Ultra-Bold';fill:#008080"
+         id="path51691" />
+      <path
+         d="M 505.93462,55.165636 H 498.3267 L 509.44345,7.9112498 h 7.7063 z"
+         style="font-weight:800;font-family:'Rockwell Extra Bold';-inkscape-font-specification:'Rockwell Extra Bold,  Ultra-Bold';fill:#008080"
+         id="path51693" />
+      <path
+         d="m 521.18326,21.126737 v -8.690085 l 36.85908,15.281433 v 7.345581 l -36.85908,15.314225 v -8.690085 l 25.51278,-10.296931 z"
+         style="font-weight:800;font-family:'Rockwell Extra Bold';-inkscape-font-specification:'Rockwell Extra Bold,  Ultra-Bold';fill:#008080"
+         id="path51695" />
     </g>
   </g>
 </svg>

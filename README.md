@@ -1,10 +1,10 @@
-<p><a href="https://github.com/markocupic"><img src="docs/logo.png" width="200"></a></p>
+<p><a href="https://github.com/markocupic"><img src="src/Resources/public/images/be_content_element_logo.svg"></a></p>
 
 # Gallery Creator Bundle
 
 ## Frontend and backend extension for [Contao CMS](https://www.contao.org)
 
-Use this extension to create, display and manage photo albums in your [Contao](https://www.contao.org) installation.
+This extension can be used to create, display and manage photo albums in your [Contao](https://www.contao.org) installation.
  The Gallery Creator Bundle offers an album listing and an album detail view.
  Since version 2.0.0 [markdown](https://www.markdownguide.org/) can be used to
   create the album description.

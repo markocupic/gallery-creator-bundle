@@ -42,10 +42,6 @@
         <source>File name</source>
         <target>Bestandsnaam</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.path.0">
-        <source>Path</source>
-        <target>Path</target>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.edit.0">
         <source>Edit image settings</source>
         <target>Bewerk afbeelding</target>

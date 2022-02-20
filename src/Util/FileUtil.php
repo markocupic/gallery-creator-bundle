@@ -322,7 +322,7 @@ class FileUtil
             ;
 
         $arrPictures['path'] = $this->connection
-            ->executeQuery('SELECT path FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
+            ->executeQuery('SELECT path FROM tl_files WHERE uuid = ?', [$arrPictures['uuid']])
             ->fetchFirstColumn()
             ;
 

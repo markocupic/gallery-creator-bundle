@@ -356,11 +356,8 @@ class GalleryCreatorPictures
 
         $file = new File($sourcePath);
 
-        // Move file to the target folder
-        if ($file->renameTo($targetPath)) {
-            $picture->path = $targetPath;
-            $picture->save();
-        }
+        $file->renameTo($targetPath);
+
     }
 
     /**

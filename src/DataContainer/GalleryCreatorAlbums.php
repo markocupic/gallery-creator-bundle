@@ -38,6 +38,8 @@ use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use FOS\HttpCacheBundle\CacheManager;
+use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
@@ -61,11 +63,11 @@ class GalleryCreatorAlbums
     private TranslatorInterface $translator;
     private TwigEnvironment $twig;
     private ReviseAlbumDatabase $reviseAlbumDatabase;
+    protected CacheManager $cacheManager;
     private string $projectDir;
     private string $galleryCreatorUploadPath;
     private bool $galleryCreatorBackendWriteProtection;
     private array $galleryCreatorValidExtensions;
-    private ?LoggerInterface $logger;
     private Adapter $backend;
     private Adapter $controller;
     private Adapter $image;
@@ -75,7 +77,7 @@ class GalleryCreatorAlbums
     private Adapter $albums;
     private Adapter $pictures;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath, bool $galleryCreatorBackendWriteProtection, array $galleryCreatorValidExtensions)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -83,12 +85,13 @@ class GalleryCreatorAlbums
         $this->connection = $connection;
         $this->security = $security;
         $this->translator = $translator;
+        $this->twig = $twig;
         $this->reviseAlbumDatabase = $reviseAlbumDatabase;
+        $this->cacheManager = $cacheManager;
         $this->projectDir = $projectDir;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
-        $this->twig = $twig;
 
         // Adapters
         $this->backend = $this->framework->getAdapter(Backend::class);
@@ -347,6 +350,13 @@ class GalleryCreatorAlbums
                     $this->controller->reload();
                 }
             }
+
+            // Invalidate cache tags.
+            $arrTags = [
+                'contao.db.tl_gallery_creator_albums.' . $id,
+            ];
+
+           $this->cacheManager->invalidateTags($arrTags);
         }
     }
 
@@ -501,17 +511,18 @@ class GalleryCreatorAlbums
             return;
         }
 
-        $request = $this->requestStack->getCurrentRequest();
-
-        if ('deleteAll' !== $request->query->get('act')) {
-            if ($this->isRestrictedUser($dc->id)) {
-                $this->message->addInfo($this->translator->trans('MSC.notAllowedToDeleteAlbum', [$dc->id], 'contao_default'));
-                $this->controller->redirect($this->system->getReferer());
-            }
 
             // Also delete child albums
             $arrDeletedAlbums = $this->albums->getChildAlbumsIds((int) $dc->id);
             $arrDeletedAlbums = array_merge([$dc->id], $arrDeletedAlbums ?? []);
+
+            // Abort deletion, if user is not the owner of an album in the selection
+            foreach ($arrDeletedAlbums as $idDelAlbum) {
+                if ($this->isRestrictedUser($idDelAlbum)) {
+                    $this->message->addError($this->translator->trans('MSC.notAllowedToDeleteAlbum',[$idDelAlbum], 'contao_default'));
+                    $this->controller->redirect($this->system->getReferer());
+                }
+            }
 
             foreach ($arrDeletedAlbums as $idDelAlbum) {
                 $albumsModel = $this->albums->findByPk($idDelAlbum);
@@ -520,55 +531,49 @@ class GalleryCreatorAlbums
                     continue;
                 }
 
-                if (!$this->isRestrictedUser($dc->id)) {
-                    // Remove all pictures from the database
-                    $picturesModel = $this->pictures->findByPid($idDelAlbum);
 
-                    $files = $this->framework->getAdapter(FilesModel::class);
+                // Remove all pictures from the database
+                $picturesModel = $this->pictures->findByPid($idDelAlbum);
 
-                    if (null !== $picturesModel) {
-                        while ($picturesModel->next()) {
-                            $fileUuid = $picturesModel->uuid;
-                            $picturesModel->delete();
+                $files = $this->framework->getAdapter(FilesModel::class);
 
-                            // Delete the picture from the filesystem if it is not in use on another album
-                            if (null === $this->pictures->findByUuid($fileUuid)) {
-                                $filesModel = $files->findByUuid($fileUuid);
+                if (null !== $picturesModel) {
+                    while ($picturesModel->next()) {
+                        $fileUuid = $picturesModel->uuid;
 
-                                if (null !== $filesModel) {
-                                    $file = new File($filesModel->path);
-                                    $file->delete();
-                                }
+                        // Delete the picture from the filesystem if it is not used by another album
+                        if (null !== $this->pictures->findByUuid($fileUuid)) {
+                            $filesModel = $files->findByUuid($fileUuid);
+
+                            if (null !== $filesModel) {
+                                $file = new File($filesModel->path);
+                                $file->delete();
                             }
                         }
                     }
-
-                    $filesModel = $files->findByUuid($albumsModel->assignedDir);
-
-                    if (null !== $filesModel) {
-                        $finder = new Finder();
-                        $finder->in($filesModel->getAbsolutePath())
-                            ->depth('== 0')
-                            ->notName('.public')
-                            ;
-
-                        if (!$finder->hasResults()) {
-                            // Remove the folder if empty
-                            (new Folder($filesModel->path))->delete();
-                        }
-                    }
-
-                    // Do not delete the album entity and let Contao do this job, otherwise we run into an error.
-                    if ((int) $dc->id !== (int) $albumsModel->id) {
-                        // Remove the album entity
-                        $albumsModel->delete();
-                    }
-                } else {
-                    // Do not delete albums that are not owned by the currently logged-in user.
-                    $this->connection->update('tl_gallery_creator_albums', ['pid' => 0], ['id' => $idDelAlbum]);
                 }
+
+                $filesModel = $files->findByUuid($albumsModel->assignedDir);
+
+                if (null !== $filesModel) {
+                    $finder = new Finder();
+                    $finder->in($filesModel->getAbsolutePath())
+                        ->depth('== 0')
+                        ->notName('.public')
+                        ;
+
+                    if (!$finder->hasResults()) {
+                        // Remove the folder if empty
+                        (new Folder($filesModel->path))->delete();
+                    }
+                }
+
+
+
             }
-        }
+
+
+
     }
 
     /**
@@ -644,6 +649,13 @@ class GalleryCreatorAlbums
         // Call the file upload script
         $arrUpload = $this->fileUtil->uploadFile($albumsModel, $strName);
 
+        // Invalidate cache tags.
+        $arrTags = [
+            'contao.db.tl_gallery_creator_albums.' . $dc->id,
+        ];
+
+        $this->cacheManager->invalidateTags($arrTags);
+
         foreach ($arrUpload as $strPath) {
             if (null === ($file = new File($strPath))) {
                 throw new ResponseException(new JsonResponse('Could not upload file '.$strName.'.', Response::HTTP_BAD_REQUEST));
@@ -653,7 +665,7 @@ class GalleryCreatorAlbums
             $this->fileUtil->addImageToAlbum($albumsModel, $file);
         }
 
-        // Do not exit the script if html5_uploader is selected and Javascript is disabled
+        // Exit script
         if (!$request->request->has('submit')) {
             throw new ResponseException(new Response('', Response::HTTP_NO_CONTENT));
         }
@@ -664,8 +676,13 @@ class GalleryCreatorAlbums
      *
      * @Callback(table="tl_gallery_creator_albums", target="config.onload")
      */
-    public function onloadCallbackImportFromFilesystem(): void
+    public function onloadCallbackImportFromFilesystem(DataContainer $dc): void
     {
+        if(!$dc)
+        {
+            return;
+        }
+
         $request = $this->requestStack->getCurrentRequest();
 
         if ('importImagesFromFilesystem' !== $request->query->get('key')) {
@@ -690,6 +707,13 @@ class GalleryCreatorAlbums
 
                 // Import Images from filesystem and write entries to tl_gallery_creator_pictures
                 $this->fileUtil->importFromFilesystem($albumsModel, $arrMultiSRC);
+
+                // Invalidate cache tags.
+                $arrTags = [
+                    'contao.db.tl_gallery_creator_albums.' . $dc->id,
+                ];
+
+                $this->cacheManager->invalidateTags($arrTags);
 
                 throw new RedirectResponseException('contao?do=gallery_creator&amp;table=tl_gallery_creator_pictures&amp;='.$albumsModel->id.'&amp;filesImported=true');
             }
@@ -860,8 +884,6 @@ class GalleryCreatorAlbums
 
                             // Rename file
                             if ($file->renameTo($newPath)) {
-                                $picturesModel->path = $file->path;
-                                $picturesModel->save();
                                 $this->message->addInfo(sprintf('Picture with ID %s has been renamed to %s.', $picturesModel->id, $newPath));
                             }
                         }

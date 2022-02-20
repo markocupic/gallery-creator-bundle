@@ -36,7 +36,6 @@ $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['title'] = ['Image title', 'S
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['caption'] = ['Image caption', 'Add the image caption.'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['sorting'] = ['Sort sequence'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['filename'] = ['File name'];
-$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['path'] = ['Path'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['socialMediaSRC'] = ['Embed a movie or a sound located on a social-media-platform', 'Add the full embed path to the source:  https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&wmode=transparent'];
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['localMediaSRC'] = ['Embed a movie or a sound located on the contao file system.', 'Select a file from the Contao file system.'];
 

@@ -16,7 +16,7 @@ declare(strict_types=1);
  * Error messages
  */
 $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'Could not find file "%s".';
-$GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s.';
+$GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable. Check chmod settings.';
 $GLOBALS['TL_LANG']['MSC']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album with ID %d.';

@@ -89,9 +89,6 @@
       <trans-unit id="tl_gallery_creator_pictures.filename.0">
         <source>File name</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.path.0">
-        <source>Path</source>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.0">
         <source>Embed a movie or a sound located on a social-media-platform</source>
       </trans-unit>

@@ -22,6 +22,7 @@ use Contao\UserModel;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use FOS\HttpCacheBundle\CacheManager;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -30,13 +31,15 @@ class ReviseAlbumDatabase
 {
     private RequestStack $requestStack;
     private Connection $connection;
+    private CacheManager $cacheManager;
     private string $projectDir;
     private string $galleryCreatorUploadPath;
 
-    public function __construct(RequestStack $requestStack, Connection $connection, string $projectDir, string $galleryCreatorUploadPath)
+    public function __construct(RequestStack $requestStack, Connection $connection, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath)
     {
         $this->requestStack = $requestStack;
         $this->connection = $connection;
+        $this->cacheManager = $cacheManager;
         $this->projectDir = $projectDir;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
     }
@@ -60,10 +63,11 @@ class ReviseAlbumDatabase
 
             if (null === $objParentAlb) {
                 $albumModel->pid = null;
+                $albumModel->save();
+
             }
         }
 
-        $albumModel->save();
 
         // Try to identify entries with no uuid via path
         $picturesModel = GalleryCreatorPicturesModel::findByPid($albumModel->id);
@@ -74,18 +78,6 @@ class ReviseAlbumDatabase
                 $filesModel = FilesModel::findByUuid($picturesModel->uuid);
 
                 if (null === $filesModel) {
-                    if ('' !== $picturesModel->path) {
-                        if (is_file($this->projectDir.'/'.$picturesModel->path)) {
-                            $objModel = Dbafs::addResource($picturesModel->path);
-
-                            if (null !== $objModel) {
-                                $picturesModel->uuid = $objModel->uuid;
-                                $picturesModel->save();
-
-                                continue;
-                            }
-                        }
-                    }
 
                     $arrError = $session->get('gc_error');
 
@@ -94,8 +86,7 @@ class ReviseAlbumDatabase
                         $picturesModel->delete();
                     } else {
                         // Show error-message
-                        $path = '' !== $picturesModel->path ? $picturesModel->path : 'unknown path';
-                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $path, $albumModel->alias);
+                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
                     }
 
                     $session->set('gc_error', $arrError);
@@ -107,16 +98,10 @@ class ReviseAlbumDatabase
                         $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
                     } else {
-                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $filesModel->path, $albumModel->alias);
+                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
                     }
 
                     $session->set('gc_error', $arrError);
-                } else {
-                    // Sync tl_gallery_creator_pictures.path with tl_files.path (redundancy)
-                    if ($picturesModel->path !== $filesModel->path) {
-                        $picturesModel->path = $filesModel->path;
-                        $picturesModel->save();
-                    }
                 }
             }
         }

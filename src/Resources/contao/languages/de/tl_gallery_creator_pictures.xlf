@@ -118,10 +118,6 @@
         <source>File name</source>
         <target>Dateiname</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.path.0">
-        <source>Path</source>
-        <target>Pfad</target>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.0">
         <source>Embed a movie or a sound located on a social-media-platform</source>
         <target>Alternativ zum Grossbild einen Film oder einen Sound von einer Social-Media-Plattform wiedergeben</target>

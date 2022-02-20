@@ -102,9 +102,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
             'sql'        => "int(10) unsigned NOT NULL default '0'",
         ],
-        'path'           => [
-            'sql' => "varchar(255) NOT NULL default ''",
-        ],
         'uuid'           => [
             'sql' => 'binary(16) NULL',
         ],

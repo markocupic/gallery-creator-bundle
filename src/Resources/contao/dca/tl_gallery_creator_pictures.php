@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     ],
     'palettes'    => [
         '__selector__' => ['addCustomThumb'],
-        'default'      => 'picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+        'default'      => 'picture,owner,date,imageInfo,caption,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',

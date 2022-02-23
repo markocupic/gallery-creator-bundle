@@ -233,10 +233,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => "varchar(64) NOT NULL default 'text'",
         ],
         'caption'           => [
-            'search'    => true,
-            'eval'      => ['style' => 'height:60px', 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'cols'      => 20,
+            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
             'exclude'   => true,
             'inputType' => 'textarea',
+            'rows'      => 5,
+            'search'    => true,
             'sql'       => 'text NULL',
         ],
         'markdownCaption'   => [

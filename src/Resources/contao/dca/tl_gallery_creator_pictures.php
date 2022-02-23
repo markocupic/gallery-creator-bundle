@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     ],
     'palettes'    => [
         '__selector__' => ['addCustomThumb'],
-        'default'      => 'picture,owner,date,imageInfo,caption,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+        'default'      => 'picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',
@@ -131,12 +131,13 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql' => "char(1) NOT NULL default ''",
         ],
         'caption'        => [
-            'cols'    => 20,
-            'eval'    => ['decodeEntities' => true, 'tl_class' => 'clr'],
-            'exclude' => true,
-            'search'  => true,
-            'rows'    => 6,
-            'sql'     => 'text NULL',
+            'cols'      => 20,
+            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'exclude'   => true,
+            'inputType' => 'textarea',
+            'rows'      => 5,
+            'search'    => true,
+            'sql'       => 'text NULL',
         ],
         'picture'        => [
             'eval' => ['tl_class' => 'clr'],

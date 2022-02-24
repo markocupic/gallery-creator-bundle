@@ -272,32 +272,61 @@ class GalleryCreatorAlbums
      */
     public function onloadCallbackSortPictures(): void
     {
-        $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
 
         if ($request->query->has('isAjaxRequest')) {
+
             // Change sorting value
             if ($request->query->has('pictureSorting')) {
-                $sorting = 10;
+                $count = 0;
 
                 foreach ($this->stringUtil->trimsplit(',', $request->query->get('pictureSorting')) as $pictureId) {
                     $picturesModel = $this->pictures->findByPk($pictureId);
 
                     if (null !== $picturesModel) {
-                        $picturesModel->sorting = $sorting;
+                        $picturesModel->sorting = (($count++)+1) * 128;
                         $picturesModel->save();
-                        $sorting += 10;
                     }
+
+                }
+
+                if ($count && null !== $picturesModel)
+                {
+                    // Invalidate cache tags.
+                    $arrTags = [
+                        'contao.db.tl_gallery_creator_albums.' . $picturesModel->pid,
+                    ];
+
+                    $this->cacheManager->invalidateTags($arrTags);
                 }
             }
+
+            throw new ResponseException(new Response('', Response::HTTP_NO_CONTENT));
+        }
+    }
+
+    /**
+     * Onload callback.
+     * Revise tables.
+     *
+     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
+     *
+     * @throws DoctrineDBALException
+     */
+    public function onloadCallbackReviseTables(): void
+    {
+        $user = $this->security->getUser();
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
+
+        if ($request->query->has('isAjaxRequest')) {
 
             // Revise table in the backend
             if ($request->query->has('checkTables')) {
                 if ($request->query->has('getAlbumIDS')) {
-                    $arrIDS = $this->connection->fetchFirstColumn('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()');
+                    $arrIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()');
 
-                    throw new ResponseException(new JsonResponse(['ids' => $arrIDS]));
+                    throw new ResponseException(new JsonResponse(['ids' => $arrIds]));
                 }
 
                 if ($request->query->has('albumId')) {
@@ -306,9 +335,9 @@ class GalleryCreatorAlbums
                     if (null !== $albumsModel) {
                         if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
                             // Delete damaged data records
-                            $cleanDb = $user->admin && $request->query->has('reviseTables');
+                            $blnCleanDb = $user->admin && $request->query->has('reviseTables');
 
-                            $this->reviseAlbumDatabase->run($albumsModel, $cleanDb);
+                            $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
 
                             if ($session->has('gc_error') && \is_array($session->get('gc_error'))) {
                                 if (!empty($session->get('gc_error'))) {
@@ -330,7 +359,7 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Check Permission callback (haste_ajax_operation).
+     * Check permission callback (haste_ajax_operation).
      *
      * @throws DoctrineDBALException
      */

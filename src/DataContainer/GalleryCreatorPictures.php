@@ -21,6 +21,7 @@ use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
+use FOS\HttpCacheBundle\CacheManager;
 use Contao\DataContainer;
 use Contao\Dbafs;
 use Contao\File;
@@ -52,11 +53,13 @@ class GalleryCreatorPictures
     private Security $security;
     private TranslatorInterface $translator;
     private TwigEnvironment $twig;
+    private CacheManager $cacheManager;
+
     private string $projectDir;
     private bool $galleryCreatorBackendWriteProtection;
     private string $galleryCreatorUploadPath;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, string $projectDir, bool $galleryCreatorBackendWriteProtection, string $galleryCreatorUploadPath)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, CacheManager $cacheManager, string $projectDir, bool $galleryCreatorBackendWriteProtection, string $galleryCreatorUploadPath)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -65,6 +68,7 @@ class GalleryCreatorPictures
         $this->security = $security;
         $this->translator = $translator;
         $this->twig = $twig;
+        $this->cacheManager = $cacheManager;
         $this->projectDir = $projectDir;
         $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
@@ -190,43 +194,44 @@ class GalleryCreatorPictures
      *
      * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=90)
      */
-    public function onloadCallbackRoute(DataContainer $dc): void
+    public function onloadCallbackRotateImage(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!$dc || !$request->query->has('key')) {
+        if (!$dc) {
             return;
         }
 
-        $key = $request->query->get('key');
+        if('imagerotate' === $request->query->get('key')){
 
-        switch ($key) {
-            case 'imagerotate':
+            if (!$this->isRestrictedUser($dc->id)) {
+                $picturesModel = $this->pictures->findByPk($dc->id);
+                $files = $this->framework->getAdapter(FilesModel::class);
 
-                if (!$this->isRestrictedUser($dc->id)) {
-                    $picturesModel = $this->pictures->findByPk($dc->id);
-                    $files = $this->framework->getAdapter(FilesModel::class);
+                $filesModel = $files->findByUuid($picturesModel->uuid);
 
-                    $filesModel = $files->findByUuid($picturesModel->uuid);
+                if (null !== $picturesModel && null !== $filesModel) {
+                    $file = new File($filesModel->path);
 
-                    if (null !== $picturesModel && null !== $filesModel) {
-                        $file = new File($filesModel->path);
+                    // Rotate image anticlockwise
+                    $this->fileUtil->imageRotate($file, 270);
 
-                        // Rotate image anticlockwise
-                        $this->fileUtil->imageRotate($file, 270);
+                    $dbafs = $this->framework->getAdapter(Dbafs::class);
+                    $dbafs->addResource($filesModel->path, true);
 
-                        $dbafs = $this->framework->getAdapter(Dbafs::class);
-                        $dbafs->addResource($filesModel->path, true);
+                    // Invalidate cache tags.
+                    $arrTags = [
+                        'contao.db.tl_gallery_creator_albums.' . $picturesModel->pid,
+                    ];
 
-                        $this->controller->redirect($this->system->getReferer());
-                    }
+                    $this->cacheManager->invalidateTags($arrTags);
+
+                    $this->controller->redirect($this->system->getReferer());
                 }
+            }
+            }
 
-                break;
 
-            default:
-                break;
-        }
     }
 
     /**

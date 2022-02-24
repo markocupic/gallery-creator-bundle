@@ -87,7 +87,7 @@ class FileUtil
 
         $imgSrc = $this->projectDir.'/'.$file->path;
 
-        if (false === ($source = imagecreatefromjpeg($imgSrc))) {
+        if (false === ($source = @imagecreatefromjpeg($imgSrc))) {
             Message::addError($this->translator->trans('ERR.rotateImageError', [$file->path], 'contao_default'));
 
             return false;

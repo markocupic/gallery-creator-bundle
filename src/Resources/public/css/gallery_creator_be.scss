@@ -61,13 +61,10 @@ div.gc-readonly input {
  * Global operations
  */
 .gc-gop-icon {
-  margin-left: 20px;
-  padding: 3px 0 3px 22px;
-  background-size: 18px 18px;
+  padding: 3px 0 3px 21px;
+  background-position: left center;
   background-repeat: no-repeat;
-  background-position-x: left;
-  background-position-y: center;
-
+  margin-left: 15px;
 }
 
 .gc-gop-icon.gc-gop-revise-database {
@@ -76,21 +73,6 @@ div.gc-readonly input {
 
 .gc-gop-icon.gc-gop-upload-img {
   background-image: url("../images/add_image.svg");
-}
-
-/**
- * Operations
- */
-[data-icon="gc-op-icon"] > img {
-  width: 16px !important;
-  height: 16px !important;
-}
-
-/**
- * Label
- */
-img[data-icon="_album.svg"] {
-  filter: brightness(200%);
 }
 
 /**

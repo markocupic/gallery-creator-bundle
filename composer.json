@@ -18,10 +18,11 @@
     "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
   },
   "require": {
-    "contao/core-bundle": "^4.12",
+    "contao/core-bundle": "^4.13",
     "php": "^7.4 || ^8.0",
     "codefog/contao-haste": "^4.20",
-    "jaybizzle/crawler-detect": "^1.2"
+    "jaybizzle/crawler-detect": "^1.2",
+    "league/commonmark": "^2.2"
   },
   "require-dev": {
     "contao/easy-coding-standard": "^4.0"

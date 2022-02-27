@@ -7,7 +7,7 @@
         <target>Die Datei "%s" wurde nicht auf dem Server gefunden.</target>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of the file in the album with alias: %s.</source>
+        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.</source>
         <target>Der Datenbankeintrag zum Bild mit ID %s in "tl_gallery_creator_pictures" verweist auf eine nicht vorhandene Datei. Bitte bereinigen Sie die Datenbank oder überprüfen Sie die Existenz der Datei "%s" im Album mit dem Album-Alias: "%s".</target>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
@@ -26,29 +26,41 @@
         <source>Error while trying to rotate picture "%s".</source>
         <target>Beim Versuch das Bild "%s" zu drehen, ist es zu einem Fehler gekommen.</target>
       </trans-unit>
-      <trans-unit id="MSC.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album with ID %d.</source>
-        <target>Sie haben nicht die erforderlichen Rechte, das Album "%s" zu bearbeiten.</target>
-      </trans-unit>
-      <trans-unit id="MSC.rejectWriteAccessToPicture">
-        <source>You are not allowed to edit the picture with ID %d.</source>
-        <target>Nicht genügend Rechte um Bild mit ID %d zu bearbeiten.</target>
-      </trans-unit>
-      <trans-unit id="MSC.notAllowedToDeleteAlbum">
-        <source>Not enough permissions to delete album with ID %d.</source>
-        <target>Nicht genügend Rechte um das Album mit ID %d zu löschen.</target>
-      </trans-unit>
-      <trans-unit id="MSC.notAllowedToDeletePicture">
-        <source>Not enough permissions to delete picture with ID %d.</source>
-        <target>Nicht genügend Rechte um das Bild mit ID %d zu löschen.</target>
-      </trans-unit>
       <trans-unit id="MSC.useFileUploadForCreatingNewPicture">
         <source>Use the file upload button to create a new entry.</source>
         <target>Benutzen Sie den "Bilder hochladen" Button um ein neues Bild zu erstellen.</target>
       </trans-unit>
-      <trans-unit id="MSC.blockEditingForeignDataRecords">
-        <source>Editing of foreign data records has been blocked.</source>
-        <target>Das Bearbeiten fremder Datensätze wurde geblockt.</target>
+      <trans-unit id="MSC.notAllowedEditAlbum">
+        <source>Not enough permissions to edit the album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, das Album "%s" zu bearbeiten.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedDeleteAlbum">
+        <source>Not enough permissions to delete album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um das Album mit ID %d zu löschen.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedMoveAlbum">
+        <source>Not enough permissions to move album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um das Album mit ID %d zu verschieben.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedAddChildAlbum">
+        <source>Not enough permissions to add a child album to album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um innerhalb des Albums mit ID %d Unteralben zu erstellen.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedEditPictures">
+        <source>Not enough permissions to edit pictures inside album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um das Bild mit ID %d zu bearbeiten.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedDeletePictures">
+        <source>Not enough permissions to delete pictures inside album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um innerhalb des Albums mit ID %d Bilder zu löschen.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedAddPictures">
+        <source>Not enough permissions to add pictures to album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um dem Album mit ID %d Bilder hinzuzufügen.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedMovePictures">
+        <source>Not enough permissions to move pictures inside album with ID %d.</source>
+        <target>Sie haben nicht die erforderlichen Rechte, um innerhalb des Albums mit ID %d Bilder zu verschieben.</target>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
         <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
@@ -56,7 +68,7 @@
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
         <source>Do you really want to delete picture with ID %s? Attention. The image-file will be deleted too.</source>
-        <target>Soll das Bild mit der ID %s gelöscht werden? Achtung. Dabei wird auch die Bilddatei im Dateisystem gelöscht.</target>
+        <target>Soll das Bild mit der ID %s gelöscht werden? Achtung. Dabei wird auch die Bilddatei aus dem Dateisystem entfernt.</target>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.backLink">
         <source>back</source>
@@ -109,6 +121,34 @@
       <trans-unit id="GALLERY_CREATOR.socialMedia">
         <source>Replace image with a social media.</source>
         <target>Ersetze das Bild mit Inhalt von einer Social Media Plattform.</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.editalbum">
+        <source>edit album</source>
+        <target>Album bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.addchildalbums">
+        <source>add child albums</source>
+        <target>Unteralben hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.deletealbum">
+        <source>delete album</source>
+        <target>Album löschen</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.movealbum">
+        <source>move album</source>
+        <target>Album verschieben</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.addandeditimages">
+        <source>add and edit images</source>
+        <target>Bilder hinzufügen und bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.deleteimages">
+        <source>delete images</source>
+        <target>Bilder löschen</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.moveimages">
+        <source>move images</source>
+        <target>Bilder verschieben</target>
       </trans-unit>
     </body>
   </file>

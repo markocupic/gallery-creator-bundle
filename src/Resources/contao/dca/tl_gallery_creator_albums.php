@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 
 use Contao\BackendUser;
+use Contao\Config;
 use Contao\System;
 use Markocupic\GalleryCreatorBundle\DataContainer\GalleryCreatorAlbums;
 
@@ -103,14 +104,15 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
     ],
     'palettes'    => [
-        '__selector__'               => ['protected'],
-        'default'                    => '{title_legend},name,alias;{meta_legend},pageTitle,robots,description,serpPreview;{details_legend},date,location,teaser,owner,photographer,visitors;{caption_legend},captionType,caption,markdownCaption;{album_preview_thumb_legend},sortBy,filePrefix,thumb;{insert_article_legend},insertArticlePre,insertArticlePost;{uploadDir_legend},assignedDir;{protection_legend:hide},protected',
+        '__selector__'               => ['protected', 'includeChmod'],
+        'default'                    => '{title_legend},name,alias;{meta_legend},pageTitle,robots,description,serpPreview;{details_legend},date,location,teaser,photographer,visitors;{caption_legend},captionType,caption,markdownCaption;{album_preview_thumb_legend},sortBy,filePrefix,thumb;{gallery_creator_chmod_legend:hide},includeChmod;{insert_article_legend},insertArticlePre,insertArticlePost;{uploadDir_legend},assignedDir;{protection_legend:hide},protected',
         'fileUpload'                 => '{upload_settings_legend},preserveFilename,imageResolution;{uploader_legend},fileUpload',
         'importImagesFromFilesystem' => '{upload_settings_legend},preserveFilename,multiSRC',
         'reviseDatabase'             => '{maintenance},reviseDatabase',
     ],
     'subpalettes' => [
-        'protected' => 'groups',
+        'protected'    => 'groups',
+        'includeChmod' => 'cuser,cgroup,chmod',
     ],
     'fields'      => [
         'id'                => ['sql' => 'int(10) unsigned NOT NULL auto_increment'],
@@ -192,16 +194,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'eval'      => ['style' => 'height:60px', 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
             'sql'       => 'text NULL',
         ],
-        'owner'             => [
-            'filter'     => true,
-            'sorting'    => true,
-            'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'nospace' => true, 'tl_class' => 'w50'],
-            'foreignKey' => 'tl_user.name',
-            'inputType'  => 'select',
-            'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
-            'sql'        => "int(10) unsigned NOT NULL default '0'",
-        ],
         'photographer'      => [
             'filter'    => true,
             'search'    => true,
@@ -267,6 +259,39 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'eval'      => ['includeBlankOption' => true, 'nospace' => true, 'rgxp' => 'digit', 'maxlength' => 64, 'tl_class' => 'clr', 'submitOnChange' => true],
             'inputType' => 'radio',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'includeChmod'      => [
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => ['submitOnChange' => true],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'cuser'             => [
+            'filter'     => true,
+            'sorting'    => true,
+            'default'    => Config::get('gcDefaultUser') ?: BackendUser::getInstance()->id,
+            'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
+            'foreignKey' => 'tl_user.name',
+            'inputType'  => 'select',
+            'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
+            'sql'        => 'int(10) unsigned NOT NULL default 0',
+        ],
+        'cgroup'            => [
+            'default'    => (int)Config::get('gcDefaultGroup'),
+            'search'     => true,
+            'exclude'    => true,
+            'inputType'  => 'select',
+            'foreignKey' => 'tl_user_group.name',
+            'eval'       => ['mandatory' => true, 'chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
+            'sql'        => 'int(10) unsigned NOT NULL default 0',
+            'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
+        ],
+        'chmod'             => [
+            'default'   => Config::get('gcDefaultChmod'),
+            'exclude'   => true,
+            'inputType' => 'gcAlbumChmod',
+            'eval'      => ['tl_class' => 'clr'],
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'insertArticlePre'  => [
             'eval'      => ['rgxp' => 'digit', 'tl_class' => 'w50'],

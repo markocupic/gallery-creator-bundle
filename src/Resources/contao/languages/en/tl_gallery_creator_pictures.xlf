@@ -47,10 +47,10 @@
       <trans-unit id="tl_gallery_creator_pictures.picture.1">
         <source>This is the image.</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.owner.0">
+      <trans-unit id="tl_gallery_creator_pictures.cuser.0">
         <source>Image owner</source>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_pictures.owner.1">
+      <trans-unit id="tl_gallery_creator_pictures.cuser.1">
         <source>Here you can define the image owner.</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.name.0">

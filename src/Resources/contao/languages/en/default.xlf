@@ -6,7 +6,7 @@
         <source>Could not find file "%s".</source>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of the file in the album with alias: %s.</source>
+        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.</source>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
         <source>The file "%s" could not been uploaded</source>
@@ -20,23 +20,32 @@
       <trans-unit id="ERR.rotateImageError">
         <source>Error while trying to rotate picture "%s".</source>
       </trans-unit>
-      <trans-unit id="MSC.rejectWriteAccessToAlbum">
-        <source>You are not allowed to edit the album with ID %d.</source>
-      </trans-unit>
-      <trans-unit id="MSC.rejectWriteAccessToPicture">
-        <source>You are not allowed to edit the picture with ID %d.</source>
-      </trans-unit>
-      <trans-unit id="MSC.notAllowedToDeleteAlbum">
-        <source>Not enough permissions to delete album with ID %d.</source>
-      </trans-unit>
-      <trans-unit id="MSC.notAllowedToDeletePicture">
-        <source>Not enough permissions to delete picture with ID %d.</source>
-      </trans-unit>
       <trans-unit id="MSC.useFileUploadForCreatingNewPicture">
         <source>Use the file upload button to create a new entry.</source>
       </trans-unit>
-      <trans-unit id="MSC.blockEditingForeignDataRecords">
-        <source>Editing of foreign data records has been blocked.</source>
+      <trans-unit id="MSC.notAllowedEditAlbum">
+        <source>Not enough permissions to edit the album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedDeleteAlbum">
+        <source>Not enough permissions to delete album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedMoveAlbum">
+        <source>Not enough permissions to move album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedAddChildAlbum">
+        <source>Not enough permissions to add a child album to album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedEditPictures">
+        <source>Not enough permissions to edit pictures inside album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedDeletePictures">
+        <source>Not enough permissions to delete pictures inside album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedAddPictures">
+        <source>Not enough permissions to add pictures to album with ID %d.</source>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedMovePictures">
+        <source>Not enough permissions to move pictures inside album with ID %d.</source>
       </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
         <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
@@ -82,6 +91,27 @@
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.socialMedia">
         <source>Replace image with a social media.</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.editalbum">
+        <source>edit album</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.addchildalbums">
+        <source>add child albums</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.deletealbum">
+        <source>delete album</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.movealbum">
+        <source>move album</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.addandeditimages">
+        <source>add and edit images</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.deleteimages">
+        <source>delete images</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.moveimages">
+        <source>move images</source>
       </trans-unit>
     </body>
   </file>

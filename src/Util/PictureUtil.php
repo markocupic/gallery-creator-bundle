@@ -97,7 +97,7 @@ class PictureUtil
             $href = $href ? $tlFilesUrl.$href : null;
         }
 
-        $ownerModel = UserModel::findByPk($pictureModel->owner);
+        $ownerModel = UserModel::findByPk($pictureModel->cuser);
 
         // Build the array
         return [

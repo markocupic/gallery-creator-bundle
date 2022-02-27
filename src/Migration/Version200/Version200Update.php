@@ -299,10 +299,24 @@ class Version200Update extends AbstractMigration
             ],
             [
                 'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_albums',
+                'old' => 'owner',
+                'new' => 'cuser',
+                'sql' => 'int(10)',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
                 'table' => 'tl_gallery_creator_pictures',
                 'old' => 'comment',
                 'new' => 'caption',
                 'sql' => 'text',
+            ],
+            [
+                'type' => self::ALTERATION_TYPE_RENAME_COLUMN,
+                'table' => 'tl_gallery_creator_pictures',
+                'old' => 'owner',
+                'new' => 'cuser',
+                'sql' => 'int(10)',
             ],
         ];
     }

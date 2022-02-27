@@ -64,7 +64,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcPictureSorting'] = [
     'eval'      => ['tl_class' => 'w50', 'submitOnChange' => false],
     'exclude'   => true,
     'inputType' => 'select',
-    'options'   => ['sorting', 'id', 'date', 'name', 'owner', 'caption', 'title'],
+    'options'   => ['sorting', 'id', 'date', 'name', 'cuser', 'caption', 'title'],
     'reference' => &$GLOBALS['TL_LANG']['tl_content']['gcSortingField'],
     'sql'       => "varchar(64) NOT NULL default 'date'",
 ];

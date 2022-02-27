@@ -81,6 +81,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                     'check_permission_callback' => [GalleryCreatorPictures::class, 'checkPermissionCallbackToggle'],
                 ],
             ],
+            'cut'         => [
+                'href'       => 'act=paste&amp;mode=cut',
+                'icon'       => 'cut.svg',
+                'attributes' => 'onclick="Backend.getScrollOffset()"',
+            ],
             'show'        => [
                 'href' => 'act=show',
                 'icon' => 'show.svg',
@@ -89,7 +94,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     ],
     'palettes'    => [
         '__selector__' => ['addCustomThumb'],
-        'default'      => 'picture,owner,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+        'default'      => 'picture,cuser,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',
@@ -165,14 +170,14 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
-        'owner'          => [
+        'cuser'          => [
             'default'    => BackendUser::getInstance()->id,
             'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'nospace' => true, 'tl_class' => 'clr w50'],
             'filter'     => true,
             'foreignKey' => 'tl_user.name',
             'inputType'  => 'select',
-            'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
-            'sql'        => "int(10) NOT NULL default '0'",
+            'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
+            'sql'        => 'int(10) NOT NULL default 0',
         ],
         'socialMediaSRC' => [
             'eval'      => ['tl_class' => 'clr'],

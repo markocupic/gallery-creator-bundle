@@ -150,9 +150,9 @@
         <source>Name (name)</source>
         <target>Name (name)</target>
       </trans-unit>
-      <trans-unit id="tl_content.gcSortingField.owner">
-        <source>Owner (owner)</source>
-        <target>Albumbesitzer (owner)</target>
+      <trans-unit id="tl_content.gcSortingField.cuser">
+        <source>Owner (cuser)</source>
+        <target>Albumbesitzer (cuser)</target>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.caption">
         <source>Caption (caption)</source>

@@ -15,6 +15,14 @@ https://user-images.githubusercontent.com/1525166/154361326-cc4dc4c0-60c5-41e3-a
 Please use the Contao Manager or run `composer require markocupic/gallery-creator-bundle`
   in your CLI to install the extension.
 
+## CHMOD
+Go to the **Contao Backend Settings** and select a default **album owner**, a **default album owner group** and set the default **access rights**
+
+**Important**: If you keep the "album owner" field empty, the currently logged in backend user automatically becomes the album owner
+  when creating a new album.
+
+![chmod](docs/chmod.png)
+
 ## Lightbox
  As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/).
  Simply run the `composer require inspiredminds/contao-glightbox` command in your CLI.
@@ -49,7 +57,6 @@ This gallery extension is shipped with a default configuration.
 # Gallery Creator (default settings)
 markocupic_gallery_creator:
   upload_path: 'files/gallery_creator_albums'
-  backend_write_protection: false
   copy_images_on_import: true
   read_exif_meta_data: false
   valid_extensions: ['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg', 'svgz']

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.1">
+  <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_settings.php" source-language="en">
+    <body>
+      <trans-unit id="tl_settings.gallery_creator_chmod_legend">
+        <source>Gallery Creator default access rights</source>
+      </trans-unit>
+      <trans-unit id="tl_settings.gcDefaultUser.0">
+        <source>Default album owner</source>
+      </trans-unit>
+      <trans-unit id="tl_settings.gcDefaultUser.1">
+        <source>Here you can select a user as the default owner of an album. If you keep the field empty, the currently logged in backend user will become the album owner.</source>
+      </trans-unit>
+      <trans-unit id="tl_settings.gcDefaultGroup.0">
+        <source>Default album user group</source>
+      </trans-unit>
+      <trans-unit id="tl_settings.gcDefaultGroup.1">
+        <source>Here you can select a user group as the default owner of an album.</source>
+      </trans-unit>
+      <trans-unit id="tl_settings.gcDefaultChmod.0">
+        <source>Default access rights</source>
+      </trans-unit>
+      <trans-unit id="tl_settings.gcDefaultChmod.1">
+        <source>Please select the default access rights for albums and child albums.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

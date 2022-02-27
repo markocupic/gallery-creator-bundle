@@ -162,7 +162,7 @@ class FileUtil
 
         if (is_file($this->projectDir.'/'.$file->path)) {
             // Finally, save the new image in tl_gallery_creator_pictures
-            $pictureModel->owner = BackendUser::getInstance()->id;
+            $pictureModel->cuser = BackendUser::getInstance()->id;
             $pictureModel->date = $albumModel->date;
             $pictureModel->sorting = $sortingVal;
             $pictureModel->save();

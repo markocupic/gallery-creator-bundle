@@ -34,10 +34,6 @@
         <source>Date of creation</source>
         <target>Data di creazione</target>
       </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.owner.0">
-        <source>Album owner</source>
-        <target>Proprietario album</target>
-      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.name.0">
         <source>Album name</source>
         <target>Nome album</target>
@@ -53,6 +49,10 @@
       <trans-unit id="tl_gallery_creator_albums.thumb.1">
         <source>Drag the items to re-order them.</source>
         <target>Quale immagine dev'essere mostrata nell'anteprima dell'album?</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cuser.0">
+        <source>Default owner</source>
+        <target>Proprietario album</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protected.0">
         <source>Protect album</source>

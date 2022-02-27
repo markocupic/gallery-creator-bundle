@@ -113,8 +113,8 @@
       <trans-unit id="tl_content.gcSortingField.name">
         <source>Name (name)</source>
       </trans-unit>
-      <trans-unit id="tl_content.gcSortingField.owner">
-        <source>Owner (owner)</source>
+      <trans-unit id="tl_content.gcSortingField.cuser">
+        <source>Owner (cuser)</source>
       </trans-unit>
       <trans-unit id="tl_content.gcSortingField.caption">
         <source>Caption (caption)</source>

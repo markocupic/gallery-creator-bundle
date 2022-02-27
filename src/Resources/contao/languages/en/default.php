@@ -19,14 +19,17 @@ $GLOBALS['TL_LANG']['ERR']['fileNotFound'] = 'Could not find file "%s".';
 $GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable. Check chmod settings.';
-$GLOBALS['TL_LANG']['MSC']['rejectWriteAccessToAlbum'] = 'You are not allowed to edit the album with ID %d.';
-$GLOBALS['TL_LANG']['MSC']['rejectWriteAccessToPicture'] = 'You are not allowed to edit the picture with ID %d.';
 $GLOBALS['TL_LANG']['ERR']['notAllowedFilenameOrExtension'] = 'Invalid file name or extension: => %s. Please check the list of supported file extensions (%s).';
 $GLOBALS['TL_LANG']['ERR']['rotateImageError'] = 'Error while trying to rotate picture "%s".';
-$GLOBALS['TL_LANG']['MSC']['notAllowedToDeleteAlbum'] = 'Not enough permissions to delete album with ID %d.';
-$GLOBALS['TL_LANG']['MSC']['notAllowedToDeletePicture'] = 'Not enough permissions to delete picture with ID %d.';
 $GLOBALS['TL_LANG']['MSC']['useFileUploadForCreatingNewPicture'] = 'Use the file upload button to create a new entry.';
-$GLOBALS['TL_LANG']['MSC']['blockEditingForeignDataRecords'] = 'Editing of foreign data records has been blocked.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedEditAlbum'] = 'Not enough permissions to edit the album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedDeleteAlbum'] = 'Not enough permissions to delete album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedMoveAlbum'] = 'Not enough permissions to move album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedAddChildAlbum'] = 'Not enough permissions to add a child album to album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedEditPictures'] = 'Not enough permissions to edit pictures inside album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedDeletePictures'] = 'Not enough permissions to delete pictures inside album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedAddPictures'] = 'Not enough permissions to add pictures to album with ID %d.';
+$GLOBALS['TL_LANG']['MSC']['notAllowedMovePictures'] = 'Not enough permissions to move pictures inside album with ID %d.';
 
 /*
  * Confirm
@@ -53,3 +56,14 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['location'] = 'Location';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['selectAllAlbums'] = 'Select all albums.';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['localMedia'] = 'Replace image with a movie or sound from the Contao filesystem.';
 $GLOBALS['TL_LANG']['GALLERY_CREATOR']['socialMedia'] = 'Replace image with a social media.';
+
+/*
+ * Chmod
+ */
+$GLOBALS['TL_LANG']['CHMOD']['editalbum'] = 'edit album';
+$GLOBALS['TL_LANG']['CHMOD']['addchildalbums'] = 'add child albums';
+$GLOBALS['TL_LANG']['CHMOD']['deletealbum'] = 'delete album';
+$GLOBALS['TL_LANG']['CHMOD']['movealbum'] = 'move album';
+$GLOBALS['TL_LANG']['CHMOD']['addandeditimages'] = 'add and edit images';
+$GLOBALS['TL_LANG']['CHMOD']['deleteimages'] = 'delete images';
+$GLOBALS['TL_LANG']['CHMOD']['moveimages'] = 'move images';

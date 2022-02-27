@@ -35,6 +35,9 @@
       <trans-unit id="tl_gallery_creator_albums.album_preview_thumb_legend">
         <source>Picture and sorting settings</source>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.gallery_creator_chmod_legend">
+        <source>Album access rights</source>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.id.0">
         <source>Album-ID</source>
       </trans-unit>
@@ -61,9 +64,6 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.date.0">
         <source>Date of creation</source>
-      </trans-unit>
-      <trans-unit id="tl_gallery_creator_albums.owner.0">
-        <source>Album owner</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.location.0">
         <source>Event location</source>
@@ -115,6 +115,30 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.1">
         <source>Drag the items to re-order them.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.includeChmod.0">
+        <source>Assign access rights</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.includeChmod.1">
+        <source>Access rights determine what back end users are allowed to do with the album.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cuser.0">
+        <source>Album owner</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cuser.1">
+        <source>Please select the album owner.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cgroup.0">
+        <source>Album owner group</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cgroup.1">
+        <source>Please select the album owner group.</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.chmod.0">
+        <source>Access rights</source>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.chmod.1">
+        <source>Please select the access rights for the album and its childalbums.</source>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protected.0">
         <source>Protect album</source>

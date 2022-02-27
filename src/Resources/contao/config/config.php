@@ -15,6 +15,7 @@ declare(strict_types=1);
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Widget\Backend\AlbumTreeWidget;
+use Markocupic\GalleryCreatorBundle\Widget\Backend\ChmodTable;
 
 /*
  * Back end module
@@ -33,3 +34,4 @@ $GLOBALS['TL_MODELS']['tl_gallery_creator_pictures'] = GalleryCreatorPicturesMod
 
 // Backend widgets
 $GLOBALS['BE_FFL'][AlbumTreeWidget::NAME] = AlbumTreeWidget::class;
+$GLOBALS['BE_FFL'][ChmodTable::NAME] = ChmodTable::class;

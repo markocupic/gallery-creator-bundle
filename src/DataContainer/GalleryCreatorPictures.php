@@ -17,11 +17,8 @@ namespace Markocupic\GalleryCreatorBundle\DataContainer;
 use Contao\Backend;
 use Contao\Config;
 use Contao\Controller;
-use Contao\CoreBundle\Exception\RedirectResponseException;
-use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
-use FOS\HttpCacheBundle\CacheManager;
 use Contao\DataContainer;
 use Contao\Dbafs;
 use Contao\File;
@@ -34,10 +31,11 @@ use Contao\UserModel;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use FOS\HttpCacheBundle\CacheManager;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Security\GalleryCreatorAlbumPermissions;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
-use Symfony\Component\HttpClient\Exception\RedirectionException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
@@ -56,10 +54,9 @@ class GalleryCreatorPictures
     private CacheManager $cacheManager;
 
     private string $projectDir;
-    private bool $galleryCreatorBackendWriteProtection;
     private string $galleryCreatorUploadPath;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, CacheManager $cacheManager, string $projectDir, bool $galleryCreatorBackendWriteProtection, string $galleryCreatorUploadPath)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -70,7 +67,6 @@ class GalleryCreatorPictures
         $this->twig = $twig;
         $this->cacheManager = $cacheManager;
         $this->projectDir = $projectDir;
-        $this->galleryCreatorBackendWriteProtection = $galleryCreatorBackendWriteProtection;
         $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
 
         // Adapters
@@ -102,19 +98,125 @@ class GalleryCreatorPictures
             return;
         }
 
-        if ($this->isRestrictedUser($dc->id)) {
-            unset($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['global_operations']['fileUpload'], $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['operations']['cut']);
+        $act = $request->query->get('act');
+        $key = $request->query->get('key');
+        $mode = $request->query->get('mode');
+        $pid = $request->query->get('pid');
+
+        // Remove global operation file upload link if user is not allowed to add images to the active album
+        if (!$act && !$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $dc->id)) {
+            unset($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['global_operations']['fileUpload']);
         }
 
-        switch ($request->query->get('act')) {
-            case 'edit':
-            case 'delete':
-            case 'cut':
-            case 'imagerotate':
-            if ($this->isRestrictedUser($dc->id)) {
-                $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToPicture', [$dc->id], 'contao_default'));
+        if($key === 'imagerotate'){
+
+            $albumId = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
+
+            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $albumId)) {
+                $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [$dc->id], 'contao_default'));
                 $this->controller->redirect($this->system->getReferer());
             }
+        }
+
+        switch ($act) {
+            case 'edit':
+                $albumId = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
+
+                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $albumId)) {
+                    $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [$albumId], 'contao_default'));
+                    $this->controller->redirect($this->system->getReferer());
+                }
+                break;
+
+            case 'delete':
+                $albumId = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
+
+                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $dc->id)) {
+                    $this->message->addInfo($this->translator->trans('MSC.notAllowedDeletePictures', [$albumId], 'contao_default'));
+                    $this->controller->redirect($this->system->getReferer());
+                }
+                 break;
+
+            case 'cut':
+                $sourceAlbumId = (int) $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
+
+                if ('1' === $mode) {
+                    $targetAlbumId = (int) $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$pid]);
+                } else {
+                    $targetAlbumId = (int) $pid;
+                }
+
+                if ($sourceAlbumId !== $targetAlbumId) {
+                    // Check if user is allowed to cut and paste a picture from one album into another
+                    if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $targetAlbumId)) {
+                        $this->message->addInfo($this->translator->trans('MSC.notAllowedAddPictures', [$targetAlbumId], 'contao_default'));
+                        $this->controller->redirect($this->system->getReferer());
+                    }
+
+                    // Check if user is allowed to move pictures inside the active album
+                    if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
+                        $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
+                        $this->controller->redirect($this->system->getReferer());
+                    }
+                } else {
+                    // Check if user is allowed to move pictures inside the source album
+                    if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $targetAlbumId)) {
+                        $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
+                        $this->controller->redirect($this->system->getReferer());
+                    }
+                }
+
+                break;
+
+            case 'cutAll':
+                // Do only show albums where the user has access rights
+                $session = $request->getSession();
+                $current = $session->get('CURRENT');
+
+                if (isset($current['IDS'])) {
+                    foreach ($current['IDS'] as $id) {
+                        $sourceAlbumId = (int) $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$id]);
+
+                        if ('1' === $mode) {
+                            $targetAlbumId = (int) $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$pid]);
+                        } else {
+                            $targetAlbumId = (int) $pid;
+                        }
+
+                        if ($targetAlbumId !== $sourceAlbumId) {
+                            // Check if user is allowed to cut and paste a picture from one album into another album
+                            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $targetAlbumId)) {
+                                $this->message->addInfo($this->translator->trans('MSC.notAllowedAddPictures', [$targetAlbumId], 'contao_default'));
+                                $this->controller->redirect($this->system->getReferer());
+                            }
+
+                            // Check if user is allowed to move pictures inside the source album
+                            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
+                                $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
+                                $this->controller->redirect($this->system->getReferer());
+                            }
+                        } else {
+                            // Check if user is allowed to move pictures inside the source album
+                            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
+                                $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
+                                $this->controller->redirect($this->system->getReferer());
+                            }
+                        }
+                    }
+
+                    $session->set('CURRENT', $current);
+                }
+                break;
+
+            case 'overrideAll':
+
+                $id = $request->query->get('id');
+
+                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $id)) {
+                    $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [], 'contao_default'));
+                    $this->controller->redirect($this->system->getReferer());
+                }
+
                 break;
 
             case 'paste':
@@ -127,37 +229,27 @@ class GalleryCreatorPictures
 
                 break;
 
-            case 'select':
-                // Do not allow selecting foreign data records
-                if ($this->galleryCreatorBackendWriteProtection) {
-                    $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_pictures WHERE owner != ? AND pid = ?', [$user->id, $dc->id]);
-
-                    if ($result) {
-                        $this->message->addInfo($this->translator->trans('MSC.blockEditingForeignDataRecords', [], 'contao_default'));
-                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner = ?', $user->id]];
-                    }
-                }
-
-                break;
-
             case 'deleteAll':
             case 'editAll':
+                $objSession = $request->getSession();
+                $session = $objSession->all();
+                $ids = $session['CURRENT']['IDS'] ?? [];
 
-                if ($this->galleryCreatorBackendWriteProtection) {
-                    $session = $request->getSession();
-                    $current = $session->get('CURRENT');
+                foreach ($ids as $id) {
+                    $albumId = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$id]);
 
-                    if (isset($current['IDS'])) {
-                        foreach ($current['IDS'] as $k => $id) {
-                            if ($this->isRestrictedUser($id)) {
-                                unset($current['IDS'][$k]);
-                            }
+                    if ('deleteAll' === $act) {
+                        if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $albumId)) {
+                            $this->message->addInfo($this->translator->trans('MSC.notAllowedDeletePictures', [$albumId], 'contao_default'));
+                            $this->controller->redirect($this->system->getReferer());
                         }
-
-                        $session->set('CURRENT', $current);
+                    } else {
+                        if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $albumId)) {
+                            $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [$albumId], 'contao_default'));
+                            $this->controller->redirect($this->system->getReferer());
+                        }
                     }
                 }
-
                 // no break
             default:
                 break;
@@ -202,36 +294,36 @@ class GalleryCreatorPictures
             return;
         }
 
-        if('imagerotate' === $request->query->get('key')){
+        if ('imagerotate' === $request->query->get('key')) {
+            $picturesModel = $this->pictures->findByPk($dc->id);
+            $files = $this->framework->getAdapter(FilesModel::class);
 
-            if (!$this->isRestrictedUser($dc->id)) {
-                $picturesModel = $this->pictures->findByPk($dc->id);
-                $files = $this->framework->getAdapter(FilesModel::class);
+            $filesModel = $files->findByUuid($picturesModel->uuid);
 
-                $filesModel = $files->findByUuid($picturesModel->uuid);
-
-                if (null !== $picturesModel && null !== $filesModel) {
-                    $file = new File($filesModel->path);
-
-                    // Rotate image anticlockwise
-                    $this->fileUtil->imageRotate($file, 270);
-
-                    $dbafs = $this->framework->getAdapter(Dbafs::class);
-                    $dbafs->addResource($filesModel->path, true);
-
-                    // Invalidate cache tags.
-                    $arrTags = [
-                        'contao.db.tl_gallery_creator_albums.' . $picturesModel->pid,
-                    ];
-
-                    $this->cacheManager->invalidateTags($arrTags);
-
+            if (null !== $picturesModel && null !== $filesModel) {
+                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $picturesModel->pid)) {
+                    $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [$picturesModel->pid], 'contao_default'));
                     $this->controller->redirect($this->system->getReferer());
                 }
-            }
-            }
 
+                $file = new File($filesModel->path);
 
+                // Rotate image anticlockwise
+                $this->fileUtil->imageRotate($file, 270);
+
+                $dbafs = $this->framework->getAdapter(Dbafs::class);
+                $dbafs->addResource($filesModel->path, true);
+
+                // Invalidate cache tags.
+                $arrTags = [
+                    'contao.db.tl_gallery_creator_albums.'.$picturesModel->pid,
+                ];
+
+                $this->cacheManager->invalidateTags($arrTags);
+
+                $this->controller->redirect($this->system->getReferer());
+            }
+        }
     }
 
     /**
@@ -244,7 +336,21 @@ class GalleryCreatorPictures
      */
     public function buttonCallback(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
     {
-        if (!$this->isRestrictedUser($row['id'])) {
+        $href .= '&amp;id='.$row['id'];
+
+        $blnGranted = false;
+
+        if (false !== strpos($href, 'key=imagerotate')) {
+            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $row['pid']);
+        } elseif (false !== strpos($href, 'act=delete')) {
+            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $row['pid']);
+        } elseif (false !== strpos($href, 'act=edit')) {
+            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $row['pid']);
+        } elseif (false !== strpos($href, 'act=paste')) {
+            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $row['pid']);
+        }
+
+        if ($blnGranted) {
             return sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->backend->addToUrl($href.'&amp;id='.$row['id']),
@@ -362,7 +468,6 @@ class GalleryCreatorPictures
         $file = new File($sourcePath);
 
         $file->renameTo($targetPath);
-
     }
 
     /**
@@ -407,7 +512,7 @@ class GalleryCreatorPictures
         $picturesModel = $this->pictures->findByPk($dc->id);
 
         $user = $this->framework->getAdapter(UserModel::class);
-        $userModel = $user->findByPk($picturesModel->owner);
+        $userModel = $user->findByPk($picturesModel->cuser);
 
         $files = $this->framework->getAdapter(FilesModel::class);
         $filesModel = $files->findByUuid($picturesModel->uuid);
@@ -435,7 +540,7 @@ class GalleryCreatorPictures
                         'picture_path' => $translator->trans('tl_gallery_creator_pictures.path.0', [], 'contao_default'),
                         'picture_filename' => $translator->trans('tl_gallery_creator_pictures.filename.0', [], 'contao_default'),
                         'picture_date' => $translator->trans('tl_gallery_creator_pictures.date.0', [], 'contao_default'),
-                        'picture_owner' => $translator->trans('tl_gallery_creator_pictures.owner.0', [], 'contao_default'),
+                        'picture_owner' => $translator->trans('tl_gallery_creator_pictures.cuser.0', [], 'contao_default'),
                         'picture_title' => $translator->trans('tl_gallery_creator_pictures.title.0', [], 'contao_default'),
                         'picture_video_href_social' => $translator->trans('tl_gallery_creator_pictures.socialMediaSRC.0', [], 'contao_default'),
                         'picture_video_href_local' => $translator->trans('tl_gallery_creator_pictures.localMediaSRC.0', [], 'contao_default'),
@@ -474,29 +579,27 @@ class GalleryCreatorPictures
             return;
         }
 
-        if (!$this->isRestrictedUser($dc->id)) {
-            $pid = $picturesModel->pid;
+        $albumId = $picturesModel->pid;
 
+        if ($this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $albumId)) {
             // Delete data record
             $uuid = $picturesModel->uuid;
-
-            // Do not delete the picture entity and let Contao do this job, otherwise we run into an error.
-            // $picturesModel->delete();
 
             $files = $this->framework->getAdapter(FilesModel::class);
             $filesModel = $files->findByUuid($uuid);
 
-            $albumsModel = $this->albums->findByPk($pid);
+            $albumsModel = $this->albums->findByPk($albumId);
             $folderModel = $files->findByUuid($albumsModel->assignedDir);
 
             // Only delete images if they are located in the directory assigned to the album
             if (null !== $folderModel && null !== $filesModel && strstr($filesModel->path, $folderModel->path)) {
+
                 // Delete file from filesystem
                 $file = new File($filesModel->path);
                 $file->delete();
             }
         } else {
-            $this->message->addInfo($this->translator->trans('MSC.notAllowedToDeletePicture', [$dc->id], 'contao_default'));
+            $this->message->addInfo($this->translator->trans('MSC.notAllowedDeletePictures', [$albumId], 'contao_default'));
             $this->controller->redirect($this->system->getReferer());
         }
     }
@@ -516,36 +619,12 @@ class GalleryCreatorPictures
             $result = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_pictures WHERE id = ?', [$id]);
 
             if ($result) {
-                if ($this->isRestrictedUser($id)) {
+                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $result['pid'])) {
                     $hasPermission = false;
-                    $this->message->addInfo($this->translator->trans('MSC.rejectWriteAccessToPicture', [$result['id']], 'contao_default'));
+                    $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [$result['id']], 'contao_default'));
                     $this->controller->reload();
                 }
             }
         }
-    }
-
-    /**
-     * Checks if the current user has full access or only restricted access to the active picture.
-     */
-    private function isRestrictedUser($id): bool
-    {
-        $user = $this->security->getUser();
-        $owner = $this->connection->fetchOne('SELECT owner FROM tl_gallery_creator_pictures WHERE id = ?', [$id]);
-
-        if (!$owner) {
-            return false;
-        }
-
-        if ($user->admin || !$this->galleryCreatorBackendWriteProtection) {
-            return false;
-        }
-
-        if ((int) $owner !== (int) $user->id) {
-            return true;
-        }
-
-        // The current user is the album owner
-        return false;
     }
 }

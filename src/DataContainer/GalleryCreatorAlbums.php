@@ -497,8 +497,9 @@ class GalleryCreatorAlbums
         $countImages = $this->connection->fetchOne('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid = ?', [$row['id']]);
 
         $icon = $row['published'] ? 'album.svg' : '_album.svg';
+        $alt = $row['published'] ? $this->translator->trans('MSC.published', [], 'contao_default') : $this->translator->trans('MSC.unpublished', [], 'contao_default');
         $icon = 'bundles/markocupicgallerycreator/images/'.$icon;
-        $icon = sprintf('<img height="18" width="18" data-icon="%s" src="%s">', $icon, $icon);
+        $icon = sprintf('<img height="18" width="18" data-icon="%s" src="%s" alt="%s">', $icon, $icon, $this->stringUtil->specialchars($alt));
 
         $label = str_replace('#icon#', $icon, $label);
         $label = str_replace('#count_pics#', (string) $countImages, $label);
@@ -1045,7 +1046,7 @@ class GalleryCreatorAlbums
         $strAlias = substr($strAlias, 0, 43);
 
         // Remove invalid characters
-        $strAlias = preg_replace('/[^a-z0-9\_\-]/', '', $strAlias);
+        $strAlias = preg_replace('/[^a-z0-9_\-]/', '', $strAlias);
 
         // If alias already exists add the album-id to the alias
         $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id != ? AND alias = ?', [$dc->activeRecord->id, $strAlias]);

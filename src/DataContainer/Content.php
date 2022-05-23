@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
-use Contao\Backend;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
@@ -23,7 +22,7 @@ use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment as TwigEnvironment;
 
-class Content extends Backend
+class Content
 {
     private AlbumUtil $albumUtil;
     private Connection $connection;

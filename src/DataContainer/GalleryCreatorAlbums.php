@@ -75,6 +75,9 @@ class GalleryCreatorAlbums
     private Adapter $albums;
     private Adapter $pictures;
 
+    /**
+     * @throws DoctrineDBALException
+     */
     public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath, array $galleryCreatorValidExtensions)
     {
         $this->framework = $framework;
@@ -99,6 +102,12 @@ class GalleryCreatorAlbums
         $this->system = $this->framework->getAdapter(System::class);
         $this->albums = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
         $this->pictures = $this->framework->getAdapter(GalleryCreatorPicturesModel::class);
+
+        $request = $this->requestStack->getCurrentRequest();
+
+        if ($request->query->has('isAjaxRequest') && $request->query->has('checkTables') && $request->query->has('getAlbumIDS')) {
+            $this->reviseTables();
+        }
     }
 
     /**
@@ -136,7 +145,7 @@ class GalleryCreatorAlbums
                     $this->message->addInfo($this->translator->trans('MSC.notAllowedDeleteAlbum', [$dc->id], 'contao_default'));
                     $this->controller->redirect($this->system->getReferer());
                 }
-            break;
+                break;
 
             case 'create':
                 if ('2' === $mode) {
@@ -317,14 +326,12 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Onload callback.
      * Revise tables.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
+     * This method is called by self::__construct();.
      *
      * @throws DoctrineDBALException
      */
-    public function onloadCallbackReviseTables(): void
+    public function reviseTables(): void
     {
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
@@ -610,7 +617,7 @@ class GalleryCreatorAlbums
                 $finder->in($filesModel->getAbsolutePath())
                     ->depth('== 0')
                     ->notName('.public')
-                        ;
+                ;
 
                 if (!$finder->hasResults()) {
                     // Remove the folder if empty
@@ -853,8 +860,7 @@ class GalleryCreatorAlbums
                             ->setTargetWidth(80)
                             ->setTargetHeight(60)
                             ->setResizeMode('center_center')
-                            ->executeResize()->getResizedPath()
-                        ;
+                            ->executeResize()->getResizedPath();
                     }
 
                     $checked = (int) $albumsModel->thumb === (int) $arrItem['id'] ? ' checked' : '';

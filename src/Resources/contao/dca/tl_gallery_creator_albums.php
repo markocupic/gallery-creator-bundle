@@ -237,7 +237,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'search'      => true,
             'exclude'     => true,
             'inputType'   => 'textarea',
-            'eval'        => ['mandatory' => true, 'style' => 'height:60px', 'preserveTags' => true, 'decodeEntities' => true, 'class' => 'monospace', 'rte' => 'ace', 'helpwizard' => true, 'tl_class' => 'clr'],
+            'eval'        => ['mandatory' => false, 'style' => 'height:60px', 'preserveTags' => true, 'decodeEntities' => true, 'class' => 'monospace', 'rte' => 'ace', 'helpwizard' => true, 'tl_class' => 'clr'],
             'explanation' => 'insertTags',
             'sql'         => 'text NULL',
         ],

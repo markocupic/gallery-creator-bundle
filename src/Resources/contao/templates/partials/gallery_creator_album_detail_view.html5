@@ -31,7 +31,7 @@
     <p class="gc-album-detail-child-albums"><?= $this->album['countChildAlbums'] ?> <?= $this->trans('GALLERY_CREATOR.childAlbums') ?></p>
     <?php endif; ?>
 
-    <?php if ($this->album['captionType'] === 'markdown'): ?>
+    <?php if ($this->album['captionType'] === 'markdown' && $this->album['markdownCaption']): ?>
     <div class="gc-album-detail-caption"><?= $this->album['markdownCaption'] ?></div>
     <?php elseif ($this->album['caption']): ?>
     <div class="gc-album-detail-caption"><?= nl2br($this->album['caption']) ?></div>

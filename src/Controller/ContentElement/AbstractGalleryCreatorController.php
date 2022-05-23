@@ -147,7 +147,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $teaser = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->teaser)));
         $caption = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->caption)));
-        $markdown = 'markdown' === $albumModel->captionType ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
+        $markdown = 'markdown' === $albumModel->captionType && $albumModel->markdownCaption ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
 
         // Meta
         $arrMeta = [];

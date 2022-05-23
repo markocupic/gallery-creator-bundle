@@ -129,7 +129,7 @@ class Version200Update extends AbstractMigration
                 ];
 
                 if ($this->connection->update('tl_content', $set, ['tl_content.type' => 'gallery_creator_ce'])) {
-                    $resultMessages[] = 'Rename tl_content.type from gallery_creator_ce to gallery_creator WHERE tl_content.type = gallery_creaor_ce.';
+                    $resultMessages[] = 'Rename tl_content.type from gallery_creator_ce to gallery_creator WHERE tl_content.type = gallery_creator_ce.';
                 }
 
                 $set = [
@@ -137,7 +137,7 @@ class Version200Update extends AbstractMigration
                 ];
 
                 if ($this->connection->update('tl_content', $set, ['tl_content.type' => 'gallery_creator_ce_news'])) {
-                    $resultMessages[] = 'Rename tl_content.type from gallery_creator_ce_news to gallery_creator_news WHERE tl_content.type = gallery_creaor_ce_news.';
+                    $resultMessages[] = 'Rename tl_content.type from gallery_creator_ce_news to gallery_creator_news WHERE tl_content.type = gallery_creator_ce_news.';
                 }
             }
         }

@@ -7,4 +7,5 @@ cd..
 cd..
 cd..
 vendor\bin\ecs check vendor/markocupic/gallery-creator-bundle/src --fix --config vendor/markocupic/gallery-creator-bundle/.ecs/config/default.php
+
 cd vendor/markocupic/gallery-creator-bundle/.ecs./batch/fix

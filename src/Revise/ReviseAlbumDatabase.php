@@ -14,11 +14,9 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Revise;
 
-use Contao\Dbafs;
 use Contao\FilesModel;
 use Contao\Folder;
 use Contao\StringUtil;
-use Contao\UserModel;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
@@ -64,10 +62,8 @@ class ReviseAlbumDatabase
             if (null === $objParentAlb) {
                 $albumModel->pid = null;
                 $albumModel->save();
-
             }
         }
-
 
         // Try to identify entries with no uuid via path
         $picturesModel = GalleryCreatorPicturesModel::findByPid($albumModel->id);
@@ -78,7 +74,6 @@ class ReviseAlbumDatabase
                 $filesModel = FilesModel::findByUuid($picturesModel->uuid);
 
                 if (null === $filesModel) {
-
                     $arrError = $session->get('gc_error');
 
                     if (false !== $blnCleanDb) {

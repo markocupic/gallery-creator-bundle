@@ -108,8 +108,7 @@ class GalleryCreatorPictures
             unset($GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['global_operations']['fileUpload']);
         }
 
-        if($key === 'imagerotate'){
-
+        if ('imagerotate' === $key) {
             $albumId = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
 
             if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $albumId)) {
@@ -593,7 +592,6 @@ class GalleryCreatorPictures
 
             // Only delete images if they are located in the directory assigned to the album
             if (null !== $folderModel && null !== $filesModel && strstr($filesModel->path, $folderModel->path)) {
-
                 // Delete file from filesystem
                 $file = new File($filesModel->path);
                 $file->delete();

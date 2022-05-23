@@ -63,35 +63,28 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
     }
 
-    public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum){
-        // Overwrite the page meta data (see #2853, #4955 and #87)
+    public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum): void
+    {
+        // Overwrite the page metadata (see #2853, #4955 and #87)
         $responseContext = $this->responseContextAccessor->getResponseContext();
 
-        if ($responseContext && $responseContext->has(HtmlHeadBag::class))
-        {
+        if ($responseContext && $responseContext->has(HtmlHeadBag::class)) {
             /** @var HtmlHeadBag $htmlHeadBag */
             $htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
 
-            if ($objAlbum->pageTitle)
-            {
+            if ($objAlbum->pageTitle) {
                 $htmlHeadBag->setTitle($objAlbum->pageTitle); // Already stored decoded
-            }
-            elseif ($objAlbum->title)
-            {
+            } elseif ($objAlbum->title) {
                 $htmlHeadBag->setTitle(StringUtil::inputEncodedToPlainText($objAlbum->title));
             }
 
-            if ($objAlbum->description)
-            {
+            if ($objAlbum->description) {
                 $htmlHeadBag->setMetaDescription(StringUtil::inputEncodedToPlainText($objAlbum->description));
-            }
-            elseif ($objAlbum->teaser)
-            {
+            } elseif ($objAlbum->teaser) {
                 $htmlHeadBag->setMetaDescription(StringUtil::htmlToPlainText($objAlbum->teaser));
             }
 
-            if ($objAlbum->robots)
-            {
+            if ($objAlbum->robots) {
                 $htmlHeadBag->setMetaRobots($objAlbum->robots);
             }
         }

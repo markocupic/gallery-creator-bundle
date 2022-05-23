@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Listener\ContaoHook;
 
-use Contao\BackendUser;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\Security\Core\Security;
@@ -37,12 +36,14 @@ class GalleryCreatorImagePostInsertListener
 
     public function __invoke(GalleryCreatorPicturesModel $picturesModel): void
     {
+        /*
         $user = $this->security->getUser();
 
-        // Automatically add a caption to the uploaded image
+        // E.g automatically add a caption to the uploaded image
         if ($user instanceof BackendUser && $user->name) {
-            //$picturesModel->caption = 'Holidays '.date('Y').', Photo: '.$user->name;
-            //$picturesModel->save();
+            $picturesModel->caption = 'Holidays '.date('Y').', Photo: '.$user->name;
+            $picturesModel->save();
         }
+        */
     }
 }

@@ -21,11 +21,9 @@ use Contao\StringUtil;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Security;
 
 class AlbumVoter extends Voter
 {
-
     private const ALBUM_PERMISSIONS = [
         'can_edit_album' => 1,
         'can_add_child_albums' => 2,
@@ -36,12 +34,10 @@ class AlbumVoter extends Voter
         'can_move_images' => 7,
     ];
     private ContaoFramework $framework;
-    private Security $security;
 
-    public function __construct(ContaoFramework $framework, Security $security)
+    public function __construct(ContaoFramework $framework)
     {
         $this->framework = $framework;
-        $this->security = $security;
     }
 
     /**
@@ -50,12 +46,11 @@ class AlbumVoter extends Voter
      */
     protected function supports($attribute, $subject): bool
     {
-        if(is_scalar($subject)){
+        if (\is_scalar($subject)) {
             if (null !== ($album = GalleryCreatorAlbumsModel::findByPk($subject))) {
                 $subject = $album;
             }
         }
-
 
         // Only vote on `GalleryCreatorAlbumsModel` objects
         if (!$subject instanceof GalleryCreatorAlbumsModel) {
@@ -88,15 +83,13 @@ class AlbumVoter extends Voter
             return false;
         }
 
-        if(!is_scalar($albumId))
-        {
+        if (!\is_scalar($albumId)) {
             throw new \Exception('The album id parameter has to be of type string or id.');
         }
 
         // Convert id to object if $subject is an album id.
         if (null === ($album = GalleryCreatorAlbumsModel::findByPk($albumId))) {
             throw new \Exception('Album with id '.$albumId.' not found.');
-
         }
 
         if ($user->admin || !$album->includeChmod) {

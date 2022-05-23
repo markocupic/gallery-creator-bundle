@@ -16,7 +16,6 @@ namespace Markocupic\GalleryCreatorBundle\Util;
 
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\StringUtil;
-use Doctrine\DBAL\Connection;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -25,13 +24,11 @@ class AlbumUtil
 {
     private ScopeMatcher $scopeMatcher;
     private RequestStack $requestStack;
-    private Connection $connection;
 
-    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack, Connection $connection)
+    public function __construct(ScopeMatcher $scopeMatcher, RequestStack $requestStack)
     {
         $this->scopeMatcher = $scopeMatcher;
         $this->requestStack = $requestStack;
-        $this->connection = $connection;
     }
 
     public function countAlbumViews(GalleryCreatorAlbumsModel $albumModel): void

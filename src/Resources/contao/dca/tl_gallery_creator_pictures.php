@@ -81,11 +81,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                     'check_permission_callback' => [GalleryCreatorPictures::class, 'checkPermissionCallbackToggle'],
                 ],
             ],
-            'cut'         => [
-                'href'       => 'act=paste&amp;mode=cut',
-                'icon'       => 'cut.svg',
-                'attributes' => 'onclick="Backend.getScrollOffset()"',
-            ],
             'show'        => [
                 'href' => 'act=show',
                 'icon' => 'show.svg',
@@ -133,7 +128,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'externalFile'   => [
-            'sql' => "char(1) NOT NULL default ''",
+            'eval' => ['isBoolean' => true],
+            'sql'  => "char(1) NOT NULL default ''",
         ],
         'caption'        => [
             'cols'      => 20,
@@ -157,7 +153,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'addCustomThumb' => [
-            'eval'      => ['submitOnChange' => true],
+            'eval'      => ['submitOnChange' => true, 'isBoolean' => true],
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'checkbox',

@@ -129,7 +129,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'published'         => [
             'filter'    => true,
-            'eval'      => ['submitOnChange' => true],
+            'eval'      => ['submitOnChange' => true, 'isBoolean' => true],
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default '1'",
         ],
@@ -263,7 +263,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         'includeChmod'      => [
             'exclude'   => true,
             'inputType' => 'checkbox',
-            'eval'      => ['submitOnChange' => true],
+            'eval'      => ['submitOnChange' => true, 'isBoolean' => true],
             'sql'       => "char(1) NOT NULL default ''",
         ],
         'cuser'             => [
@@ -305,7 +305,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'protected'         => [
             'filter'    => true,
-            'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr'],
+            'eval'      => ['submitOnChange' => true, 'isBoolean' => true, 'tl_class' => 'clr'],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default ''",
@@ -328,7 +328,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => "smallint(5) unsigned NOT NULL default '1600'",
         ],
         'preserveFilename'  => [
-            'eval'      => ['doNotShow' => true, 'submitOnChange' => true],
+            'eval'      => ['doNotShow' => true, 'isBoolean' => true, 'submitOnChange' => true],
             'inputType' => 'checkbox',
             'sql'       => "char(1) NOT NULL default '1'",
         ],

@@ -104,7 +104,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcFullSize'] = [
-    'eval'      => ['tl_class' => 'clr'],
+    'eval'      => ['isBoolean' => true, 'tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
@@ -118,7 +118,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcThumbsPerPage'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcShowAlbumSelection'] = [
-    'eval'      => ['tl_class' => 'clr', 'submitOnChange' => true],
+    'eval'      => ['submitOnChange' => true, 'isBoolean' => true, 'tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
@@ -139,7 +139,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcPublishSingleAlbum'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcAddBreadcrumb'] = [
-    'eval'      => ['tl_class' => 'clr'],
+    'eval'      => ['isBoolean' => true, 'tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",

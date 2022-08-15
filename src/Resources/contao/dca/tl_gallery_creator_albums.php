@@ -67,7 +67,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                 'icon'       => 'bundles/markocupicgallerycreator/images/list.svg',
             ],
             'delete'                     => [
-                'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"',
+                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false;Backend.getScrollOffset()"',
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
             ],
@@ -287,7 +287,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
         ],
         'chmod'             => [
-            'default'   => Config::get('gcDefaultChmod'),
+            'default'   => serialize(Config::get('gcDefaultChmod')),
             'exclude'   => true,
             'inputType' => 'gcAlbumChmod',
             'eval'      => ['tl_class' => 'clr'],

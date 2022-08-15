@@ -287,7 +287,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
         ],
         'chmod'             => [
-            'default'   => serialize(Config::get('gcDefaultChmod')),
+            'default'   => Config::get('gcDefaultChmod'),
             'exclude'   => true,
             'inputType' => 'gcAlbumChmod',
             'eval'      => ['tl_class' => 'clr'],

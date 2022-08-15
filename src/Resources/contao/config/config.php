@@ -35,3 +35,8 @@ $GLOBALS['TL_MODELS']['tl_gallery_creator_pictures'] = GalleryCreatorPicturesMod
 // Backend widgets
 $GLOBALS['BE_FFL'][AlbumTreeWidget::NAME] = AlbumTreeWidget::class;
 $GLOBALS['BE_FFL'][ChmodTable::NAME] = ChmodTable::class;
+
+/*
+ * Default chmod
+ */
+$GLOBALS['TL_CONFIG']['gcDefaultChmod'] = ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7'];

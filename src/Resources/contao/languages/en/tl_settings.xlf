@@ -18,7 +18,7 @@
         <source>Here you can select a user group as the default owner of an album.</source>
       </trans-unit>
       <trans-unit id="tl_settings.gcDefaultChmod.0">
-        <source>Default access rights</source>
+        <source>Gallery Creator default access rights</source>
       </trans-unit>
       <trans-unit id="tl_settings.gcDefaultChmod.1">
         <source>Please select the default access rights for albums and child albums.</source>

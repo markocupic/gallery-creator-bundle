@@ -23,8 +23,8 @@
         <target>Hier können Sie die Standard Album Besitzergruppe auswählen.</target>
       </trans-unit>
       <trans-unit id="tl_settings.gcDefaultChmod.0">
-        <source>Default access rights</source>
-        <target>Standard Zugriffsrechte</target>
+        <source>Gallery Creator default access rights</source>
+        <target>Gallery Creator Standard Zugriffsrechte</target>
       </trans-unit>
       <trans-unit id="tl_settings.gcDefaultChmod.1">
         <source>Please select the default access rights for albums and child albums.</source>

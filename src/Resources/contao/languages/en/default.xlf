@@ -47,6 +47,9 @@
       <trans-unit id="MSC.notAllowedMovePictures">
         <source>Not enough permissions to move pictures inside album with ID %d.</source>
       </trans-unit>
+      <trans-unit id="WARNING.setDefaultChmod">
+        <source>Please set your Gallery Creator default access rights in the Contao Backend settings.</source>
+      </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
         <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
       </trans-unit>
@@ -91,6 +94,9 @@
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.socialMedia">
         <source>Replace image with a social media.</source>
+      </trans-unit>
+      <trans-unit id="CHMOD.gcDefaultChmod">
+        <source>Gallery Creator default access rights</source>
       </trans-unit>
       <trans-unit id="CHMOD.editalbum">
         <source>edit album</source>

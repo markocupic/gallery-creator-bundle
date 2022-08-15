@@ -66,14 +66,17 @@ class GalleryCreatorAlbums
     private string $projectDir;
     private string $galleryCreatorUploadPath;
     private array $galleryCreatorValidExtensions;
+
+    // Adapters
+    private Adapter $albums;
     private Adapter $backend;
+    private Adapter $config;
     private Adapter $controller;
     private Adapter $image;
-    private Adapter $stringUtil;
     private Adapter $message;
-    private Adapter $system;
-    private Adapter $albums;
     private Adapter $pictures;
+    private Adapter $stringUtil;
+    private Adapter $system;
 
     /**
      * @throws DoctrineDBALException
@@ -94,14 +97,15 @@ class GalleryCreatorAlbums
         $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
 
         // Adapters
+        $this->albums = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
         $this->backend = $this->framework->getAdapter(Backend::class);
+        $this->config = $this->framework->getAdapter(Config::class);
         $this->controller = $this->framework->getAdapter(Controller::class);
         $this->image = $this->framework->getAdapter(Image::class);
-        $this->stringUtil = $this->framework->getAdapter(StringUtil::class);
         $this->message = $this->framework->getAdapter(Message::class);
-        $this->system = $this->framework->getAdapter(System::class);
-        $this->albums = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
         $this->pictures = $this->framework->getAdapter(GalleryCreatorPicturesModel::class);
+        $this->stringUtil = $this->framework->getAdapter(StringUtil::class);
+        $this->system = $this->framework->getAdapter(System::class);
 
         $request = $this->requestStack->getCurrentRequest();
 
@@ -217,6 +221,18 @@ class GalleryCreatorAlbums
 
             default:
                 break;
+        }
+    }
+
+    /**
+     * Onload callback.
+     *
+     * @Callback(table="tl_gallery_creator_albums", target="config.onload", priority="120")
+     */
+    public function checkHasDefaultChmod(DataContainer $dc): void
+    {
+        if (!$this->config->gcDefaultChmod) {
+            //$this->message->addInfo($this->translator->trans)
         }
     }
 

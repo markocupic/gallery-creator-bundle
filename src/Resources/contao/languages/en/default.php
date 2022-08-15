@@ -30,6 +30,7 @@ $GLOBALS['TL_LANG']['MSC']['notAllowedEditPictures'] = 'Not enough permissions t
 $GLOBALS['TL_LANG']['MSC']['notAllowedDeletePictures'] = 'Not enough permissions to delete pictures inside album with ID %d.';
 $GLOBALS['TL_LANG']['MSC']['notAllowedAddPictures'] = 'Not enough permissions to add pictures to album with ID %d.';
 $GLOBALS['TL_LANG']['MSC']['notAllowedMovePictures'] = 'Not enough permissions to move pictures inside album with ID %d.';
+$GLOBALS['TL_LANG']['WARNING']['setDefaultChmod'] = 'Please set your Gallery Creator default access rights in the Contao Backend settings.';
 
 /*
  * Confirm
@@ -60,6 +61,7 @@ $GLOBALS['TL_LANG']['GALLERY_CREATOR']['socialMedia'] = 'Replace image with a so
 /*
  * Chmod
  */
+$GLOBALS['TL_LANG']['CHMOD']['gcDefaultChmod'] = 'Gallery Creator default access rights';
 $GLOBALS['TL_LANG']['CHMOD']['editalbum'] = 'edit album';
 $GLOBALS['TL_LANG']['CHMOD']['addchildalbums'] = 'add child albums';
 $GLOBALS['TL_LANG']['CHMOD']['deletealbum'] = 'delete album';

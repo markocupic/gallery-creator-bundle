@@ -62,6 +62,10 @@
         <source>Not enough permissions to move pictures inside album with ID %d.</source>
         <target>Sie haben nicht die erforderlichen Rechte, um innerhalb des Albums mit ID %d Bilder zu verschieben.</target>
       </trans-unit>
+      <trans-unit id="WARNING.setDefaultChmod">
+        <source>Please set your Gallery Creator default access rights in the Contao Backend settings.</source>
+        <source>Bitte setzen Sie die Gallery Creator Standard-Zugriffrechte in den Contao Backend Einstellungen.</source>
+      </trans-unit>
       <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
         <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
         <target>Soll das Album mit der ID %s gelöscht werden? Achtung. Dadurch werden auch alle Bilddateien im zugeordneten Verzeichnis gelöscht.</target>
@@ -121,6 +125,10 @@
       <trans-unit id="GALLERY_CREATOR.socialMedia">
         <source>Replace image with a social media.</source>
         <target>Ersetze das Bild mit Inhalt von einer Social Media Plattform.</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.gcDefaultChmod">
+        <source>Gallery Creator default access rights</source>
+        <target>Gallery Creator Standard Zugriffsrechte</target>
       </trans-unit>
       <trans-unit id="CHMOD.editalbum">
         <source>edit album</source>

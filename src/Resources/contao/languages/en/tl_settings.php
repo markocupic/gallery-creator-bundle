@@ -22,4 +22,4 @@ $GLOBALS['TL_LANG']['tl_settings']['gallery_creator_chmod_legend'] = 'Gallery Cr
  */
 $GLOBALS['TL_LANG']['tl_settings']['gcDefaultUser'] = ['Default album owner', 'Here you can select a user as the default owner of an album. If you keep the field empty, the currently logged in backend user will become the album owner.'];
 $GLOBALS['TL_LANG']['tl_settings']['gcDefaultGroup'] = ['Default album user group', 'Here you can select a user group as the default owner of an album.'];
-$GLOBALS['TL_LANG']['tl_settings']['gcDefaultChmod'] = ['Default access rights', 'Please select the default access rights for albums and child albums.'];
+$GLOBALS['TL_LANG']['tl_settings']['gcDefaultChmod'] = ['Gallery Creator default access rights', 'Please select the default access rights for albums and child albums.'];

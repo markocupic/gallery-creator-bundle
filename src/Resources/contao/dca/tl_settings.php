@@ -20,7 +20,7 @@ PaletteManipulator::create()
     ->addField(['gcDefaultUser', 'gcDefaultGroup', 'gcDefaultChmod'], 'gallery_creator_chmod_legend')
     ->applyToPalette('default', 'tl_settings');
 
-// fields
+// Fields
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gcDefaultUser'] = [
     'inputType'  => 'select',
     'foreignKey' => 'tl_user.username',

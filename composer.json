@@ -1,8 +1,13 @@
 {
   "name": "markocupic/gallery-creator-bundle",
-  "keywords": ["Contao","gallery","album","plugin"],
+  "keywords": [
+    "Contao",
+    "gallery",
+    "album",
+    "plugin"
+  ],
   "type": "contao-bundle",
-  "description": "Gallery extension for Contao CMS",
+  "description": "gallery extension for Contao CMS",
   "license": "LGPL-3.0+",
   "authors": [
     {
@@ -30,15 +35,9 @@
   "autoload": {
     "psr-4": {
       "Markocupic\\GalleryCreatorBundle\\": "src/"
-    },
-    "exclude-from-classmap": [
-      "src/Resources/contao/config",
-      "src/Resources/contao/dca",
-      "src/Resources/contao/languages",
-      "src/Resources/contao/templates"
-    ]
+    }
   },
   "extra": {
-     "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
+    "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
   }
 }

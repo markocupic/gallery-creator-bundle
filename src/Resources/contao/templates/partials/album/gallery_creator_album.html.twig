@@ -1,0 +1,41 @@
+{# gallery_creator_album.html.twig #}
+
+<div class="gc-album-list-inner">
+    <div class="gc-album-list-figure">
+        {{ contao_figure(album.figureUuid, album.figureSize, album.figureOptions) }}
+    </div>
+
+    <div class="gc-album-list-facts">
+        {% if album.href %}
+        <a href="{{ album.href }}" title="{{ album.meta.getTitle() }}" class="gc-album-list-link">
+            {% endif %}
+            <h4 class="gc-album-list-name">{{ album.name }}</h4>
+            {% if album.href %}
+        </a>
+        {% endif %}
+
+        <p class="gc-album-list-date">{{ album.date|date('Y-m-d') }}</p>
+
+        {% if album.location is defined and not album.location is empty %}
+            <p class="gc-album-list-location">{{ 'GALLERY_CREATOR.location'|trans({}, 'contao_default') }}: {{ album.location }}</p>
+        {% endif %}
+
+        {% if album.photographer is defined and not album.photographer is empty %}
+            <p class="gc-album-list-photographer">{{ 'GALLERY_CREATOR.photographerName'|trans({}, 'contao_default') }}: {{ album.photographer }}</p>
+        {% endif %}
+
+        {% if album.teaser is defined and not album.teaser is empty %}
+            <p class="gc-album-list-teaser">{{ album.teaser|nl2br }}</p>
+        {% endif %}
+
+        <p class="gc-album-list-pictures-count">{{ album.countPictures }} {{ 'GALLERY_CREATOR.pictures'|trans({}, 'contao_default') }}</p>
+
+        <p class="gc-album-list-visitors-count">{{ album.visitors }} {{ 'GALLERY_CREATOR.visitors'|trans({}, 'contao_default') }}</p>
+
+        {% if album.hasChildAlbums %}
+            <p class="gc-album-list-child-albums-count">{{ album.countChildAlbums }} {{ 'GALLERY_CREATOR.childAlbums'|trans({}, 'contao_default') }}</p>
+        {% endif %}
+
+    </div>
+</div>
+

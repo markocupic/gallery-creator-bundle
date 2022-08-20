@@ -143,6 +143,11 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      */
     protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
+        // Det defaults
+        $template->showAlbumDetail = false;
+        $template->showAlbumListing = false;
+        $template->hasBreadcrumb = false;
+
         if ($this->model->gcAddBreadcrumb) {
             $template->hasBreadcrumb = true;
             $template->breadcrumb = $this->generateBreadcrumb();
@@ -291,13 +296,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
 
         // Back link
-        $template->backLink = $this->generateBackLink($albumModel);
+        $template->backLink = $this->generateBackLink($albumModel) ?: false;
 
         // In the detail view, an article can optionally be added in front of the album
-        $template->insertArticlePre = $albumModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : null;
+        $template->insertArticlePre = $albumModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : false;
 
         // In the detail view, an article can optionally be added right after the album
-        $template->insertArticlePost = $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : null;
+        $template->insertArticlePost = $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : false;
     }
 
     protected function generateBreadcrumb(): string

@@ -172,13 +172,13 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $arrAlbum = $albumModel->row();
         $arrAlbum['teaser'] = $teaser;
         $arrAlbum['caption'] = $caption;
-        $arrAlbum['markdownCaption'] = $markdown;
+        $arrAlbum['markdownCaption'] = $markdown ?: false;
         $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
         $arrAlbum['meta'] = new Metadata($arrMeta);
         $arrAlbum['href'] = $href;
         $arrAlbum['countPictures'] = $countPictures;
 
-        $arrAlbum['cssClass'] = implode(' ', array_filter($arrCssClasses));
+        $arrAlbum['cssClass'] = !(empty(implode(' ', array_filter($arrCssClasses)))) ? implode(' ', array_filter($arrCssClasses)) : false;
         $arrAlbum['figureUuid'] = $previewImage ? $previewImage->uuid : null;
         $arrAlbum['figureSize'] = !empty($arrSize) ? $arrSize : null;
         $arrAlbum['figureOptions'] = [

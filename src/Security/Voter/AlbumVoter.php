@@ -33,6 +33,7 @@ class AlbumVoter extends Voter
         'can_delete_images' => 6,
         'can_move_images' => 7,
     ];
+
     private ContaoFramework $framework;
 
     public function __construct(ContaoFramework $framework)

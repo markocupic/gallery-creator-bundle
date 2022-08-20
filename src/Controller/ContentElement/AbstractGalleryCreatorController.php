@@ -91,34 +91,6 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     }
 
     /**
-     * Add meta tags to the page header.
-     */
-    protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $albumModel): void
-    {
-        $pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : StringUtil::specialchars($this->pageModel->description);
-    }
-
-    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
-    {
-        // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
-        if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
-            foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
-                System::importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
-            }
-        }
-    }
-
-    /**
-     * Augment template with some more properties of the active album.
-     *
-     * @throws DoctrineDBALException
-     */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
-    {
-        $template->album = $this->getAlbumData($albumModel, $contentModel);
-    }
-
-    /**
      * @throws DoctrineDBALDriverException
      * @throws Exception
      */
@@ -131,7 +103,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->fetchOne(
                 'SELECT COUNT(id) AS countPictures FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
                 [$albumModel->id, '1'],
-            );
+            )
+        ;
 
         // Image size
         $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
@@ -146,8 +119,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $previewImage = $this->getAlbumPreviewThumb($albumModel);
 
         $arrCssClasses = [];
-        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int)$albumModel->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int)$albumModel->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $albumModel->pid);
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
         $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
 
         // Do not show child albums, in news elements
@@ -159,8 +132,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
-        $teaser = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string)$albumModel->teaser)));
-        $caption = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string)$albumModel->caption)));
+        $teaser = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->teaser)));
+        $caption = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->caption)));
         $markdown = 'markdown' === $albumModel->captionType && $albumModel->markdownCaption ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
 
         // Meta
@@ -186,7 +159,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             'linkHref' => $href,
         ];
 
-        $arrAlbum['hasChildAlbums'] = (bool)$childAlbumCount;
+        $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
         $arrAlbum['countChildAlbums'] = $childAlbums ? \count($childAlbums) : 0;
         $arrAlbum['childAlbums'] = $childAlbums;
 
@@ -247,6 +220,34 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     }
 
     /**
+     * Add meta tags to the page header.
+     */
+    protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $albumModel): void
+    {
+        $pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : StringUtil::specialchars($this->pageModel->description);
+    }
+
+    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
+    {
+        // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
+        if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
+            foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
+                System::importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
+            }
+        }
+    }
+
+    /**
+     * Augment template with some more properties of the active album.
+     *
+     * @throws DoctrineDBALException
+     */
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
+    {
+        $template->album = $this->getAlbumData($albumModel, $contentModel);
+    }
+
+    /**
      * @param $template
      *
      * @throws DoctrineDBALDriverException
@@ -260,7 +261,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ['1', $albumModel->id]
         );
 
-        $perPage = (int)$contentModel->gcThumbsPerPage;
+        $perPage = (int) $contentModel->gcThumbsPerPage;
 
         // Use Haste\Util\Pagination to generate the pagination.
         $pagination = new Pagination($itemsTotal, $perPage, 'page_d'.$contentModel->id);
@@ -287,7 +288,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->setParameter('pid', $albumModel->id)
             ->setFirstResult($pagination->getOffset())
             ->setMaxResults($pagination->getLimit())
-            ->executeQuery();
+            ->executeQuery()
+        ;
 
         $arrPictures = [];
 
@@ -308,9 +310,9 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         // Sort by name
         if ('name' === $contentModel->gcPictureSorting) {
             if ('ASC' === $contentModel->gcPictureSortingDirection) {
-                uksort($arrPictures, static fn($a, $b): int => strnatcasecmp(basename($a), basename($b)));
+                uksort($arrPictures, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
             } else {
-                uksort($arrPictures, static fn($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
+                uksort($arrPictures, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
             }
         }
 

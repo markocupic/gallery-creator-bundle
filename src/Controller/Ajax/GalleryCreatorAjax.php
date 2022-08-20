@@ -33,13 +33,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class GalleryCreatorAjax
 {
     private ContaoFramework $framework;
-
     private Connection $connection;
-
     private SecurityUtil $securityUtil;
-
     private AlbumUtil $albumUtil;
-
     private PictureUtil $pictureUtil;
 
     public function __construct(ContaoFramework $framework, Connection $connection, SecurityUtil $securityUtil, AlbumUtil $albumUtil, PictureUtil $pictureUtil)

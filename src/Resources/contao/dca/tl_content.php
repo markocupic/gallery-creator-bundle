@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = [
     'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
     'exclude' => true,
     'inputType' => 'imageSize',
-    'options_callback' => static fn () => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
+    'options_callback' => static fn () => System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance()),
     'reference' => &$GLOBALS['TL_LANG']['MSC'],
     'sql' => "varchar(255) NOT NULL default ''",
 ];
@@ -98,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeDetailView'] = [
     'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
     'exclude' => true,
     'inputType' => 'imageSize',
-    'options_callback' => static fn () => System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance()),
+    'options_callback' => static fn () => System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance()),
     'reference' => &$GLOBALS['TL_LANG']['MSC'],
     'sql' => "varchar(255) NOT NULL default ''",
 ];

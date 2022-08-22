@@ -20,6 +20,7 @@ use Contao\Controller;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\File\Metadata;
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
@@ -52,6 +53,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     protected SecurityUtil $securityUtil;
     protected ScopeMatcher $scopeMatcher;
     protected ResponseContextAccessor $responseContextAccessor;
+    protected InsertTagParser $insertTagParser;
 
     public function __construct(DependencyAggregate $dependencyAggregate)
     {
@@ -62,6 +64,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $this->securityUtil = $dependencyAggregate->securityUtil;
         $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
         $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
+        $this->insertTagParser = $dependencyAggregate->insertTagParser;
     }
 
     public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum): void
@@ -133,8 +136,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
-        $teaser = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->teaser)));
-        $caption = Controller::replaceInsertTags(StringUtil::toHtml5(nl2br((string) $albumModel->caption)));
+        $teaser = $this->insertTagParser->replaceInline(nl2br((string) $albumModel->teaser));
+        $caption = $this->insertTagParser->replaceInline(nl2br((string) $albumModel->caption));
         $markdown = 'markdown' === $albumModel->captionType && $albumModel->markdownCaption ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
 
         // Meta

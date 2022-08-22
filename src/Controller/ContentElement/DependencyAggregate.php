@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Doctrine\DBAL\Connection;
@@ -31,8 +32,9 @@ final class DependencyAggregate
     public SecurityUtil $securityUtil;
     public ScopeMatcher $scopeMatcher;
     public ResponseContextAccessor $responseContextAccessor;
+    public InsertTagParser $insertTagParser;
 
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, MarkdownUtil $markdownUtil, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, ResponseContextAccessor $responseContextAccessor)
+    public function __construct(AlbumUtil $albumUtil, Connection $connection, MarkdownUtil $markdownUtil, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, ResponseContextAccessor $responseContextAccessor, InsertTagParser $insertTagParser)
     {
         $this->albumUtil = $albumUtil;
         $this->connection = $connection;
@@ -41,5 +43,6 @@ final class DependencyAggregate
         $this->securityUtil = $securityUtil;
         $this->scopeMatcher = $scopeMatcher;
         $this->responseContextAccessor = $responseContextAccessor;
+        $this->insertTagParser = $insertTagParser;
     }
 }

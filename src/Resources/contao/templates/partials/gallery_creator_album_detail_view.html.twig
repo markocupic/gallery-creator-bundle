@@ -34,7 +34,7 @@
         {% if album.captionType == 'markdown' and album.markdownCaption %}
             <div class="gc-album-detail-caption">{{ album.markdownCaption|raw }}</div>
         {% elseif album.caption %}
-            <div class="gc-album-detail-caption">{{ album.caption|nl2br|raw }}</div>
+            <div class="gc-album-detail-caption">{{ album.caption|raw|nl2br }}</div>
         {% endif %}
 
         {{ detailPagination|raw }}

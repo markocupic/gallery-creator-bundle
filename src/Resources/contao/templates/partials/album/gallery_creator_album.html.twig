@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if album.teaser is defined and not album.teaser is empty %}
-            <p class="gc-album-list-teaser">{{ album.teaser|nl2br }}</p>
+            <p class="gc-album-list-teaser">{{ album.teaser|raw|nl2br }}</p>
         {% endif %}
 
         <p class="gc-album-list-pictures-count">{{ album.countPictures }} {{ 'GALLERY_CREATOR.pictures'|trans({}, 'contao_default') }}</p>

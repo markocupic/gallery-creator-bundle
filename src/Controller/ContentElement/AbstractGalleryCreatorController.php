@@ -26,6 +26,7 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
+use Contao\Input;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
@@ -34,7 +35,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
-use Haste\Util\Pagination;
+use Contao\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
@@ -255,22 +256,9 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      */
     protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, $template, PageModel $pageModel): void
     {
-        // Count items
-        $itemsTotal = $this->connection->fetchOne(
-            'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
-            ['1', $albumModel->id]
-        );
 
-        $perPage = (int) $contentModel->gcThumbsPerPage;
 
-        // Use Haste\Util\Pagination to generate the pagination.
-        $pagination = new Pagination($itemsTotal, $perPage, 'page_d'.$contentModel->id);
-
-        if ($pagination->isOutOfRange()) {
-            throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
-        }
-
-        $template->detailPagination = $pagination->generate();
+        $template->detailPagination = '';
 
         // Picture sorting
         $arrSorting = empty($contentModel->gcPictureSorting) || empty($contentModel->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$contentModel->gcPictureSorting, $contentModel->gcPictureSortingDirection];
@@ -278,7 +266,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         // Sort by name will be done below.
         $arrSorting[0] = str_replace('name', 'id', $arrSorting[0]);
 
-        $stmt = $this->connection->createQueryBuilder()
+        $qb = $this->connection->createQueryBuilder()
             ->select('*')
             ->from('tl_gallery_creator_pictures', 't')
             ->where('t.pid = :pid')
@@ -286,12 +274,39 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->orderBy(...$arrSorting)
             ->setParameter('published', '1')
             ->setParameter('pid', $albumModel->id)
-            ->setFirstResult($pagination->getOffset())
-            ->setMaxResults($pagination->getLimit())
-            ->executeQuery()
         ;
 
+        $perPage = (int) $contentModel->gcThumbsPerPage;
+
+        if ($perPage > 0)
+        {
+            $id = 'page_d' . $contentModel->id;
+            $page = Input::get($id) ?? 1;
+            $total = $this->connection->fetchOne(
+                'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
+                ['1', $albumModel->id]
+            );
+
+
+            // Do not index or cache the page if the page number is outside the range
+            if ($page < 1 || $page > max(ceil($total/$perPage), 1))
+            {
+                throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
+            }
+
+            $offset = ($page - 1) * $perPage;
+            $limit = min($perPage + $offset, $total);
+
+            $objPagination = new Pagination($total, $perPage, Config::get('maxPaginationLinks'), $id);
+            $template->detailPagination = $objPagination->generate("\n  ");
+
+            $qb->setFirstResult($pagination->getOffset());
+            $qb->setMaxResults($pagination->getLimit());
+        }
+
         $arrPictures = [];
+
+        $stmt = $qb->executeQuery();
 
         while (false !== ($rowPicture = $stmt->fetchAssociative())) {
             $filesModel = FilesModel::findByUuid($rowPicture['uuid']);

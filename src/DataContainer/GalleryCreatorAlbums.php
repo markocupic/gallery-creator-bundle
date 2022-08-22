@@ -24,6 +24,8 @@ use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Image\ImageFactory;
+use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\Dbafs;
@@ -61,6 +63,7 @@ class GalleryCreatorAlbums
     private Connection $connection;
     private Security $security;
     private TranslatorInterface $translator;
+    private ImageFactory $imageFactory;
     private TwigEnvironment $twig;
     private ReviseAlbumDatabase $reviseAlbumDatabase;
     private string $projectDir;
@@ -81,7 +84,7 @@ class GalleryCreatorAlbums
     /**
      * @throws DoctrineDBALException
      */
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath, array $galleryCreatorValidExtensions)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, ImageFactory $imageFactory, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath, array $galleryCreatorValidExtensions)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -89,6 +92,7 @@ class GalleryCreatorAlbums
         $this->connection = $connection;
         $this->security = $security;
         $this->translator = $translator;
+        $this->imageFactory = $imageFactory;
         $this->twig = $twig;
         $this->reviseAlbumDatabase = $reviseAlbumDatabase;
         $this->cacheManager = $cacheManager;
@@ -392,34 +396,32 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Check permission callback (haste_ajax_operation).
+     * Return the "toggle visibility" button.
      *
-     * @throws DoctrineDBALException
+     * @Callback(table="tl_gallery_creator_albums", target="list.operations.toggle.button")
      */
-    public function checkPermissionCallbackToggle(string $table, array $hasteAjaxOperationSettings, bool &$hasPermission): void
+    public function toggleVisibility(array $row, string $href, string $label, string $title, string $icon, string $attributes): string
     {
-        $request = $this->requestStack->getCurrentRequest();
-        $hasPermission = true;
+        // Check permissions AFTER checking the tid, so hacking attempts are logged
+        if (!$this->security->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FIELD_OF_TABLE, 'tl_gallery_creator_albums::published')) {
+            return '';
+        }
 
-        if ($request->request->has('id')) {
-            $id = (int) $request->request->get('id');
-            $result = $this->connection->fetchAssociative('SELECT * FROM tl_gallery_creator_albums WHERE id = ?', [$id]);
+        $href .= '&amp;id='.$row['id'];
 
-            if ($result) {
-                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_EDIT_ALBUM, $id)) {
-                    $hasPermission = false;
-                    $this->message->addInfo($this->translator->trans('MSC.notAllowedEditAlbum', [$result['id']], 'contao_default'));
-                    $this->controller->reload();
-                }
+        if (!$row['published']) {
+            $icon = 'invisible.svg';
+        }
+
+        if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_EDIT_ALBUM, $row['id'])) {
+            if ($row['published']) {
+                $icon = preg_replace('/\.svg$/i', '_.svg', $icon); // see #8126
             }
 
-            // Invalidate cache tags.
-            $arrTags = [
-                'contao.db.tl_gallery_creator_albums.'.$id,
-            ];
-
-            $this->cacheManager->invalidateTags($arrTags);
+            return Image::getHtml($icon).' ';
         }
+
+        return '<a href="'.$this->backend->addToUrl($href).'" title="'.StringUtil::specialchars($title).'" onclick="Backend.getScrollOffset();return AjaxRequest.toggleField(this,true)">'.Image::getHtml($icon, $label, 'data-icon="'.Image::getPath('visible.svg').'" data-icon-disabled="'.Image::getPath('invisible.svg').'" data-state="'.($row['published'] ? 1 : 0).'"').'</a> ';
     }
 
     /**
@@ -437,9 +439,9 @@ class GalleryCreatorAlbums
         $blnGranted = false;
 
         if (false !== strpos($href, 'act=edit') && false !== strpos($href, 'key=fileUpload')) {
-            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $row['id']);
+            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $row['id']);
         } elseif (false !== strpos($href, 'act=edit') && false !== strpos($href, 'key=importImagesFromFilesystem')) {
-            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $row['id']);
+            $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $row['id']);
         } elseif (false !== strpos($href, 'act=edit')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_EDIT_ALBUM, $row['id']);
         } elseif (false !== strpos($href, 'act=delete')) {
@@ -679,7 +681,7 @@ class GalleryCreatorAlbums
         }
 
         // Do not allow uploads to not authorized users
-        if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_MAGES, $dc->id)) {
+        if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $dc->id)) {
             $this->message->addInfo($this->translator->trans('MSC.notAllowedEditAlbum', [$dc->id], 'contao_default'));
             $this->controller->redirect($this->system->getReferer());
         }
@@ -789,6 +791,23 @@ class GalleryCreatorAlbums
     }
 
     /**
+     * @Callback(table="tl_gallery_creator_albums", target="config.onsubmit")
+     */
+    public function onSubmitInvalidateCache(DataContainer $dc): void
+    {
+        if (!$dc) {
+            return;
+        }
+
+        // Invalidate cache tags.
+        $arrTags = [
+            'contao.db.tl_gallery_creator_albums.'.$dc->id,
+        ];
+
+        $this->cacheManager->invalidateTags($arrTags);
+    }
+
+    /**
      * Input field callback.
      *
      * List all images of the album (and child albums).
@@ -872,11 +891,12 @@ class GalleryCreatorAlbums
                     $config = $this->framework->getAdapter(Config::class);
 
                     if ($file->height <= $config->get('gdMaxImgHeight') && $file->width <= $config->get('gdMaxImgWidth')) {
-                        $src = (new Image($file))
-                            ->setTargetWidth(80)
-                            ->setTargetHeight(60)
-                            ->setResizeMode('center_center')
-                            ->executeResize()->getResizedPath();
+                        $image = $this->imageFactory->create(
+                            $this->projectDir.'/'.$src,
+                            [80, 60, 'center_center']
+                        );
+
+                        $src = $image->getUrl($this->projectDir);
                     }
 
                     $checked = (int) $albumsModel->thumb === (int) $arrItem['id'] ? ' checked' : '';
@@ -1000,11 +1020,12 @@ class GalleryCreatorAlbums
                 break;
 
             case 'name_asc':
-                uksort($arrFiles, 'basename_natcasecmp');
+
+                uksort($arrFiles, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
                 break;
 
             case 'name_desc':
-                uksort($arrFiles, 'basename_natcasercmp');
+                uksort($arrFiles, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
                 break;
 
             case 'date_asc':

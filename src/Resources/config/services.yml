@@ -9,6 +9,7 @@ services:
             $galleryCreatorCopyImagesOnImport: '%markocupic_gallery_creator.copy_images_on_import%'
             $galleryCreatorReadExifMetaData: '%markocupic_gallery_creator.read_exif_meta_data%'
             $galleryCreatorValidExtensions: '%markocupic_gallery_creator.valid_extensions%'
+            $imageFactory: '@contao.image.factory'
 
     _instanceof:
         Symfony\Bundle\FrameworkBundle\Controller\AbstractController:

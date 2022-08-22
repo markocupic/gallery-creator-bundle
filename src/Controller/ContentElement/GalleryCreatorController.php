@@ -22,13 +22,13 @@ use Contao\Environment;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\PageModel;
+use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
-use Haste\Util\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -155,24 +155,34 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         if ($this->showAlbumListing) {
             $template->showAlbumListing = true;
+            $template->listPagination = '';
 
             // Add a CSS class to the body tag
             $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass.' gc-listing-view';
 
-            $itemsTotal = \count($this->arrAlbumListing);
+            $arrItems = $this->arrAlbumListing;
+
             $perPage = (int) $this->model->gcAlbumsPerPage;
 
-            $pagination = new Pagination($itemsTotal, $perPage, 'page_g'.$this->model->id);
+            if ($perPage > 0) {
+                $id = 'page_g'.$this->model->id;
+                $page = Input::get($id) ?? 1;
+                $total = \count($arrItems);
 
-            if ($pagination->isOutOfRange()) {
-                throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
+                // Do not index or cache the page if the page number is outside the range
+                if ($page < 1 || $page > max(ceil($total / $perPage), 1)) {
+                    throw new PageNotFoundException('Page not found: '.Environment::get('uri'));
+                }
+
+                $offset = ($page - 1) * $perPage;
+                $limit = min($perPage + $offset, $total);
+
+                $objPagination = new Pagination($total, $perPage, Config::get('maxPaginationLinks'), $id);
+                $template->listPagination = $objPagination->generate("\n  ");
+
+                // Paginate the result
+                $arrItems = \array_slice($arrItems, $offset, $limit);
             }
-
-            // Paginate the result
-            $arrItems = $this->arrAlbumListing;
-            $arrItems = \array_slice($arrItems, $pagination->getOffset(), $pagination->getLimit());
-
-            $template->listPagination = $pagination->generate();
 
             $template->albums = array_map(
                 function ($id) {

@@ -44,7 +44,7 @@ final class GalleryCreatorAlbumPermissions
      * Access is granted, if the current user can add and edit images inside a certain album.
      * Subject must be an album ID.
      */
-    public const USER_CAN_ADD_AND_EDIT_MAGES = 'contao_gallery_creator_user.can_add_and_edit_images';
+    public const USER_CAN_ADD_AND_EDIT_IMAGES = 'contao_gallery_creator_user.can_add_and_edit_images';
 
     /**
      * Access is granted, if the current user can delete images inside a certain album.

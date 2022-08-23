@@ -24,6 +24,7 @@ use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\CoreBundle\String\HtmlDecoder;
 use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
@@ -54,6 +55,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     protected ScopeMatcher $scopeMatcher;
     protected ResponseContextAccessor $responseContextAccessor;
     protected InsertTagParser $insertTagParser;
+    protected HtmlDecoder $htmlDecoder;
 
     public function __construct(DependencyAggregate $dependencyAggregate)
     {
@@ -65,6 +67,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
         $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
         $this->insertTagParser = $dependencyAggregate->insertTagParser;
+        $this->htmlDecoder = $dependencyAggregate->htmlDecoder;
     }
 
     public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum): void
@@ -79,13 +82,13 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             if ($objAlbum->pageTitle) {
                 $htmlHeadBag->setTitle($objAlbum->pageTitle); // Already stored decoded
             } elseif ($objAlbum->title) {
-                $htmlHeadBag->setTitle(StringUtil::inputEncodedToPlainText($objAlbum->title));
+                $htmlHeadBag->setTitle($this->htmlDecoder->inputEncodedToPlainText($objAlbum->title));
             }
 
             if ($objAlbum->description) {
-                $htmlHeadBag->setMetaDescription(StringUtil::inputEncodedToPlainText($objAlbum->description));
+                $htmlHeadBag->setMetaDescription($this->htmlDecoder->inputEncodedToPlainText($objAlbum->description));
             } elseif ($objAlbum->teaser) {
-                $htmlHeadBag->setMetaDescription(StringUtil::htmlToPlainText($objAlbum->teaser));
+                $htmlHeadBag->setMetaDescription($this->htmlDecoder->inputEncodedToPlainText($objAlbum->teaser));
             }
 
             if ($objAlbum->robots) {
@@ -114,10 +117,8 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
         $arrSize = !empty($size) && \is_array($size) ? $size : null;
 
-        $href = sprintf(
-            StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/%s' : '/items/%s'), $objPage->language)),
-            $albumModel->alias,
-        );
+        $params = '/' . $albumModel->alias;
+        $href = StringUtil::ampersand($objPage->getFrontendUrl($params));
 
         /** @var FilesModel $previewImage */
         $previewImage = $this->getAlbumPreviewThumb($albumModel);

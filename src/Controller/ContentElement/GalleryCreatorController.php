@@ -79,13 +79,22 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $this->model = $model;
         $this->pageModel = $pageModel;
+        $albumDetailAlias = null;
 
-        // Set the item from the auto_item parameter
-        if (Config::get('useAutoItem') && isset($_GET['auto_item'])) {
-            Input::setGet('items', Input::get('auto_item'));
+        // Set the item from the auto_item parameter and remove auto_item from unused route parameters
+        if (isset($_GET['auto_item']) && '' !== $_GET['auto_item']) {
+            Input::setGet('auto_item', $_GET['auto_item']);
+            $albumDetailAlias = $_GET['auto_item'];
+
+            $arrUnused = Input::getUnusedRouteParameters();
+
+            if (false !== ($key = array_search('auto_item', $arrUnused, true))) {
+                unset($arrUnused[$key]);
+                Input::setUnusedRouteParameters($arrUnused);
+            }
         }
 
-        if (!Input::get('items')) {
+        if (!$albumDetailAlias) {
             if (!$model->gcShowAlbumSelection) {
                 $this->arrAlbumListing = $this->getAlbumsByPid(0);
             } else {
@@ -104,7 +113,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         } else {
             $this->activeAlbum = GalleryCreatorAlbumsModel::findOneBy(
                 ['tl_gallery_creator_albums.alias = ? AND tl_gallery_creator_albums.published = ?'],
-                [Input::get('items'), '1']
+                [$albumDetailAlias, '1']
             );
 
             if (null !== $this->activeAlbum && $this->securityUtil->isAuthorized($this->activeAlbum) && $this->isInSelection($this->activeAlbum)) {
@@ -238,10 +247,14 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         if (null !== ($parentAlbum = GalleryCreatorAlbumsModel::getParentAlbum($albumModel))) {
             if ($this->model->gcShowAlbumSelection) {
                 if ($this->isInSelection($parentAlbum)) {
-                    return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$parentAlbum->alias));
+                    $params = '/'.$parentAlbum->alias;
+
+                    return StringUtil::ampersand($this->pageModel->getFrontendUrl($params));
                 }
             } else {
-                return StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$parentAlbum->alias));
+                $params = '/'.$parentAlbum->alias;
+
+                return StringUtil::ampersand($this->pageModel->getFrontendUrl($params));
             }
         }
 
@@ -344,7 +357,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $item['isActive'] = true;
             } else {
                 $item['title'] = StringUtil::specialchars($album->name);
-                $item['href'] = StringUtil::ampersand($this->pageModel->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').$album->alias));
+                $params = '/'.$album->alias;
+                $item['href'] = StringUtil::ampersand($this->pageModel->getFrontendUrl($params));
             }
             $items[] = $item;
 

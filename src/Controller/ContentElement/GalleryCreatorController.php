@@ -392,7 +392,11 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $items = array_reverse($items);
 
-        $template->getSchemaOrgData = static function () use ($items): array {
+        $this->galleryCreatorAlbumsModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
+
+        $htmlDecoder = $this->htmlDecoder;
+
+        $template->getSchemaOrgData = static function () use ($items, $htmlDecoder): array {
             $jsonLd = [
                 '@type' => 'BreadcrumbList',
                 'itemListElement' => [],
@@ -406,7 +410,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                     'position' => ++$position,
                     'item' => [
                         '@id' => isset($item['href']) ?: './',
-                        'name' => $this->htmlDecoder->inputEncodedToPlainText($item['link']),
+                        'name' => $htmlDecoder->inputEncodedToPlainText($item['link']),
                     ],
                 ];
             }

@@ -110,7 +110,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'filter'    => true,
             'inputType' => 'checkbox',
             'eval'      => ['doNotCopy' => true],
-            'sql'       => "char(1) NOT NULL default ''",
+            'sql'       => "char(1) NOT NULL default '1'",
         ],
         'imageInfo'      => [
             'eval' => ['tl_class' => 'clr'],

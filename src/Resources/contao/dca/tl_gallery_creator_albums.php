@@ -128,7 +128,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'filter'    => true,
             'inputType' => 'checkbox',
             'eval'      => ['doNotCopy' => true],
-            'sql'       => ['type' => 'boolean', 'default' => true],
+            'sql'       => "char(1) NOT NULL default ''",
         ],
         'name'              => [
             'filter'    => true,

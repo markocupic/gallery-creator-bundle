@@ -8,10 +8,13 @@
  * @package    Gallery Creator Bundle
  */
 
+use Contao\Config;
+use Contao\Input;
+
 /**
  * Define Constants
  */
-define('GALLERY_CREATOR_UPLOAD_PATH', \Config::get('uploadPath') . '/gallery_creator_albums');
+define('GALLERY_CREATOR_UPLOAD_PATH', Config::get('uploadPath') . '/gallery_creator_albums');
 
 /**
  * Front end content element
@@ -21,11 +24,11 @@ array_insert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('ga
 array_insert($GLOBALS['TL_CTE'], 2, array('ce_type_gallery_creator' => array('gallery_creator_ce' => 'Markocupic\GalleryCreatorBundle\ContentGalleryCreator')));
 
 // Show news ce_element in the news-module only
-if (TL_MODE == 'BE' && Input::get('do') == 'news')
+if (TL_MODE === 'BE' && Input::get('do') == 'news')
 {
     unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce']);
 }
-if (TL_MODE == 'BE' && Input::get('do') != 'news')
+if (TL_MODE === 'BE' && Input::get('do') != 'news')
 {
     unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce_news']);
 }
@@ -34,7 +37,7 @@ if (TL_MODE == 'BE' && Input::get('do') != 'news')
 /**
  * Back end module
  */
-if (TL_MODE == 'BE')
+if (TL_MODE === 'BE')
 {
 
     $GLOBALS['BE_MOD']['content']['gallery_creator'] = array(
@@ -47,13 +50,13 @@ if (TL_MODE == 'BE')
 
 
     // check tables script
-    if (count($_GET) <= 2 && $_GET['do'] == 'gallery_creator' && $_GET['mode'] != 'revise_tables')
+    if (count($_GET) <= 2 && isset($_GET['do']) && $_GET['do'] === 'gallery_creator' && isset($_GET['mode']) && $_GET['mode'] !== 'revise_tables')
     {
         $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_check_tables.js';
     }
 
     // revise table script
-    if ($_GET['do'] == 'gallery_creator' && $_GET['mode'] == 'revise_tables')
+    if (isset($_GET['do']) && $_GET['do'] === 'gallery_creator' && isset($_GET['mode']) && $_GET['mode'] === 'revise_tables')
     {
         $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_revise_tables.js';
     }

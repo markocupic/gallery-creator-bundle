@@ -15,21 +15,21 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\Listener\ContaoHook;
 
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Template;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 /**
  * This is a demo class!
- *
- * @Hook(GalleryCreatorFrontendTemplateListener::HOOK, priority=100)
  */
+#[AsHook(GalleryCreatorFrontendTemplateListener::HOOK, priority: 100)]
 class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
     public function __invoke(AbstractContentElementController $contentElement, Template $template, GalleryCreatorAlbumsModel $albumsModel = null): void
     {
-        //$template->hallo = 'Lorem ipsum';
+        //$template->foo = 'bar';
     }
 }

@@ -18,8 +18,8 @@ services:
                 - [ setContainer, [ '@service_container' ] ]
 
     Markocupic\GalleryCreatorBundle\:
-        resource: ../../
-        exclude: ../../{DependencyInjection,Resources,Model}
+        resource: ../src/
+        exclude: ../src/{DependencyInjection,Model}
 
     Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController:
         tags:

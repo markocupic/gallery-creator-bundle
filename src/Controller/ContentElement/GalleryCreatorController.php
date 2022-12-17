@@ -16,10 +16,10 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\CoreBundle\String\HtmlDecoder;
 use Contao\Environment;
 use Contao\FrontendTemplate;
@@ -39,9 +39,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-/**
- * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements")
- */
+#[AsContentElement(category: 'gallery_creator_elements', template: 'ce_gallery_creator')]
 class GalleryCreatorController extends AbstractGalleryCreatorController
 {
     public const TYPE = 'gallery_creator';
@@ -49,12 +47,12 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     protected ContaoFramework $framework;
     protected TwigEnvironment $twig;
     protected HtmlDecoder $htmlDecoder;
-    protected ?SymfonyResponseTagger $responseTagger;
-    protected ?string $viewMode = null;
-    protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
+    protected SymfonyResponseTagger|null $responseTagger;
+    protected string|null $viewMode = null;
+    protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
     protected array $arrAlbumListing = [];
-    protected ?ContentModel $model;
-    protected ?PageModel $pageModel;
+    protected ContentModel|null $model;
+    protected PageModel|null $pageModel;
 
     // Adapters
     protected Adapter $config;
@@ -66,7 +64,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     private bool $showAlbumDetail = false;
     private bool $showAlbumListing = false;
 
-    public function __construct(DependencyAggregate $dependencyAggregate, ContaoFramework $framework, TwigEnvironment $twig, HtmlDecoder $htmlDecoder, ?SymfonyResponseTagger $responseTagger)
+    public function __construct(DependencyAggregate $dependencyAggregate, ContaoFramework $framework, TwigEnvironment $twig, HtmlDecoder $htmlDecoder, SymfonyResponseTagger|null $responseTagger)
     {
         parent::__construct($dependencyAggregate);
         $this->framework = $framework;

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
@@ -36,15 +37,12 @@ class Content
         $this->requestStack = $requestStack;
         $this->twig = $twig;
     }
-
+    
     /**
-     * Options callback.
-     *
-     * @Callback(table="tl_content", target="fields.gcPublishSingleAlbum.options")
-     *
-     * @throws Exception
+     * Options callback
      * @throws \Doctrine\DBAL\Exception
      */
+    #[AsCallback(table: 'tl_content', target: 'fields.gcPublishSingleAlbum.options', priority: 100)]
     public function optionsCbGcPublishSingleAlbum(DataContainer $dc): array
     {
         $arrOpt = [];

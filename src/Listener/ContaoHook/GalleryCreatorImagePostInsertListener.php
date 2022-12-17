@@ -14,15 +14,14 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Listener\ContaoHook;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\Security\Core\Security;
 
 /**
  * This is a demo class!
- *
- * @Hook(GalleryCreatorImagePostInsertListener::HOOK, priority=100)
  */
+#[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
 class GalleryCreatorImagePostInsertListener
 {
     public const HOOK = 'galleryCreatorImagePostInsert';

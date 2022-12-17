@@ -135,6 +135,7 @@ div.gc-readonly input {
 }
 .tl_gc_album_tree_widget .gc-item-picker ul {
   padding-left: 15px;
+  list-style: none;
 }
 .tl_gc_album_tree_widget .gc-item-picker ul li {
   padding-bottom: 6px;

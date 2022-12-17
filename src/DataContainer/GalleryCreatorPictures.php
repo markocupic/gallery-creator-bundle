@@ -17,10 +17,10 @@ namespace Markocupic\GalleryCreatorBundle\DataContainer;
 use Contao\Backend;
 use Contao\Config;
 use Contao\Controller;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Image\ImageFactory;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
-use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\Dbafs;
 use Contao\File;
@@ -85,15 +85,10 @@ class GalleryCreatorPictures
 
     /**
      * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=110)
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onload', priority: 110)]
     public function onloadCallbackCheckPermissions(DataContainer $dc): void
     {
-        if (!$dc) {
-            return;
-        }
-
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
@@ -193,16 +188,10 @@ class GalleryCreatorPictures
                             }
 
                             // Check if user is allowed to move pictures inside the source album
-                            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
-                                $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
-                                $this->controller->redirect($this->system->getReferer());
-                            }
-                        } else {
-                            // Check if user is allowed to move pictures inside the source album
-                            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
-                                $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
-                                $this->controller->redirect($this->system->getReferer());
-                            }
+                        }
+                        if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
+                            $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
+                            $this->controller->redirect($this->system->getReferer());
                         }
                     }
 
@@ -260,9 +249,8 @@ class GalleryCreatorPictures
 
     /**
      * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=100)
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onload', priority: 100)]
     public function onloadCallbackSetCorrectReferer(DataContainer $dc): void
     {
         if (!$dc) {
@@ -285,16 +273,11 @@ class GalleryCreatorPictures
      * Onload callback.
      *
      * @throws \Exception
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.onload", priority=90)
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onload', priority: 90)]
     public function onloadCallbackRotateImage(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
-
-        if (!$dc) {
-            return;
-        }
 
         if ('imagerotate' === $request->query->get('key')) {
             $picturesModel = $this->pictures->findByPk($dc->id);
@@ -328,15 +311,9 @@ class GalleryCreatorPictures
         }
     }
 
-    /**
-     * @Callback(table="tl_gallery_creator_pictures", target="config.onsubmit")
-     */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onsubmit', priority: 100)]
     public function onSubmitInvalidateCache(DataContainer $dc): void
     {
-        if (!$dc) {
-            return;
-        }
-
         $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
 
         if (!$pid) {
@@ -353,9 +330,8 @@ class GalleryCreatorPictures
 
     /**
      * Return the "toggle visibility" button.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.toggle.button")
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.toggle.button', priority: 100)]
     public function toggleVisibility(array $row, string $href, string $label, string $title, string $icon, string $attributes): string
     {
         // Check permissions AFTER checking the tid, so hacking attempts are logged
@@ -382,25 +358,24 @@ class GalleryCreatorPictures
 
     /**
      * Button callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.edit.button", priority=100)
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.delete.button", priority=100)
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.cut.button", priority=100)
-     * @Callback(table="tl_gallery_creator_pictures", target="list.operations.imagerotate.button", priority=100)
      */
-    public function buttonCallback(array $row, ?string $href, ?string $label, ?string $title, ?string $icon, ?string $attributes): string
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.edit.button', priority: 100)]
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.delete.button', priority: 100)]
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.cut.button', priority: 100)]
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.imagerotate.button', priority: 100)]
+    public function buttonCallback(array $row, string|null $href, string|null $label, string|null $title, string|null $icon, string|null $attributes): string
     {
         $href .= '&amp;id='.$row['id'];
 
         $blnGranted = false;
 
-        if (false !== strpos($href, 'key=imagerotate')) {
+        if (str_contains($href, 'key=imagerotate')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $row['pid']);
-        } elseif (false !== strpos($href, 'act=delete')) {
+        } elseif (str_contains($href, 'act=delete')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $row['pid']);
-        } elseif (false !== strpos($href, 'act=edit')) {
+        } elseif (str_contains($href, 'act=edit')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $row['pid']);
-        } elseif (false !== strpos($href, 'act=paste')) {
+        } elseif (str_contains($href, 'act=paste')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $row['pid']);
         }
 
@@ -419,9 +394,8 @@ class GalleryCreatorPictures
 
     /**
      * Child record callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="list.sorting.child_record", priority=100)
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.sorting.child_record', priority: 100)]
     public function childRecordCallback(array $arrRow): string
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -498,9 +472,8 @@ class GalleryCreatorPictures
     /**
      * Move file to the correct directory, when cutting & pasting images
      * from one album into another.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.oncut", priority=100)
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.oncut', priority: 100)]
     public function oncutCallback(DataContainer $dc): void
     {
         $picture = $this->pictures->findByPk($dc->id);
@@ -517,7 +490,7 @@ class GalleryCreatorPictures
         }
 
         // Return if it is an external file
-        if (false === strpos($sourcePath, $this->galleryCreatorUploadPath)) {
+        if (!str_contains($sourcePath, $this->galleryCreatorUploadPath)) {
             return;
         }
 
@@ -528,9 +501,8 @@ class GalleryCreatorPictures
 
     /**
      * Input field callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="fields.picture.input_field")
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'fields.picture.input_field', priority: 100)]
     public function inputFieldCallbackPicture(DataContainer $dc): string
     {
         $objImg = $this->pictures->findByPk($dc->id);
@@ -562,9 +534,8 @@ class GalleryCreatorPictures
 
     /**
      * Input field callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="fields.imageInfo.input_field")
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'fields.imageInfo.input_field', priority: 100)]
     public function inputFieldCallbackImageInfo(DataContainer $dc): string
     {
         $picturesModel = $this->pictures->findByPk($dc->id);
@@ -610,9 +581,8 @@ class GalleryCreatorPictures
 
     /**
      * Edit buttons callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="edit.buttons")
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'edit.buttons', priority: 100)]
     public function editButtonsCallback(array $buttons, DataContainer $dc): array
     {
         unset($buttons['saveNcreate'], $buttons['copy']);
@@ -622,9 +592,8 @@ class GalleryCreatorPictures
 
     /**
      * Ondelete callback.
-     *
-     * @Callback(table="tl_gallery_creator_pictures", target="config.ondelete", priority=100)
      */
+    #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.ondelete', priority: 100)]
     public function ondeleteCallback(DataContainer $dc, int $undoInt): void
     {
         if (!$dc->id) {

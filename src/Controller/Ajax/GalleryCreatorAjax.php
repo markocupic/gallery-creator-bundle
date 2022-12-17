@@ -19,7 +19,6 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
@@ -48,13 +47,17 @@ class GalleryCreatorAjax
     }
 
     /**
+     * @param int $pictureId
+     * @param int $contentId
+     *
      * @throws \Exception
      *
-     * @Route("/_gallery_creator/get_image/{pictureId}/{contentId}", name="GalleryCreatorAjax::class\getImage", defaults={"_scope" = "frontend"})
+     * @return Response
      */
+    #[Route('/_gallery_creator/get_image/{pictureId}/{contentId}', name: 'GalleryCreatorAjax::class\getImage', defaults: ['scope' => 'frontend'])]
     public function getImage(int $pictureId, int $contentId): Response
     {
-        $this->framework->initialize(true);
+        $this->framework->initialize();
 
         $arrPicture = [];
         $pictureModel = GalleryCreatorPicturesModel::findByPk($pictureId);
@@ -68,14 +71,17 @@ class GalleryCreatorAjax
     }
 
     /**
-     * @throws DoctrineDBALDriverException
+     * @param int $pid
+     * @param int $contentId
+     *
      * @throws DoctrineDBALException
      *
-     * @Route("/_gallery_creator/get_images_by_pid/{pid}/{contentId}", name="GalleryCreatorAjax::class\getImagesByPid", defaults={"_scope" = "frontend"})
+     * @return Response
      */
+    #[Route('/_gallery_creator/get_images_by_pid/{pid}/{contentId}', name: 'GalleryCreatorAjax::class\getImagesByPid', defaults: ['scope' => 'frontend'])]
     public function getImagesByPid(int $pid, int $contentId): Response
     {
-        $this->framework->initialize(true);
+        $this->framework->initialize();
 
         // Do not send data if album is protected and the user has no access
         $albumModel = GalleryCreatorAlbumsModel::findByPk($pid);

@@ -23,8 +23,8 @@
     "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
   },
   "require": {
-    "contao/core-bundle": "^4.13 || ^5.0 || > 5.0.0-RC3",
-    "php": "^7.4 || ^8.0",
+    "contao/core-bundle": "^4.13 || ^5.0",
+    "php": "^8.0",
     "jaybizzle/crawler-detect": "^1.2",
     "league/commonmark": "^2.2"
   },

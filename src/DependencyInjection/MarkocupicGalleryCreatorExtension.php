@@ -31,10 +31,10 @@ class MarkocupicGalleryCreatorExtension extends Extension
 
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/../Resources/config')
+            new FileLocator(__DIR__.'/../../config')
         );
 
-        $loader->load('services.yml');
+        $loader->load('services.yaml');
 
         // Configuration
         $container->setParameter('markocupic_gallery_creator.upload_path', $config['upload_path']);

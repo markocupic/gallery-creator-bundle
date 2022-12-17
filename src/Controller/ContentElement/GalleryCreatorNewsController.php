@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\ContentModel;
-use Contao\CoreBundle\ServiceAnnotation\ContentElement;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
 use Contao\PageModel;
 use Contao\Template;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
@@ -25,17 +25,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
 
-/**
- * @ContentElement(GalleryCreatorNewsController::TYPE, category="gallery_creator_elements")
- */
+#[AsContentElement(category: 'gallery_creator_elements', template: 'ce_gallery_creator_news')]
 class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 {
     public const TYPE = 'gallery_creator_news';
 
     protected TwigEnvironment $twig;
-    protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
-    protected ?ContentModel $model = null;
-    protected ?PageModel $pageModel = null;
+    protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
+    protected ContentModel|null $model = null;
+    protected PageModel|null $pageModel = null;
 
     public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig)
     {

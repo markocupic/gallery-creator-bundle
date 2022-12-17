@@ -14,13 +14,12 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Listener\ContaoHook;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-/**
- * @Hook(ParseBackendTemplate::HOOK)
- */
+#[AsHook(ParseBackendTemplate::HOOK, priority: 100)]
 class ParseBackendTemplate
 {
     public const HOOK = 'parseBackendTemplate';
@@ -35,7 +34,7 @@ class ParseBackendTemplate
     }
 
     /**
-     * Adapt the form encoding for the image uploader in the contao backend.
+     * Adjust the form encoding for the image uploader in the contao backend.
      */
     public function __invoke(string $strContent): string
     {

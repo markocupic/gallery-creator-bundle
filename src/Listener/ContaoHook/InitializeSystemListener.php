@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Listener\ContaoHook;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Input;
@@ -21,9 +22,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @todo Handle this issue in a more proper way
- *
- * @Hook(InitializeSystemListener::HOOK)
  */
+#[AsHook(InitializeSystemListener::HOOK, priority: 100)]
 class InitializeSystemListener
 {
     public const HOOK = 'initializeSystem';

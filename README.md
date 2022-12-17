@@ -83,14 +83,12 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Template;
-use Markocupic\GalleryCreatorBundle\Controller\ContentElement\AbstractContentElementController;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
-/**
- * @Hook(GalleryCreatorFrontendTemplateListener::HOOK, priority=100)
- */
+#[AsHook(GalleryCreatorFrontendTemplateListener::HOOK, priority: 100)]
 class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
@@ -120,13 +118,11 @@ declare(strict_types=1);
 namespace App\EventListener;
 
 use Contao\BackendUser;
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\Security\Core\Security;
 
-/**
- * @Hook(GalleryCreatorImagePostInsertListener::HOOK, priority=100)
- */
+#[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
 class GalleryCreatorImagePostInsertListener
 {
     public const HOOK = 'galleryCreatorImagePostInsert';

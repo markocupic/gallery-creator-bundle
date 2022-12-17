@@ -20,13 +20,13 @@ use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\Controller;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Exception\ResponseException;
 use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Image\ImageFactory;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
-use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\Dbafs;
 use Contao\File;
@@ -53,6 +53,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment as TwigEnvironment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class GalleryCreatorAlbums
 {
@@ -73,7 +76,6 @@ class GalleryCreatorAlbums
     // Adapters
     private Adapter $albums;
     private Adapter $backend;
-    private Adapter $config;
     private Adapter $controller;
     private Adapter $image;
     private Adapter $message;
@@ -83,6 +85,7 @@ class GalleryCreatorAlbums
 
     /**
      * @throws DoctrineDBALException
+     * @throws Exception
      */
     public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, ImageFactory $imageFactory, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath, array $galleryCreatorValidExtensions)
     {
@@ -103,7 +106,6 @@ class GalleryCreatorAlbums
         // Adapters
         $this->albums = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
         $this->backend = $this->framework->getAdapter(Backend::class);
-        $this->config = $this->framework->getAdapter(Config::class);
         $this->controller = $this->framework->getAdapter(Controller::class);
         $this->image = $this->framework->getAdapter(Image::class);
         $this->message = $this->framework->getAdapter(Message::class);
@@ -120,15 +122,10 @@ class GalleryCreatorAlbums
 
     /**
      * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload", priority=110)
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function onloadCallbackCheckPermissions(DataContainer $dc): void
     {
-        if (!$dc) {
-            return;
-        }
-
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
@@ -231,26 +228,11 @@ class GalleryCreatorAlbums
     /**
      * Onload callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload", priority="120")
+     * @throws DoctrineDBALException
      */
-    public function checkHasDefaultChmod(DataContainer $dc): void
-    {
-        if (!$this->config->gcDefaultChmod) {
-            //$this->message->addInfo($this->translator->trans)
-        }
-    }
-
-    /**
-     * Onload callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
-     */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function onloadCallbackSetPalettes(DataContainer $dc): void
     {
-        if (!$dc) {
-            return;
-        }
-
         $user = $this->security->getUser();
 
         $request = $this->requestStack->getCurrentRequest();
@@ -308,11 +290,8 @@ class GalleryCreatorAlbums
     /**
      * Onload callback.
      * Handle image sorting ajax requests.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
-     *
-     * @throws DoctrineDBALException
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function onloadCallbackSortPictures(): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -321,6 +300,8 @@ class GalleryCreatorAlbums
             // Change sorting value
             if ($request->query->has('pictureSorting')) {
                 $count = 0;
+
+                $picturesModel = null;
 
                 foreach ($this->stringUtil->trimsplit(',', $request->query->get('pictureSorting')) as $pictureId) {
                     $picturesModel = $this->pictures->findByPk($pictureId);
@@ -350,6 +331,7 @@ class GalleryCreatorAlbums
      * This method is called by self::__construct();.
      *
      * @throws DoctrineDBALException
+     * @throws Exception
      */
     public function reviseTables(): void
     {
@@ -397,9 +379,8 @@ class GalleryCreatorAlbums
 
     /**
      * Return the "toggle visibility" button.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.toggle.button")
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.operations.toggle.button', priority: 100)]
     public function toggleVisibility(array $row, string $href, string $label, string $title, string $icon, string $attributes): string
     {
         // Check permissions AFTER checking the tid, so hacking attempts are logged
@@ -426,25 +407,24 @@ class GalleryCreatorAlbums
 
     /**
      * Button callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.editheader.button")
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.delete.button")
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.uploadImages.button")
-     * @Callback(table="tl_gallery_creator_albums", target="list.operations.importImagesFromFilesystem.button")
      */
-    public function buttonCallback(array $row, ?string $href, string $label, string $title, ?string $icon, string $attributes): string
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.operations.editheader.button', priority: 100)]
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.operations.delete.button', priority: 100)]
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.operations.uploadImages.button', priority: 100)]
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.operations.importImagesFromFilesystem.button', priority: 100)]
+    public function buttonCallback(array $row, string|null $href, string $label, string $title, string|null $icon, string $attributes): string
     {
         $href .= '&amp;id='.$row['id'];
 
         $blnGranted = false;
 
-        if (false !== strpos($href, 'act=edit') && false !== strpos($href, 'key=fileUpload')) {
+        if (str_contains($href, 'act=edit') && str_contains($href, 'key=fileUpload')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $row['id']);
-        } elseif (false !== strpos($href, 'act=edit') && false !== strpos($href, 'key=importImagesFromFilesystem')) {
+        } elseif (str_contains($href, 'act=edit') && str_contains($href, 'key=importImagesFromFilesystem')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $row['id']);
-        } elseif (false !== strpos($href, 'act=edit')) {
+        } elseif (str_contains($href, 'act=edit')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_EDIT_ALBUM, $row['id']);
-        } elseif (false !== strpos($href, 'act=delete')) {
+        } elseif (str_contains($href, 'act=delete')) {
             $blnGranted = $this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_EDIT_ALBUM, $row['id']);
         }
 
@@ -462,10 +442,11 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Input field callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.reviseDatabase.input_field")
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.reviseDatabase.input_field', priority: 100)]
     public function inputFieldCallbackReviseDatabase(): string
     {
         $translator = $this->system->getContainer()->get('translator');
@@ -487,9 +468,8 @@ class GalleryCreatorAlbums
 
     /**
      * Input field callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.fileUpload.input_field")
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.fileUpload.input_field', priority: 100)]
     public function inputFieldCallbackFileUpload(): string
     {
         // Create the template object
@@ -513,10 +493,9 @@ class GalleryCreatorAlbums
     /**
      * Label callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="list.label.label")
-     *
      * @throws DoctrineDBALException
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.label.label', priority: 100)]
     public function labelCallback(array $row, string $label): string
     {
         $countImages = $this->connection->fetchOne('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid = ?', [$row['id']]);
@@ -536,9 +515,8 @@ class GalleryCreatorAlbums
 
     /**
      * Load callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.imageResolution.load")
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.imageResolution.load', priority: 100)]
     public function loadCallbackImageResolution(): string
     {
         $user = $this->security->getUser();
@@ -548,9 +526,8 @@ class GalleryCreatorAlbums
 
     /**
      * Buttons callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="edit.buttons")
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'edit.buttons', priority: 100)]
     public function editButtonsCallback(array $arrButtons, DataContainer $dc): array
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -578,16 +555,11 @@ class GalleryCreatorAlbums
     /**
      * Ondelete callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="config.ondelete")
-     *
-     * @throws DoctrineDBALException
+     * @throws \Exception
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.ondelete', priority: 100)]
     public function ondeleteCallback(DataContainer $dc, int $undoId): void
     {
-        if (!$dc) {
-            return;
-        }
-
         // Also delete child albums
         $arrDeletedAlbums = $this->albums->getChildAlbumsIds((int) $dc->id);
         $arrDeletedAlbums = array_merge([$dc->id], $arrDeletedAlbums ?? []);
@@ -648,8 +620,9 @@ class GalleryCreatorAlbums
     /**
      * Onload callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
+     * @throws \Exception
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function onloadCallbackCheckFolderSettings(DataContainer $dc): void
     {
         // Create the upload directory if it doesn't already exist
@@ -670,13 +643,14 @@ class GalleryCreatorAlbums
     /**
      * Onload callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
+     * @throws DoctrineDBALException
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function onloadCallbackFileUpload(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!$dc || 'fileUpload' !== $request->query->get('key')) {
+        if ('fileUpload' !== $request->query->get('key')) {
             return;
         }
 
@@ -743,14 +717,11 @@ class GalleryCreatorAlbums
     /**
      * Onload callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="config.onload")
+     * @throws Exception
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function onloadCallbackImportFromFilesystem(DataContainer $dc): void
     {
-        if (!$dc) {
-            return;
-        }
-
         $request = $this->requestStack->getCurrentRequest();
 
         if ('importImagesFromFilesystem' !== $request->query->get('key')) {
@@ -791,13 +762,11 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * @Callback(table="tl_gallery_creator_albums", target="config.onsubmit")
+     * Onsubmit callback.
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onsubmit', priority: 100)]
     public function onSubmitInvalidateCache(DataContainer $dc): void
     {
-        if (!$dc) {
-            return;
-        }
 
         // Invalidate cache tags.
         $arrTags = [
@@ -812,11 +781,12 @@ class GalleryCreatorAlbums
      *
      * List all images of the album (and child albums).
      *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.thumb.input_field")
-     *
      * @throws DoctrineDBALException
-     * @throws Exception
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.thumb.input_field', priority: 100)]
     public function inputFieldCallbackThumb(): string
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -931,9 +901,8 @@ class GalleryCreatorAlbums
 
     /**
      * Save callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.filePrefix.save")
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.filePrefix.save', priority: 100)]
     public function saveCallbackValidateFilePrefix(string $strPrefix, DataContainer $dc): string
     {
         $i = 0;
@@ -985,9 +954,8 @@ class GalleryCreatorAlbums
 
     /**
      * Save callback.
-     *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.sortBy.save")
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.sortBy.save', priority: 100)]
     public function saveCallbackSortBy(string $varValue, DataContainer $dc): string
     {
         if ('----' === $varValue) {
@@ -1058,10 +1026,9 @@ class GalleryCreatorAlbums
      * Generate a unique album alias based on the album name
      * and create a directory with the same name
      *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.alias.save")
-     *
      * @throws DoctrineDBALException
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.alias.save', priority: 100)]
     public function saveCallbackSetAliasAndUploadFolder(string $strAlias, DataContainer $dc): string
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -1121,10 +1088,9 @@ class GalleryCreatorAlbums
     /**
      * Save callback.
      *
-     * @Callback(table="tl_gallery_creator_albums", target="fields.imageResolution.save")
-     *
      * @throws DoctrineDBALException
      */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.imageResolution.save', priority: 100)]
     public function saveCallbackImageResolution(string $value): void
     {
         $user = $this->security->getUser();

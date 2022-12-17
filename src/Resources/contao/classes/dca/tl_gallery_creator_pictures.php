@@ -203,6 +203,7 @@ class tl_gallery_creator_pictures extends Backend
             $hasMovie = null;
             $src = $objFile->path;
             $src = trim($arrRow['socialMediaSRC']) != "" ? trim($arrRow['socialMediaSRC']) : $src;
+            $lmSRC = null;
 
             // local media (movies, etc.)
             if (Validator::isBinaryUuid($arrRow['localMediaSRC']))
@@ -230,7 +231,7 @@ class tl_gallery_creator_pictures extends Backend
                 $blnShowThumb = true;
             }
             //return html
-            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'], basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
+            $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['title'], basename($oFile->path), $objFile->width, $objFile->height, $this->getReadableSize($objFile->filesize));
             $return .= $hasMovie;
             $return .= $blnShowThumb ? '<div class="block"><img src="' . $src . '" width="100"></div>' : null;
             $return .= sprintf('<div class="limit_height%s block">%s</div>', (\Config::get('thumbnails') ? ' h64' : ''), specialchars($arrRow['comment']));

@@ -40,7 +40,7 @@ class tl_gallery_creator_albums extends Backend
             'myParseBackendTemplate',
         );
 
-        if ($_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode'] == 'copyAll')
+        if (isset($_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode']) && $_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode'] == 'copyAll')
         {
             $this->redirect('contao/main.php?do=gallery_creator&clipboard=1');
         }
@@ -127,7 +127,7 @@ class tl_gallery_creator_albums extends Backend
         $objVersions->initialize();
 
         // Trigger the save_callback
-        if (is_array($GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['published']['save_callback']))
+        if (isset($GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['published']['save_callback']) && is_array($GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['published']['save_callback']))
         {
             foreach ($GLOBALS['TL_DCA']['tl_gallery_creator_albums']['fields']['published']['save_callback'] as $callback)
             {
@@ -257,6 +257,8 @@ class tl_gallery_creator_albums extends Backend
         // Return the buttons
         $imagePasteAfter = Image::getHtml('pasteafter.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id']), 'class="blink"');
         $imagePasteInto = Image::getHtml('pasteinto.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id']), 'class="blink"');
+
+        $return = '';
 
         if ($row['id'] > 0)
         {
@@ -709,7 +711,7 @@ class tl_gallery_creator_albums extends Backend
         }
 
         // Exit if there is no upload or the upload directory is missing
-        if (!is_array($_FILES[$strName]) || $blnNoUploadDir || $blnNoAlbum)
+        if (!isset($_FILES[$strName]) || !is_array($_FILES[$strName]) || $blnNoUploadDir || $blnNoAlbum)
         {
             return;
         }

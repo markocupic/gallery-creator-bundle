@@ -109,7 +109,7 @@ class ce_gallery_creator extends Backend
     {
         $objContent = $this->Database->prepare('SELECT * FROM tl_content WHERE id=?')->execute($this->Input->get('id'));
         $str_sorting = $objContent->gc_sorting == '' || $objContent->gc_sorting_direction == '' ? 'date DESC' : $objContent->gc_sorting . ' ' . $objContent->gc_sorting_direction;
-
+        $list = '';
 
         $selectedAlbums = $objContent->gc_publish_albums != '' ? deserialize($objContent->gc_publish_albums) : array();
         $level = GcHelpers::getAlbumLevel($pid);

@@ -18,6 +18,7 @@
     "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
   },
   "require": {
+    "php": "^7.2 || ^8.0",
     "contao/core-bundle": "^4.8",
     "patchwork/utf8": "^1.2"
   },

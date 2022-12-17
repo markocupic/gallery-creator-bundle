@@ -88,8 +88,7 @@ class ContentGalleryCreator extends \ContentElement
         // unset the Session
         unset($_SESSION['gallery_creator']['CURRENT_ALBUM']);
 
-
-        if ($_SESSION['GcRedirectToAlbum'])
+        if (isset($_SESSION['GcRedirectToAlbum']) && empty($_SESSION['GcRedirectToAlbum']))
         {
             \Input::setGet('items', $_SESSION['GcRedirectToAlbum']);
             unset($_SESSION['GcRedirectToAlbum']);

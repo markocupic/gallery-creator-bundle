@@ -538,7 +538,7 @@ class GcHelpers extends \System
             // Meta
             $arrMeta = $objContentElement->getMetaData($objFileModel->meta, $objPage->language);
             // Use the file name as title if none is given
-            if ($arrMeta['title'] == '')
+            if (empty($arrMeta['title']))
             {
                 $arrMeta['title'] = specialchars($objFileModel->name);
             }
@@ -581,7 +581,7 @@ class GcHelpers extends \System
         }
 
         $picture['alt'] = $objPicture->title != '' ? specialchars($objPicture->title) : specialchars($arrMeta['title']);
-        $picture['title'] = $objPicture->comment != '' ? ($objPage->outputFormat == 'xhtml' ? specialchars(\StringUtil::toXhtml($objPicture->comment)) : specialchars(\StringUtil::toHtml5($objPicture->comment))) : specialchars($arrMeta['caption']);
+        $picture['title'] = $objPicture->comment != '' ? ($objPage->outputFormat == 'xhtml' ? specialchars(\StringUtil::toXhtml($objPicture->comment)) : specialchars(\StringUtil::toHtml5($objPicture->comment))) : specialchars($arrMeta['caption'] ?? '');
 
         $objFileThumb = new \File(rawurldecode($thumbSrc));
         $arrSize[0] = $objFileThumb->width;
@@ -678,8 +678,8 @@ class GcHelpers extends \System
             //[string] title-attribut
             'title' => $objPicture->title != '' ? specialchars($objPicture->title) : specialchars($arrMeta['title']),
             //[string] Bildkommentar oder Bildbeschreibung
-            'comment' => $objPicture->comment != '' ? ($objPage->outputFormat == 'xhtml' ? specialchars(\StringUtil::toXhtml($objPicture->comment)) : specialchars(\StringUtil::toHtml5($objPicture->comment))) : specialchars($arrMeta['caption']),
-            'caption' => $objPicture->comment != '' ? ($objPage->outputFormat == 'xhtml' ? specialchars(\StringUtil::toXhtml($objPicture->comment)) : specialchars(\StringUtil::toHtml5($objPicture->comment))) : specialchars($arrMeta['caption']),
+            'comment' => $objPicture->comment != '' ? ($objPage->outputFormat == 'xhtml' ? specialchars(\StringUtil::toXhtml($objPicture->comment)) : specialchars(\StringUtil::toHtml5($objPicture->comment))) : specialchars($arrMeta['caption'] ?? ''),
+            'caption' => $objPicture->comment != '' ? ($objPage->outputFormat == 'xhtml' ? specialchars(\StringUtil::toXhtml($objPicture->comment)) : specialchars(\StringUtil::toHtml5($objPicture->comment))) : specialchars($arrMeta['caption'] ?? ''),
             //[string] path to media (video, picture, sound...)
             'href' => $href,
             // single image url
@@ -721,9 +721,9 @@ class GcHelpers extends \System
             //[array] Array mit Bildinfos aus den meta-Angaben der Datei, gespeichert in tl_files.meta
             'metaData' => $arrMeta,
             //[string] css-ID des Bildcontainers
-            'cssID' => $cssID[0] != '' ? $cssID[0] : '',
+            'cssID' => $cssID[0] ?? '',
             //[string] css-Klasse des Bildcontainers
-            'cssClass' => $cssID[1] != '' ? $cssID[1] : '',
+            'cssClass' => $cssID[1] ?? '',
             //[bool] true, wenn es sich um ein Bild handelt, das nicht in files/gallery_creator_albums/albumname gespeichert ist
             'externalFile' => $objPicture->externalFile,
             // [array] picture

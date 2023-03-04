@@ -1,42 +1,47 @@
 {
-  "name": "markocupic/gallery-creator-bundle",
-  "keywords": [
-    "Contao",
-    "gallery",
-    "album",
-    "plugin"
-  ],
-  "type": "contao-bundle",
-  "description": "gallery extension for Contao CMS",
-  "license": "LGPL-3.0+",
-  "authors": [
-    {
-      "name": "Marko Cupic",
-      "email": "m.cupic@gmx.ch",
-      "homepage": "https://github.com/markocupic",
-      "role": "Developer"
+    "name": "markocupic/gallery-creator-bundle",
+    "keywords": [
+        "Contao",
+        "gallery",
+        "album",
+        "plugin"
+    ],
+    "type": "contao-bundle",
+    "description": "gallery extension for Contao CMS",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Marko Cupic",
+            "email": "m.cupic@gmx.ch",
+            "homepage": "https://github.com/markocupic",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/markocupic/gallery-creator-bundle/issues",
+        "source": "https://github.com/markocupic/gallery-creator-bundle",
+        "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
+    },
+    "require": {
+        "contao/core-bundle": "^5.0",
+        "php": "^8.1",
+        "jaybizzle/crawler-detect": "^1.2",
+        "league/commonmark": "^2.3"
+    },
+    "require-dev": {
+        "contao/easy-coding-standard": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Markocupic\\GalleryCreatorBundle\\": "src/"
+        }
+    },
+    "extra": {
+        "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
+    },
+    "scripts": {
+        "cs-fixer": "@php tools/ecs/vendor/bin/ecs check config/ contao/ src/ tests/ --config tools/ecs/config.php --fix --ansi",
+        "unit-tests": "@php tools/phpunit/vendor/bin/phpunit -c tools/phpunit/phpunit.xml.dist",
+        "phpstan": "@php tools/phpstan/vendor/bin/phpstan analyse src tests"
     }
-  ],
-  "support": {
-    "issues": "https://github.com/markocupic/gallery-creator-bundle/issues",
-    "source": "https://github.com/markocupic/gallery-creator-bundle",
-    "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
-  },
-  "require": {
-    "contao/core-bundle": "^4.13 || ^5.0",
-    "php": "^8.0",
-    "jaybizzle/crawler-detect": "^1.2",
-    "league/commonmark": "^2.2"
-  },
-  "require-dev": {
-    "contao/easy-coding-standard": "^5.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Markocupic\\GalleryCreatorBundle\\": "src/"
-    }
-  },
-  "extra": {
-    "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
-  }
 }

@@ -16,7 +16,6 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
-use Contao\Controller;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\File\Metadata;
@@ -25,19 +24,19 @@ use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\String\HtmlDecoder;
+use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\Date;
 use Contao\Environment;
 use Contao\FilesModel;
 use Contao\Input;
 use Contao\PageModel;
+use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
-use Contao\Template;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
-use Contao\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
@@ -117,7 +116,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
         $arrSize = !empty($size) && \is_array($size) ? $size : null;
 
-        $params = '/' . $albumModel->alias;
+        $params = '/'.$albumModel->alias;
         $href = StringUtil::ampersand($objPage->getFrontendUrl($params));
 
         /** @var FilesModel $previewImage */
@@ -171,7 +170,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         return $arrAlbum;
     }
 
-    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): ?FilesModel
+    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): FilesModel|null
     {
         if (null === ($pictureModel = GalleryCreatorPicturesModel::findByPk($albumModel->thumb))) {
             $pictureModel = GalleryCreatorPicturesModel::findOneByPid($albumModel->id);
@@ -188,7 +187,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      * @throws Exception
      * @throws DoctrineDBALDriverException
      */
-    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel, bool $blnOnlyAllowed = false): ?array
+    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel, bool $blnOnlyAllowed = false): array|null
     {
         $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
 
@@ -229,10 +228,10 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      */
     protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $albumModel): void
     {
-        $pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : StringUtil::specialchars($this->pageModel->description);
+        $pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : StringUtil::specialchars($pageModel->description);
     }
 
-    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
+    protected function triggerGenerateFrontendTemplateHook(FragmentTemplate $template, GalleryCreatorAlbumsModel $albumModel = null): void
     {
         // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
         if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
@@ -247,9 +246,9 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      *
      * @throws DoctrineDBALException
      */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
     {
-        $template->album = $this->getAlbumData($albumModel, $contentModel);
+        $template->set('album', $this->getAlbumData($albumModel, $contentModel));
     }
 
     /**
@@ -258,11 +257,9 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */
-    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, $template, PageModel $pageModel): void
+    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
     {
-
-
-        $template->detailPagination = '';
+        $template->set('detailPagination', '');
 
         // Picture sorting
         $arrSorting = empty($contentModel->gcPictureSorting) || empty($contentModel->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$contentModel->gcPictureSorting, $contentModel->gcPictureSortingDirection];
@@ -282,30 +279,26 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $perPage = (int) $contentModel->gcThumbsPerPage;
 
-        if ($perPage > 0)
-        {
-            $id = 'page_d' . $contentModel->id;
+        if ($perPage > 0) {
+            $id = 'page_d'.$contentModel->id;
             $page = Input::get($id) ?? 1;
+            $offset = ($page - 1) * $perPage;
+
             $total = $this->connection->fetchOne(
                 'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
                 ['1', $albumModel->id]
             );
 
-
             // Do not index or cache the page if the page number is outside the range
-            if ($page < 1 || $page > max(ceil($total/$perPage), 1))
-            {
+            if ($page < 1 || $page > max(ceil($total / $perPage), 1)) {
                 throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
             }
 
-            $offset = ($page - 1) * $perPage;
-            $limit = min($perPage + $offset, $total);
+            $pagination = new Pagination($total, $perPage, Config::get('maxPaginationLinks'), $id);
+            $template->detailPagination = $pagination->generate("\n  ");
 
-            $objPagination = new Pagination($total, $perPage, Config::get('maxPaginationLinks'), $id);
-            $template->detailPagination = $objPagination->generate("\n  ");
-
-            $qb->setFirstResult($pagination->getOffset());
-            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($offset);
+            $qb->setMaxResults($perPage);
         }
 
         $arrPictures = [];
@@ -336,6 +329,6 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         }
 
         // Add pictures to the template.
-        $template->arrPictures = array_values($arrPictures);
+        $template->set('arrPictures', array_values($arrPictures));
     }
 }

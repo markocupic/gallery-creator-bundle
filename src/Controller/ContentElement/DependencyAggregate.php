@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -26,26 +26,16 @@ use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 
 final class DependencyAggregate
 {
-    public AlbumUtil $albumUtil;
-    public Connection $connection;
-    public MarkdownUtil $markdownUtil;
-    public PictureUtil $pictureUtil;
-    public SecurityUtil $securityUtil;
-    public ScopeMatcher $scopeMatcher;
-    public ResponseContextAccessor $responseContextAccessor;
-    public InsertTagParser $insertTagParser;
-    public HtmlDecoder $htmlDecoder;
-
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, MarkdownUtil $markdownUtil, PictureUtil $pictureUtil, SecurityUtil $securityUtil, ScopeMatcher $scopeMatcher, ResponseContextAccessor $responseContextAccessor, InsertTagParser $insertTagParser, HtmlDecoder $htmlDecoder)
-    {
-        $this->albumUtil = $albumUtil;
-        $this->connection = $connection;
-        $this->markdownUtil = $markdownUtil;
-        $this->pictureUtil = $pictureUtil;
-        $this->securityUtil = $securityUtil;
-        $this->scopeMatcher = $scopeMatcher;
-        $this->responseContextAccessor = $responseContextAccessor;
-        $this->insertTagParser = $insertTagParser;
-        $this->htmlDecoder = $htmlDecoder;
+    public function __construct(
+        public readonly AlbumUtil $albumUtil,
+        public readonly Connection $connection,
+        public readonly MarkdownUtil $markdownUtil,
+        public readonly PictureUtil $pictureUtil,
+        public readonly SecurityUtil $securityUtil,
+        public readonly ScopeMatcher $scopeMatcher,
+        public readonly ResponseContextAccessor $responseContextAccessor,
+        public readonly InsertTagParser $insertTagParser,
+        public readonly HtmlDecoder $htmlDecoder,
+    ) {
     }
 }

@@ -12,11 +12,6 @@ services:
             $imageFactory: '@contao.image.factory'
             $insertTagParser: '@contao.insert_tag.parser'
 
-    _instanceof:
-        Symfony\Bundle\FrameworkBundle\Controller\AbstractController:
-            calls:
-                - [ setContainer, [ '@service_container' ] ]
-
     Markocupic\GalleryCreatorBundle\:
         resource: ../src/
         exclude: ../src/{DependencyInjection,Model}

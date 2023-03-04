@@ -18,6 +18,7 @@ use Contao\Backend;
 use Contao\Config;
 use Contao\Controller;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
+use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Image\ImageFactory;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
@@ -45,33 +46,28 @@ use Twig\Environment as TwigEnvironment;
 
 class GalleryCreatorPictures
 {
-    private ContaoFramework $framework;
-    private RequestStack $requestStack;
-    private Connection $connection;
-    private FileUtil $fileUtil;
-    private Security $security;
-    private TranslatorInterface $translator;
-    private ImageFactory $imageFactory;
-    private TwigEnvironment $twig;
-    private CacheManager $cacheManager;
+    private Adapter $backend;
+    private Adapter $controller;
+    private Adapter $image;
+    private Adapter $stringUtil;
+    private Adapter $message;
+    private Adapter $system;
+    private Adapter $albums;
+    private Adapter $pictures;
 
-    private string $projectDir;
-    private string $galleryCreatorUploadPath;
-
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, FileUtil $fileUtil, Security $security, TranslatorInterface $translator, ImageFactory $imageFactory, TwigEnvironment $twig, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath)
-    {
-        $this->framework = $framework;
-        $this->requestStack = $requestStack;
-        $this->connection = $connection;
-        $this->fileUtil = $fileUtil;
-        $this->security = $security;
-        $this->translator = $translator;
-        $this->imageFactory = $imageFactory;
-        $this->twig = $twig;
-        $this->cacheManager = $cacheManager;
-        $this->projectDir = $projectDir;
-        $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
-
+    public function __construct(
+        private readonly ContaoFramework $framework,
+        private readonly RequestStack $requestStack,
+        private readonly Connection $connection,
+        private readonly FileUtil $fileUtil,
+        private readonly Security $security,
+        private readonly TranslatorInterface $translator,
+        private readonly ImageFactory $imageFactory,
+        private readonly TwigEnvironment $twig,
+        private readonly CacheManager $cacheManager,
+        private readonly string $projectDir,
+        private readonly string $galleryCreatorUploadPath,
+    ) {
         // Adapters
         $this->backend = $this->framework->getAdapter(Backend::class);
         $this->controller = $this->framework->getAdapter(Controller::class);
@@ -189,6 +185,7 @@ class GalleryCreatorPictures
 
                             // Check if user is allowed to move pictures inside the source album
                         }
+
                         if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_MOVE_IMAGES, $sourceAlbumId)) {
                             $this->message->addInfo($this->translator->trans('MSC.notAllowedMovePictures', [$sourceAlbumId], 'contao_default'));
                             $this->controller->redirect($this->system->getReferer());

@@ -39,23 +39,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FileUtil
 {
-    private RequestStack $requestStack;
-    private Connection $connection;
-    private TranslatorInterface $translator;
-    private string $projectDir;
-    private bool $galleryCreatorCopyImagesOnImport;
-    private array $galleryCreatorValidExtensions;
-    private ?LoggerInterface $logger;
-
-    public function __construct(RequestStack $requestStack, Connection $connection, TranslatorInterface $translator, string $projectDir, bool $galleryCreatorCopyImagesOnImport, array $galleryCreatorValidExtensions, LoggerInterface $logger = null)
-    {
-        $this->requestStack = $requestStack;
-        $this->connection = $connection;
-        $this->translator = $translator;
-        $this->projectDir = $projectDir;
-        $this->galleryCreatorCopyImagesOnImport = $galleryCreatorCopyImagesOnImport;
-        $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly RequestStack $requestStack,
+        private readonly Connection $connection,
+        private readonly TranslatorInterface $translator,
+        private readonly string $projectDir,
+        private readonly bool $galleryCreatorCopyImagesOnImport,
+        private readonly array $galleryCreatorValidExtensions,
+        private readonly LoggerInterface|null $logger = null,
+    ) {
     }
 
     /**

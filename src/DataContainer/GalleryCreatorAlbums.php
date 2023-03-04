@@ -59,20 +59,6 @@ use Twig\Error\SyntaxError;
 
 class GalleryCreatorAlbums
 {
-    protected CacheManager $cacheManager;
-    private ContaoFramework $framework;
-    private RequestStack $requestStack;
-    private FileUtil $fileUtil;
-    private Connection $connection;
-    private Security $security;
-    private TranslatorInterface $translator;
-    private ImageFactory $imageFactory;
-    private TwigEnvironment $twig;
-    private ReviseAlbumDatabase $reviseAlbumDatabase;
-    private string $projectDir;
-    private string $galleryCreatorUploadPath;
-    private array $galleryCreatorValidExtensions;
-
     // Adapters
     private Adapter $albums;
     private Adapter $backend;
@@ -87,22 +73,21 @@ class GalleryCreatorAlbums
      * @throws DoctrineDBALException
      * @throws Exception
      */
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, FileUtil $fileUtil, Connection $connection, Security $security, TranslatorInterface $translator, ImageFactory $imageFactory, TwigEnvironment $twig, ReviseAlbumDatabase $reviseAlbumDatabase, CacheManager $cacheManager, string $projectDir, string $galleryCreatorUploadPath, array $galleryCreatorValidExtensions)
-    {
-        $this->framework = $framework;
-        $this->requestStack = $requestStack;
-        $this->fileUtil = $fileUtil;
-        $this->connection = $connection;
-        $this->security = $security;
-        $this->translator = $translator;
-        $this->imageFactory = $imageFactory;
-        $this->twig = $twig;
-        $this->reviseAlbumDatabase = $reviseAlbumDatabase;
-        $this->cacheManager = $cacheManager;
-        $this->projectDir = $projectDir;
-        $this->galleryCreatorUploadPath = $galleryCreatorUploadPath;
-        $this->galleryCreatorValidExtensions = $galleryCreatorValidExtensions;
-
+    public function __construct(
+        private readonly ContaoFramework $framework,
+        private readonly RequestStack $requestStack,
+        private readonly FileUtil $fileUtil,
+        private readonly Connection $connection,
+        private readonly Security $security,
+        private readonly TranslatorInterface $translator,
+        private readonly ImageFactory $imageFactory,
+        private readonly TwigEnvironment $twig,
+        private readonly ReviseAlbumDatabase $reviseAlbumDatabase,
+        private readonly CacheManager $cacheManager,
+        private readonly string $projectDir,
+        private readonly string $galleryCreatorUploadPath,
+        private readonly array $galleryCreatorValidExtensions,
+    ) {
         // Adapters
         $this->albums = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
         $this->backend = $this->framework->getAdapter(Backend::class);
@@ -767,7 +752,6 @@ class GalleryCreatorAlbums
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onsubmit', priority: 100)]
     public function onSubmitInvalidateCache(DataContainer $dc): void
     {
-
         // Invalidate cache tags.
         $arrTags = [
             'contao.db.tl_gallery_creator_albums.'.$dc->id,

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -15,32 +15,19 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
-use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception;
-use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Twig\Environment as TwigEnvironment;
+use Doctrine\DBAL\Exception;
 
 class Content
 {
-    private AlbumUtil $albumUtil;
-    private Connection $connection;
-    private RequestStack $requestStack;
-    private TwigEnvironment $twig;
-
-    public function __construct(AlbumUtil $albumUtil, Connection $connection, RequestStack $requestStack, TwigEnvironment $twig)
-    {
-        $this->albumUtil = $albumUtil;
-        $this->connection = $connection;
-        $this->requestStack = $requestStack;
-        $this->twig = $twig;
+    public function __construct(
+        private readonly Connection $connection,
+    ) {
     }
-    
+
     /**
-     * Options callback
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     #[AsCallback(table: 'tl_content', target: 'fields.gcPublishSingleAlbum.options', priority: 100)]
     public function optionsCbGcPublishSingleAlbum(DataContainer $dc): array

@@ -16,8 +16,8 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\ContentModel;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
+use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\PageModel;
-use Contao\Template;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
@@ -25,20 +25,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
 
-#[AsContentElement(category: 'gallery_creator_elements', template: 'ce_gallery_creator_news')]
+#[AsContentElement(category: 'gallery_creator_elements')]
 class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 {
     public const TYPE = 'gallery_creator_news';
 
-    protected TwigEnvironment $twig;
     protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
     protected ContentModel|null $model = null;
     protected PageModel|null $pageModel = null;
 
-    public function __construct(DependencyAggregate $dependencyAggregate, TwigEnvironment $twig)
-    {
-        $this->twig = $twig;
-
+    public function __construct(
+        DependencyAggregate $dependencyAggregate,
+        private readonly TwigEnvironment $twig,
+    ) {
         parent::__construct($dependencyAggregate);
     }
 
@@ -82,7 +81,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
      *
      * @return Response|null
      */
-    protected function getResponse(Template $template, ContentModel $model, Request $request): Response
+    protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
     {
         // Add the picture collection and the pagination to the template.
         $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
@@ -94,7 +93,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         $this->albumUtil->countAlbumViews($this->activeAlbum);
 
         // Add content model to template.
-        $template->content = $model->row();
+        $template->set('content', $model->row());
 
         // Add meta tags to the page header.
         $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
@@ -108,7 +107,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
     /**
      * Augment template with some more properties of the active album.
      */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
     {
         parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
     }

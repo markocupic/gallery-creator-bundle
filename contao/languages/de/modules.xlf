@@ -19,8 +19,8 @@
         <target>Gallery-Creator</target>
       </trans-unit>
       <trans-unit id="CTE.gallery_creator.1">
-        <source>Include a Gallery Creator content element to your article.</source>
-        <target>Fügen Sie dem Artikel eine Gallery Creator Inhaltselement hinzu.</target>
+        <source>Include a Gallery Creator content element.</source>
+        <target>Fügt ein Gallery Creator Inhaltselement ein.</target>
       </trans-unit>
       <trans-unit id="CTE.gallery_creator_news.0">
         <source>Gallery Creator News</source>

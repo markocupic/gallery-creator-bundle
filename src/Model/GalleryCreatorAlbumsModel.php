@@ -36,12 +36,12 @@ class GalleryCreatorAlbumsModel extends Model
      *
      * @return static|null
      */
-    public static function getParentAlbum(self $albumsModel): ?self
+    public static function getParentAlbum(self $albumsModel): self|null
     {
         return $albumsModel->getRelated('pid');
     }
 
-    public static function getChildAlbumsIds(int $parentId, string $strSorting = '', int $iterationDepth = null): ?array
+    public static function getChildAlbumsIds(int $parentId, string $strSorting = '', int $iterationDepth = null): array|null
     {
         $arrChildAlbumsIds = [];
 

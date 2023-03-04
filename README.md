@@ -1,4 +1,4 @@
-<p><a href="https://github.com/markocupic"><img src="src/Resources/public/images/be_content_element_logo.svg"></a></p>
+![Marko Cupic](docs/logo.png?raw=true "Marko Cupic")
 
 # Gallery Creator Bundle
 
@@ -85,7 +85,7 @@ namespace App\EventListener;
 
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Contao\Template;
+use Contao\CoreBundle\Twig\FragmentTemplate;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
 #[AsHook(GalleryCreatorFrontendTemplateListener::HOOK, priority: 100)]
@@ -93,9 +93,9 @@ class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
-    public function __invoke(AbstractContentElementController $contentElement, Template $template, ?GalleryCreatorAlbumsModel $activeAlbum = null)
+    public function __invoke(AbstractContentElementController $contentElement, Fragmenttemplate $template, GalleryCreatorAlbumsModel|null $activeAlbum = null)
     {
-        $template->foo = 'bar';
+        $template->set('foo', 'bar');
     }
 }
 

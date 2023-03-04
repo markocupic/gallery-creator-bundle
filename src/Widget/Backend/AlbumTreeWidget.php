@@ -32,7 +32,7 @@ class AlbumTreeWidget extends Widget
     protected $blnSubmitInput = true;
     protected $blnForAttribute = true;
     protected $strTemplate = 'be_widget';
-    protected ?MenuItem $picker;
+    protected MenuItem|null $picker;
 
     public function __construct($arrAttributes = null)
     {

@@ -8,8 +8,9 @@
     "config": {
         "allow-plugins": {
             "contao-components/installer": true,
-            "contao/manager-plugin": false,
-            "contao-community-alliance/composer-plugin": true
+            "contao/manager-plugin": true,
+            "contao-community-alliance/composer-plugin": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

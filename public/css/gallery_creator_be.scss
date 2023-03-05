@@ -6,18 +6,20 @@
 }
 
 /**
- * Album detail
+ * Album- % picture info table
  */
-.gc-album-info-table {
-
+.gc-album-info-table, .gc-image-info-table {
   td {
     padding: .5rem;
   }
 
-  tr.odd > td {
-    background-color: #f3f3f5;
+  tr:nth-child(even) td {
+    background-color: #ffffff;
   }
 
+  tr:nth-child(odd) td {
+    background: #f3f3f5
+  }
 }
 
 div.gc-readonly input {

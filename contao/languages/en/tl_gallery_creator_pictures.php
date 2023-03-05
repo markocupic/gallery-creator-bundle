@@ -15,6 +15,9 @@ declare(strict_types=1);
 /*
  * Legends
  */
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['picture_info_legend'] = 'picture info';
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['title_legend'] = 'title legend';
+$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['thumb_legend'] = 'thumbnail legend';
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['media_integration'] = 'Embed a movie or a sound';
 $GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['expert_legend'] = 'Expert Settings';
 

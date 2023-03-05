@@ -1,4 +1,4 @@
-<div class="long widget" style="height:auto;">
+<div class="{% if not css_class is empty %}{{ css_class }} {% endif %}widget" style="height:auto;">
     <h3><label for="ctrl_picture">{{ basename }}</label></h3>
     <img src="{{ img_src }}" alt="{{ basename }}" style="margin-top:8px; max-width:100%; max-height:300px">
 </div>

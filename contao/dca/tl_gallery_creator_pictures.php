@@ -15,6 +15,7 @@ declare(strict_types=1);
 use Contao\BackendUser;
 use Contao\DC_Table;
 use Contao\System;
+use Contao\DataContainer;
 
 $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     'config'      => [
@@ -35,7 +36,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         'sorting'           => [
             'fields'       => ['sorting'],
             'headerFields' => ['date', 'name'],
-            'mode'         => 4,
+            'mode'         => DataContainer::MODE_PARENT,
             'panelLayout'  => 'filter;sorting,search,limit',
         ],
         'global_operations' => [
@@ -83,7 +84,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
     ],
     'palettes'    => [
         '__selector__' => ['addCustomThumb'],
-        'default'      => 'picture,cuser,date,imageInfo,addCustomThumb,title,caption;{media_integration:hide},socialMediaSRC,localMediaSRC',
+        'default'      => '
+            {picture_info_legend},picture,imageInfo;
+            {title_legend},title,caption,cuser,date;
+            {thumb_legend},addCustomThumb;
+            {media_integration:hide},socialMediaSRC,localMediaSRC
+        ',
     ],
     'subpalettes' => [
         'addCustomThumb' => 'customThumb',
@@ -106,46 +112,50 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
         'published'      => [
-            'toggle'    => true,
+            'eval'      => ['doNotCopy' => true],
             'filter'    => true,
             'inputType' => 'checkbox',
-            'eval'      => ['doNotCopy' => true],
             'sql'       => "char(1) NOT NULL default '1'",
+            'toggle'    => true,
+        ],
+        'picture'        => [
+            'eval' => ['tl_class' => 'w50'],
         ],
         'imageInfo'      => [
-            'eval' => ['tl_class' => 'clr'],
+            'eval' => ['tl_class' => 'w50'],
         ],
         'title'          => [
-            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum'],
+            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum', 'tl_class' => 'w50'],
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'externalFile'   => [
-            'eval' => ['isBoolean' => true],
-            'sql'  => "char(1) NOT NULL default ''",
-        ],
         'caption'        => [
             'cols'      => 20,
-            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'w50', 'allowHtml' => false, 'wrap' => 'soft'],
             'exclude'   => true,
             'inputType' => 'textarea',
             'rows'      => 5,
             'search'    => true,
             'sql'       => 'text NULL',
         ],
-        'picture'        => [
-            'eval' => ['tl_class' => 'clr'],
-        ],
         'date'           => [
-            'inputType' => 'text',
-            // A new uploaded image inherits the date of the parent album.
-            'default'   => time(),
+            'default'   => time(), // A new uploaded image inherits the date of its parent album.
+            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'w50 wizard ', 'submitOnChange' => false],
             'filter'    => true,
+            'inputType' => 'text',
             'sorting'   => true,
-            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'clr wizard ', 'submitOnChange' => false],
             'sql'       => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'cuser'          => [
+            'default'    => System::getContainer()->get('security.helper')->getUser() instanceof BackendUser ? System::getContainer()->get('security.helper')->getUser()->id : 0,
+            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'nospace' => true, 'tl_class' => 'clr w50'],
+            'filter'     => true,
+            'foreignKey' => 'tl_user.name',
+            'inputType'  => 'select',
+            'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
+            'sql'        => 'int(10) NOT NULL default 0',
         ],
         'addCustomThumb' => [
             'eval'      => ['submitOnChange' => true, 'isBoolean' => true],
@@ -161,15 +171,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'inputType' => 'fileTree',
             'sql'       => 'blob NULL',
         ],
-        'cuser'          => [
-            'default'    => BackendUser::getInstance()->id,
-            'eval'       => ['includeBlankOption' => true, 'blankOptionLabel' => 'noName', 'nospace' => true, 'tl_class' => 'clr w50'],
-            'filter'     => true,
-            'foreignKey' => 'tl_user.name',
-            'inputType'  => 'select',
-            'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
-            'sql'        => 'int(10) NOT NULL default 0',
-        ],
         'socialMediaSRC' => [
             'eval'      => ['tl_class' => 'clr'],
             'exclude'   => true,
@@ -183,6 +184,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'filter'    => true,
             'inputType' => 'fileTree',
             'sql'       => 'binary(16) NULL',
+        ],
+        'externalFile'   => [
+            'eval' => ['isBoolean' => true],
+            'sql'  => "char(1) NOT NULL default ''",
         ],
     ],
 ];

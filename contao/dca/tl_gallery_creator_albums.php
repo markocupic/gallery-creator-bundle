@@ -61,12 +61,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'editheader'                 => [
                 'attributes' => 'data-icon="gc-op-icon"',
                 'href'       => 'act=edit',
-                'icon'       => 'header.svg',
+                'icon'       => 'edit.svg',
             ],
             'edit'                       => [
                 'attributes' => 'data-icon="gc-op-icon"',
                 'href'       => 'table=tl_gallery_creator_pictures',
-                'icon'       => 'bundles/markocupicgallerycreator/images/list.svg',
+                'icon'       => 'children.svg',
             ],
             'delete'                     => [
                 'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false;Backend.getScrollOffset()"',
@@ -101,8 +101,21 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
     ],
     'palettes'    => [
         '__selector__'               => ['protected', 'includeChmod'],
-        'default'                    => '{title_legend},name,alias;{meta_legend},pageTitle,robots,description,serpPreview;{details_legend},date,location,teaser,photographer,visitors;{caption_legend},captionType,caption,markdownCaption;{album_preview_thumb_legend},sortBy,filePrefix,thumb;{gallery_creator_chmod_legend:hide},includeChmod;{insert_article_legend},insertArticlePre,insertArticlePost;{uploadDir_legend},assignedDir;{protection_legend:hide},protected',
-        'fileUpload'                 => '{upload_settings_legend},preserveFilename,imageResolution;{uploader_legend},fileUpload',
+        'default'                    => '
+            {title_legend},name,alias;
+            {meta_legend},pageTitle,robots,description,serpPreview;
+            {details_legend},date,location,photographer,visitors,teaser;
+            {caption_legend},captionType,caption,markdownCaption;
+            {album_preview_thumb_legend},sortBy,filePrefix,thumb;
+            {gallery_creator_chmod_legend:hide},includeChmod;
+            {insert_article_legend},insertArticlePre,insertArticlePost;
+            {uploadDir_legend},assignedDir;
+            {protection_legend:hide},protected
+        ',
+        'fileUpload'                 => '
+            {upload_settings_legend},preserveFilename,imageResolution;
+            {uploader_legend},fileUpload
+        ',
         'importImagesFromFilesystem' => '{upload_settings_legend},preserveFilename,multiSRC',
         'reviseDatabase'             => '{maintenance},reviseDatabase',
     ],
@@ -150,7 +163,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'text',
-            'eval'      => ['maxlength' => 255, 'decodeEntities' => true, 'tl_class' => 'w50'],
+            'eval'      => ['maxlength' => 255, 'decodeEntities' => true, 'tl_class' => 'w33'],
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'robots'            => [
@@ -158,20 +171,20 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'search'    => true,
             'inputType' => 'select',
             'options'   => ['index,follow', 'index,nofollow', 'noindex,follow', 'noindex,nofollow'],
-            'eval'      => ['tl_class' => 'w50', 'includeBlankOption' => true],
+            'eval'      => ['tl_class' => 'w33', 'includeBlankOption' => true],
             'sql'       => "varchar(32) NOT NULL default ''",
         ],
         'description'       => [
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'textarea',
-            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr'],
+            'eval'      => ['decodeEntities' => true, 'tl_class' => 'w33'],
             'sql'       => 'text NULL',
         ],
         'date'              => [
             'sorting'   => true,
             'default'   => time(),
-            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'w50 wizard', 'submitOnChange' => false],
+            'eval'      => ['mandatory' => true, 'datepicker' => true, 'rgxp' => 'date', 'tl_class' => 'w25 wizard', 'submitOnChange' => false],
             'inputType' => 'text',
             'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
@@ -179,10 +192,27 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'filter'    => true,
             'search'    => true,
             'sorting'   => true,
-            'eval'      => ['mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'eval'      => ['mandatory' => false, 'tl_class' => 'w25', 'submitOnChange' => false],
             'exclude'   => true,
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
+        ],
+        'photographer'      => [
+            'filter'    => true,
+            'search'    => true,
+            'sorting'   => true,
+            'eval'      => ['mandatory' => false, 'tl_class' => 'w25', 'submitOnChange' => false],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'sql'       => "varchar(255) NOT NULL default ''",
+        ],
+        'visitors'          => [
+            'eval'      => ['maxlength' => 10, 'tl_class' => 'w25', 'rgxp' => 'digit'],
+            'inputType' => 'text',
+            'sql'       => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'visitorsDetails'   => [
+            'sql' => 'blob NULL',
         ],
         'teaser'            => [
             'exclude'   => true,
@@ -190,29 +220,6 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'inputType' => 'textarea',
             'eval'      => ['style' => 'height:60px', 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
             'sql'       => 'text NULL',
-        ],
-        'photographer'      => [
-            'filter'    => true,
-            'search'    => true,
-            'sorting'   => true,
-            'eval'      => ['mandatory' => false, 'tl_class' => 'w50', 'submitOnChange' => false],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'sql'       => "varchar(255) NOT NULL default ''",
-        ],
-        'assignedDir'       => [
-            'eval'      => ['mandatory' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'],
-            'exclude'   => true,
-            'inputType' => 'fileTree',
-            'sql'       => 'blob NULL',
-        ],
-        'visitors'          => [
-            'eval'      => ['maxlength' => 10, 'tl_class' => 'w50', 'rgxp' => 'digit'],
-            'inputType' => 'text',
-            'sql'       => "int(10) unsigned NOT NULL default '0'",
-        ],
-        'visitorsDetails'   => [
-            'sql' => 'blob NULL',
         ],
         'captionType'       => [
             'filter'    => true,
@@ -337,6 +344,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'reviseDatabase'    => [
             'eval' => ['doNotShow' => true],
+        ],
+        'assignedDir'       => [
+            'eval'      => ['mandatory' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'],
+            'exclude'   => true,
+            'inputType' => 'fileTree',
+            'sql'       => 'blob NULL',
         ],
     ],
 ];

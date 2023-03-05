@@ -6,13 +6,16 @@
 }
 
 /**
- * Album detail
+ * Album- % picture info table
  */
-.gc-album-info-table td {
+.gc-album-info-table td, .gc-image-info-table td {
   padding: 0.5rem;
 }
-.gc-album-info-table tr.odd > td {
-  background-color: #f3f3f5;
+.gc-album-info-table tr:nth-child(even) td, .gc-image-info-table tr:nth-child(even) td {
+  background-color: #ffffff;
+}
+.gc-album-info-table tr:nth-child(odd) td, .gc-image-info-table tr:nth-child(odd) td {
+  background: #f3f3f5;
 }
 
 div.gc-readonly input {
@@ -159,5 +162,3 @@ div.gc-readonly input {
 .tl_gc_album_tree_widget .gc-item-picker > ul {
   padding-left: 0;
 }
-
-/*# sourceMappingURL=gallery_creator_be.css.map */

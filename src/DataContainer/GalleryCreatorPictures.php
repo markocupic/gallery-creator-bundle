@@ -79,11 +79,8 @@ class GalleryCreatorPictures
         $this->pictures = $this->framework->getAdapter(GalleryCreatorPicturesModel::class);
     }
 
-    /**
-     * Onload callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onload', priority: 110)]
-    public function onloadCallbackCheckPermissions(DataContainer $dc): void
+    public function checkPermissions(DataContainer $dc): void
     {
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
@@ -244,13 +241,10 @@ class GalleryCreatorPictures
         }
     }
 
-    /**
-     * Onload callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onload', priority: 100)]
-    public function onloadCallbackSetCorrectReferer(DataContainer $dc): void
+    public function setCorrectReferer(DataContainer $dc): void
     {
-        if (!$dc) {
+        if (empty($dc->id)) {
             return;
         }
 
@@ -266,13 +260,8 @@ class GalleryCreatorPictures
         }
     }
 
-    /**
-     * Onload callback.
-     *
-     * @throws \Exception
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onload', priority: 90)]
-    public function onloadCallbackRotateImage(DataContainer $dc): void
+    public function rotateImage(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -309,7 +298,7 @@ class GalleryCreatorPictures
     }
 
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.onsubmit', priority: 100)]
-    public function onSubmitInvalidateCache(DataContainer $dc): void
+    public function invalidateCacheOnSubmit(DataContainer $dc): void
     {
         $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
 
@@ -325,9 +314,6 @@ class GalleryCreatorPictures
         $this->cacheManager->invalidateTags($arrTags);
     }
 
-    /**
-     * Return the "toggle visibility" button.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.toggle.button', priority: 100)]
     public function toggleVisibility(array $row, string $href, string $label, string $title, string $icon, string $attributes): string
     {
@@ -353,9 +339,6 @@ class GalleryCreatorPictures
         return '<a href="'.$this->backend->addToUrl($href).'" title="'.StringUtil::specialchars($title).'" onclick="Backend.getScrollOffset();return AjaxRequest.toggleField(this,true)">'.Image::getHtml($icon, $label, 'data-icon="'.Image::getPath('visible.svg').'" data-icon-disabled="'.Image::getPath('invisible.svg').'" data-state="'.($row['published'] ? 1 : 0).'"').'</a> ';
     }
 
-    /**
-     * Button callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.edit.button', priority: 100)]
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.delete.button', priority: 100)]
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.operations.cut.button', priority: 100)]
@@ -389,9 +372,6 @@ class GalleryCreatorPictures
         return $this->image->getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
-    /**
-     * Child record callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'list.sorting.child_record', priority: 100)]
     public function childRecordCallback(array $arrRow): string
     {
@@ -432,7 +412,7 @@ class GalleryCreatorPictures
             $type = empty(trim((string) $arrRow['localMediaSRC'])) ? $this->translator->trans('GALLERY_CREATOR.localMedia', [], 'contao_default') : $this->translator->trans('GALLERY_CREATOR.socialMedia', [], 'contao_default');
             $iconSrc = 'bundles/markocupicgallerycreator/images/movie.svg';
             $hasMovie = sprintf(
-                '<div class="block" style="margin-bottom: 10px; line-height:1.7; display: flex; flex-wrap: wrap; align-items: center;"><img src="%s" style="margin-right: 6px;"> <span style="color:darkred; font-weight:500">%s:&nbsp;</span><a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
+                '<div class="block" style="margin-bottom: 10px; line-height:1.7; display: flex; flex-wrap: wrap; align-items: center;"><img src="%s" alt="has local media" style="margin-right: 6px;"> <span style="color:darkred; font-weight:500">%s:&nbsp;</span><a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
                 $iconSrc,
                 $type,
                 $src,
@@ -458,10 +438,23 @@ class GalleryCreatorPictures
             $src = $image->getUrl($this->projectDir);
         }
 
-        $return = sprintf('<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>', $key, $arrRow['headline'] ?? '', basename($filesModel->path), $file->width, $file->height, $this->backend->getReadableSize($file->filesize));
+        $return = sprintf(
+            '<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>',
+            $key,
+            $arrRow['headline'] ?? '',
+            basename($filesModel->path),
+            $file->width,
+            $file->height,
+            $this->backend->getReadableSize($file->filesize),
+        );
+
         $return .= $hasMovie;
-        $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" width="100"></div>' : null;
-        $return .= sprintf('<div class="limit_height%s block">%s</div>', ($config->get('thumbnails') ? ' h64' : ''), $this->stringUtil->specialchars($arrRow['caption']));
+        $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" alt="has movie" width="100"></div>' : null;
+        $return .= sprintf(
+            '<div class="limit_height%s block">%s</div>',
+            ($config->get('thumbnails') ? ' h64' : ''),
+            $this->stringUtil->specialchars($arrRow['caption']),
+        );
 
         return $return;
     }
@@ -496,11 +489,8 @@ class GalleryCreatorPictures
         $file->renameTo($targetPath);
     }
 
-    /**
-     * Input field callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'fields.picture.input_field', priority: 100)]
-    public function inputFieldCallbackPicture(DataContainer $dc): string
+    public function getPreviewPicture(DataContainer $dc): string
     {
         $objImg = $this->pictures->findByPk($dc->id);
 
@@ -519,6 +509,7 @@ class GalleryCreatorPictures
                 $this->twig->render(
                     '@MarkocupicGalleryCreator/Backend/picture.html.twig',
                     [
+                        'css_class' => $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['picture']['eval']['tl_class'] ?? null,
                         'basename' => basename($filesModel->path),
                         'img_src' => $src,
                     ]
@@ -529,11 +520,8 @@ class GalleryCreatorPictures
         return '';
     }
 
-    /**
-     * Input field callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'fields.imageInfo.input_field', priority: 100)]
-    public function inputFieldCallbackImageInfo(DataContainer $dc): string
+    public function getImageInformationTable(DataContainer $dc): string
     {
         $picturesModel = $this->pictures->findByPk($dc->id);
 
@@ -560,6 +548,7 @@ class GalleryCreatorPictures
                 '@MarkocupicGalleryCreator/Backend/image_information.html.twig',
                 [
                     'model' => $picturesModel->row(),
+                    'css_class' => $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['imageInfo']['eval']['tl_class'] ?? null,
                     'trans' => [
                         'picture_id' => $translator->trans('tl_gallery_creator_pictures.id.0', [], 'contao_default'),
                         'picture_info' => $translator->trans('tl_gallery_creator_pictures.imageInfo.0', [], 'contao_default'),
@@ -576,20 +565,14 @@ class GalleryCreatorPictures
         ))->getContent();
     }
 
-    /**
-     * Edit buttons callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'edit.buttons', priority: 100)]
-    public function editButtonsCallback(array $buttons, DataContainer $dc): array
+    public function setSubmitButtons(array $buttons, DataContainer $dc): array
     {
         unset($buttons['saveNcreate'], $buttons['copy']);
 
         return $buttons;
     }
 
-    /**
-     * Ondelete callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.ondelete', priority: 100)]
     public function ondeleteCallback(DataContainer $dc, int $undoInt): void
     {

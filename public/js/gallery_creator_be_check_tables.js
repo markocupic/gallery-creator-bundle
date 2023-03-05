@@ -178,7 +178,7 @@
                             setTimeout(function () {
                                 let statusBox = new Element('p#statusBoxChecksCompleted', {
                                     'class': 'gc-check-tables-status-box',
-                                    text: 'All checks completed.',
+                                    text: 'All checks successfully completed.',
                                 });
                                 statusBox.inject($$('.tl_folder_top')[0]);
                             }, 2000);

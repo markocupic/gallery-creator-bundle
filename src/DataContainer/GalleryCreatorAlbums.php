@@ -37,6 +37,7 @@ use Contao\Image;
 use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
@@ -97,6 +98,7 @@ class GalleryCreatorAlbums
         $this->pictures = $this->framework->getAdapter(GalleryCreatorPicturesModel::class);
         $this->stringUtil = $this->framework->getAdapter(StringUtil::class);
         $this->system = $this->framework->getAdapter(System::class);
+        $this->config = $this->framework->getAdapter(Config::class);
 
         $request = $this->requestStack->getCurrentRequest();
 
@@ -105,11 +107,8 @@ class GalleryCreatorAlbums
         }
     }
 
-    /**
-     * Onload callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
-    public function onloadCallbackCheckPermissions(DataContainer $dc): void
+    public function checkPermissions(DataContainer $dc): void
     {
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
@@ -210,13 +209,8 @@ class GalleryCreatorAlbums
         }
     }
 
-    /**
-     * Onload callback.
-     *
-     * @throws DoctrineDBALException
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
-    public function onloadCallbackSetPalettes(DataContainer $dc): void
+    public function setPalettes(DataContainer $dc): void
     {
         $user = $this->security->getUser();
 
@@ -239,7 +233,7 @@ class GalleryCreatorAlbums
 
         $dca = &$GLOBALS['TL_DCA']['tl_gallery_creator_albums'];
 
-        // Permit revise database to admins only
+        // Allow database revise to admins only
         if (!$user->admin) {
             unset(
                 $dca['list']['global_operations']['reviseDatabase']
@@ -273,11 +267,10 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Onload callback.
      * Handle image sorting ajax requests.
      */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
-    public function onloadCallbackSortPictures(): void
+    public function sortPictures(): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -312,57 +305,6 @@ class GalleryCreatorAlbums
     }
 
     /**
-     * Revise tables.
-     * This method is called by self::__construct();.
-     *
-     * @throws DoctrineDBALException
-     * @throws Exception
-     */
-    public function reviseTables(): void
-    {
-        $user = $this->security->getUser();
-        $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
-
-        if ($request->query->has('isAjaxRequest')) {
-            // Revise table in the backend
-            if ($request->query->has('checkTables')) {
-                if ($request->query->has('getAlbumIDS')) {
-                    $arrIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()');
-
-                    throw new ResponseException(new JsonResponse(['ids' => $arrIds]));
-                }
-
-                if ($request->query->has('albumId')) {
-                    $albumsModel = $this->albums->findByPk($request->query->get('albumId', 0));
-
-                    if (null !== $albumsModel) {
-                        if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
-                            // Delete damaged data records
-                            $blnCleanDb = $user->admin && $request->query->has('reviseTables');
-
-                            $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
-
-                            if ($session->has('gc_error') && \is_array($session->get('gc_error'))) {
-                                if (!empty($session->get('gc_error'))) {
-                                    $arrErrors = $session->get('gc_error');
-
-                                    if (!empty($arrErrors)) {
-                                        throw new ResponseException(new JsonResponse(['errors' => $arrErrors]));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $session->remove('gc_error');
-                }
-            }
-
-            throw new ResponseException(new Response('', Response::HTTP_NO_CONTENT));
-        }
-    }
-
-    /**
      * Return the "toggle visibility" button.
      */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.operations.toggle.button', priority: 100)]
@@ -384,10 +326,10 @@ class GalleryCreatorAlbums
                 $icon = preg_replace('/\.svg$/i', '_.svg', $icon); // see #8126
             }
 
-            return Image::getHtml($icon).' ';
+            return $this->image->getHtml($icon).' ';
         }
 
-        return '<a href="'.$this->backend->addToUrl($href).'" title="'.StringUtil::specialchars($title).'" onclick="Backend.getScrollOffset();return AjaxRequest.toggleField(this,true)">'.Image::getHtml($icon, $label, 'data-icon="'.Image::getPath('visible.svg').'" data-icon-disabled="'.Image::getPath('invisible.svg').'" data-state="'.($row['published'] ? 1 : 0).'"').'</a> ';
+        return '<a href="'.$this->backend->addToUrl($href).'" title="'.$this->stringUtil->specialchars($title).'" onclick="Backend.getScrollOffset();return AjaxRequest.toggleField(this,true)">'.$this->image->getHtml($icon, $label, 'data-icon="'.$this->image->getPath('visible.svg').'" data-icon-disabled="'.$this->image->getPath('invisible.svg').'" data-state="'.($row['published'] ? 1 : 0).'"').'</a> ';
     }
 
     /**
@@ -426,13 +368,8 @@ class GalleryCreatorAlbums
         return $this->image->getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
-    /**
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.reviseDatabase.input_field', priority: 100)]
-    public function inputFieldCallbackReviseDatabase(): string
+    public function getReviseDatabaseWidget(): string
     {
         $translator = $this->system->getContainer()->get('translator');
 
@@ -451,11 +388,8 @@ class GalleryCreatorAlbums
         ))->getContent();
     }
 
-    /**
-     * Input field callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.fileUpload.input_field', priority: 100)]
-    public function inputFieldCallbackFileUpload(): string
+    public function getFileUploadWidget(): string
     {
         // Create the template object
         $objTemplate = new BackendTemplate('be_gc_uploader');
@@ -475,11 +409,6 @@ class GalleryCreatorAlbums
         return $objTemplate->parse();
     }
 
-    /**
-     * Label callback.
-     *
-     * @throws DoctrineDBALException
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.label.label', priority: 100)]
     public function labelCallback(array $row, string $label): string
     {
@@ -493,55 +422,38 @@ class GalleryCreatorAlbums
         $label = str_replace('#icon#', $icon, $label);
         $label = str_replace('#count_pics#', (string) $countImages, $label);
 
-        $config = $this->framework->getAdapter(Config::class);
-
-        return str_replace('#datum#', date($config->get('dateFormat'), (int) $row['date']), $label);
+        return str_replace('#datum#', date($this->config->get('dateFormat'), (int) $row['date']), $label);
     }
 
-    /**
-     * Load callback.
-     */
-    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.imageResolution.load', priority: 100)]
-    public function loadCallbackImageResolution(): string
-    {
-        $user = $this->security->getUser();
-
-        return $user->gcImageResolution;
-    }
-
-    /**
-     * Buttons callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'edit.buttons', priority: 100)]
-    public function editButtonsCallback(array $arrButtons, DataContainer $dc): array
+    public function setFormSubmitButtons(array $arrButtons, DataContainer $dc): array
     {
         $request = $this->requestStack->getCurrentRequest();
 
         if ('reviseDatabase' === $request->query->get('key')) {
-            // Remove buttons
+            // Remove useless buttons
             unset($arrButtons['saveNcreate'], $arrButtons['saveNclose']);
 
-            $arrButtons['save'] = '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">'.$this->translator->trans('tl_gallery_creator_albums.reviseTablesBtn', [], 'contao_default').'</button>';
+            // Replace the save button with the revise table button.
+            $arrButtons['save'] = sprintf(
+                '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">%s</button>',
+                $this->translator->trans('tl_gallery_creator_albums.reviseTablesBtn', [], 'contao_default'),
+            );
         }
 
         if ('fileUpload' === $request->query->get('key')) {
-            // Remove buttons
+            // Remove useless buttons
             unset($arrButtons['save'], $arrButtons['saveNclose'], $arrButtons['saveNcreate']);
         }
 
         if ('importImagesFromFilesystem' === $request->query->get('key')) {
-            // Remove buttons
+            // Remove useless buttons
             unset($arrButtons['saveNclose'], $arrButtons['saveNcreate'], $arrButtons['uploadNback']);
         }
 
         return $arrButtons;
     }
 
-    /**
-     * Ondelete callback.
-     *
-     * @throws \Exception
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.ondelete', priority: 100)]
     public function ondeleteCallback(DataContainer $dc, int $undoId): void
     {
@@ -574,8 +486,8 @@ class GalleryCreatorAlbums
                     $fileUuid = $picturesModel->uuid;
 
                     // Delete the picture from the filesystem if it is not used by another album
-                    if (null !== $this->pictures->findByUuid($fileUuid)) {
-                        $filesModel = $files->findByUuid($fileUuid);
+                    if (null !== $this->pictures->findOneByUuid($fileUuid)) {
+                        $filesModel = $files->findOneByUuid($fileUuid);
 
                         if (null !== $filesModel) {
                             $file = new File($filesModel->path);
@@ -585,7 +497,7 @@ class GalleryCreatorAlbums
                 }
             }
 
-            $filesModel = $files->findByUuid($albumsModel->assignedDir);
+            $filesModel = $files->findOneByUuid($albumsModel->assignedDir);
 
             if (null !== $filesModel) {
                 $finder = new Finder();
@@ -602,13 +514,8 @@ class GalleryCreatorAlbums
         }
     }
 
-    /**
-     * Onload callback.
-     *
-     * @throws \Exception
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
-    public function onloadCallbackCheckFolderSettings(DataContainer $dc): void
+    public function checkAlbumFolder(DataContainer $dc): void
     {
         // Create the upload directory if it doesn't already exist
         $objFolder = new Folder($this->galleryCreatorUploadPath);
@@ -625,13 +532,8 @@ class GalleryCreatorAlbums
         }
     }
 
-    /**
-     * Onload callback.
-     *
-     * @throws DoctrineDBALException
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
-    public function onloadCallbackFileUpload(DataContainer $dc): void
+    public function uploadFile(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -648,7 +550,7 @@ class GalleryCreatorAlbums
         // Load language file
         $this->controller->loadLanguageFile('tl_files');
 
-        // Store uploaded files to $_FILES['file']
+        // Store uploaded files under $_FILES['file']
         $strName = 'file';
 
         // Return if there is no album
@@ -660,8 +562,8 @@ class GalleryCreatorAlbums
 
         $files = $this->framework->getAdapter(FilesModel::class);
 
-        // Return if there is no album directory
-        $objUploadDir = $files->findByUuid($albumsModel->assignedDir);
+        // Return if the album directory does not exist.
+        $objUploadDir = $files->findOneByUuid($albumsModel->assignedDir);
 
         if (null === $objUploadDir || !is_dir($this->projectDir.'/'.$objUploadDir->path)) {
             $this->message->addError('No upload directory defined in the album settings!');
@@ -699,13 +601,8 @@ class GalleryCreatorAlbums
         }
     }
 
-    /**
-     * Onload callback.
-     *
-     * @throws Exception
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
-    public function onloadCallbackImportFromFilesystem(DataContainer $dc): void
+    public function importFromFilesystem(DataContainer $dc): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -746,11 +643,8 @@ class GalleryCreatorAlbums
         throw new RedirectResponseException('contao?do=gallery_creator');
     }
 
-    /**
-     * Onsubmit callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onsubmit', priority: 100)]
-    public function onSubmitInvalidateCache(DataContainer $dc): void
+    public function invalidateCacheOnAlbumUpdate(DataContainer $dc): void
     {
         // Invalidate cache tags.
         $arrTags = [
@@ -771,7 +665,7 @@ class GalleryCreatorAlbums
      * @throws SyntaxError
      */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.thumb.input_field', priority: 100)]
-    public function inputFieldCallbackThumb(): string
+    public function getAlbumThumbsWidget(): string
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -810,7 +704,7 @@ class GalleryCreatorAlbums
             $stmt = $this->connection->executeQuery(
                 'SELECT * FROM tl_gallery_creator_pictures WHERE pid IN (?) ORDER BY id',
                 [$arrChildAlbums],
-                [Connection::PARAM_INT_ARRAY]
+                [ArrayParameterType::INTEGER]
             );
 
             while (false !== ($arrPicture = $stmt->fetchAssociative())) {
@@ -830,7 +724,7 @@ class GalleryCreatorAlbums
             foreach ($arrData as $ii => $arrItem) {
                 $files = $this->framework->getAdapter(FilesModel::class);
 
-                $filesModel = $files->findByUuid($arrItem['uuid']);
+                $filesModel = $files->findOneByUuid($arrItem['uuid']);
 
                 if (null !== $filesModel) {
                     if (file_exists($filesModel->getAbsolutePath())) {
@@ -842,9 +736,7 @@ class GalleryCreatorAlbums
 
                     $src = $file->path;
 
-                    $config = $this->framework->getAdapter(Config::class);
-
-                    if ($file->height <= $config->get('gdMaxImgHeight') && $file->width <= $config->get('gdMaxImgWidth')) {
+                    if ($file->height <= $this->config->get('gdMaxImgHeight') && $file->width <= $this->config->get('gdMaxImgWidth')) {
                         $image = $this->imageFactory->create(
                             $this->projectDir.'/'.$src,
                             [80, 60, 'center_center']
@@ -883,11 +775,8 @@ class GalleryCreatorAlbums
         ))->getContent();
     }
 
-    /**
-     * Save callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.filePrefix.save', priority: 100)]
-    public function saveCallbackValidateFilePrefix(string $strPrefix, DataContainer $dc): string
+    public function validateFilePrefix(string $strPrefix, DataContainer $dc): string
     {
         $i = 0;
 
@@ -936,11 +825,8 @@ class GalleryCreatorAlbums
         return '';
     }
 
-    /**
-     * Save callback.
-     */
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.sortBy.save', priority: 100)]
-    public function saveCallbackSortBy(string $varValue, DataContainer $dc): string
+    public function sortAlbumEntities(string $varValue, DataContainer $dc): string
     {
         if ('----' === $varValue) {
             return $varValue;
@@ -958,7 +844,7 @@ class GalleryCreatorAlbums
         while ($picturesModels->next()) {
             $files = $this->framework->getAdapter(FilesModel::class);
 
-            $filesModel = $files->findByUuid($picturesModels->uuid);
+            $filesModel = $files->findOneByUuid($picturesModels->uuid);
 
             $file = new File($filesModel->path);
             $arrFiles[$filesModel->path] = [
@@ -1069,16 +955,67 @@ class GalleryCreatorAlbums
         return $strAlias;
     }
 
-    /**
-     * Save callback.
-     *
-     * @throws DoctrineDBALException
-     */
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.imageResolution.load', priority: 100)]
+    public function getImageResolution(): string
+    {
+        $user = $this->security->getUser();
+
+        return $user->gcImageResolution;
+    }
+
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.imageResolution.save', priority: 100)]
-    public function saveCallbackImageResolution(string $value): void
+    public function setImageResolution(string $value): void
     {
         $user = $this->security->getUser();
 
         $this->connection->update('tl_user', ['gcImageResolution' => $value], ['id' => $user->id]);
+    }
+
+    /**
+     * @throws DoctrineDBALException
+     * @throws Exception
+     */
+    private function reviseTables(): void
+    {
+        $user = $this->security->getUser();
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
+
+        if ($request->query->has('isAjaxRequest')) {
+            // Revise table in the backend
+            if ($request->query->has('checkTables')) {
+                if ($request->query->has('getAlbumIDS')) {
+                    $arrIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()');
+
+                    throw new ResponseException(new JsonResponse(['ids' => $arrIds]));
+                }
+
+                if ($request->query->has('albumId')) {
+                    $albumsModel = $this->albums->findByPk($request->query->get('albumId', 0));
+
+                    if (null !== $albumsModel) {
+                        if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
+                            // Delete damaged data records
+                            $blnCleanDb = $user->admin && $request->query->has('reviseTables');
+
+                            $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
+
+                            if ($session->has('gc_error') && \is_array($session->get('gc_error'))) {
+                                if (!empty($session->get('gc_error'))) {
+                                    $arrErrors = $session->get('gc_error');
+
+                                    if (!empty($arrErrors)) {
+                                        throw new ResponseException(new JsonResponse(['errors' => $arrErrors]));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $session->remove('gc_error');
+                }
+            }
+
+            throw new ResponseException(new Response('', Response::HTTP_NO_CONTENT));
+        }
     }
 }

@@ -416,7 +416,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             return $jsonLd;
         };
 
-        $template->set('items', $items);
+        $template->items = $items;
 
         return $template->getResponse()->getContent();
     }

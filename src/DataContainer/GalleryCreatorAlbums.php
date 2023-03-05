@@ -69,6 +69,8 @@ class GalleryCreatorAlbums
     private Adapter $pictures;
     private Adapter $stringUtil;
     private Adapter $system;
+    private Adapter $config;
+
 
     /**
      * @throws DoctrineDBALException

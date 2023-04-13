@@ -1,4 +1,4 @@
-{# gallery_creator_album_list_view.html.twig #}
+{# _album_list_view.html.twig #}
 
 <!-- indexer::stop -->
 <div class="gc-album-list-view">
@@ -7,7 +7,7 @@
     <ul class="gc-album-list">
         {% for album in albums %}
             <li class="gc-album-list-item{% if album.cssClass %} {{ album.cssClass }}{% endif %}" data-id="{{ album.id }}">
-                {{ include ('@Contao/gallery_creator_album', {content: content, album: album}) }}
+                {{ include ('@Contao_MarkocupicGalleryCreatorBundle/content_element/_album.html.twig', {content: content, album: album}) }}
             </li>
         {% endfor %}
     </ul>

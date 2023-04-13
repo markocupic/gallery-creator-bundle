@@ -120,7 +120,7 @@ namespace App\EventListener;
 use Contao\BackendUser;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
 class GalleryCreatorImagePostInsertListener

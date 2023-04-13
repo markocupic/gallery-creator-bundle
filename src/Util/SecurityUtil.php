@@ -19,7 +19,7 @@ use Contao\FrontendUser;
 use Contao\StringUtil;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class SecurityUtil
 {

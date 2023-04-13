@@ -16,7 +16,7 @@ namespace Markocupic\GalleryCreatorBundle\EventListener\ContaoHook;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * This is a demo class!

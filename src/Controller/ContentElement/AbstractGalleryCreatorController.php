@@ -105,9 +105,9 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         global $objPage;
 
         // Count images
-        $countPictures = $this->connection
+        $pictureCount = $this->connection
             ->fetchOne(
-                'SELECT COUNT(id) AS countPictures FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
+                'SELECT COUNT(id) AS pictureCount FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
                 [$albumModel->id, '1'],
             )
         ;
@@ -125,7 +125,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $arrCssClasses = [];
         $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $albumModel->pid);
         $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
-        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
+        $arrCssClasses[] = !$pictureCount ? 'gc-empty-album' : null;
 
         // Do not show child albums, in news elements
         if (GalleryCreatorNewsController::TYPE === $contentElementModel->type) {
@@ -153,7 +153,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
         $arrAlbum['meta'] = new Metadata($arrMeta);
         $arrAlbum['href'] = $href;
-        $arrAlbum['countPictures'] = $countPictures;
+        $arrAlbum['pictureCount'] = $pictureCount;
 
         $arrAlbum['cssClass'] = !(empty(implode(' ', array_filter($arrCssClasses)))) ? implode(' ', array_filter($arrCssClasses)) : false;
         $arrAlbum['figureUuid'] = $previewImage ? $previewImage->uuid : null;
@@ -164,7 +164,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         ];
 
         $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
-        $arrAlbum['countChildAlbums'] = $childAlbums ? \count($childAlbums) : 0;
+        $arrAlbum['childAlbumCount'] = $childAlbums ? \count($childAlbums) : 0;
         $arrAlbum['childAlbums'] = $childAlbums;
 
         return $arrAlbum;

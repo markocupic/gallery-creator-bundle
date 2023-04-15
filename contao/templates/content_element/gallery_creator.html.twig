@@ -1,5 +1,9 @@
-{# gallery_creator.html.twig #}
+{# content_element/gallery_creator.html.twig #}
+
 {% extends "@Contao/content_element/_base.html.twig" %}
+{% use '@Contao_MarkocupicGalleryCreatorBundle/component/_album_list_view.html.twig' %}
+{% use '@Contao_MarkocupicGalleryCreatorBundle/component/_album_detail_view.html.twig' %}
+{% use "@Contao_MarkocupicGalleryCreatorBundle/component/_album.html.twig" %}
 
 {% block content %}
 
@@ -10,11 +14,23 @@
     {% endif %}
 
     {% if showAlbumDetail %}
-        {% include '@Contao_MarkocupicGalleryCreatorBundle/content_element/_album_detail_view.html.twig' with _context %}
+        {% block album_detail_view %}
+            {#
+            Do your template modification
+            (e.g. add css classes, replace tag names, etc.) below here:
+            #}
+            {{ parent() }}
+        {% endblock %}
     {% endif %}
 
     {% if showAlbumListing %}
-        {% include '@Contao_MarkocupicGalleryCreatorBundle/content_element/_album_list_view.html.twig' with _context %}
+        {% block album_list_view %}
+            {#
+            Do your template modification
+            (e.g. add css classes, replace tag names, etc.) below here:
+            #}
+            {{ parent() }}
+        {% endblock %}
     {% endif %}
 
 {% endblock %}

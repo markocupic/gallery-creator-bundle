@@ -1,0 +1,73 @@
+{# _album.html.twig #}
+{% trans_default_domain 'contao_default' %}
+
+{% block album_component %}
+
+    <div{{ attrs(album_inner_attributes|default).addClass('gc-album-list-inner') }}>
+        {% block album_figure %}
+            <div{{ attrs(album_figure_attributes|default).addClass('gc-album-list-figure') }}>
+                {{ contao_figure(album.figureUuid, album.figureSize, album.figureOptions) }}
+            </div>
+        {% endblock %}
+
+        <div{{ attrs(album_facts_attributes|default).addClass('gc-album-list-facts') }}>
+            {% block album_title %}
+                {% if album.href|default %}
+                    {%
+                        set album_href_attributes = attrs(album_href_attributes|default)
+                        .set('href', album.href)
+                        .set('title', album.meta.getTitle())
+                        .addClass('gc-album-list-link')
+                    %}
+                    <a{{ album_href_attributes }}>
+                {% endif %}
+                <{{ album_title_tag|default('h4') }}{{ attrs(album_name_attributes|default).addClass('gc-album-list-name') }}>{% block album_name %}{{ album.name }}{% endblock %}</{{ album_title_tag|default('h4') }}>
+                {% if album.href|default %}
+                    </a>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_date %}
+                <p{{ attrs(album_date_attributes|default).addClass('gc-album-list-date') }}>{{ album.date|date('Y-m-d') }}</p>
+            {% endblock %}
+
+            {% if album.location|default %}
+                {% block album_location %}
+                    <p{{ attrs(album_location_attributes|default).addClass('gc-album-list-location') }}>{{ 'GALLERY_CREATOR.location'|trans }}: {{ album.location }}</p>
+                {% endblock %}
+            {% endif %}
+
+            {% if album.photographer|default %}
+                {% block album_photographer %}
+                    <p{{ attrs(album_photographer_attributes|default).addClass('gc-album-list-photographer') }}>{{ 'GALLERY_CREATOR.photographerName'|trans }}: {{ album.photographer }}</p>
+                {% endblock %}
+            {% endif %}
+
+            {% if album.teaser|default %}
+                {% block album_teaser %}
+                    <p{{ attrs(album_teaser_attributes|default).addClass('gc-album-list-teaser') }}>{{ album.teaser|raw|nl2br }}</p>
+                {% endblock %}
+            {% endif %}
+
+            {% if album.pictureCount|default(0) %}
+                {% block album_picture_count %}
+                    <p{{ attrs(album_picture_count_attributes|default).addClass('gc-album-list-picture-count') }}>{{ album.pictureCount }} {{ 'GALLERY_CREATOR.pictures'|trans }}</p>
+                {% endblock %}
+            {% endif %}
+
+            {% if album.visitors|default(0) %}
+                {% block album_visitors %}
+                    <p{{ attrs(album_visitors_attributes|default).addClass('gc-album-list-visitors') }}>{{ album.visitors }} {{ 'GALLERY_CREATOR.visitors'|trans }}</p>
+                {% endblock %}
+            {% endif %}
+
+            {% if album.hasChildAlbums|default %}
+                {% block album_child_album_count %}
+                    <p{{ attrs(album_child_album_attributes|default).addClass('gc-album-list-child-album-count') }}>{{ album.childAlbumCount }} {{ 'GALLERY_CREATOR.childAlbums'|trans }}</p>
+                {% endblock %}
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}

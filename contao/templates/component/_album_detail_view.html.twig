@@ -1,0 +1,68 @@
+{# _album_detail_view.html.twig #}
+
+{% block album_detail_view %}
+    {%
+        set album_detail_view_attributes = attrs(album_detail_view_attributes|default)
+            .addClass('gc-album-detail-view')
+            .set('data-album-level', level)
+    %}
+
+    <div{{ album_detail_view_attributes }}>
+        <div class="gc-album-detail-inner">
+
+            {% if insertArticlePre %}
+                <div class="gc-album-detail-article-box-pre">
+                    {{ insertArticlePre|raw }}
+                </div>
+            {% endif %}
+
+            {% if backLink %}
+                <div class="gc-album-detail-back-link">
+                    <a href="{{ backLink }}" title="{{ 'GALLERY_CREATOR.backLink'|trans({}, 'contao_default') }}">{{ 'GALLERY_CREATOR.backLink'|trans({}, 'contao_default') }}</a>
+                </div>
+            {% endif %}
+
+            {% if album.name is defined and not album.name is empty %}
+                <h2 class="gc-album-detail-name">{{ album.name }}</h2>
+            {% endif %}
+
+            {% if album.dateFormatted is defined and not album.dateFormatted is empty %}
+                <p class="gc-album-detail-date">{{ album.dateFormatted }}</p>
+            {% endif %}
+
+            {% if album.location is defined and not album.location is empty %}
+                <p class="gc-album-detail-location">{{ album.location }}</p>
+            {% endif %}
+
+            {% if album.hasChildAlbums %}
+                <p class="gc-album-detail-child-albums">{{ album.childAlbumCount }} {{ 'GALLERY_CREATOR.childAlbums'|trans({}, 'contao_default') }}</p>
+            {% endif %}
+
+            {% if album.captionType == 'markdown' and album.markdownCaption %}
+                <div class="gc-album-detail-caption">{{ album.markdownCaption|raw }}</div>
+            {% elseif album.caption %}
+                <div class="gc-album-detail-caption">{{ album.caption|raw|nl2br }}</div>
+            {% endif %}
+
+            {{ detailPagination|raw }}
+
+            {% block album_detail_picture_list %}
+                {% if arrPictures %}
+                    <ul{{ attrs(album_detail_picture_list_attributes|default).addClass('gc-album-detail-picture-list') }}>
+                        {% for picture in arrPictures %}
+                            <li{{ attrs(album_detail_picture_list_item_attributes|default).addClass('gc-album-detail-picture-list-item') }}>
+                                {{ contao_figure(picture.figureUuid, picture.figureSize, picture.figureOptions) }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endblock %}
+
+            {% if insertArticlePost %}
+                <div class="gc-album-detail-article-box-pre">
+                    {{ insertArticlePost|raw }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

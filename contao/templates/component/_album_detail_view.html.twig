@@ -1,68 +1,91 @@
-{# _album_detail_view.html.twig #}
+{# component/_album_detail_view.html.twig #}
+{% trans_default_domain 'contao_default' %}
 
 {% block album_detail_view %}
-    {%
-        set album_detail_view_attributes = attrs(album_detail_view_attributes|default)
-            .addClass('gc-album-detail-view')
-            .set('data-album-level', level)
-    %}
-
+    {% set album_detail_view_attributes = attrs(album_detail_view_attributes|default).addClass('gc-album-detail-view').set('data-album-level', level) %}
     <div{{ album_detail_view_attributes }}>
-        <div class="gc-album-detail-inner">
+        <div{{ attrs(album_detail_inner_attributes|default).addClass('gc-album-detail-inner') }}>
 
-            {% if insertArticlePre %}
-                <div class="gc-album-detail-article-box-pre">
-                    {{ insertArticlePre|raw }}
-                </div>
-            {% endif %}
-
-            {% if backLink %}
-                <div class="gc-album-detail-back-link">
-                    <a href="{{ backLink }}" title="{{ 'GALLERY_CREATOR.backLink'|trans({}, 'contao_default') }}">{{ 'GALLERY_CREATOR.backLink'|trans({}, 'contao_default') }}</a>
-                </div>
-            {% endif %}
-
-            {% if album.name is defined and not album.name is empty %}
-                <h2 class="gc-album-detail-name">{{ album.name }}</h2>
-            {% endif %}
-
-            {% if album.dateFormatted is defined and not album.dateFormatted is empty %}
-                <p class="gc-album-detail-date">{{ album.dateFormatted }}</p>
-            {% endif %}
-
-            {% if album.location is defined and not album.location is empty %}
-                <p class="gc-album-detail-location">{{ album.location }}</p>
-            {% endif %}
-
-            {% if album.hasChildAlbums %}
-                <p class="gc-album-detail-child-albums">{{ album.childAlbumCount }} {{ 'GALLERY_CREATOR.childAlbums'|trans({}, 'contao_default') }}</p>
-            {% endif %}
-
-            {% if album.captionType == 'markdown' and album.markdownCaption %}
-                <div class="gc-album-detail-caption">{{ album.markdownCaption|raw }}</div>
-            {% elseif album.caption %}
-                <div class="gc-album-detail-caption">{{ album.caption|raw|nl2br }}</div>
-            {% endif %}
-
-            {{ detailPagination|raw }}
-
-            {% block album_detail_picture_list %}
-                {% if arrPictures %}
-                    <ul{{ attrs(album_detail_picture_list_attributes|default).addClass('gc-album-detail-picture-list') }}>
-                        {% for picture in arrPictures %}
-                            <li{{ attrs(album_detail_picture_list_item_attributes|default).addClass('gc-album-detail-picture-list-item') }}>
-                                {{ contao_figure(picture.figureUuid, picture.figureSize, picture.figureOptions) }}
-                            </li>
-                        {% endfor %}
-                    </ul>
+            {% block album_detail_article_pre %}
+                {% if insertArticlePre %}
+                    <div{{ attrs(album_detail_article_pre_attributes|default).addClass('gc-album-detail-article-pre') }}>
+                        {{ insertArticlePre|raw }}
+                    </div>
                 {% endif %}
             {% endblock %}
 
-            {% if insertArticlePost %}
-                <div class="gc-album-detail-article-box-pre">
-                    {{ insertArticlePost|raw }}
-                </div>
-            {% endif %}
+            {% block album_detail_back_link %}
+                {% if backLink %}
+                    <div{{ attrs(album_detail_back_link_attributes|default).addClass('gc-album-detail-back-link') }}>
+                        <a href="{{ backLink }}" title="{{ 'GALLERY_CREATOR.backLink'|trans }}">{{ 'GALLERY_CREATOR.backLink'|trans }}</a>
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_name %}
+                {% if album.name|default %}
+                    {% set album_detail_name_tag_name = album_detail_name_tag_name|default('h2') %}
+                    <{{ album_detail_name_tag_name }}{{ attrs(album_detail_name_attributes|default).addClass('gc-album-detail-name') }}>{{ album.name }}</{{ album_detail_name_tag_name }}>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_date %}
+                {% if album.dateFormatted|default %}
+                    <div{{ attrs(album_detail_date_attributes|default).addClass('gc-album-detail-date') }}>{{ album.dateFormatted }}</div>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_location %}
+                {% if album.location|default %}
+                    <div{{ attrs(album_detail_location_attributes|default).addClass('gc-album-detail-location') }}>{{ album.location }}</div>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_child_albums %}
+                {% if album.hasChildAlbums %}
+                    <div{{ attrs(album_detail_child_albums_attributes|default).addClass('gc-album-detail-child-albums') }}>{{ album.childAlbumCount }} {{ 'GALLERY_CREATOR.childAlbums'|trans }}</div>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_caption %}
+                {% set album_detail_caption_attributes = attrs(album_detail_caption_attributes|default).addClass('gc-album-detail-caption') %}
+                {% if album.captionType == 'markdown' and album.markdownCaption|default %}
+                    <div{{ album_detail_caption_attributes }}>
+                        <p>{{ album.markdownCaption|raw }}</p>
+                    </div>
+                {% elseif album.caption|default %}
+                    <div{{ album_detail_caption_attributes }}>
+                        <p>{{ album.caption|raw|nl2br }}</p>
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_pagination %}
+                {{ detailPagination|raw }}
+            {% endblock %}
+
+            {% block album_detail_picture_list %}
+                {% if arrPictures %}
+                    {% set album_detail_picture_list_tag_name = album_detail_picture_list_tag_name|default('ul') %}
+                    {% set album_detail_picture_list_item_tag_name = album_detail_picture_list_item_tag_name|default('li') %}
+
+                    <{{ album_detail_picture_list_tag_name }}{{ attrs(album_detail_picture_list_attributes|default).addClass('gc-album-detail-picture-list') }}>
+                        {% for picture in arrPictures %}
+                            <{{ album_detail_picture_list_item_tag_name }}{{ attrs(album_detail_picture_list_item_attributes|default).addClass('gc-album-detail-picture-list-item') }}>
+                                {{ contao_figure(picture.figureUuid, picture.figureSize, picture.figureOptions) }}
+                            </{{ album_detail_picture_list_item_tag_name }}>
+                        {% endfor %}
+                    </{{ album_detail_picture_list_tag_name }}>
+                {% endif %}
+            {% endblock %}
+
+            {% block album_detail_article_post %}
+                {% if insertArticlePost %}
+                    <div{{ attrs(album_detail_article_post_attributes|default).addClass('gc-album-detail-article-post') }}>
+                        {{ insertArticlePost|raw }}
+                    </div>
+                {% endif %}
+            {% endblock %}
         </div>
     </div>
 {% endblock %}

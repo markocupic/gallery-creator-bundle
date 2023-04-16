@@ -1,4 +1,4 @@
-{# _album.html.twig #}
+{# component/_album.html.twig #}
 {% trans_default_domain 'contao_default' %}
 
 {% block album_component %}
@@ -21,7 +21,10 @@
                     %}
                     <a{{ album_href_attributes }}>
                 {% endif %}
-                <{{ album_title_tag|default('h4') }}{{ attrs(album_name_attributes|default).addClass('gc-album-list-name') }}>{% block album_name %}{{ album.name }}{% endblock %}</{{ album_title_tag|default('h4') }}>
+
+                {% set album_title_tag = album_title_tag|default('h4') %}
+
+                <{{ album_title_tag }}{{ attrs(album_name_attributes|default).addClass('gc-album-list-name') }}>{% block album_name %}{{ album.name }}{% endblock %}</{{ album_title_tag }}>
                 {% if album.href|default %}
                     </a>
                 {% endif %}

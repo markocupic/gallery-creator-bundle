@@ -53,10 +53,6 @@ class PictureUtil
             return null;
         }
 
-        if (!is_file($filesModel->getAbsolutePath())) {
-            return null;
-        }
-
         // Meta
         $arrMeta = Frontend::getMetaData($filesModel->meta, $objPage->language);
 
@@ -66,7 +62,7 @@ class PictureUtil
 
         $arrMeta['title'] = $pictureModel->caption ?? $arrMeta['title'];
 
-        // Get thumb dimensions
+        // Get the thumb dimensions
         $arrSize = StringUtil::deserialize($contentElementModel->gcSizeDetailView);
 
         $href = null;
@@ -98,7 +94,7 @@ class PictureUtil
         return [
             'ownerRow' => $ownerModel ? $ownerModel->row() : [],
             'filesRow' => $filesModel->row(),
-            'pictureRow' => $pictureModel->row,
+            'pictureRow' => $pictureModel->row(),
             'albumRow' => $pictureModel->getRelated('pid')->row(),
             'meta' => $arrMeta,
             'href' => $href,
@@ -106,7 +102,7 @@ class PictureUtil
             'socialMediaSrc' => $socialMediaSrc,
             'exif' => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
             'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),
-            'figureUuid' => $pictureModel->addCustomThumb ? $pictureModel->customThumb : $filesModel->uuid,
+            'figureUuid' => $pictureModel->addCustomThumb && $pictureModel->customThumb ? $pictureModel->customThumb : $filesModel->uuid,
             'figureSize' => !empty($arrSize) ? $arrSize : null,
             'figureHref' => $href,
             'figureOptions' => [
@@ -132,5 +128,16 @@ class PictureUtil
         }
 
         return $exif;
+    }
+
+    public function pictureExists(GalleryCreatorPicturesModel $picturesModel): bool
+    {
+        $objFile = FilesModel::findByUuid($picturesModel->uuid);
+
+        if (null !== $objFile) {
+            return is_file($objFile->getAbsolutePath());
+        }
+
+        return false;
     }
 }

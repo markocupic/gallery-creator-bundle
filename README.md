@@ -34,7 +34,7 @@ class MyGalleryCreatorClass extends \System
 
        /**
         * Do some custom modifications
-        * @param Module $objModule
+        * @param \Module $objModule
         * @param null $objAlbum
         * @return mixed
         */

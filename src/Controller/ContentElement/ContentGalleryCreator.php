@@ -37,16 +37,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContentGalleryCreator extends ContentElement
 {
+    public string $defaultThumb = 'bundles/markocupicgallerycreator/images/image_not_found.jpg';
     /**
      * list_view, detail_view, single_image.
      */
     protected string|null $viewMode = null;
-    public string $defaultThumb = 'bundles/markocupicgallerycreator/images/image_not_found.jpg';
     protected $strTemplate = 'ce_gc_default';
     protected int|null $intAlbumId = null;
     protected string|null $strAlbumalias = null;
     protected array|null $arrSelectedAlbums = null;
-
 
     public function generate(): string
     {
@@ -97,30 +96,53 @@ class ContentGalleryCreator extends ContentElement
 
         if ($this->gc_publish_all_albums) {
             // if all albums should be shown
-            $this->arrSelectedAlbums = $this->listAllAlbums();
+            $this->arrSelectedAlbums = $this->listAllPublishedAlbums();
         } else {
             // if only selected albums should be shown
             $this->arrSelectedAlbums = StringUtil::deserialize($this->gc_publish_albums, true);
         }
 
-        // clean array from unpublished or empty or protected albums
+        // Clean array from unpublished or empty or protected albums
         foreach ($this->arrSelectedAlbums as $key => $albumId) {
-            // Get all not empty albums
-            $objAlbum = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE (SELECT COUNT(id) FROM tl_gallery_creator_pictures WHERE pid = ? AND published=?) > 0 AND id=? AND published=?')->execute($albumId, 1, $albumId, 1);
+            $countImages = $this->Database
+                ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?')
+                ->execute($albumId, '1')
+                ->numRows
+            ;
 
-            // if the album doesn't exist
-            if (!$objAlbum->numRows && !GalleryCreatorAlbumsModel::hasChildAlbums($albumId) && !$this->gc_hierarchicalOutput) {
+            $objAlbum = $this->Database
+                ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id = ?')
+                ->execute($albumId)
+            ;
+
+            // Do not display...
+
+            // if the album doesn't exist or is not published
+            if (!$objAlbum->numRows || !$objAlbum->published) {
                 unset($this->arrSelectedAlbums[$key]);
                 continue;
             }
 
-            // remove id from $this->arrSelectedAlbums if user is not allowed
+            // or if the album is empty
+            if (!$countImages && !$this->gc_hierarchicalOutput) {
+                unset($this->arrSelectedAlbums[$key]);
+                continue;
+            }
+
+            // or if the album is empty, we have hierarchical output and the album has no child albums
+            if (!$countImages && !GalleryCreatorAlbumsModel::hasChildAlbums($albumId) && $this->gc_hierarchicalOutput) {
+                unset($this->arrSelectedAlbums[$key]);
+                continue;
+            }
+
+            // or user is not allowed
             if (TL_MODE === 'FE' && true === $objAlbum->protected) {
                 if (!$this->authenticate($objAlbum->alias)) {
                     unset($this->arrSelectedAlbums[$key]);
                 }
             }
         }
+
         // Build new array
         $this->arrSelectedAlbums = array_values($this->arrSelectedAlbums);
 
@@ -605,13 +627,21 @@ class ContentGalleryCreator extends ContentElement
     /**
      * return a sorted array with all album ID's.
      */
-    protected function listAllAlbums(int $pid = 0): array
+    protected function listAllPublishedAlbums(int $pid = null): array
     {
         $strSorting = '' === $this->gc_sorting || '' === $this->gc_sorting_direction ? 'date DESC' : $this->gc_sorting.' '.$this->gc_sorting_direction;
-        $objAlbums = $this->Database
-            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
-            ->execute($pid, 1)
-        ;
+
+        if (null !== $pid) {
+            $objAlbums = $this->Database
+                ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting)
+                ->execute($pid, '1')
+            ;
+        } else {
+            $objAlbums = $this->Database
+                ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE published = ? ORDER BY '.$strSorting)
+                ->execute('1')
+            ;
+        }
 
         return $objAlbums->fetchEach('id');
     }

@@ -1,0 +1,16 @@
+{
+    "require": {
+        "phpstan/phpstan": "^1.10",
+        "contao/test-case": "^4.13",
+        "contao/core-bundle": "^4.13",
+        "contao/calendar-bundle": "^4.13",
+        "contao/manager-bundle": "^4.13"
+    },
+    "config": {
+        "allow-plugins": {
+            "contao-components/installer": false,
+            "contao/manager-plugin": false,
+            "contao-community-alliance/composer-plugin": false
+        }
+    }
+}

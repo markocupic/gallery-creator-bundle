@@ -1,23 +1,25 @@
 <?php
-/**
- * @copyright  Marko Cupic 2017 <m.cupic@gmx.ch>
- * @author     Marko Cupic
- * @package    GalleryCreatrBundle
- * @license    LGPL-3.0+
- * @see	       https://github.com/markocupic/gallery-creator-bundle
+
+declare(strict_types=1);
+
+/*
+ * This file is part of Gallery Creator Bundle.
  *
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
+ * @license MIT
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/gallery-creator-bundle
  */
+
 namespace Markocupic\GalleryCreatorBundle\ContaoManager;
 
-use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
+use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Markocupic\GalleryCreatorBundle\MarkocupicGalleryCreatorBundle;
 
-/**
- * Plugin for the Contao Manager.
- *
- * @author Marko Cupic
- */
 class Plugin implements BundlePluginInterface
 {
     /**
@@ -26,8 +28,8 @@ class Plugin implements BundlePluginInterface
     public function getBundles(ParserInterface $parser)
     {
         return [
-            BundleConfig::create('Markocupic\GalleryCreatorBundle\MarkocupicGalleryCreatorBundle')
-                ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle'])
+            BundleConfig::create(MarkocupicGalleryCreatorBundle::class)
+                ->setLoadAfter([ContaoCoreBundle::class])
                 ->setReplace(['gallery_creator']),
         ];
     }

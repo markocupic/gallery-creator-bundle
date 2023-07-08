@@ -1,0 +1,23 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Markocupic\GalleryCreatorBundle\:
+        resource: ../src/
+        exclude: [
+            '../src/{Model,DependencyInjection}',
+        ]
+
+    Markocupic\GalleryCreatorBundle\DataContainer\Content:
+        public: true;
+
+    Markocupic\GalleryCreatorBundle\DataContainer\GalleryCreatorAlbums:
+        public: true;
+
+    Markocupic\GalleryCreatorBundle\DataContainer\GalleryCreatorPictures:
+        public: true;
+
+    Markocupic\GalleryCreatorBundle\Util\GalleryCreatorUtil:
+        public: true;

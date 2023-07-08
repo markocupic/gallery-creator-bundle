@@ -1,3 +1,5 @@
+
+
 {
   "name": "markocupic/gallery-creator-bundle",
   "keywords": ["contao","Gallery Creator","album plugin","gallery_creator gallery-creator-bundle"],
@@ -18,25 +20,16 @@
     "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
   },
   "require": {
-    "php": "^7.2 || ^8.0",
-    "contao/core-bundle": "^4.8",
-    "patchwork/utf8": "^1.2"
+    "php": "^8.1",
+    "contao/core-bundle": "^4.13"
   },
   "autoload": {
     "psr-4": {
       "Markocupic\\GalleryCreatorBundle\\": "src/"
-    },
-    "classmap": [
-      "src/Resources/contao"
-    ],
-    "exclude-from-classmap": [
-      "src/Resources/contao/config",
-      "src/Resources/contao/dca",
-      "src/Resources/contao/languages",
-      "src/Resources/contao/templates"
-    ]
+    }
   },
   "extra": {
      "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
-  }
+  },
+  "version": "1.3"
 }

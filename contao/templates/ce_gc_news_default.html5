@@ -1,0 +1,70 @@
+<?php
+/* CSS for the frontend-output */
+$GLOBALS['TL_CSS'][] = 'bundles/markocupicgallerycreator/css/gallery_creator_fe.css';
+
+/* javascript for the frontend-output */
+$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_fe.js';
+?>
+
+
+
+<!-- gallery_creator - album preview -->
+<div class="<?= $this->class ?> gallery_creator block"<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+
+<?php if ($this->insertArticlePre):?>
+<!-- articleBoxPre-->
+<div id="articleBoxPre" class="block">
+  <?= $this->insertArticlePre ?>
+</div>
+<!-- end articleBoxPre-->
+<?php endif; ?>
+
+<?php if ($this->headline): ?>
+<<?= $this->hl ?>><?= $this->headline ?></<?= $this->hl ?>>
+<?php endif; ?>
+
+
+<?php if ($this->Albumname): ?>
+<h2><?= $this->Albumname ?></h2>
+<?php endif; ?>
+
+
+<?php if ($this->albumComment): ?>
+<div class="albumComment">
+  <p><?= $this->albumComment ?></p>
+</div>
+<?php endif; ?>
+
+<?= $this->pagination ?>
+<?php $col=0; ?>
+<?php if ($this->arrPictures): ?>
+<div class="gallery_container block">
+  <ul class="album_preview clearfix">
+    <?php foreach ($this->arrPictures as $Picture): ?>
+    <li class="col_<?= $col ?><?= ($col == 0 ? ' col_first' : '') ?><?= ($col == $this->colsPerRow - 1 ? ' col_last' : '') ?>">
+      <figure<?= (strlen($Picture['cssID']) ? ' id="' . $Picture['cssID'] . '"' : '') ?> class="image_container<?= strlen($Picture['cssClass']) ? ' ' . $Picture['cssClass'] : '' ?>"<?= $this->imagemargin ? ' style="'.$this->imagemargin.'"' : '' ?>>
+      <?php if ($Picture['href']): ?>
+      <a href="<?= $Picture['href'] ?>" <?= $Picture['lightbox'] ?> title="<?= $Picture['comment'] ? $Picture['comment'] : ($Picture['title'] ? $Picture['title'] : $Picture['filename']); ?>">
+      <?php endif; ?>
+      <?php $this->insert('picture_default', $Picture['picture']); ?>
+      <?php if ($Picture['href'] != ''): ?>
+      </a>
+      <?php endif; ?>
+      </figure>
+    </li>
+    <?php $col++;?>
+    <?php if ($col == $this->colsPerRow) $col=0; ?>
+    <?php endforeach;?>
+  </ul>
+</div>
+<?php endif;?>
+
+<?php if ($this->insertArticlePost):?>
+<!-- articleBoxPre-->
+<div id="articleBoxPost" class="block">
+  <?= $this->insertArticlePost ?>
+</div>
+<!-- end articleBoxPost-->
+<?php endif; ?>
+
+</div>

@@ -12,14 +12,13 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-namespace Markocupic\GalleryCreatorBundle;
+namespace Markocupic\GalleryCreatorBundle\Model;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Contao\Model;
 
-class MarkocupicGalleryCreatorBundle extends Bundle
+
+class GalleryCreatorPicturesModel extends Model
 {
-    public function getPath(): string
-    {
-        return \dirname(__DIR__);
-    }
+
+    protected static $strTable = 'tl_gallery_creator_pictures';
 }

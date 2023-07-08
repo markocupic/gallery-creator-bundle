@@ -1,6 +1,6 @@
 # Gallery Creator
 
-## Frontend Modul für Contao >=4.3
+## Frontend Modul für Contao 4.13
 
 Mit dem Modul lassen sich Alben verwalten und erstellen. Das Modul ist sehr flexibel und bietet eine Albenübersicht und eine Detailansicht.
 
@@ -45,16 +45,16 @@ class MyGalleryCreatorClass extends \System
               if($objAlbum !== null)
               {
                      // display the album name in the head section of your page (title tag)
-                     $objPage->pageTitle = specialchars($objAlbum->name);
+                     $objPage->pageTitle = \StringUtil::specialchars($objAlbum->name);
                      // display the album comment in the head section of your page (description tag)
-                     $objPage->description = specialchars(strip_tags($objAlbum->comment));
+                     $objPage->description = \StringUtil::specialchars(strip_tags($objAlbum->comment));
                      // add the album name to the keywords in the head section of your page (keywords tag)
-                     $GLOBALS['TL_KEYWORDS'] .= ',' . specialchars($objAlbum->name) . ',' . specialchars($objAlbum->event_location);
+                     $GLOBALS['TL_KEYWORDS'] .= ',' . \StringUtil::specialchars($objAlbum->name) . ',' . \StringUtil::specialchars($objAlbum->event_location);
               }
               return $objModule->Template;
        }
 }
-``` 
+```
 
 
 Viel Spass mit Gallery Creator!!!

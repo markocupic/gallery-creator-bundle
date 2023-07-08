@@ -471,7 +471,7 @@ class ContentGalleryCreator extends \ContentElement
                 }
                 // Get the page model
                 $objPageModel = \PageModel::findByPk($objPage->id);
-                $this->Template->returnHref = ampersand($objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items'), $objPage->language));
+                $this->Template->returnHref = ampersand($objPageModel->getFrontendUrl((\Config::get('useAutoItem') ? '/' : '/items/') . \Input::get('items')));
                 $this->Template->arrPictures = $arrPictures;
 
                 // generate other template variables

@@ -30,6 +30,5 @@
   },
   "extra": {
      "contao-manager-plugin": "Markocupic\\GalleryCreatorBundle\\ContaoManager\\Plugin"
-  },
-  "version": "1.3"
+  }
 }

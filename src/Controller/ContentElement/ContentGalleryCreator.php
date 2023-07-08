@@ -109,7 +109,7 @@ class ContentGalleryCreator extends ContentElement
             $objAlbum = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE (SELECT COUNT(id) FROM tl_gallery_creator_pictures WHERE pid = ? AND published=?) > 0 AND id=? AND published=?')->execute($albumId, 1, $albumId, 1);
 
             // if the album doesn't exist
-            if (!$objAlbum->numRows && !GalleryCreatorAlbumsModel::hasChildAlbums($objAlbum->id) && !$this->gc_hierarchicalOutput) {
+            if (!$objAlbum->numRows && !GalleryCreatorAlbumsModel::hasChildAlbums($albumId) && !$this->gc_hierarchicalOutput) {
                 unset($this->arrSelectedAlbums[$key]);
                 continue;
             }

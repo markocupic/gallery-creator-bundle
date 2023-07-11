@@ -26,16 +26,17 @@ use Contao\Image;
 use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\UserModel;
 use Contao\Validator;
 use Contao\Versions;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\GalleryCreatorUtil;
+use Symfony\Component\HttpFoundation\Request;
 
 class GalleryCreatorPictures extends Backend
 {
-
     public string|null $uploadPath = null;
     public bool $restrictedUser = false;
 
@@ -104,7 +105,12 @@ class GalleryCreatorPictures extends Backend
             $objPicture = GalleryCreatorPicturesModel::findByPk(Input::get('id'));
 
             if (null !== $objPicture) {
-                $_SESSION['gallery_creator']['SOURCE_ALBUM_ID'] = $objPicture->pid;
+                /** @var Request $request */
+                $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+                $session = $request->getSession();
+                $bag = $session->get('GALLERY_CREATOR', []);
+                $bag['BE_COPY_PASTE_SOURCE_ALBUM'] = $objPicture->pid;
+                $session->set('GALLERY_CREATOR', $bag);
             }
         }
     }
@@ -207,12 +213,18 @@ class GalleryCreatorPictures extends Backend
      */
     public function onCutCb(DC_Table $dc): void
     {
-        if (!isset($_SESSION['gallery_creator']['SOURCE_ALBUM_ID'])) {
+        /** @var Request $request */
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+        $session = $request->getSession();
+        $bag = $session->get('GALLERY_CREATOR', []);
+
+        if (!isset($bag['BE_COPY_PASTE_SOURCE_ALBUM'])) {
             return;
         }
 
-        $objSourceAlbum = GalleryCreatorAlbumsModel::findByPk($_SESSION['gallery_creator']['SOURCE_ALBUM_ID']);
-        unset($_SESSION['gallery_creator']['SOURCE_ALBUM_ID']);
+        $objSourceAlbum = GalleryCreatorAlbumsModel::findByPk($bag['BE_COPY_PASTE_SOURCE_ALBUM']);
+        unset($bag['BE_COPY_PASTE_SOURCE_ALBUM']);
+        $session->set('GALLERY_CREATOR', $bag);
 
         $objPictureToMove = GalleryCreatorPicturesModel::findByPk(Input::get('id'));
 
@@ -419,7 +431,7 @@ class GalleryCreatorPictures extends Backend
     }
 
     /**
-     * onload-callback
+     * onload-callback.
      */
     public function onloadCbCheckPermission(): void
     {
@@ -441,7 +453,7 @@ class GalleryCreatorPictures extends Backend
     }
 
     /**
-     * onload-callback
+     * onload-callback.
      */
     public function onloadCbSetUpPalettes(): void
     {

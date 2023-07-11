@@ -187,7 +187,7 @@ class GalleryCreatorAlbums extends Backend
         $disablePA = false;
         $disablePI = false;
         // Disable all buttons if there is a circular reference
-        if ($this->User->isAdmin && false !== $arrClipboard && ('cut' === $arrClipboard['mode'] && (1 === $cr || $arrClipboard['id'] === $row['id']) || 'cutAll' === $arrClipboard['mode'] && (1 === $cr || \in_array($row['id'], $arrClipboard['id'], true)))) {
+        if ($this->User->isAdmin && false !== $arrClipboard && ('cut' === $arrClipboard['mode'] && (1 === $cr || $arrClipboard['id'] === $row['id']) || 'cutAll' === $arrClipboard['mode'] && (1 === $cr || \in_array($row['id'], $arrClipboard['id'], false)))) {
             $disablePA = true;
             $disablePI = true;
         }
@@ -337,7 +337,7 @@ class GalleryCreatorAlbums extends Backend
                 }
 
                 if (Input::get('albumId')) {
-                    $albumId = (int)Input::get('albumId');
+                    $albumId = (int) Input::get('albumId');
 
                     if (Input::get('reviseTables') && $this->User->isAdmin) {
                         // delete damaged data records

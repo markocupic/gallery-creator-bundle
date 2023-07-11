@@ -129,7 +129,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_PaginationNumberOfLinks'] = [
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_size_detailview'] = [
     'exclude'   => true,
     'inputType' => 'imageSize',
-    'options'   => System::getImageSizes(),
+    'options'   => System::getContainer()->get('contao.image.sizes')->getAllOptions(),
     'reference' => &$GLOBALS['TL_LANG']['MSC'],
     'eval'      => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
     'sql'       => "varchar(64) NOT NULL default ''",
@@ -146,7 +146,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gc_imagemargin_detailview'] = [
 $GLOBALS['TL_DCA']['tl_content']['fields']['gc_size_albumlisting'] = [
     'exclude'   => true,
     'inputType' => 'imageSize',
-    'options'   => System::getImageSizes(),
+    'options'   => System::getContainer()->get('contao.image.sizes')->getAllOptions(),
     'reference' => &$GLOBALS['TL_LANG']['MSC'],
     'eval'      => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
     'sql'       => "varchar(64) NOT NULL default ''",

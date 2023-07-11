@@ -475,7 +475,7 @@ class GalleryCreatorUtil
         }
 
         // Get thumb dimensions
-        $arrSize = StringUtil::deserialize($objContentElement->gc_size_detailview,true);
+        $arrSize = StringUtil::deserialize($objContentElement->gc_size_detailview, true);
 
         // Generate the thumbnails and the picture element
         try {
@@ -663,7 +663,7 @@ class GalleryCreatorUtil
             // If it is a content element only
             if ('' !== $objContentElement->gc_publish_albums) {
                 if (!$objContentElement->gc_publish_all_albums) {
-                    if (!\in_array($objSubAlbums->id, StringUtil::deserialize($objContentElement->gc_publish_albums), true)) {
+                    if (!\in_array($objSubAlbums->id, StringUtil::deserialize($objContentElement->gc_publish_albums), false)) {
                         continue;
                     }
                 }
@@ -933,7 +933,7 @@ class GalleryCreatorUtil
 
         while ($objCont->next()) {
             $newArr = [];
-            $arrAlbums = StringUtil::deserialize($objCont->gc_publish_albums,true);
+            $arrAlbums = StringUtil::deserialize($objCont->gc_publish_albums, true);
 
             if (!empty($arrAlbums)) {
                 foreach ($arrAlbums as $AlbumID) {

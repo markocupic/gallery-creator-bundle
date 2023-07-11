@@ -15,31 +15,39 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\Database;
+use Contao\DataContainer;
 use Contao\Input;
 use Contao\StringUtil;
 use Markocupic\GalleryCreatorBundle\Util\GalleryCreatorUtil;
 
 class Content
 {
-
-    public function optionsCallbackListAlbums(): array
+    public function optionsCallbackListAlbums(DataContainer $dc): array
     {
-        $objContent = Database::getInstance()->prepare('SELECT gc_sorting, gc_sorting_direction FROM tl_content WHERE id=?')->execute(Input::get('id'));
-
-        $str_sorting = '' === $objContent->gc_sorting || '' === $objContent->gc_sorting_direction ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
-
-        $db = Database::getInstance()->prepare('SELECT id, name FROM tl_gallery_creator_albums WHERE published=? ORDER BY '.$str_sorting)->execute('1');
-
         $arrOpt = [];
 
-        while ($db->next()) {
-            $arrOpt[$db->id] = '[ID '.$db->id.'] '.$db->name;
+        if ($dc->id) {
+            $objContent = Database::getInstance()
+                ->prepare('SELECT gc_sorting, gc_sorting_direction FROM tl_content WHERE id=?')
+                ->execute($dc->id)
+            ;
+
+            $str_sorting = empty($objContent->gc_sorting) || empty($objContent->gc_sorting_direction) ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
+
+            $db = Database::getInstance()
+                ->prepare("SELECT id, name FROM tl_gallery_creator_albums WHERE published=? ORDER BY $str_sorting")
+                ->execute('1')
+            ;
+
+            while ($db->next()) {
+                $arrOpt[$db->id] = "[ID $db->id] $db->name";
+            }
         }
 
         return $arrOpt;
     }
 
-    public function inputFieldCallbackListAlbums(): string
+    public function inputFieldCallbackListAlbums(DataContainer $dc, string $extLabel): string
     {
         if ('tl_content' === Input::post('FORM_SUBMIT')) {
             if (!Input::post('gc_publish_all_albums')) {
@@ -50,8 +58,14 @@ class Content
                         $albums[] = $album;
                     }
                 }
+
                 $set = ['gc_publish_albums' => serialize($albums)];
-                Database::getInstance()->prepare('UPDATE tl_content %s WHERE id=? ')->set($set)->execute(Input::get('id'));
+
+                Database::getInstance()
+                    ->prepare('UPDATE tl_content %s WHERE id=? ')
+                    ->set($set)
+                    ->execute($dc->id)
+                ;
             }
         }
 
@@ -67,7 +81,7 @@ class Content
     </fieldset>
 </div>';
 
-        return sprintf($html, $this->getSubalbumsAsUnorderedList(0));
+        return sprintf($html, $this->getSubalbumsAsUnorderedList(0, (int) $dc->id));
     }
 
     public function onloadCbSetUpPalettes(): void
@@ -79,24 +93,26 @@ class Content
         }
     }
 
-    private function getSubalbumsAsUnorderedList(int $pid = 0): string
+    private function getSubalbumsAsUnorderedList(int $pid, int $contentId): string
     {
         $objContent = Database::getInstance()
             ->prepare('SELECT * FROM tl_content WHERE id=?')
-            ->execute(Input::get('id'))
+            ->execute($contentId)
         ;
 
         $str_sorting = '' === $objContent->gc_sorting || '' === $objContent->gc_sorting_direction ? 'date DESC' : $objContent->gc_sorting.' '.$objContent->gc_sorting_direction;
         $list = '';
 
         $selectedAlbums = $objContent->gc_publish_albums ? StringUtil::deserialize($objContent->gc_publish_albums, true) : [];
+        $selectedAlbums = array_map('intval', $selectedAlbums);
+
         $level = GalleryCreatorUtil::getAlbumLevel($pid);
         $db = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)->execute($pid, 1);
 
         while ($db->next()) {
             $checked = \in_array($db->id, $selectedAlbums, true) ? ' checked' : '';
             $list .= '<li class="album-list-item"><input type="checkbox" class="tl_checkbox" name="gc_publish_albums[]" class="album-control-field" id="albumControlField-'.$db->id.'" value="'.$db->id.'"'.$checked.'>'.$db->name;
-            $list .= $this->getSubalbumsAsUnorderedList($db->id);
+            $list .= $this->getSubalbumsAsUnorderedList($db->id, $contentId);
             $list .= '</li>';
         }
 

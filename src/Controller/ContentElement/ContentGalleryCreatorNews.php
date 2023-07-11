@@ -28,7 +28,6 @@ use Markocupic\GalleryCreatorBundle\Util\GalleryCreatorUtil;
 
 class ContentGalleryCreatorNews extends ContentElement
 {
-
     protected $strTemplate = 'ce_gc_news_default';
     protected int|null $intAlbumId;
 
@@ -155,7 +154,7 @@ class ContentGalleryCreatorNews extends ContentElement
         $this->Template->arrPictures = $arrPictures;
 
         // Generate other template variables
-        $this->getAlbumTemplateVars($this->intAlbumId);
+        $this->addTemplateData($this->intAlbumId);
 
         // HOOK: modify the page or template object
         if (isset($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['gc_generateFrontendTemplate'])) {
@@ -171,7 +170,7 @@ class ContentGalleryCreatorNews extends ContentElement
      *
      * @param $intAlbumId
      */
-    protected function getAlbumTemplateVars($intAlbumId): void
+    protected function addTemplateData($intAlbumId): void
     {
         global $objPage;
 

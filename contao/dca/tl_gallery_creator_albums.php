@@ -119,14 +119,20 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         'protected' => 'groups',
     ],
     'fields'      => [
-        'id'                  => ['sql' => "int(10) unsigned NOT NULL auto_increment"],
+        'id'                  => [
+            'sql' => "int(10) unsigned NOT NULL auto_increment",
+        ],
         'pid'                 => [
             'foreignKey' => 'tl_gallery_creator_albums.alias',
             'sql'        => "int(10) unsigned NOT NULL default '0'",
             'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
         ],
-        'sorting'             => ['sql' => "int(10) unsigned NOT NULL default '0'"],
-        'tstamp'              => ['sql' => "int(10) unsigned NOT NULL default '0'"],
+        'sorting'             => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'tstamp'              => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
         'published'           => [
             'inputType' => 'checkbox',
             'eval'      => ['submitOnChange' => true],
@@ -198,7 +204,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'exclude'   => true,
             'inputType' => 'textarea',
             'eval'      => ['tl_class' => 'clr long', 'style' => 'height:7em;', 'allowHtml' => false, 'submitOnChange' => false, 'wrap' => 'soft'],
-            'sql'       => "text NULL",
+            'sql'       => "mediumtext NULL",
         ],
         'thumb'               => [
             'inputType'            => 'radio',
@@ -290,9 +296,9 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'exclude'       => true,
             'save_callback' => [[GalleryCreatorAlbums::class, 'saveCbSortAlbum']],
             'inputType'     => 'select',
-            'options'       => ['----', 'name_asc', 'name_desc', 'date_asc', 'date_desc'],
+            'options'       => ['name_asc', 'name_desc', 'date_asc', 'date_desc'],
             'reference'     => &$GLOBALS['TL_LANG']['tl_gallery_creator_albums'],
-            'eval'          => ['chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'eval'          => ['includeBlankOption' => true, 'chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
             'sql'           => "varchar(32) NOT NULL default ''",
         ],
         'filePrefix'          => [

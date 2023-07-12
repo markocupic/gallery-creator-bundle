@@ -249,30 +249,21 @@ class GalleryCreatorAlbums extends Backend
 			';
     }
 
-    public function inputFieldCbGenerateAlbumInformationTable(): string
+    public function inputFieldCbGenerateAlbumInformationTable(DataContainer $dc): string
     {
-        $objAlb = GalleryCreatorAlbumsModel::findByPk(Input::get('id'));
+        $objAlb = GalleryCreatorAlbumsModel::findByPk($dc->id);
         $objUser = UserModel::findByPk($objAlb->owner);
         $owner = null === $objUser ? 'no-name' : $objUser->name;
+
         // check User Role
-        $this->checkUserRole(Input::get('id'));
+        $this->checkUserRole(($dc->id));
 
         if (!$this->restrictedUser) {
-            $output = '
-<div class="widget long album_infos">
-<br><br>
-<table>
-	<tr class="odd">
-		<td style="width:25%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id'][0].':&nbsp;</strong></td>
-		<td>'.$objAlb->id.'</td>
-	</tr>
-</table>
-</div>
-				';
+            return '';
         } else {
             $output = '
 <div class="widget long album_infos">
-<table>
+<table style="margin-top: 16px">
 	<tr class="odd">
 		<td style="width:25%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_albums']['id'][0].': </strong></td>
 		<td>'.$objAlb->id.'</td>
@@ -476,16 +467,16 @@ class GalleryCreatorAlbums extends Backend
      */
     public function ondeleteCb(DataContainer $dc): void
     {
-        if ('deleteAll' !== Input::get('act')) {
+        if ($dc->id && 'deleteAll' !== Input::get('act')) {
             $this->checkUserRole($dc->id);
 
             if ($this->restrictedUser) {
-                $this->log('Datensatz mit ID '.Input::get('id').' wurde von einem nicht authorisierten Benutzer versucht aus tl_gallery_creator_albums zu loeschen.', __METHOD__, TL_ERROR);
+                $this->log("Datensatz mit ID '$dc->id' wurde von einem nicht autorisierten Benutzer versucht aus tl_gallery_creator_albums zu loeschen.", __METHOD__, TL_ERROR);
                 $this->redirect('contao?do=error');
             }
             // also delete the child element
-            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums((int) Input::get('id'));
-            $arrDeletedAlbums = array_merge([Input::get('id')], $arrDeletedAlbums);
+            $arrDeletedAlbums = GalleryCreatorAlbumsModel::getChildAlbums((int) $dc->id);
+            $arrDeletedAlbums = array_merge([$dc->id], $arrDeletedAlbums);
 
             foreach ($arrDeletedAlbums as $idDelAlbum) {
                 $objAlbumModel = GalleryCreatorAlbumsModel::findByPk($idDelAlbum);
@@ -553,9 +544,9 @@ class GalleryCreatorAlbums extends Backend
         }
     }
 
-    public function onloadCbFileUpload(): void
+    public function onloadCbFileUpload(DataContainer $dc): void
     {
-        if ('fileupload' !== Input::get('mode')) {
+        if (!$dc->id || 'fileupload' !== Input::get('mode')) {
             return;
         }
 
@@ -563,7 +554,7 @@ class GalleryCreatorAlbums extends Backend
         $this->loadLanguageFile('tl_files');
 
         // Album ID
-        $intAlbumId = (int) Input::get('id');
+        $intAlbumId = (int) $dc->id;
 
         // Save uploaded files in $_FILES['file']
         $strName = 'file';
@@ -611,9 +602,9 @@ class GalleryCreatorAlbums extends Backend
      * onload-callback
      * import images from an external directory to an existing album.
      */
-    public function onloadCbImportFromFilesystem(): void
+    public function onloadCbImportFromFilesystem(DataContainer $dc): void
     {
-        if ('import_images' !== Input::get('mode')) {
+        if (!$dc->id || 'import_images' !== Input::get('mode')) {
             return;
         }
         // load language file
@@ -622,7 +613,7 @@ class GalleryCreatorAlbums extends Backend
         if (!$this->Input->post('FORM_SUBMIT')) {
             return;
         }
-        $intAlbumId = (int) Input::get('id');
+        $intAlbumId = (int) $dc->id;
 
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($intAlbumId);
 
@@ -644,8 +635,12 @@ class GalleryCreatorAlbums extends Backend
         $this->redirect('contao?do=gallery_creator');
     }
 
-    public function onloadCbSetUpPalettes(): void
+    public function onloadCbSetUpPalettes(DataContainer $dc): void
     {
+        if(!$dc->id)
+        {
+            return;
+        }
         // global_operations for admin only
         if (!$this->user->isAdmin) {
             unset($GLOBALS['TL_DCA']['tl_gallery_creator_albums']['list']['global_operations']['all'], $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['list']['global_operations']['revise_tables']);
@@ -699,13 +694,14 @@ class GalleryCreatorAlbums extends Backend
 
             return;
         }
+
         $objAlb = Database::getInstance()
             ->prepare('SELECT id, owner FROM tl_gallery_creator_albums WHERE id=?')
-            ->execute(Input::get('id'))
+            ->execute($dc->id)
         ;
 
         // only admins and album-owners obtains writing-access for these fields
-        $this->checkUserRole(Input::get('id'));
+        $this->checkUserRole($dc->id);
 
         if ($objAlb->owner !== $this->user->id && $this->restrictedUser) {
             $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['palettes']['restricted_user'];
@@ -716,9 +712,9 @@ class GalleryCreatorAlbums extends Backend
      * Input field callback for the album preview thumb select
      * list each image of the album (and child-albums).
      */
-    public function inputFieldCbThumb(): string
+    public function inputFieldCbThumb(DataContainer $dc): string
     {
-        $objAlbum = GalleryCreatorAlbumsModel::findByPk(Input::get('id'));
+        $objAlbum = GalleryCreatorAlbumsModel::findByPk($dc->id);
 
         // Save input
         if ('tl_gallery_creator_albums' === Input::post('FORM_SUBMIT')) {
@@ -739,7 +735,7 @@ class GalleryCreatorAlbums extends Backend
 
         $objPicture = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=? ORDER BY sorting')
-            ->execute(Input::get('id'))
+            ->execute($dc->id)
         ;
         $arrData = [];
 
@@ -748,7 +744,7 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Get all child albums
-        $arrSubalbums = GalleryCreatorAlbumsModel::getChildAlbums((int) Input::get('id'));
+        $arrSubalbums = GalleryCreatorAlbumsModel::getChildAlbums((int) $dc->id);
 
         if (\count($arrSubalbums)) {
             $arrData[] = ['uuid' => 'beginn_childalbums', 'id' => ''];
@@ -878,14 +874,14 @@ class GalleryCreatorAlbums extends Backend
      */
     public function saveCbSortAlbum(string $varValue, DataContainer $dc): string
     {
-        if ('----' === $varValue) {
+        if ('' === $varValue) {
             return $varValue;
         }
 
         $objPictures = GalleryCreatorPicturesModel::findByPid($dc->id);
 
         if (null === $objPictures) {
-            return '----';
+            return '';
         }
 
         $files = [];
@@ -925,8 +921,8 @@ class GalleryCreatorAlbums extends Backend
             $objPicture->save();
         }
 
-        // return default value
-        return '----';
+        // return empty value
+        return '';
     }
 
     /**

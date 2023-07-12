@@ -14,10 +14,13 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\StringUtil;
+use Contao\System;
+use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Util\GalleryCreatorUtil;
 
 class Content
@@ -84,15 +87,16 @@ class Content
         return sprintf($html, $this->getSubalbumsAsUnorderedList(0, (int) $dc->id));
     }
 
-    public function onloadCbSetUpPalettes(): void
+    public function onloadCbSetUpPalettes(DataContainer $dc): void
     {
-        $objContent = Database::getInstance()
-            ->prepare('SELECT gc_publish_all_albums FROM tl_content WHERE id=?')
-            ->execute(Input::get('id'))
-        ;
+        /** @var Connection $conn */
+        $conn = System::getContainer()->get('database_connection');
 
-        if ($objContent->gc_publish_all_albums) {
-            $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce'] = str_replace('gc_publish_albums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce']);
+        if ($conn->fetchOne('SELECT gc_publish_all_albums FROM tl_content WHERE id=?',[$dc->id])) {
+            PaletteManipulator::create()
+                ->removeField('gc_publish_albums')
+                ->applyToPalette( 'gallery_creator_ce','tl_content')
+            ;
         }
     }
 

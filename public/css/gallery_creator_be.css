@@ -85,3 +85,10 @@ div.readonly input {
     min-height: 100px;
 }
 
+#ctrl_gc_publish_albums.tl_checkbox_container li.album-list-item {
+    margin: .5rem 0;
+}
+
+#ctrl_gc_publish_albums.tl_checkbox_container li.album-list-item .tl_checkbox {
+    margin-right: .25rem;
+}

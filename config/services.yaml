@@ -7,7 +7,7 @@ services:
     Markocupic\GalleryCreatorBundle\:
         resource: ../src/
         exclude: [
-            '../src/{Model,DependencyInjection}',
+            '../src/{Model,DataContainer,DependencyInjection,Util}',
         ]
 
     Markocupic\GalleryCreatorBundle\DataContainer\Content:

@@ -21,11 +21,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class KernelRequestSubscriber implements EventSubscriberInterface
 {
-    protected $scopeMatcher;
 
-    public function __construct(ScopeMatcher $scopeMatcher)
+    public function __construct(protected readonly ScopeMatcher $scopeMatcher)
     {
-        $this->scopeMatcher = $scopeMatcher;
     }
 
     public static function getSubscribedEvents()
@@ -38,9 +36,6 @@ class KernelRequestSubscriber implements EventSubscriberInterface
         $request = $e->getRequest();
 
         if ($this->scopeMatcher->isBackendRequest($request)) {
-            if ('gallery_creator' !== $request->query->get('do')) {
-                return;
-            }
 
             if (2 === $request->query->count() && $request->query->has('ref')) {
                 // check tables script

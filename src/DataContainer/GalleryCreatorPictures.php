@@ -60,8 +60,9 @@ class GalleryCreatorPictures extends Backend
         if (Input::get('filesImported')) {
             $request = System::getContainer()->get('request_stack')->getCurrentRequest();
             $session = $request->getSession();
-            $session[$request->get('_contao_referer_id')]['current'] = 'contao?do=gallery_creator';
-            $this->Session->set('referer', $session);
+            $ref = $session->get('referer', []);
+            $ref[$request->get('_contao_referer_id')]['current'] = 'contao?do=gallery_creator';
+            $session->set('referer', $ref);
         }
 
         switch (Input::get('mode')) {
@@ -139,8 +140,10 @@ class GalleryCreatorPictures extends Backend
     {
         $objImg = Database::getInstance()
             ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
-            ->execute($row['id']
-            );
+            ->execute(
+                $row['id']
+            )
+        ;
 
         return $this->user->isAdmin || $this->user->id === $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
@@ -166,7 +169,7 @@ class GalleryCreatorPictures extends Backend
      */
     public function childRecordCb(array $arrRow): string
     {
-        $key = '1' === $arrRow['published'] ? 'published' : 'unpublished';
+        $key = $arrRow['published'] ? 'published' : 'unpublished';
 
         // Nächste Zeile nötig, da be_breadcrumb sonst bei "mehrere bearbeiten" hier einen Fehler produziert
         $oFile = FilesModel::findByUuid($arrRow['uuid']);
@@ -197,7 +200,7 @@ class GalleryCreatorPictures extends Backend
                 $type = '' === trim($arrRow['localMediaSRC']) ? ' embeded local-media: ' : ' embeded social media: ';
                 $iconSrc = 'bundles/markocupicgallerycreator/images/film.png';
                 $movieIcon = Image::getHtml($iconSrc);
-                $hasMovie = sprintf('<div class="block">%s%s<a href="%s" data-lightbox="gc_album_%s">%s</a></div>', $movieIcon, $type, $src, Input::get('id'), $src);
+                $hasMovie = sprintf('<div class="block">%s%s<a href="%s" data-lightbox="gc_album_%s">%s</a></div>', $movieIcon, $type, $src, $arrRow['pid'], $src);
             }
             $blnShowThumb = false;
             $src = '';
@@ -236,7 +239,7 @@ class GalleryCreatorPictures extends Backend
         unset($bag['BE_COPY_PASTE_SOURCE_ALBUM']);
         $session->set('GALLERY_CREATOR', $bag);
 
-        $objPictureToMove = GalleryCreatorPicturesModel::findByPk(Input::get('id'));
+        $objPictureToMove = GalleryCreatorPicturesModel::findByPk($dc->id);
 
         if (null === $objSourceAlbum || null === $objPictureToMove) {
             return;
@@ -319,8 +322,7 @@ class GalleryCreatorPictures extends Backend
 
         $output = '
 			<div class="long widget album_infos">
-			<br><br>
-			<table>
+              <table style="margin-top: 16px">
 
 				<tr class="odd">
 					<td style="width:20%"><strong>'.$GLOBALS['TL_LANG']['tl_gallery_creator_pictures']['pid'][0].': </strong></td>
@@ -443,17 +445,17 @@ class GalleryCreatorPictures extends Backend
     /**
      * onload-callback.
      */
-    public function onloadCbCheckPermission(): void
+    public function onloadCbCheckPermission(DataContainer $dc): void
     {
-        if ($this->user->isAdmin) {
+        if (!$dc->id || $this->user->isAdmin) {
             return;
         }
 
         if ('edit' === Input::get('act')) {
             $objUser = Database::getInstance()
                 ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
-                ->execute(Input::get('id')
-                );
+                ->execute($dc->id)
+            ;
 
             if (Config::get('gc_disable_backend_edit_protection')) {
                 return;

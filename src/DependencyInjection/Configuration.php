@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of GMK Navigation.
+ * This file is part of Gallery Creator Bundle.
  *
  * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license MIT
@@ -27,15 +27,11 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-                ->arrayNode('foo')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('bar')
-                            ->cannotBeEmpty()
-                            ->defaultValue('***')
-                        ->end()
-                    ->end()
-                ->end() // end foo
+                ->scalarNode('upload_path')
+                    ->info('The folder where gallery creator stores new albums by default.')
+                    ->cannotBeEmpty()
+                    ->defaultValue('%contao.upload_path%/gallery_creator_albums')
+                ->end()
             ->end()
         ;
 

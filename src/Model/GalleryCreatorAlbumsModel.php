@@ -19,9 +19,7 @@ use Contao\Model;
 
 class GalleryCreatorAlbumsModel extends Model
 {
-
     protected static $strTable = 'tl_gallery_creator_albums';
-
 
     public static function getParentAlbum(int $albumId): array|null
     {
@@ -75,7 +73,12 @@ class GalleryCreatorAlbumsModel extends Model
         } else {
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid=? ORDER BY '.$strSorting;
         }
-        $objAlb = Database::getInstance()->prepare($strSql)->execute($parentId);
+
+        $objAlb = Database::getInstance()
+            ->prepare($strSql)
+            ->execute($parentId)
+        ;
+
         $depth = null !== $iterationDepth ? $iterationDepth - 1 : null;
 
         while ($objAlb->next()) {

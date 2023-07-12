@@ -17,12 +17,15 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\ContentElement;
+use Contao\Database;
 use Contao\Date;
 use Contao\FilesModel;
 use Contao\FrontendTemplate;
+use Contao\FrontendUser;
 use Contao\Input;
 use Contao\Pagination;
 use Contao\StringUtil;
+use Contao\System;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Util\GalleryCreatorUtil;
 
@@ -33,15 +36,12 @@ class ContentGalleryCreatorNews extends ContentElement
 
     public function generate(): string
     {
-        if (TL_MODE === 'BE') {
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
             $objTemplate = new BackendTemplate('be_wildcard');
             $objTemplate->wildcard = '### '.$GLOBALS['TL_LANG']['CTE']['gallery_creator_ce_news'][0].' ###';
             $objTemplate->title = $this->headline;
-
-            // for module use only
-            $objTemplate->id = $this->id;
-            $objTemplate->link = $this->name;
-            $objTemplate->href = 'contao?do=themes&amp;table=tl_module&amp;act=edit&amp;id='.$this->id;
 
             return $objTemplate->parse();
         }
@@ -50,7 +50,10 @@ class ContentGalleryCreatorNews extends ContentElement
             return '';
         }
 
-        $objAlbum = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=? AND published=?')->execute($this->gc_publish_single_album, '1');
+        $objAlbum = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=? AND published=?')
+            ->execute($this->gc_publish_single_album, '1')
+        ;
 
         // if the album doesn't exist
         if (!$objAlbum->numRows) {
@@ -60,13 +63,16 @@ class ContentGalleryCreatorNews extends ContentElement
         $this->intAlbumId = $objAlbum->id;
 
         // Check Permission for protected albums
-        if (TL_MODE === 'FE' && $objAlbum->protected) {
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request) && $objAlbum->protected) {
             $blnAllowed = false;
-            $this->import('FrontendUser', 'User');
 
-            if (FE_USER_LOGGED_IN && \is_array(StringUtil::deserialize($this->User->allGroups))) {
+            if (($user = System::getContainer()->get('security.helper')->getUser()) instanceof FrontendUser) {
+                $hasLoggedInFrontendUser = true;
+            }
+
+            if ($hasLoggedInFrontendUser && \is_array(StringUtil::deserialize($user->allGroups))) {
                 // Check if logged-in user is in an allowed group
-                if (array_intersect(StringUtil::deserialize($this->User->allGroups), StringUtil::deserialize($objAlbum->groups, true))) {
+                if (array_intersect(StringUtil::deserialize($user->allGroups), StringUtil::deserialize($objAlbum->groups, true))) {
                     $blnAllowed = true;
                 }
             }
@@ -103,7 +109,10 @@ class ContentGalleryCreatorNews extends ContentElement
             $offset = ($page - 1) * $limit;
 
             // Count pictures
-            $objPictures = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')->execute('1', $this->intAlbumId);
+            $objPictures = Database::getInstance()
+                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
+                ->execute('1', $this->intAlbumId)
+            ;
             $itemsTotal = $objPictures->numRows;
 
             // Create the pagination menu
@@ -117,11 +126,14 @@ class ContentGalleryCreatorNews extends ContentElement
 
         // Sort by name is done below
         $str_sorting = str_replace('name', 'id', $str_sorting);
-        $objPictures = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting);
+        $objPictures = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
+        ;
 
         if ($limit > 0) {
             $objPictures->limit($limit, $offset);
         }
+
         $objPictures = $objPictures->execute('1', $this->intAlbumId);
 
         // Build up $arrPictures
@@ -175,7 +187,10 @@ class ContentGalleryCreatorNews extends ContentElement
         global $objPage;
 
         // Load the current album from db
-        $objAlbum = $this->Database->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')->execute($intAlbumId);
+        $objAlbum = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
+            ->execute($intAlbumId)
+        ;
 
         $objPage->description = '' !== $objAlbum->description ? StringUtil::specialchars($objAlbum->description) : $objPage->description;
         $GLOBALS['TL_KEYWORDS'] = ltrim($GLOBALS['TL_KEYWORDS'].','.StringUtil::specialchars($objAlbum->keywords), ',');

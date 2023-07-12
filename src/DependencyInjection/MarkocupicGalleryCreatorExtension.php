@@ -47,6 +47,6 @@ class MarkocupicGalleryCreatorExtension extends Extension
 
         $rootKey = $this->getAlias();
 
-        $container->setParameter($rootKey.'.foo.bar', $config['foo']['bar']);
+        $container->setParameter($rootKey.'.upload_path', $config['upload_path']);
     }
 }

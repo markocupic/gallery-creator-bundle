@@ -86,7 +86,10 @@ class Content
 
     public function onloadCbSetUpPalettes(): void
     {
-        $objContent = Database::getInstance()->prepare('SELECT gc_publish_all_albums FROM tl_content WHERE id=?')->execute(Input::get('id'));
+        $objContent = Database::getInstance()
+            ->prepare('SELECT gc_publish_all_albums FROM tl_content WHERE id=?')
+            ->execute(Input::get('id'))
+        ;
 
         if ($objContent->gc_publish_all_albums) {
             $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce'] = str_replace('gc_publish_albums,', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery_creator_ce']);
@@ -107,7 +110,11 @@ class Content
         $selectedAlbums = array_map('intval', $selectedAlbums);
 
         $level = GalleryCreatorUtil::getAlbumLevel($pid);
-        $db = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)->execute($pid, 1);
+
+        $db = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$str_sorting)
+            ->execute($pid, 1)
+        ;
 
         while ($db->next()) {
             $checked = \in_array($db->id, $selectedAlbums, true) ? ' checked' : '';

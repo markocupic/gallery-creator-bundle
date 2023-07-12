@@ -68,7 +68,7 @@ class GalleryCreatorUtil
         $assignedDir = null;
 
         if (null !== $objFolder) {
-            if (is_dir(TL_ROOT.'/'.$objFolder->path)) {
+            if (is_dir(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFolder->path)) {
                 $assignedDir = $objFolder->path;
             }
         }
@@ -96,7 +96,11 @@ class GalleryCreatorUtil
         $insertId = $objPictureModel->id;
 
         // Get the next sorting index
-        $objImg = Database::getInstance()->prepare('SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid=?')->execute($objAlbumModel->id);
+        $objImg = Database::getInstance()
+            ->prepare('SELECT MAX(sorting)+10 AS maximum FROM tl_gallery_creator_pictures WHERE pid=?')
+            ->execute($objAlbumModel->id)
+        ;
+
         $sorting = $objImg->maximum;
 
         // If filename should be generated
@@ -105,16 +109,18 @@ class GalleryCreatorUtil
             $objFile->renameTo($newFilepath);
         }
 
-        if (is_file(TL_ROOT.'/'.$objFile->path)) {
+        if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFile->path)) {
             // Get the userId
             $userId = '0';
 
-            if (TL_MODE === 'BE') {
+            $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+            if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
                 $userId = BackendUser::getInstance()->id;
             }
 
             // The album-owner is automatically the image owner, if the image was uploaded by a frontend user
-            if (TL_MODE === 'FE') {
+            if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request)) {
                 $userId = $objAlbumModel->owner;
             }
 
@@ -170,7 +176,7 @@ class GalleryCreatorUtil
         // Check for a valid upload directory
         $objUploadDir = FilesModel::findByUuid($objAlb->assignedDir);
 
-        if (null === $objUploadDir || !is_dir(TL_ROOT.'/'.$objUploadDir->path)) {
+        if (null === $objUploadDir || !is_dir(System::getContainer()->getParameter('kernel.project_dir').'/'.$objUploadDir->path)) {
             $blnIsError = true;
             Message::addError('No upload directory defined in the album settings!');
         }
@@ -257,7 +263,7 @@ class GalleryCreatorUtil
         $dirname = \dirname($strPath);
 
         for ($i = 1; $i < 1000; ++$i) {
-            if (!file_exists(TL_ROOT.'/'.$dirname.'/'.$basename.'.'.$extension)) {
+            if (!file_exists(System::getContainer()->getParameter('kernel.project_dir').'/'.$dirname.'/'.$basename.'.'.$extension)) {
                 // Exit loop if filename is unique
                 return $dirname.'/'.$basename.'.'.$extension;
             }
@@ -319,7 +325,9 @@ class GalleryCreatorUtil
 
         $href = null;
 
-        if (TL_MODE === 'FE') {
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request)) {
             // Generate the url as a formatted string
             $href = StringUtil::ampersand($objPageModel->getFrontendUrl(Config::get('useAutoItem') ? '/%s' : '/items/%s'));
 
@@ -435,7 +443,7 @@ class GalleryCreatorUtil
 
             if (null !== $objFile) {
                 if (Validator::isStringUuid(Config::get('gc_error404_thumb'))) {
-                    if (is_file(TL_ROOT.'/'.$objFile->path)) {
+                    if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFile->path)) {
                         $defaultThumbSRC = $objFile->path;
                     }
                 }
@@ -445,14 +453,25 @@ class GalleryCreatorUtil
         // Get the page model
         $objPageModel = PageModel::findByPk($objPage->id);
 
-        $objPicture = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE id=?')->execute($intPictureId);
+        $objPicture = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE id=?')
+            ->execute($intPictureId)
+        ;
 
         // Alle Informationen zum Album in ein array packen
-        $objAlbum = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')->execute($objPicture->pid);
+        $objAlbum = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
+            ->execute($objPicture->pid)
+        ;
+
         $arrAlbumInfo = $objAlbum->fetchAssoc();
 
         // Bild-Besitzer
-        $objOwner = Database::getInstance()->prepare('SELECT * FROM tl_user WHERE id=?')->execute($objPicture->owner);
+        $objOwner = Database::getInstance()
+            ->prepare('SELECT * FROM tl_user WHERE id=?')
+            ->execute($objPicture->owner)
+        ;
+
         $arrMeta = [];
         $objFileModel = FilesModel::findByUuid($objPicture->uuid);
 
@@ -461,7 +480,7 @@ class GalleryCreatorUtil
         } else {
             $strImageSrc = $objFileModel->path;
 
-            if (!is_file(TL_ROOT.'/'.$strImageSrc)) {
+            if (!is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$strImageSrc)) {
                 // Fallback to the default thumb
                 $strImageSrc = $defaultThumbSRC;
             }
@@ -485,7 +504,7 @@ class GalleryCreatorUtil
                 $customThumbModel = FilesModel::findByUuid($objPicture->customThumb);
 
                 if (null !== $customThumbModel) {
-                    if (is_file(TL_ROOT.'/'.$customThumbModel->path)) {
+                    if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$customThumbModel->path)) {
                         $objFileCustomThumb = new File($customThumbModel->path);
 
                         if ($objFileCustomThumb->isGdImage) {
@@ -513,7 +532,7 @@ class GalleryCreatorUtil
         $arrFile['thumb_height'] = $objFileThumb->height;
 
         // Get some image params
-        if (is_file(TL_ROOT.'/'.$strImageSrc)) {
+        if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$strImageSrc)) {
             $objFileImage = new File($strImageSrc);
 
             if (!$objFileImage->isGdImage) {
@@ -533,8 +552,10 @@ class GalleryCreatorUtil
 
         // Exif
         if (Config::get('gc_read_exif')) {
+            $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
             try {
-                $exif = \is_callable('exif_read_data') && TL_MODE === 'FE' ? exif_read_data($strImageSrc) : ['info' => "The function 'exif_read_data()' is not available on this server."];
+                $exif = \is_callable('exif_read_data') && $request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request) ? exif_read_data($strImageSrc) : ['info' => "The function 'exif_read_data()' is not available on this server."];
             } catch (\Exception $e) {
                 $exif = ['info' => "The function 'exif_read_data()' is not available on this server."];
             }
@@ -550,9 +571,12 @@ class GalleryCreatorUtil
             $objMovieFile = FilesModel::findById($objPicture->localMediaSRC);
             $strMediaSrc = null !== $objMovieFile ? $objMovieFile->path : $strMediaSrc;
         }
+
         $href = null;
 
-        if (TL_MODE === 'FE' && $objContentElement->gc_fullsize) {
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request) && $objContentElement->gc_fullsize) {
             $href = '' !== $strMediaSrc ? $strMediaSrc : TL_FILES_URL.System::urlEncode($strImageSrc);
         }
 
@@ -656,7 +680,12 @@ class GalleryCreatorUtil
     public static function getSubalbumsInformationArray(int $intAlbumId, ContentElement $objContentElement): array
     {
         $strSorting = $objContentElement->gc_sorting.' '.$objContentElement->gc_sorting_direction;
-        $objSubAlbums = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)->execute($intAlbumId, '1');
+
+        $objSubAlbums = Database::getInstance()
+            ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE pid=? AND published=? ORDER BY '.$strSorting)
+            ->execute($intAlbumId, '1')
+        ;
+
         $arrSubalbums = [];
 
         while ($objSubAlbums->next()) {
@@ -702,8 +731,10 @@ class GalleryCreatorUtil
         // Chmod
         Files::getInstance()->chmod($imgPath, 0777);
 
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
         // Load
-        if (TL_MODE === 'BE') {
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
             $imgSrc = '../'.$imgPath;
         } else {
             $imgSrc = $imgPath;
@@ -735,7 +766,7 @@ class GalleryCreatorUtil
 
         while ($objFilesModel->next()) {
             // Continue if the file has been processed or does not exist
-            if (isset($images[$objFilesModel->path]) || !file_exists(TL_ROOT.'/'.$objFilesModel->path)) {
+            if (isset($images[$objFilesModel->path]) || !file_exists(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFilesModel->path)) {
                 continue;
             }
 
@@ -756,7 +787,7 @@ class GalleryCreatorUtil
 
                 while ($objSubfilesModel->next()) {
                     // Skip child folders
-                    if ('folder' === $objSubfilesModel->type || !is_file(TL_ROOT.'/'.$objSubfilesModel->path)) {
+                    if ('folder' === $objSubfilesModel->type || !is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objSubfilesModel->path)) {
                         continue;
                     }
 
@@ -776,7 +807,11 @@ class GalleryCreatorUtil
                 'basename' => [],
             ];
 
-            $objPictures = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=?')->execute($intAlbumId);
+            $objPictures = Database::getInstance()
+                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE pid=?')
+                ->execute($intAlbumId)
+            ;
+
             $arrPictures['uuid'] = $objPictures->fetchEach('uuid');
             $arrPictures['path'] = $objPictures->fetchEach('path');
 
@@ -816,14 +851,14 @@ class GalleryCreatorUtil
                         Controller::redirect('contao?do=gallery_creator&ref='.System::getReferer());
                     }
 
-                    if (!is_dir(TL_ROOT.'/'.$objFolderModel->path)) {
+                    if (!is_dir(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFolderModel->path)) {
                         Message::addError($errMsg);
                         Controller::redirect('contao?do=gallery_creator&ref='.System::getReferer());
                     }
 
                     $strDestination = self::generateSanitizedAndUniqueFilename($objFolderModel->path.'/'.basename($strSource));
 
-                    if (is_file(TL_ROOT.'/'.$strSource)) {
+                    if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$strSource)) {
                         // Copy Image to the upload folder
                         $objFile = new File($strSource);
                         $objFile->copyTo($strDestination);
@@ -842,8 +877,8 @@ class GalleryCreatorUtil
     {
         $_SESSION['GC_ERROR'] = [];
 
-        // Upload-Verzeichnis erstellen, falls nicht mehr vorhanden
-        new Folder(GALLERY_CREATOR_UPLOAD_PATH);
+        // Create the upload folder if not exists
+        new Folder(System::getContainer()->getParameter('markocupic_gallery_creator.upload_path'));
 
         // Get album model
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
@@ -884,7 +919,7 @@ class GalleryCreatorUtil
 
                     if (null === $objFile) {
                         if ('' !== $objPictures->path) {
-                            if (is_file(TL_ROOT.'/'.$objPictures->path)) {
+                            if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objPictures->path)) {
                                 $objModel = Dbafs::addResource($objPictures->path);
 
                                 if (null !== $objModel) {
@@ -904,7 +939,7 @@ class GalleryCreatorUtil
                             $path = '' !== $objPictures->path ? $objPictures->path : 'unknown path';
                             $_SESSION['GC_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $path, $objAlbum->alias);
                         }
-                    } elseif (!is_file(TL_ROOT.'/'.$objFile->path)) {
+                    } elseif (!is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFile->path)) {
                         // If file has an entry in tl_files, but doesn't exist on the server anymore
                         if (false !== $blnCleanDb) {
                             $msg = 'Deleted Data record with ID '.$objPictures->id.'.';
@@ -929,22 +964,33 @@ class GalleryCreatorUtil
          * Checks whether the albums defined in the content element still exist.
          * If no, these are removed from the array.
          */
-        $objCont = Database::getInstance()->prepare('SELECT * FROM tl_content WHERE type=?')->execute('gallery_creator');
+        $objContent = Database::getInstance()
+            ->prepare('SELECT * FROM tl_content WHERE type=?')
+            ->execute('gallery_creator')
+        ;
 
-        while ($objCont->next()) {
+        while ($objContent->next()) {
             $newArr = [];
-            $arrAlbums = StringUtil::deserialize($objCont->gc_publish_albums, true);
+            $arrAlbums = StringUtil::deserialize($objContent->gc_publish_albums, true);
 
             if (!empty($arrAlbums)) {
                 foreach ($arrAlbums as $AlbumID) {
-                    $objAlb = Database::getInstance()->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')->limit('1')->execute($AlbumID);
+                    $objAlb = Database::getInstance()
+                        ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id=?')
+                        ->limit('1')
+                        ->execute($AlbumID)
+                    ;
 
                     if ($objAlb->next()) {
                         $newArr[] = $AlbumID;
                     }
                 }
             }
-            Database::getInstance()->prepare('UPDATE tl_content SET gc_publish_albums=? WHERE id=?')->execute(serialize($newArr), $objCont->id);
+
+            Database::getInstance()
+                ->prepare('UPDATE tl_content SET gc_publish_albums=? WHERE id=?')
+                ->execute(serialize($newArr), $objContent->id)
+            ;
         }
     }
 

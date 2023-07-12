@@ -122,13 +122,13 @@ class ContentGalleryCreator extends ContentElement
 
         // Clean array from unpublished or empty or protected albums
         foreach ($this->arrSelectedAlbums as $key => $albumId) {
-            $countImages = $this->Database
+            $countImages = Database::getInstance()
                 ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?')
                 ->execute($albumId, '1')
                 ->numRows
             ;
 
-            $objAlbum = $this->Database
+            $objAlbum = Database::getInstance()
                 ->prepare('SELECT * FROM tl_gallery_creator_albums WHERE id = ?')
                 ->execute($albumId)
             ;
@@ -249,7 +249,8 @@ class ContentGalleryCreator extends ContentElement
         // used f.ex. for the ce_gc_colorbox.html template --> https://gist.github.com/markocupic/327413038262b2f84171f8df177cf021
         if (Input::get('isAjax') && Input::get('getImagesByPid') && Input::get('pid')) {
             // Do not send data if album is protected and the user has no access
-            $objAlbum = $this->Database->prepare('SELECT alias FROM tl_gallery_creator_albums WHERE id=?')
+            $objAlbum = Database::getInstance()
+                ->prepare('SELECT alias FROM tl_gallery_creator_albums WHERE id=?')
                 ->execute(Input::get('albumId'))
             ;
 
@@ -263,7 +264,8 @@ class ContentGalleryCreator extends ContentElement
             // sorting direction
             $sorting = $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
 
-            $objPicture = $this->Database->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$sorting)
+            $objPicture = Database::getInstance()
+                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$sorting)
                 ->execute(1, Input::get('pid'))
             ;
 
@@ -304,7 +306,7 @@ class ContentGalleryCreator extends ContentElement
                 $objFile = FilesModel::findByUuid(StringUtil::uuidToBin(Config::get('gc_error404_thumb')));
 
                 if (null !== $objFile) {
-                    if (is_file(TL_ROOT.'/'.$objFile->path)) {
+                    if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFile->path)) {
                         $thumbSRC = $objFile->path;
                     }
                 }
@@ -329,7 +331,7 @@ class ContentGalleryCreator extends ContentElement
             $oFile = FilesModel::findByUuid($objPreviewThumb->uuid);
 
             if (null !== $oFile) {
-                if (is_file(TL_ROOT.'/'.$oFile->path)) {
+                if (is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$oFile->path)) {
                     $arrThumb = [
                         'name' => basename($oFile->path),
                         'path' => $oFile->path,
@@ -488,7 +490,7 @@ class ContentGalleryCreator extends ContentElement
                 }
 
                 // Count pictures
-                $objTotal = $this->Database
+                $objTotal = Database::getInstance()
                     ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
                     ->execute('1', $this->intAlbumId)
                 ;
@@ -522,7 +524,7 @@ class ContentGalleryCreator extends ContentElement
                 // Sort by name is done below
                 $str_sorting = str_replace('name', 'id', $str_sorting);
 
-                $objPictures = $this->Database
+                $objPictures = Database::getInstance()
                     ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
                 ;
 
@@ -580,7 +582,10 @@ class ContentGalleryCreator extends ContentElement
                     die('Invalid album alias: '.Input::get('items'));
                 }
 
-                $objPic = Database::getInstance()->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND name LIKE '".Input::get('img').".%'")->execute($objAlbum->id);
+                $objPic = Database::getInstance()
+                    ->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE pid=? AND name LIKE '".Input::get('img').".%'")
+                    ->execute($objAlbum->id)
+                ;
 
                 if (!$objPic->numRows) {
                     $message = sprintf('File "%s" does not exist in album with alias "%s".', Input::get('img'), Input::get('items'));
@@ -600,8 +605,10 @@ class ContentGalleryCreator extends ContentElement
 
                 // Picture sorting
                 $str_sorting = '' === $this->gc_picture_sorting || '' === $this->gc_picture_sorting_direction ? 'sorting ASC' : $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
-                $objPictures = $this->Database->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting);
-                $objPictures = $objPictures->execute('1', $this->intAlbumId);
+                $objPictures = Database::getInstance()
+                    ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
+                    ->execute('1', $this->intAlbumId)
+                ;
 
                 // Build $arrPictures
                 $arrIDS = [];
@@ -673,12 +680,12 @@ class ContentGalleryCreator extends ContentElement
         $strSorting = '' === $this->gc_sorting || '' === $this->gc_sorting_direction ? 'date DESC' : $this->gc_sorting.' '.$this->gc_sorting_direction;
 
         if (null !== $pid) {
-            $objAlbums = $this->Database
+            $objAlbums = Database::getInstance()
                 ->prepare("SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY $strSorting")
                 ->execute($pid, '1')
             ;
         } else {
-            $objAlbums = $this->Database
+            $objAlbums = Database::getInstance()
                 ->prepare("SELECT * FROM tl_gallery_creator_albums WHERE published = ? ORDER BY $strSorting")
                 ->execute('1')
             ;

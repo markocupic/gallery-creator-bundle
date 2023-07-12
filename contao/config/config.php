@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 
 use Contao\ArrayUtil;
-use Contao\Config;
 use Contao\Input;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\ContentGalleryCreator;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\ContentGalleryCreatorNews;
@@ -21,38 +20,33 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 
 /**
- * Define Constants
- */
-define('GALLERY_CREATOR_UPLOAD_PATH', Config::get('uploadPath').'/gallery_creator_albums');
-
-/**
  * Front end content element
  */
 ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, ['ce_type_gallery_creator' => ['gallery_creator_ce_news' => ContentGalleryCreatorNews::class]]);
 ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, ['ce_type_gallery_creator' => ['gallery_creator_ce' => ContentGalleryCreator::class]]);
 
-// Show news ce_element in the news-module only
-if (TL_MODE === 'BE' && Input::get('do') === 'news') {
+/**
+ * Show news content element in the news-module only
+ */
+if (Input::get('do') === 'news') {
     unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce']);
 }
 
-if (TL_MODE === 'BE' && Input::get('do') != 'news') {
+if (Input::get('do') !== 'news') {
     unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce_news']);
 }
 
 /**
  * Back end module
  */
-if (TL_MODE === 'BE') {
+$GLOBALS['BE_MOD']['content']['gallery_creator'] = [
+    'icon'   => 'bundles/markocupicgallerycreator/images/picture.png',
+    'tables' => [
+        'tl_gallery_creator_albums',
+        'tl_gallery_creator_pictures',
+    ],
+];
 
-    $GLOBALS['BE_MOD']['content']['gallery_creator'] = [
-        'icon'   => 'bundles/markocupicgallerycreator/images/picture.png',
-        'tables' => [
-            'tl_gallery_creator_albums',
-            'tl_gallery_creator_pictures',
-        ],
-    ];
-}
 
 /**
  * Models

@@ -15,7 +15,9 @@ declare(strict_types=1);
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\Backend;
+use Contao\BackendUser;
 use Contao\Config;
+use Contao\Database;
 use Contao\DataContainer;
 use Contao\Date;
 use Contao\Dbafs;
@@ -39,24 +41,26 @@ class GalleryCreatorPictures extends Backend
 {
     public string|null $uploadPath = null;
     public bool $restrictedUser = false;
+    private BackendUser|null $user = null;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->import('BackendUser', 'User');
-        $this->import('Files');
+        if (($user = System::getContainer()->get('security.helper')->getUser()) instanceof BackendUser) {
+            $this->user = $user;
+        }
 
-        $this->uploadPath = GALLERY_CREATOR_UPLOAD_PATH;
+        $this->uploadPath = System::getContainer()->getParameter('markocupic_gallery_creator.upload_path');
 
         // Register parse backend template hook
         $GLOBALS['TL_HOOKS']['parseBackendTemplate'][] = [self::class, 'removeSubmitButtons'];
 
         // set the referer when redirecting from import files from the filesystem
         if (Input::get('filesImported')) {
-            $this->import('Session');
-            $session = $this->Session->get('referer');
-            $session[TL_REFERER_ID]['current'] = 'contao?do=gallery_creator';
+            $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+            $session = $request->getSession();
+            $session[$request->get('_contao_referer_id')]['current'] = 'contao?do=gallery_creator';
             $this->Session->set('referer', $session);
         }
 
@@ -87,10 +91,10 @@ class GalleryCreatorPictures extends Backend
                 break;
 
             case 'select':
-                if (!$this->User->isAdmin) {
+                if (!$this->user->isAdmin) {
                     // only list pictures where the current logged-in user is owner
                     if (!Config::get('gc_disable_backend_edit_protection')) {
-                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner=?', $this->User->id]];
+                        $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['list']['sorting']['filter'] = [['owner=?', $this->user->id]];
                     }
                 }
 
@@ -120,9 +124,12 @@ class GalleryCreatorPictures extends Backend
      */
     public function buttonCbDeletePicture(array $row, string|null $href, string $label, string $title, string $icon, string $attributes): string
     {
-        $objImg = $this->Database->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')->execute($row['id']);
+        $objImg = Database::getInstance()
+            ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
+            ->execute($row['id'])
+        ;
 
-        return $this->User->isAdmin || $this->User->id === $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
+        return $this->user->isAdmin || $this->user->id === $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
     /**
@@ -130,9 +137,12 @@ class GalleryCreatorPictures extends Backend
      */
     public function buttonCbEditImage(array $row, string|null $href, string $label, string $title, string $icon, string $attributes): string
     {
-        $objImg = $this->Database->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')->execute($row['id']);
+        $objImg = Database::getInstance()
+            ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
+            ->execute($row['id']
+            );
 
-        return $this->User->isAdmin || $this->User->id === $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
+        return $this->user->isAdmin || $this->user->id === $objImg->owner || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id'], true).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
     /**
@@ -148,7 +158,7 @@ class GalleryCreatorPictures extends Backend
      */
     public function buttonCbRotateImage(array $row, string|null $href, string $label, string $title, string $icon, string $attributes): string
     {
-        return $this->User->isAdmin || $this->User->id === $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&imgId='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml($icon, $label);
+        return $this->user->isAdmin || $this->user->id === $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&imgId='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml($icon, $label);
     }
 
     /**
@@ -161,7 +171,7 @@ class GalleryCreatorPictures extends Backend
         // Nächste Zeile nötig, da be_breadcrumb sonst bei "mehrere bearbeiten" hier einen Fehler produziert
         $oFile = FilesModel::findByUuid($arrRow['uuid']);
 
-        if (!is_file(TL_ROOT.'/'.$oFile->path)) {
+        if (!is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$oFile->path)) {
             return '';
         }
 
@@ -402,7 +412,7 @@ class GalleryCreatorPictures extends Backend
         $objImg = GalleryCreatorPicturesModel::findByPk($dc->id);
         $pid = $objImg->pid;
 
-        if ($objImg->owner === $this->User->id || $this->User->isAdmin || Config::get('gc_disable_backend_edit_protection')) {
+        if ($objImg->owner === $this->user->id || $this->user->isAdmin || Config::get('gc_disable_backend_edit_protection')) {
             $uuid = $objImg->uuid;
 
             $objImg->delete();
@@ -423,8 +433,8 @@ class GalleryCreatorPictures extends Backend
                     $file->delete();
                 }
             }
-        } elseif (!$this->User->isAdmin && $objImg->owner !== $this->User->id) {
-            $this->log('Datensatz mit ID '.$dc->id.' wurde vom  Benutzer mit ID '.$this->User->id.' versucht aus tl_gallery_creator_pictures zu loeschen.', __METHOD__, TL_ERROR);
+        } elseif (!$this->user->isAdmin && $objImg->owner !== $this->user->id) {
+            $this->log('Datensatz mit ID '.$dc->id.' wurde vom  Benutzer mit ID '.$this->user->id.' versucht aus tl_gallery_creator_pictures zu loeschen.', __METHOD__, TL_ERROR);
             Message::addError('No permission to delete picture with ID '.$dc->id.'.');
             $this->redirect('contao?do=error');
         }
@@ -435,18 +445,21 @@ class GalleryCreatorPictures extends Backend
      */
     public function onloadCbCheckPermission(): void
     {
-        if ($this->User->isAdmin) {
+        if ($this->user->isAdmin) {
             return;
         }
 
         if ('edit' === Input::get('act')) {
-            $objUser = $this->Database->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')->execute(Input::get('id'));
+            $objUser = Database::getInstance()
+                ->prepare('SELECT owner FROM tl_gallery_creator_pictures WHERE id=?')
+                ->execute(Input::get('id')
+                );
 
             if (Config::get('gc_disable_backend_edit_protection')) {
                 return;
             }
 
-            if ($objUser->owner !== $this->User->id) {
+            if ($objUser->owner !== $this->user->id) {
                 $this->restrictedUser = true;
             }
         }
@@ -462,7 +475,7 @@ class GalleryCreatorPictures extends Backend
             $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['palettes']['restricted_user'];
         }
 
-        if ($this->User->isAdmin) {
+        if ($this->user->isAdmin) {
             $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['owner']['eval']['doNotShow'] = false;
         }
     }
@@ -478,7 +491,7 @@ class GalleryCreatorPictures extends Backend
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->user->isAdmin && $row['owner'] !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
             return '';
         }
 
@@ -488,7 +501,7 @@ class GalleryCreatorPictures extends Backend
             $icon = 'invisible.svg';
         }
 
-        if (!$this->User->isAdmin && $row['owner'] !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->user->isAdmin && $row['owner'] !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
             return Image::getHtml($icon).' ';
         }
 
@@ -502,7 +515,7 @@ class GalleryCreatorPictures extends Backend
     {
         $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
         // Check permissions to publish
-        if (!$this->User->isAdmin && $objPicture->owner !== $this->User->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->user->isAdmin && $objPicture->owner !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
             $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
             $this->redirect('contao?act=error');
         }
@@ -523,7 +536,10 @@ class GalleryCreatorPictures extends Backend
         }
 
         // Update the database
-        $this->Database->prepare('UPDATE tl_gallery_creator_pictures SET tstamp='.time().", published='".($blnVisible ? 1 : '')."' WHERE id=?")->execute($intId);
+        Database::getInstance()
+            ->prepare('UPDATE tl_gallery_creator_pictures SET tstamp='.time().", published='".($blnVisible ? 1 : '')."' WHERE id=?")
+            ->execute($intId)
+        ;
 
         $objVersions->create();
         $this->log('A new version of record "tl_gallery_creator_pictures.id='.$intId.'" has been created.', __METHOD__, TL_GENERAL);

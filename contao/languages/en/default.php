@@ -16,13 +16,12 @@ declare(strict_types=1);
  * Error messages
  */
 $GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'] = 'The file "%s" doesn\'t exist on your server!';
-$GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. <br>Please clean up the database or check the existence of %s in the album with alias: %s!';
+$GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'] = 'The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of %s in the album with alias: %s!';
 $GLOBALS['TL_LANG']['ERR']['uploadError'] = 'The file "%s" could not been uploaded!';
 $GLOBALS['TL_LANG']['ERR']['fileDontExist'] = 'The file "%s" does not exist!';
 $GLOBALS['TL_LANG']['ERR']['fileNotReadable'] = 'The file "%s" ist not readable! Check access rights.';
 $GLOBALS['TL_LANG']['ERR']['dirNotWriteable'] = 'The directory "%s" is not writeable! Check chmod settings!';
 $GLOBALS['TL_LANG']['ERR']['accept_jpg'] = 'Gallery Creator only supports jpeg/jpg files.';
-
 
 /**
  * Frontend

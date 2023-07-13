@@ -57,15 +57,11 @@ class GalleryCreatorAlbums extends Backend
         // path to the gallery_creator upload-directory
         $this->uploadPath = System::getContainer()->getParameter('markocupic_gallery_creator.upload_path');
 
-        // register the parseBackendTemplate Hook
+        // Register the parseBackendTemplate Hook
         $GLOBALS['TL_HOOKS']['parseBackendTemplate'][] = [
             self::class,
-            'myParseBackendTemplate',
+            'setCorrectEnctype',
         ];
-
-        if (isset($_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode']) && 'copyAll' === $_SESSION['BE_DATA']['CLIPBOARD']['tl_gallery_creator_albums']['mode']) {
-            $this->redirect('contao?do=gallery_creator&clipboard=1');
-        }
     }
 
     /**
@@ -350,24 +346,17 @@ class GalleryCreatorAlbums extends Backend
 
                     if (Input::get('reviseTables') && $this->user->isAdmin) {
                         // delete damaged data records
-                        GalleryCreatorUtil::reviseTables($albumId, true);
+                        $msg = GalleryCreatorUtil::reviseTables($albumId, true);
                     } else {
-                        GalleryCreatorUtil::reviseTables($albumId);
+                        $msg = GalleryCreatorUtil::reviseTables($albumId);
                     }
 
-                    if (\is_array($_SESSION['GC_ERROR'])) {
-                        if (\count($_SESSION['GC_ERROR']) > 0) {
-                            $strError = implode('***', $_SESSION['GC_ERROR']);
+                    if (!empty($msg)) {
+                        $strError = implode('***', $msg);
+                        $response = new JsonResponse(['errors' => $strError]);
 
-                            if ('' !== $strError) {
-                                $response = new JsonResponse(['errors' => $strError]);
-
-                                throw new ResponseException($response);
-                            }
-                        }
+                        throw new ResponseException($response);
                     }
-
-                    unset($_SESSION['GC_ERROR']);
 
                     $response = new JsonResponse(['status' => 'success']);
 
@@ -377,9 +366,6 @@ class GalleryCreatorAlbums extends Backend
         }
     }
 
-    /**
-     * label-callback for the album listing.
-     */
     public function labelCb(array $row, string $label): string
     {
         $mysql = Database::getInstance()
@@ -404,33 +390,21 @@ class GalleryCreatorAlbums extends Backend
         return str_replace('#padding-left#', 'padding-left:'.$padding.'px;', $label);
     }
 
-    /**
-     * load-callback for uploader type.
-     */
     public function loadCbGetUploader(): string
     {
         return $this->user->gc_be_uploader_template;
     }
 
-    /**
-     * load-callback for image-quality.
-     */
     public function loadCbGetImageQuality(): int
     {
         return (int) $this->user->gc_img_quality;
     }
 
-    /**
-     * load-callback for image-resolution.
-     */
     public function loadCbGetImageResolution(): int
     {
         return (int) $this->user->gc_img_resolution;
     }
 
-    /**
-     * buttons_callback buttonsCallback.
-     */
     public function buttonsCallback(array $arrButtons, DataContainer $dc): array
     {
         if ('revise_tables' === Input::get('mode')) {
@@ -454,11 +428,11 @@ class GalleryCreatorAlbums extends Backend
     }
 
     /**
-     * Parse Backend Template Hook.
+     * Parse backend template hook.
      */
-    public function myParseBackendTemplate(string $strContent, string $strTemplate): string
+    public function setCorrectEnctype(string $strContent, string $strTemplate): string
     {
-        if ('fileupload' === Input::get('mode')) {
+        if ('fileupload' === Input::get('mode') && $strTemplate === 'be_main') {
             // form encode
             $strContent = str_replace('application/x-www-form-urlencoded', 'multipart/form-data', $strContent);
         }
@@ -466,9 +440,6 @@ class GalleryCreatorAlbums extends Backend
         return $strContent;
     }
 
-    /**
-     * on-delete-callback.
-     */
     public function ondeleteCb(DataContainer $dc): void
     {
         if ($dc->id && 'deleteAll' !== Input::get('act')) {
@@ -536,7 +507,6 @@ class GalleryCreatorAlbums extends Backend
     }
 
     /**
-     * onload_callback
      * checks availability of the upload-folder.
      */
     public function onloadCbCheckFolderSettings(DC_Table $dc): void
@@ -547,7 +517,7 @@ class GalleryCreatorAlbums extends Backend
         Dbafs::addResource($this->uploadPath, false);
 
         if (!is_writable(System::getContainer()->getParameter('kernel.project_dir').'/'.$this->uploadPath)) {
-            $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['dirNotWriteable'], $this->uploadPath);
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['dirNotWriteable'], $this->uploadPath));
         }
     }
 
@@ -599,14 +569,13 @@ class GalleryCreatorAlbums extends Backend
 
         // Do not exit script if html5_uploader is selected and Javascript is disabled
         if (!Input::post('submit')) {
-            $response = new Response('Activate JavaScript to run the html image uploader.');
+            $response = new Response('Enable Javascript inyour browser to run the html image uploader.');
 
             throw new ResponseException($response);
         }
     }
 
     /**
-     * onload-callback
      * import images from an external directory to an existing album.
      */
     public function onloadCbImportFromFilesystem(DataContainer $dc): void

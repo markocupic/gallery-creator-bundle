@@ -152,9 +152,9 @@ class GalleryCreatorUtil
         }
 
         if (true === $blnExternalFile) {
-            $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath);
+           Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath));
         } else {
-            $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath);
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath));
         }
 
         $strText = 'Unable to create the new image in: '.$strFilepath.'!';
@@ -884,9 +884,9 @@ class GalleryCreatorUtil
         }
     }
 
-    public static function reviseTables(int $albumId, bool $blnCleanDb = false): void
+    public static function reviseTables(int $albumId, bool $blnCleanDb = false): array
     {
-        $_SESSION['GC_ERROR'] = [];
+        $errors = [];
 
         // Create the upload folder if not exists
         new Folder(System::getContainer()->getParameter('markocupic_gallery_creator.upload_path'));
@@ -895,7 +895,7 @@ class GalleryCreatorUtil
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
 
         if (null === $objAlbum) {
-            return;
+            return $errors;
         }
 
         // Check for valid album owner
@@ -942,22 +942,20 @@ class GalleryCreatorUtil
                         }
 
                         if (false !== $blnCleanDb) {
-                            $msg = ' Deleted data record with ID '.$objPictures->id.'.';
-                            $_SESSION['GC_ERROR'][] = $msg;
+                            $errors[] = ' Deleted data record with ID '.$objPictures->id.'.';
                             $objPictures->delete();
                         } else {
                             // Show the error message
                             $path = '' !== $objPictures->path ? $objPictures->path : 'unknown path';
-                            $_SESSION['GC_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $path, $objAlbum->alias);
+                            $errors[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $path, $objAlbum->alias);
                         }
                     } elseif (!is_file(System::getContainer()->getParameter('kernel.project_dir').'/'.$objFile->path)) {
                         // If file has an entry in tl_files, but doesn't exist on the server anymore
                         if (false !== $blnCleanDb) {
-                            $msg = 'Deleted Data record with ID '.$objPictures->id.'.';
-                            $_SESSION['GC_ERROR'][] = $msg;
+                            $errors[] = 'Deleted Data record with ID '.$objPictures->id.'.';
                             $objPictures->delete();
                         } else {
-                            $_SESSION['GC_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $objFile->path, $objAlbum->alias);
+                            $errors[] = sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file_1'], $objPictures->id, $objFile->path, $objAlbum->alias);
                         }
                     } else {
                         // Compare path information with tl_files.path (redundancy)
@@ -1003,6 +1001,8 @@ class GalleryCreatorUtil
                 ->execute(serialize($newArr), $objContent->id)
             ;
         }
+
+        return $errors;
     }
 
     public static function getAlbumLevel(int $pid): int

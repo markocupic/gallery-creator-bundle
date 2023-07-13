@@ -580,7 +580,7 @@ class ContentGalleryCreator extends ContentElement
                 $objAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
                 if (null === $objAlbum) {
-                    die('Invalid album alias: '.Input::get('items'));
+                    throw new PageNotFoundException('Invalid album alias: '.Input::get('items'));
                 }
 
                 $objPic = Database::getInstance()

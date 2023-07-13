@@ -60,20 +60,20 @@ class ContentGalleryCreatorNews extends ContentElement
             return '';
         }
 
-        $this->intAlbumId = $objAlbum->id;
+        $this->intAlbumId = (int) $objAlbum->id;
 
         // Check Permission for protected albums
         if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request) && $objAlbum->protected) {
             $blnAllowed = false;
 
-            if (($user = System::getContainer()->get('security.helper')->getUser()) instanceof FrontendUser) {
-                $hasLoggedInFrontendUser = true;
-            }
-
-            if ($hasLoggedInFrontendUser && \is_array(StringUtil::deserialize($user->allGroups))) {
-                // Check if logged-in user is in an allowed group
-                if (array_intersect(StringUtil::deserialize($user->allGroups), StringUtil::deserialize($objAlbum->groups, true))) {
-                    $blnAllowed = true;
+            if (System::getContainer()->get('contao.security.token_checker')->hasFrontendUser()) {
+                if (($user = System::getContainer()->get('security.helper')->getUser()) instanceof FrontendUser) {
+                    if (\is_array(StringUtil::deserialize($user->allGroups))) {
+                        // Check if the logged in frontend user is in an allowed group
+                        if (array_intersect(StringUtil::deserialize($user->allGroups, true), StringUtil::deserialize($objAlbum->groups, true))) {
+                            $blnAllowed = true;
+                        }
+                    }
                 }
             }
 
@@ -83,7 +83,7 @@ class ContentGalleryCreatorNews extends ContentElement
         }
 
         // Assigning the frontend template
-        $this->strTemplate = '' !== $this->gc_template ? $this->gc_template : $this->strTemplate;
+        $this->strTemplate = $this->gc_template ?: $this->strTemplate;
         $this->Template = new FrontendTemplate($this->strTemplate);
 
         return parent::generate();
@@ -113,6 +113,7 @@ class ContentGalleryCreatorNews extends ContentElement
                 ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=?')
                 ->execute('1', $this->intAlbumId)
             ;
+
             $itemsTotal = $objPictures->numRows;
 
             // Create the pagination menu
@@ -126,6 +127,7 @@ class ContentGalleryCreatorNews extends ContentElement
 
         // Sort by name is done below
         $str_sorting = str_replace('name', 'id', $str_sorting);
+
         $objPictures = Database::getInstance()
             ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
         ;
@@ -136,7 +138,7 @@ class ContentGalleryCreatorNews extends ContentElement
 
         $objPictures = $objPictures->execute('1', $this->intAlbumId);
 
-        // Build up $arrPictures
+        // Build $arrPictures
         $arrPictures = [];
         $auxBasename = [];
 
@@ -165,7 +167,7 @@ class ContentGalleryCreatorNews extends ContentElement
         // Store $arrPictures in the template variable
         $this->Template->arrPictures = $arrPictures;
 
-        // Generate other template variables
+        // Add more data to the template
         $this->addTemplateData($this->intAlbumId);
 
         // HOOK: modify the page or template object
@@ -177,12 +179,7 @@ class ContentGalleryCreatorNews extends ContentElement
         }
     }
 
-    /**
-     * Set the template-vars to the template object for the selected album.
-     *
-     * @param $intAlbumId
-     */
-    protected function addTemplateData($intAlbumId): void
+    protected function addTemplateData(int $intAlbumId): void
     {
         global $objPage;
 

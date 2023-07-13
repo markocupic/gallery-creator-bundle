@@ -92,10 +92,10 @@ class Content
         /** @var Connection $conn */
         $conn = System::getContainer()->get('database_connection');
 
-        if ($conn->fetchOne('SELECT gc_publish_all_albums FROM tl_content WHERE id=?',[$dc->id])) {
+        if ($conn->fetchOne('SELECT gc_publish_all_albums FROM tl_content WHERE id=?', [$dc->id])) {
             PaletteManipulator::create()
                 ->removeField('gc_publish_albums')
-                ->applyToPalette( 'gallery_creator_ce','tl_content')
+                ->applyToPalette('gallery_creator_ce', 'tl_content')
             ;
         }
     }

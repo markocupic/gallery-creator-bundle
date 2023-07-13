@@ -21,7 +21,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class KernelRequestSubscriber implements EventSubscriberInterface
 {
-
     public function __construct(protected readonly ScopeMatcher $scopeMatcher)
     {
     }
@@ -36,7 +35,6 @@ class KernelRequestSubscriber implements EventSubscriberInterface
         $request = $e->getRequest();
 
         if ($this->scopeMatcher->isBackendRequest($request)) {
-
             if (2 === $request->query->count() && $request->query->has('ref')) {
                 // check tables script
                 $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/markocupicgallerycreator/js/gallery_creator_be_check_tables.js';

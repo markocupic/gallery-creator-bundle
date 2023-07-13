@@ -436,7 +436,10 @@ class GalleryCreatorPictures extends Backend
                 }
             }
         } elseif (!$this->user->isAdmin && $objImg->owner !== $this->user->id) {
-            $this->log('Datensatz mit ID '.$dc->id.' wurde vom  Benutzer mit ID '.$this->user->id.' versucht aus tl_gallery_creator_pictures zu loeschen.', __METHOD__, TL_ERROR);
+            $strText = "An attempt was made to delete record with ID $dc->id from tl_gallery_creator_pictures by an unauthorized user with ID $this->user->id.";
+            $logger = System::getContainer()->get('monolog.logger.contao.error');
+            $logger->error($strText);
+
             Message::addError('No permission to delete picture with ID '.$dc->id.'.');
             $this->redirect('contao?do=error');
         }
@@ -518,7 +521,10 @@ class GalleryCreatorPictures extends Backend
         $objPicture = GalleryCreatorPicturesModel::findByPk($intId);
         // Check permissions to publish
         if (!$this->user->isAdmin && $objPicture->owner !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
-            $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
+            $strText = 'Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"';
+            $logger = System::getContainer()->get('monolog.logger.contao.error');
+            $logger->error($strText);
+
             $this->redirect('contao?act=error');
         }
 
@@ -544,6 +550,9 @@ class GalleryCreatorPictures extends Backend
         ;
 
         $objVersions->create();
-        $this->log('A new version of record "tl_gallery_creator_pictures.id='.$intId.'" has been created.', __METHOD__, TL_GENERAL);
+
+        $strText = 'A new version of record "tl_gallery_creator_pictures.id='.$intId.'" has been created.';
+        $logger = System::getContainer()->get('monolog.logger.contao.general');
+        $logger->info($strText);
     }
 }

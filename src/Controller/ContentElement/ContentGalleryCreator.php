@@ -153,7 +153,7 @@ class ContentGalleryCreator extends ContentElement
 
             // Remove the album from selection if the frontend user is not allowed.
             if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request) && true === $objAlbum->protected) {
-                if (!$this->authenticate($objAlbum->alias)) {
+                if (!$this->isAuthorised($objAlbum->alias)) {
                     unset($this->arrSelectedAlbums[$key]);
                 }
             }
@@ -168,7 +168,6 @@ class ContentGalleryCreator extends ContentElement
         }
 
         // Detail view:
-        // Authenticate and get the album alias and the album id
         if (Input::get('items')) {
             $objAlbum = GalleryCreatorAlbumsModel::findByAlias(Input::get('items'));
 
@@ -180,8 +179,8 @@ class ContentGalleryCreator extends ContentElement
                 return '';
             }
 
-            // Authentication for protected albums, the user only gets to see the album thumbnail if not authorized.
-            if (!$this->authenticate($this->strAlbumAlias)) {
+            // Check if the user has access to a protected album.
+            if (!$this->isAuthorised($this->strAlbumAlias)) {
                 return '';
             }
         }
@@ -223,15 +222,15 @@ class ContentGalleryCreator extends ContentElement
             }
         }
 
-        // assigning the frontend template
-        $this->strTemplate = '' !== $this->gc_template ? $this->gc_template : $this->strTemplate;
+        // Assigning the frontend template
+        $this->strTemplate = $this->gc_template ?: $this->strTemplate;
         $this->Template = new FrontendTemplate($this->strTemplate);
 
         return parent::generate();
     }
 
     /**
-     * Responds to ajax-requests
+     * Respond to ajax requests
      * and
      * returns an array with all image information of the image with the id imageId.
      */
@@ -239,6 +238,7 @@ class ContentGalleryCreator extends ContentElement
     {
         if (Input::get('isAjax') && Input::get('getImageByPk') && Input::get('id')) {
             $arrPicture = GalleryCreatorUtil::getPictureInformationArray(Input::get('id'), $this);
+            $arrPicture = mb_convert_encoding($arrPicture, 'UTF-8');
 
             $response = new JsonResponse($arrPicture);
 
@@ -254,18 +254,18 @@ class ContentGalleryCreator extends ContentElement
                 ->execute(Input::get('albumId'))
             ;
 
-            if (!$this->authenticate($objAlbum->alias)) {
+            if (!$this->isAuthorised($objAlbum->alias)) {
                 throw new AccessDeniedException('Access denied!');
             }
 
             // Init visit counter
             $this->initCounter(Input::get('pid'));
 
-            // sorting direction
-            $sorting = $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
+            // Sorting direction
+            $sorting = !$this->gc_picture_sorting || !$this->gc_picture_sorting_direction ? 'sorting ASC' : $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
 
             $objPicture = Database::getInstance()
-                ->prepare('SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$sorting)
+                ->prepare("SELECT * FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY $sorting")
                 ->execute(1, Input::get('pid'))
             ;
 
@@ -285,6 +285,7 @@ class ContentGalleryCreator extends ContentElement
                     'uuid' => StringUtil::binToUuid($objFile->uuid),
                 ];
                 $data[] = array_merge($objPicture->row(), $arrPicture);
+                $data = mb_convert_encoding($data, 'UTF-8');
             }
 
             $response = new JsonResponse(['src' => $data, 'success' => 'true']);
@@ -478,7 +479,7 @@ class ContentGalleryCreator extends ContentElement
                 $this->Template->imagemargin = $this->generateMargin(unserialize($this->gc_imagemargin_albumlisting));
                 $this->Template->arrAlbums = $arrAlbums;
 
-                // Call gcGenerateFrontendTemplateHook
+                // Trigger gcGenerateFrontendTemplateHook
                 $this->Template = $this->callGcGenerateFrontendTemplateHook($this);
                 break;
 
@@ -518,8 +519,8 @@ class ContentGalleryCreator extends ContentElement
                     $this->Template->pagination = $objPagination->generate("\n  ");
                 }
 
-                //Picture sorting
-                $str_sorting = empty($this->gc_picture_sorting) || empty($this->gc_picture_sorting_direction) ? 'sorting ASC' : $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
+                // Picture sorting
+                $str_sorting = !$this->gc_picture_sorting || !$this->gc_picture_sorting_direction ? 'sorting ASC' : $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
 
                 // Sort by name is done below
                 $str_sorting = str_replace('name', 'id', $str_sorting);
@@ -570,7 +571,7 @@ class ContentGalleryCreator extends ContentElement
                 // Init the counter
                 $this->initCounter($this->intAlbumId);
 
-                // Call gcGenerateFrontendTemplateHook
+                // Trigger gcGenerateFrontendTemplateHook
                 $objAlbum = GalleryCreatorAlbumsModel::findByAlias($this->strAlbumAlias);
                 $this->Template = $this->callGcGenerateFrontendTemplateHook($this, $objAlbum);
                 break;
@@ -604,7 +605,7 @@ class ContentGalleryCreator extends ContentElement
                 }
 
                 // Picture sorting
-                $str_sorting = '' === $this->gc_picture_sorting || '' === $this->gc_picture_sorting_direction ? 'sorting ASC' : $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
+                $str_sorting = !$this->gc_picture_sorting || !$this->gc_picture_sorting_direction ? 'sorting ASC' : $this->gc_picture_sorting.' '.$this->gc_picture_sorting_direction;
                 $objPictures = Database::getInstance()
                     ->prepare('SELECT id FROM tl_gallery_creator_pictures WHERE published=? AND pid=? ORDER BY '.$str_sorting)
                     ->execute('1', $this->intAlbumId)
@@ -664,7 +665,7 @@ class ContentGalleryCreator extends ContentElement
                 // Init the counter
                 $this->initCounter($this->intAlbumId);
 
-                // Call gcGenerateFrontendTemplateHook
+                // Trigger gcGenerateFrontendTemplateHook
                 $this->Template = $this->callGcGenerateFrontendTemplateHook($this, $objAlbum);
 
                 break;
@@ -673,11 +674,11 @@ class ContentGalleryCreator extends ContentElement
     }
 
     /**
-     * return a sorted array with all album ID's.
+     * Return a sorted array with all album ID's.
      */
     protected function listAllPublishedAlbums(int $pid = null): array
     {
-        $strSorting = '' === $this->gc_sorting || '' === $this->gc_sorting_direction ? 'date DESC' : $this->gc_sorting.' '.$this->gc_sorting_direction;
+        $strSorting = !$this->gc_sorting || !$this->gc_sorting_direction ? 'date DESC' : $this->gc_sorting.' '.$this->gc_sorting_direction;
 
         if (null !== $pid) {
             $objAlbums = Database::getInstance()
@@ -708,9 +709,9 @@ class ContentGalleryCreator extends ContentElement
     }
 
     /**
-     * Check if frontend user has access to a certain album.
+     * Check if the frontend user has access to a maybe protected certain album.
      */
-    protected function authenticate(string $strAlbumAlias): bool
+    protected function isAuthorised(string $strAlbumAlias): bool
     {
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
@@ -724,8 +725,10 @@ class ContentGalleryCreator extends ContentElement
 
                 $groups = StringUtil::deserialize($objAlbum->groups);
 
-                if (($user = System::getContainer()->get('security.helper')->getUser()) instanceof FrontendUser) {
-                    $hasLoggedInFrontendUser = true;
+                if (System::getContainer()->get('contao.security.token_checker')->hasFrontendUser()) {
+                    if (($user = System::getContainer()->get('security.helper')->getUser()) instanceof FrontendUser) {
+                        $hasLoggedInFrontendUser = true;
+                    }
                 }
 
                 if (!isset($hasLoggedInFrontendUser) || !\is_array($groups) || empty($groups) || empty(array_intersect($groups, $user->groups))) {

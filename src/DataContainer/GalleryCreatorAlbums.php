@@ -118,7 +118,10 @@ class GalleryCreatorAlbums extends Backend
 
         // Check permissions to publish
         if (!$this->user->isAdmin && $objAlbum->owner !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
-            $this->log('Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"', __METHOD__, TL_ERROR);
+            $strText = 'Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"';
+            $logger = System::getContainer()->get('monolog.logger.contao.error');
+            $logger->error($strText);
+
             $this->redirect('contao?act=error');
         }
 
@@ -144,7 +147,10 @@ class GalleryCreatorAlbums extends Backend
         ;
 
         $objVersions->create();
-        $this->log('A new version of record "tl_gallery_creator_albums.id='.$intId.'" has been created.', __METHOD__, TL_GENERAL);
+
+        $strText = 'A new version of record "tl_gallery_creator_albums.id='.$intId.'" has been created.';
+        $logger = System::getContainer()->get('monolog.logger.contao.general');
+        $logger->info($strText);
     }
 
     /**
@@ -256,12 +262,13 @@ class GalleryCreatorAlbums extends Backend
         $owner = null === $objUser ? 'no-name' : $objUser->name;
 
         // check User Role
-        $this->checkUserRole(($dc->id));
+        $this->checkUserRole($dc->id);
 
         if (!$this->restrictedUser) {
             return '';
-        } else {
-            $output = '
+        }
+
+        return '
 <div class="widget long album_infos">
 <table style="margin-top: 16px">
 	<tr class="odd">
@@ -292,9 +299,6 @@ class GalleryCreatorAlbums extends Backend
 </table>
 </div>
 		';
-        }
-
-        return $output;
     }
 
     public function inputFieldCbGenerateUploaderMarkup(): string
@@ -471,7 +475,10 @@ class GalleryCreatorAlbums extends Backend
             $this->checkUserRole($dc->id);
 
             if ($this->restrictedUser) {
-                $this->log("Datensatz mit ID '$dc->id' wurde von einem nicht autorisierten Benutzer versucht aus tl_gallery_creator_albums zu loeschen.", __METHOD__, TL_ERROR);
+                $strText = "An attempt was made to delete record with ID '$dc->id' from tl_gallery_creator_albums by an unauthorized user.";
+                $logger = System::getContainer()->get('monolog.logger.contao.error');
+                $logger->error($strText);
+
                 $this->redirect('contao?do=error');
             }
             // also delete the child element
@@ -637,8 +644,7 @@ class GalleryCreatorAlbums extends Backend
 
     public function onloadCbSetUpPalettes(DataContainer $dc): void
     {
-        if(!$dc->id)
-        {
+        if (!$dc->id) {
             return;
         }
         // global_operations for admin only

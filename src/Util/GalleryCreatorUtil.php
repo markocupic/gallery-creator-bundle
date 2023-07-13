@@ -129,7 +129,10 @@ class GalleryCreatorUtil
             $objPictureModel->date = $objAlbumModel->date;
             $objPictureModel->sorting = $sorting;
             $objPictureModel->save();
-            System::log('A new version of tl_gallery_creator_pictures ID '.$insertId.' has been created', __METHOD__, TL_GENERAL);
+
+            $strText = 'A new version of tl_gallery_creator_pictures ID '.$insertId.' has been created';
+            $logger = System::getContainer()->get('monolog.logger.contao.general');
+            $logger->info($strText);
 
             // Check for a valid preview-thumb for the album
             if (!$objAlbumModel->thumb) {
@@ -153,7 +156,10 @@ class GalleryCreatorUtil
         } else {
             $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath);
         }
-        System::log('Unable to create the new image in: '.$strFilepath.'!', __METHOD__, TL_ERROR);
+
+        $strText = 'Unable to create the new image in: '.$strFilepath.'!';
+        $logger = System::getContainer()->get('monolog.logger.contao.error');
+        $logger->error($strText);
 
         return false;
     }
@@ -347,7 +353,9 @@ class GalleryCreatorUtil
                 new File(rawurldecode($thumbSrc), true);
             }
         } catch (\Exception $e) {
-            System::log('Image "'.$strImageSrc.'" could not be processed: '.$e->getMessage(), __METHOD__, TL_ERROR);
+            $strText = 'Image "'.$strImageSrc.'" could not be processed: '.$e->getMessage();
+            $logger = System::getContainer()->get('monolog.logger.contao.error');
+            $logger->error($strText);
         }
 
         $picture['alt'] = StringUtil::specialchars($objAlbum->name);
@@ -517,7 +525,10 @@ class GalleryCreatorUtil
             $thumbPath = $hasCustomThumb ? $objFileCustomThumb->path : $strImageSrc;
             $picture = Picture::create($thumbPath, $arrSize)->getTemplateData();
         } catch (\Exception $e) {
-            System::log('Image "'.$strImageSrc.'" could not be processed: '.$e->getMessage(), __METHOD__, TL_ERROR);
+            $strText = 'Image "'.$strImageSrc.'" could not be processed: '.$e->getMessage();
+            $logger = System::getContainer()->get('monolog.logger.contao.error');
+            $logger->error($strText);
+
             $thumbSrc = '';
             $picture = ['img' => ['src' => '', 'srcset' => ''], 'sources' => []];
         }
@@ -966,7 +977,7 @@ class GalleryCreatorUtil
          */
         $objContent = Database::getInstance()
             ->prepare('SELECT * FROM tl_content WHERE type=?')
-            ->execute('gallery_creator')
+            ->execute('gallery_creator_ce')
         ;
 
         while ($objContent->next()) {

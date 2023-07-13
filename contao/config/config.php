@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 use Contao\ArrayUtil;
 use Contao\Input;
+use Contao\System;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\ContentGalleryCreator;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\ContentGalleryCreatorNews;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
@@ -28,12 +29,14 @@ ArrayUtil::arrayInsert($GLOBALS['TL_CTE'], 2, ['ce_type_gallery_creator' => ['ga
 /**
  * Show news content element in the news-module only
  */
-if (Input::get('do') === 'news') {
-    unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce']);
-}
+$request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-if (Input::get('do') !== 'news') {
-    unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce_news']);
+if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
+    if (Input::get('do') === 'news') {
+        unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce']);
+    } else {
+        unset($GLOBALS['TL_CTE']['ce_type_gallery_creator']['gallery_creator_ce_news']);
+    }
 }
 
 /**
@@ -46,7 +49,6 @@ $GLOBALS['BE_MOD']['content']['gallery_creator'] = [
         'tl_gallery_creator_pictures',
     ],
 ];
-
 
 /**
  * Models

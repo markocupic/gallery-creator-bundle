@@ -16,9 +16,7 @@ namespace Markocupic\GalleryCreatorBundle\Model;
 
 use Contao\Model;
 
-
 class GalleryCreatorPicturesModel extends Model
 {
-
     protected static $strTable = 'tl_gallery_creator_pictures';
 }

@@ -85,7 +85,7 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->user->isAdmin && $row['owner'] !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->user->admin && $row['owner'] !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
             return '';
         }
 
@@ -101,7 +101,7 @@ class GalleryCreatorAlbums extends Backend
             ->execute($row['id'])
         ;
 
-        if (!$this->user->isAdmin && $row['owner'] !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->user->admin && $row['owner'] !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
             return Image::getHtml($icon).' ';
         }
 
@@ -113,7 +113,7 @@ class GalleryCreatorAlbums extends Backend
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($intId);
 
         // Check permissions to publish
-        if (!$this->user->isAdmin && $objAlbum->owner !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
+        if (!$this->user->admin && $objAlbum->owner !== $this->user->id && !Config::get('gc_disable_backend_edit_protection')) {
             $strText = 'Not enough permissions to publish/unpublish tl_gallery_creator_albums ID "'.$intId.'"';
             $logger = System::getContainer()->get('monolog.logger.contao.error');
             $logger->error($strText);
@@ -155,7 +155,7 @@ class GalleryCreatorAlbums extends Backend
     public function buttonCbCutPicture(array $row, string|null $href, string $label, string $title, string $icon, string $attributes): string
     {
         // enable cutting albums to album-owners and admins only
-        return $this->user->id === $row['owner'] || $this->user->isAdmin || Config::get('gc_disable_backend_edit_protection') ? ' <a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : ' '.Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
+        return $this->user->id === $row['owner'] || $this->user->admin || Config::get('gc_disable_backend_edit_protection') ? ' <a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : ' '.Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
     /**
@@ -164,7 +164,7 @@ class GalleryCreatorAlbums extends Backend
     public function buttonCbDelete(array $row, string|null $href, string $label, string $title, string $icon, string $attributes): string
     {
         // enable deleting albums to album-owners and admins only
-        return $this->user->isAdmin || $this->user->id === $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
+        return $this->user->admin || $this->user->id === $row['owner'] || Config::get('gc_disable_backend_edit_protection') ? '<a href="'.$this->addToUrl($href.'&id='.$row['id']).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ' : Image::getHtml(preg_replace('/\.svg$/i', '_.svg', $icon)).' ';
     }
 
     /**
@@ -201,7 +201,7 @@ class GalleryCreatorAlbums extends Backend
         $disablePA = false;
         $disablePI = false;
         // Disable all buttons if there is a circular reference
-        if ($this->user->isAdmin && false !== $arrClipboard && ('cut' === $arrClipboard['mode'] && (1 === $cr || $arrClipboard['id'] === $row['id']) || 'cutAll' === $arrClipboard['mode'] && (1 === $cr || \in_array($row['id'], $arrClipboard['id'], false)))) {
+        if ($this->user->admin && false !== $arrClipboard && ('cut' === $arrClipboard['mode'] && (1 === $cr || $arrClipboard['id'] === $row['id']) || 'cutAll' === $arrClipboard['mode'] && (1 === $cr || \in_array($row['id'], $arrClipboard['id'], false)))) {
             $disablePA = true;
             $disablePI = true;
         }
@@ -225,7 +225,7 @@ class GalleryCreatorAlbums extends Backend
     {
         $objAlbum = GalleryCreatorAlbumsModel::findByPk($albumId);
 
-        if ($this->user->isAdmin || Config::get('gc_disable_backend_edit_protection')) {
+        if ($this->user->admin || Config::get('gc_disable_backend_edit_protection')) {
             $this->restrictedUser = false;
 
             return;
@@ -344,7 +344,7 @@ class GalleryCreatorAlbums extends Backend
                 if (Input::get('albumId')) {
                     $albumId = (int) Input::get('albumId');
 
-                    if (Input::get('reviseTables') && $this->user->isAdmin) {
+                    if (Input::get('reviseTables') && $this->user->admin) {
                         // delete damaged data records
                         $msg = GalleryCreatorUtil::reviseTables($albumId, true);
                     } else {
@@ -432,7 +432,7 @@ class GalleryCreatorAlbums extends Backend
      */
     public function setCorrectEnctype(string $strContent, string $strTemplate): string
     {
-        if ('fileupload' === Input::get('mode') && $strTemplate === 'be_main') {
+        if ('fileupload' === Input::get('mode') && 'be_main' === $strTemplate) {
             // form encode
             $strContent = str_replace('application/x-www-form-urlencoded', 'multipart/form-data', $strContent);
         }
@@ -463,7 +463,7 @@ class GalleryCreatorAlbums extends Backend
                     continue;
                 }
 
-                if ($this->user->isAdmin || $objAlbumModel->owner === $this->user->id || Config::get('gc_disable_backend_edit_protection')) {
+                if ($this->user->admin || $objAlbumModel->owner === $this->user->id || Config::get('gc_disable_backend_edit_protection')) {
                     // remove all pictures from tl_gallery_creator_pictures
                     $objPicturesModel = GalleryCreatorPicturesModel::findByPid($idDelAlbum);
 
@@ -613,11 +613,8 @@ class GalleryCreatorAlbums extends Backend
 
     public function onloadCbSetUpPalettes(DataContainer $dc): void
     {
-        if (!$dc->id) {
-            return;
-        }
         // global_operations for admin only
-        if (!$this->user->isAdmin) {
+        if (!$this->user->admin) {
             unset($GLOBALS['TL_DCA']['tl_gallery_creator_albums']['list']['global_operations']['all'], $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['list']['global_operations']['revise_tables']);
         }
 
@@ -645,7 +642,7 @@ class GalleryCreatorAlbums extends Backend
         }
 
         // the palette for admins
-        if ($this->user->isAdmin) {
+        if ($this->user->admin) {
             $objAlb = Database::getInstance()
                 ->prepare('SELECT id FROM tl_gallery_creator_albums')
                 ->limit(1)
@@ -670,16 +667,18 @@ class GalleryCreatorAlbums extends Backend
             return;
         }
 
-        $objAlb = Database::getInstance()
-            ->prepare('SELECT id, owner FROM tl_gallery_creator_albums WHERE id=?')
-            ->execute($dc->id)
-        ;
+        if (!empty($dc->id)) {
+            $objAlb = Database::getInstance()
+                ->prepare('SELECT id, owner FROM tl_gallery_creator_albums WHERE id=?')
+                ->execute($dc->id)
+            ;
 
-        // only admins and album-owners obtains writing-access for these fields
-        $this->checkUserRole($dc->id);
+            // only admins and album-owners obtain writing-access to these fields
+            $this->checkUserRole($dc->id);
 
-        if ($objAlb->owner !== $this->user->id && $this->restrictedUser) {
-            $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['palettes']['restricted_user'];
+            if ($objAlb->owner !== $this->user->id && $this->restrictedUser) {
+                $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_gallery_creator_albums']['palettes']['restricted_user'];
+            }
         }
     }
 

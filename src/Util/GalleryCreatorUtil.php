@@ -152,7 +152,7 @@ class GalleryCreatorUtil
         }
 
         if (true === $blnExternalFile) {
-           Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath));
+            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['link_to_not_existing_file'], $strFilepath));
         } else {
             Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $strFilepath));
         }

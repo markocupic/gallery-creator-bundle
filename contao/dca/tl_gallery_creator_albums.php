@@ -60,7 +60,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
             ],
             'revise_tables' => [
-                'href'       => 'href is set in $this->setUpPalettes',
+                // 'href' => .... The href is set in the onload callback GalleryCreatorAlbums::onloadCbSetUpPalettes()
                 'icon'       => 'bundles/markocupicgallerycreator/images/database_gear.png',
                 'class'      => 'icon_revise_tables',
                 'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',

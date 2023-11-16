@@ -314,8 +314,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             }
 
             if (null !== ($picturesModel = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
-                if($picturesModel->uuid && $this->pictureUtil->pictureExists($picturesModel))
-                {
+                if ($picturesModel->uuid && $this->pictureUtil->pictureExists($picturesModel)) {
                     // Prevent overriding items with same basename
                     $arrPictures[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picturesModel, $contentModel);
                 }

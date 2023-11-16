@@ -72,7 +72,9 @@
                     <{{ album_detail_picture_list_tag_name }}{{ attrs(album_detail_picture_list_attributes|default).addClass('gc-album-detail-picture-list') }}>
                         {% for picture in arrPictures %}
                             <{{ album_detail_picture_list_item_tag_name }}{{ attrs(album_detail_picture_list_item_attributes|default).addClass('gc-album-detail-picture-list-item') }}>
-                                {{ contao_figure(picture.figureUuid, picture.figureSize, picture.figureOptions) }}
+                                {% include "@Contao/component/_figure.html.twig" with {
+                                    figure: figure(picture.figureUuid, picture.figureSize, picture.figureOptions)
+                                } %}
                             </{{ album_detail_picture_list_item_tag_name }}>
                         {% endfor %}
                     </{{ album_detail_picture_list_tag_name }}>

@@ -6,7 +6,9 @@
     <div{{ attrs(album_inner_attributes|default).addClass('gc-album-list-inner') }}>
         {% block album_figure %}
             <div{{ attrs(album_figure_attributes|default).addClass('gc-album-list-figure') }}>
-                {{ contao_figure(album.figureUuid, album.figureSize, album.figureOptions) }}
+                {% include "@Contao/component/_figure.html.twig" with {
+                    figure: figure(album.figureUuid, album.figureSize, album.figureOptions)
+                } %}
             </div>
         {% endblock %}
 

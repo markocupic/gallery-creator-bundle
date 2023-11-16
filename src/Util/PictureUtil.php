@@ -101,15 +101,14 @@ class PictureUtil
             'localMediaSrc' => $localMediaSrc,
             'socialMediaSrc' => $socialMediaSrc,
             'exif' => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
-            'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name, $objPage->language)),
+            'singleImageUrl' => StringUtil::ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') ? '/' : '/items/').Input::get('items').'/img/'.$filesModel->name)),
             'figureUuid' => $pictureModel->addCustomThumb && $pictureModel->customThumb ? $pictureModel->customThumb : $filesModel->uuid,
             'figureSize' => !empty($arrSize) ? $arrSize : null,
             'figureHref' => $href,
             'figureOptions' => [
                 'metadata' => new Metadata($arrMeta),
                 'enableLightbox' => (bool) $contentElementModel->gcFullSize,
-                'lightboxGroupIdentifier' => sprintf('data-lightbox="lb%s"', $pictureModel->pid),
-                //'lightboxSize' => '_big_size',
+                'lightboxGroupIdentifier' => sprintf('lb%s', $pictureModel->pid),
                 'linkHref' => $href,
             ],
         ];

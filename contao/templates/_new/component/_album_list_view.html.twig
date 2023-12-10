@@ -3,7 +3,7 @@
 
 {% block album_list_view %}
     <!-- indexer::stop -->
-    <div{{ attrs(album_list_view_attributes|default).addClass('gc-album-list-view') }}>
+<div{{ attrs(album_list_view_attributes|default).addClass('gc-album-list-view') }}>
     {% block album_list_pagination %}
         {{ listPagination|raw }}
     {% endblock %}
@@ -34,5 +34,8 @@
         </{{ album_list_tag }}>
     {% endblock %}
     </div>
+    {% block album_list_script %}
+        {# Add your javascript here. #}
+    {% endblock %}
     <!-- indexer::continue -->
 {% endblock %}

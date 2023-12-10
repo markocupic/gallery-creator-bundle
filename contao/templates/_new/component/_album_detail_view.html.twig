@@ -1,3 +1,5 @@
+{% use "@Contao/component/_list.html.twig" %}
+
 {# component/_album_detail_view.html.twig #}
 {% trans_default_domain 'contao_default' %}
 
@@ -60,27 +62,12 @@
                 {% endif %}
             {% endblock %}
 
-            {% block album_detail_pagination %}
-                {{ detailPagination|raw }}
-            {% endblock %}
-
-            {% block album_detail_picture_list %}
-                {% if arrPictures %}
-                    {% set album_detail_picture_list_tag_name = album_detail_picture_list_tag_name|default('ul') %}
-                    {% set album_detail_picture_list_item_tag_name = album_detail_picture_list_item_tag_name|default('li') %}
-
-                    <{{ album_detail_picture_list_tag_name }}{{ attrs(album_detail_picture_list_attributes|default).addClass('gc-album-detail-picture-list') }}>
-                        {% for picture in arrPictures %}
-                            <{{ album_detail_picture_list_item_tag_name }}{{ attrs(album_detail_picture_list_item_attributes|default).addClass('gc-album-detail-picture-list-item') }}>
-                                {% include "@Contao/component/_figure.html.twig" with {
-                                    figure: figure(picture.figureUuid, picture.figureSize, picture.figureOptions)
-                                } %}
-                            </{{ album_detail_picture_list_item_tag_name }}>
-                        {% endfor %}
-                    </{{ album_detail_picture_list_tag_name }}>
-                {% endif %}
-            {% endblock %}
-
+            {% if images|default %}
+                {% block album_detail_picture_list %}
+                    {# !!! The gallery is rendered here!!! #}
+                    {% with {items: images } %}{{ block('list_component') }}{% endwith %}
+                {% endblock %}
+            {% endif %}
             {% block album_detail_article_post %}
                 {% if insertArticlePost %}
                     <div{{ attrs(album_detail_article_post_attributes|default).addClass('gc-album-detail-article-post') }}>
@@ -90,4 +77,8 @@
             {% endblock %}
         </div>
     </div>
+
+    {% block album_detail_script %}
+        {# Add your javascript here. #}
+    {% endblock %}
 {% endblock %}

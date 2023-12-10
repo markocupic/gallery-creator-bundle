@@ -1,4 +1,6 @@
 {# component/_album.html.twig #}
+{% use "@Contao/component/_figure.html.twig" %}
+
 {% trans_default_domain 'contao_default' %}
 
 {% block album_component %}
@@ -6,9 +8,7 @@
     <div{{ attrs(album_inner_attributes|default).addClass('gc-album-list-inner') }}>
         {% block album_figure %}
             <div{{ attrs(album_figure_attributes|default).addClass('gc-album-list-figure') }}>
-                {% include "@Contao/component/_figure.html.twig" with {
-                    figure: figure(album.figureUuid, album.figureSize, album.figureOptions)
-                } %}
+                {% if album.figure.build|default %}{% with {figure: album.figure.build} %}{{ block('figure_component') }}{% endwith %}{% endif %}
             </div>
         {% endblock %}
 

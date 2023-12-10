@@ -165,6 +165,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $template->set('showAlbumDetail', false);
         $template->set('showAlbumListing', false);
         $template->set('hasBreadcrumb', false);
+        $template->set('items_per_page', $model->gcThumbsPerPage);
 
         if ($this->model->gcAddBreadcrumb) {
             $template->set('hasBreadcrumb', true);
@@ -239,6 +240,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             // Add meta tags to the page header.
             $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
+
+
         }
 
         // Trigger gcGenerateFrontendTemplateHook

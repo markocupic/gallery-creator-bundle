@@ -44,7 +44,6 @@ class PictureUtil
      */
     public function getPictureData(GalleryCreatorPicturesModel $pictureModel, ContentModel $contentElementModel): array|null
     {
-
         $staticUrl = System::getContainer()->get('contao.assets.files_context')->getStaticUrl();
 
         $request = $this->requestStack->getCurrentRequest();
@@ -95,10 +94,11 @@ class PictureUtil
             ->createFigureBuilder()
             ->setSize($contentElementModel->gcSizeDetailView)
             ->setLightboxGroupIdentifier('lb'.$contentElementModel->id)
-            ->enableLightbox((bool)$contentElementModel->gcFullSize)
+            ->enableLightbox((bool) $contentElementModel->gcFullSize)
             ->setOverwriteMetadata(new Metadata($arrMeta))
             ->fromUuid($filesModel->uuid)
-            ->setMetadata(new Metadata($arrMeta));
+            ->setMetadata(new Metadata($arrMeta))
+        ;
 
         if ($customHref) {
             $figure->setLinkHref($customHref);
@@ -106,20 +106,20 @@ class PictureUtil
 
         // Build the array
         return [
-            'row_owner'        => $ownerModel ? $ownerModel->row() : [],
-            'row_files'        => $filesModel->row(),
-            'row_picture'      => $pictureModel->row(),
-            'row_album'        => $pictureModel->getRelated('pid')->row(),
-            'local_media_src'  => $localMediaSrc,
+            'row_owner' => $ownerModel ? $ownerModel->row() : [],
+            'row_files' => $filesModel->row(),
+            'row_picture' => $pictureModel->row(),
+            'row_album' => $pictureModel->getRelated('pid')->row(),
+            'local_media_src' => $localMediaSrc,
             'social_media_src' => $socialMediaSrc,
-            'exif_data'        => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
-            'figure'           => [
+            'exif_data' => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
+            'figure' => [
                 'build' => $figure->build(),
                 'uuid' => $filesModel->uuid,
                 'size' => $contentElementModel->gcSizeDetailView,
                 'enable_lightbox' => (bool) $contentElementModel->gcFullSize,
                 'meta_data' => new Metadata($arrMeta),
-                ],
+            ],
         ];
     }
 
@@ -149,5 +149,4 @@ class PictureUtil
 
         return true;
     }
-
 }

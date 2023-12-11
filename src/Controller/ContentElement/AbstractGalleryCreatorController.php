@@ -26,8 +26,6 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\String\HtmlDecoder;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\Date;
-use Contao\File;
-use Contao\Files;
 use Contao\FilesModel;
 use Contao\PageModel;
 use Contao\StringUtil;

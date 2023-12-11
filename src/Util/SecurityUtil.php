@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Util;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\FrontendUser;
 use Contao\StringUtil;
@@ -24,9 +25,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class SecurityUtil
 {
     public function __construct(
-        private readonly Security $security,
-        private readonly ScopeMatcher $scopeMatcher,
+        private readonly ContaoFramework $framework,
         private readonly RequestStack $requestStack,
+        private readonly ScopeMatcher $scopeMatcher,
+        private readonly Security $security,
     ) {
     }
 
@@ -38,14 +40,15 @@ class SecurityUtil
     {
         $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
+        $stringUtil = $this->framework->getAdapter(StringUtil::class);
 
         if (!$albumsModel->protected) {
             return true;
         }
 
         if ($request && $this->scopeMatcher->isFrontendRequest($request) && $user instanceof FrontendUser) {
-            $allowedGroups = StringUtil::deserialize($albumsModel->groups, true);
-            $userGroups = StringUtil::deserialize($user->groups, true);
+            $allowedGroups = $stringUtil->deserialize($albumsModel->groups, true);
+            $userGroups = $stringUtil->deserialize($user->groups, true);
 
             if (!empty(array_intersect($allowedGroups, $userGroups))) {
                 return true;

@@ -240,8 +240,6 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             // Add meta tags to the page header.
             $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
-
-
         }
 
         // Trigger gcGenerateFrontendTemplateHook

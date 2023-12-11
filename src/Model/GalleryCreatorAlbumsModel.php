@@ -29,13 +29,6 @@ class GalleryCreatorAlbumsModel extends Model
      */
     protected static $strTable = 'tl_gallery_creator_albums';
 
-    /**
-     * @param GalleryCreatorAlbumsModel $albumsModel
-     *
-     * @throws \Exception
-     *
-     * @return static|null
-     */
     public static function getParentAlbum(self $albumsModel): self|null
     {
         return $albumsModel->getRelated('pid');

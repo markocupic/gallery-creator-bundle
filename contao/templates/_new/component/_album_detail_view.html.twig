@@ -5,7 +5,7 @@
 
 {% block album_detail_view %}
     {% set album_detail_view_attributes = attrs(album_detail_view_attributes|default).addClass('gc-album-detail-view').set('data-album-level', level) %}
-    <div{{ album_detail_view_attributes }}>
+    <article{{ album_detail_view_attributes }}>
         <div{{ attrs(album_detail_inner_attributes|default).addClass('gc-album-detail-inner') }}>
 
             {% block album_detail_article_pre %}
@@ -33,7 +33,7 @@
 
             {% block album_detail_date %}
                 {% if album.dateFormatted|default %}
-                    <div{{ attrs(album_detail_date_attributes|default).addClass('gc-album-detail-date') }}>{{ album.dateFormatted }}</div>
+                    <div{{ attrs(album_detail_date_attributes|default).addClass('gc-album-detail-date') }}><time datetime="{{ album.datimFormatted }}"></time>{{ album.dateFormatted }}</div>
                 {% endif %}
             {% endblock %}
 
@@ -76,7 +76,7 @@
                 {% endif %}
             {% endblock %}
         </div>
-    </div>
+    </article>
 
     {% block album_detail_script %}
         {# Add your javascript here. #}

@@ -164,6 +164,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $arrAlbum['caption'] = $strCaption;
         $arrAlbum['markdownCaption'] = $strMarkdown ?: false;
         $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $album->date);
+        $arrAlbum['datimFormatted'] = Date::parse(Config::get('datimFormat'), $album->date);
         $arrAlbum['meta'] = new Metadata($arrMeta);
         $arrAlbum['href'] = $href;
         $arrAlbum['pictureCount'] = $pictureCount;

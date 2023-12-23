@@ -1,0 +1,21 @@
+{# ce_gallery_creator.html.twig #}
+
+{% extends '@Contao/block_searchable' %}
+
+{% block content %}
+
+    {% if hasBreadcrumb and showAlbumDetail %}
+        <nav class="gc-breadcrumb-nav">
+            {{ breadcrumb|raw }}
+        </nav>
+    {% endif %}
+
+    {% if showAlbumDetail %}
+        {% include '@Contao/gallery_creator_album_detail_view' with _context %}
+    {% endif %}
+
+    {% if showAlbumListing %}
+        {% include '@Contao/gallery_creator_album_list_view' with _context %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,32 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+        bind:
+            $projectDir: '%kernel.project_dir%'
+            $galleryCreatorUploadPath: '%markocupic_gallery_creator.upload_path%'
+            $galleryCreatorCopyImagesOnImport: '%markocupic_gallery_creator.copy_images_on_import%'
+            $galleryCreatorReadExifMetaData: '%markocupic_gallery_creator.read_exif_meta_data%'
+            $galleryCreatorValidExtensions: '%markocupic_gallery_creator.valid_extensions%'
+            $imageFactory: '@contao.image.factory'
+            $insertTagParser: '@contao.insert_tag.parser'
+
+    _instanceof:
+        Symfony\Bundle\FrameworkBundle\Controller\AbstractController:
+            calls:
+                - [ setContainer, [ '@service_container' ] ]
+
+    Markocupic\GalleryCreatorBundle\:
+        resource: ../../
+        exclude: ../../{DependencyInjection,Resources,Model}
+
+    Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController:
+        tags:
+            - { name: container.service_subscriber }
+        public: true
+
+    Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorNewsController:
+        tags:
+            - { name: container.service_subscriber }
+        public: true

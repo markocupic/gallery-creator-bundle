@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -16,61 +16,58 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
+use Contao\Controller;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
+use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\File\Metadata;
-use Contao\CoreBundle\Image\Studio\Studio;
 use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\String\HtmlDecoder;
-use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\Date;
+use Contao\Environment;
 use Contao\FilesModel;
+use Contao\Input;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Template;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use Contao\Pagination;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Markocupic\GalleryCreatorBundle\Util\MarkdownUtil;
 use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
     protected AlbumUtil $albumUtil;
-    protected Connection $connection;
-    protected HtmlDecoder $htmlDecoder;
-    protected InsertTagParser $insertTagParser;
     protected MarkdownUtil $markdownUtil;
+    protected Connection $connection;
     protected PictureUtil $pictureUtil;
-    protected RequestStack $requestStack;
-    protected ResponseContextAccessor $responseContextAccessor;
-    protected ScopeMatcher $scopeMatcher;
     protected SecurityUtil $securityUtil;
-    protected Studio $studio;
-    protected string $projectDir;
+    protected ScopeMatcher $scopeMatcher;
+    protected ResponseContextAccessor $responseContextAccessor;
+    protected InsertTagParser $insertTagParser;
+    protected HtmlDecoder $htmlDecoder;
 
     public function __construct(DependencyAggregate $dependencyAggregate)
     {
         $this->albumUtil = $dependencyAggregate->albumUtil;
-        $this->connection = $dependencyAggregate->connection;
-        $this->htmlDecoder = $dependencyAggregate->htmlDecoder;
-        $this->insertTagParser = $dependencyAggregate->insertTagParser;
         $this->markdownUtil = $dependencyAggregate->markdownUtil;
+        $this->connection = $dependencyAggregate->connection;
         $this->pictureUtil = $dependencyAggregate->pictureUtil;
-        $this->projectDir = $dependencyAggregate->projectDir;
-        $this->requestStack = $dependencyAggregate->requestStack;
-        $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
-        $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
         $this->securityUtil = $dependencyAggregate->securityUtil;
-        $this->studio = $dependencyAggregate->studio;
+        $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
+        $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
+        $this->insertTagParser = $dependencyAggregate->insertTagParser;
+        $this->htmlDecoder = $dependencyAggregate->htmlDecoder;
     }
 
     public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum): void
@@ -100,160 +97,147 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         }
     }
 
-    public function getAlbumData(GalleryCreatorAlbumsModel $album, ContentModel $content): array
+    /**
+     * @throws DoctrineDBALDriverException
+     * @throws Exception
+     */
+    public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel): array
     {
-        /** @var PageModel $page */
-        $page = $this->requestStack->getCurrentRequest()->attributes->get('pageModel');
+        global $objPage;
 
         // Count images
-        $pictureCount = $this->connection
+        $countPictures = $this->connection
             ->fetchOne(
-                'SELECT COUNT(id) AS pictureCount FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
-                [$album->id, '1'],
+                'SELECT COUNT(id) AS countPictures FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
+                [$albumModel->id, '1'],
             )
         ;
 
         // Image size
-        $size = StringUtil::deserialize($content->gcSizeAlbumListing);
+        $size = StringUtil::deserialize($contentElementModel->gcSizeAlbumListing);
         $arrSize = !empty($size) && \is_array($size) ? $size : null;
 
-        $params = '/'.$album->alias;
-        $href = StringUtil::ampersand($page->getFrontendUrl($params));
+        $params = '/' . $albumModel->alias;
+        $href = StringUtil::ampersand($objPage->getFrontendUrl($params));
 
         /** @var FilesModel $previewImage */
-        $previewImage = $this->getAlbumPreviewThumb($album);
+        $previewImage = $this->getAlbumPreviewThumb($albumModel);
 
         $arrCssClasses = [];
-        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $album->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $album->id) ? 'gc-has-child-album' : null;
-        $arrCssClasses[] = !$pictureCount ? 'gc-empty-album' : null;
+        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $albumModel->pid);
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $albumModel->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = !$countPictures ? 'gc-empty-album' : null;
 
         // Do not show child albums, in news elements
-        if (GalleryCreatorNewsController::TYPE === $content->type) {
+        if (GalleryCreatorNewsController::TYPE === $contentElementModel->type) {
             $childAlbums = null;
         } else {
-            $childAlbums = $this->getChildAlbums($album, $content, true);
+            $childAlbums = $this->getChildAlbums($albumModel, $contentElementModel, true);
         }
 
         $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
-        $strTeaser = $this->insertTagParser->replaceInline(nl2br((string) $album->teaser));
-        $strCaption = $this->insertTagParser->replaceInline(nl2br((string) $album->caption));
-        $strMarkdown = 'markdown' === $album->captionType && $album->markdownCaption ? $this->markdownUtil->parse($album->markdownCaption) : null;
+        $teaser = $this->insertTagParser->replaceInline(nl2br((string) $albumModel->teaser));
+        $caption = $this->insertTagParser->replaceInline(nl2br((string) $albumModel->caption));
+        $markdown = 'markdown' === $albumModel->captionType && $albumModel->markdownCaption ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
 
         // Meta
         $arrMeta = [];
-        $arrMeta['alt'] = StringUtil::specialchars($album->name);
-        $arrMeta['caption'] = $strTeaser;
-        $arrMeta['title'] = StringUtil::specialchars($album->name);
+        $arrMeta['alt'] = StringUtil::specialchars($albumModel->name);
+        $arrMeta['caption'] = $teaser;
+        $arrMeta['title'] = StringUtil::specialchars($albumModel->name);
 
-        // Compile list of images
-        if ($previewImage) {
-            $figure = $this->studio
-                ->createFigureBuilder()
-                ->setSize($arrSize)
-                ->enableLightbox(false)
-                ->setOverwriteMetadata(new Metadata($arrMeta))
-                ->fromUuid($previewImage->uuid)
-                ->setMetadata(new Metadata($arrMeta))
-            ;
-        }
-
-        $arrAlbum = $album->row();
-        $arrAlbum['teaser'] = $strTeaser;
-        $arrAlbum['caption'] = $strCaption;
-        $arrAlbum['markdownCaption'] = $strMarkdown ?: false;
-        $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $album->date);
-        $arrAlbum['datimFormatted'] = Date::parse(Config::get('datimFormat'), $album->date);
+        $arrAlbum = $albumModel->row();
+        $arrAlbum['teaser'] = $teaser;
+        $arrAlbum['caption'] = $caption;
+        $arrAlbum['markdownCaption'] = $markdown ?: false;
+        $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $albumModel->date);
         $arrAlbum['meta'] = new Metadata($arrMeta);
         $arrAlbum['href'] = $href;
-        $arrAlbum['pictureCount'] = $pictureCount;
+        $arrAlbum['countPictures'] = $countPictures;
+
         $arrAlbum['cssClass'] = !(empty(implode(' ', array_filter($arrCssClasses)))) ? implode(' ', array_filter($arrCssClasses)) : false;
-        $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
-        $arrAlbum['childAlbumCount'] = $childAlbums ? \count($childAlbums) : 0;
-        $arrAlbum['childAlbums'] = $childAlbums;
-        $arrAlbum['figure'] = [
-            'build' => isset($figure) ? $figure->build() : null,
-            'uuid' => isset($figure) ? $previewImage->uuid : null,
-            'size' => $arrSize,
-            'enable_lightbox' => false,
-            'meta_data' => new Metadata($arrMeta),
+        $arrAlbum['figureUuid'] = $previewImage ? $previewImage->uuid : null;
+        $arrAlbum['figureSize'] = !empty($arrSize) ? $arrSize : null;
+        $arrAlbum['figureOptions'] = [
+            'metadata' => new Metadata($arrMeta),
+            'linkHref' => $href,
         ];
+
+        $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
+        $arrAlbum['countChildAlbums'] = $childAlbums ? \count($childAlbums) : 0;
+        $arrAlbum['childAlbums'] = $childAlbums;
 
         return $arrAlbum;
     }
 
-    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $album): FilesModel|null
+    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): ?FilesModel
     {
-        $picture = GalleryCreatorPicturesModel::findOneById($album->thumb);
-
-        if (null === $picture || !$picture->published) {
-            return null;
+        if (null === ($pictureModel = GalleryCreatorPicturesModel::findByPk($albumModel->thumb))) {
+            $pictureModel = GalleryCreatorPicturesModel::findOneByPid($albumModel->id);
         }
 
-        $files = FilesModel::findByUuid($picture->uuid);
-
-        if (null === $files || !is_file($this->projectDir.'/'.$files->path)) {
-            return null;
+        if (null !== $pictureModel && $pictureModel->published && null !== ($filesModel = FilesModel::findByUuid($pictureModel->uuid))) {
+            return $filesModel;
         }
 
-        return $files;
+        return null;
     }
 
     /**
      * @throws Exception
      * @throws DoctrineDBALDriverException
      */
-    public function getChildAlbums(GalleryCreatorAlbumsModel $album, ContentModel $content, bool $blnOnlyAllowed = false): array|null
+    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentElementModel, bool $blnOnlyAllowed = false): ?array
     {
-        $strSorting = $content->gcSorting.' '.$content->gcSortingDirection;
+        $strSorting = $contentElementModel->gcSorting.' '.$contentElementModel->gcSortingDirection;
 
         $stmt = $this->connection->executeQuery(
-            "SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY $strSorting",
-            [$album->id, '1']
+            'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY '.$strSorting,
+            [$albumModel->id, '1']
         );
 
-        $arrChildren = [];
+        $arrChildAlbums = [];
 
-        while (false !== ($arrChild = $stmt->fetchAssociative())) {
-            $objChild = GalleryCreatorAlbumsModel::findByPk($arrChild['id']);
+        while (false !== ($objChildAlbums = $stmt->fetchAssociative())) {
+            $objChildAlbum = GalleryCreatorAlbumsModel::findByPk($objChildAlbums['id']);
 
             if ($blnOnlyAllowed) {
-                if ($content->gcShowAlbumSelection) {
-                    $arrAllowed = StringUtil::deserialize($content->gcAlbumSelection, true);
+                if ($contentElementModel->gcShowAlbumSelection) {
+                    $arrAllowed = StringUtil::deserialize($contentElementModel->gcAlbumSelection, true);
 
-                    if (!\in_array($objChild->id, $arrAllowed, false)) {
+                    if (!\in_array($objChildAlbum->id, $arrAllowed, false)) {
                         continue;
                     }
 
-                    if (!$this->securityUtil->isAuthorized($objChild)) {
+                    if (!$this->securityUtil->isAuthorized($objChildAlbum)) {
                         continue;
                     }
                 }
             }
 
-            if (null !== $objChild) {
-                $arrChildren[] = $this->getAlbumData($objChild, $content);
+            if (null !== $objChildAlbum) {
+                $arrChildAlbums[] = $this->getAlbumData($objChildAlbum, $contentElementModel);
             }
         }
 
-        return !empty($arrChildren) ? $arrChildren : null;
+        return !empty($arrChildAlbums) ? $arrChildAlbums : null;
     }
 
     /**
      * Add meta tags to the page header.
      */
-    protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $album): void
+    protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $albumModel): void
     {
-        $pageModel->description = '' !== $album->description ? StringUtil::specialchars($album->description) : StringUtil::specialchars($pageModel->description);
+        $pageModel->description = '' !== $albumModel->description ? StringUtil::specialchars($albumModel->description) : StringUtil::specialchars($this->pageModel->description);
     }
 
-    protected function triggerGenerateFrontendTemplateHook(FragmentTemplate $template, GalleryCreatorAlbumsModel $album = null): void
+    protected function triggerGenerateFrontendTemplateHook(Template $template, GalleryCreatorAlbumsModel $albumModel = null): void
     {
         // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
         if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
             foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
-                System::importStatic($callback[0])->{$callback[1]}($this, $template, $album);
+                System::importStatic($callback[0])->{$callback[1]}($this, $template, $albumModel);
             }
         }
     }
@@ -263,9 +247,9 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      *
      * @throws DoctrineDBALException
      */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $album, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
     {
-        $template->set('album', $this->getAlbumData($album, $contentModel));
+        $template->album = $this->getAlbumData($albumModel, $contentModel);
     }
 
     /**
@@ -274,26 +258,59 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */
-    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $album, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
+    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, $template, PageModel $pageModel): void
     {
+
+
+        $template->detailPagination = '';
+
         // Picture sorting
         $arrSorting = empty($contentModel->gcPictureSorting) || empty($contentModel->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$contentModel->gcPictureSorting, $contentModel->gcPictureSortingDirection];
 
         // Sort by name will be done below.
         $arrSorting[0] = str_replace('name', 'id', $arrSorting[0]);
 
-        $stmt = $this->connection->createQueryBuilder()
+        $qb = $this->connection->createQueryBuilder()
             ->select('*')
             ->from('tl_gallery_creator_pictures', 't')
             ->where('t.pid = :pid')
             ->andWhere('t.published = :published')
             ->orderBy(...$arrSorting)
             ->setParameter('published', '1')
-            ->setParameter('pid', $album->id)
-            ->executeQuery()
+            ->setParameter('pid', $albumModel->id)
         ;
 
-        $images = [];
+        $perPage = (int) $contentModel->gcThumbsPerPage;
+
+        if ($perPage > 0)
+        {
+            $id = 'page_d' . $contentModel->id;
+            $page = Input::get($id) ?? 1;
+            $total = $this->connection->fetchOne(
+                'SELECT COUNT(id) AS itemsTotal FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ?',
+                ['1', $albumModel->id]
+            );
+
+
+            // Do not index or cache the page if the page number is outside the range
+            if ($page < 1 || $page > max(ceil($total/$perPage), 1))
+            {
+                throw new PageNotFoundException('Page not found/Out of pagination range exception: '.Environment::get('uri'));
+            }
+
+            $offset = ($page - 1) * $perPage;
+            $limit = min($perPage + $offset, $total);
+
+            $objPagination = new Pagination($total, $perPage, Config::get('maxPaginationLinks'), $id);
+            $template->detailPagination = $objPagination->generate("\n  ");
+
+            $qb->setFirstResult($pagination->getOffset());
+            $qb->setMaxResults($pagination->getLimit());
+        }
+
+        $arrPictures = [];
+
+        $stmt = $qb->executeQuery();
 
         while (false !== ($rowPicture = $stmt->fetchAssociative())) {
             $filesModel = FilesModel::findByUuid($rowPicture['uuid']);
@@ -303,24 +320,22 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
                 $basename = $filesModel->name;
             }
 
-            if (null !== ($picture = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
-                if ($picture->uuid && $this->pictureUtil->pictureExists($picture)) {
-                    // Prevent overriding items with same basename
-                    $images[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picture, $contentModel);
-                }
+            if (null !== ($picturesModel = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
+                // Prevent overriding items with same basename
+                $arrPictures[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picturesModel, $contentModel);
             }
         }
 
         // Sort by name
         if ('name' === $contentModel->gcPictureSorting) {
             if ('ASC' === $contentModel->gcPictureSortingDirection) {
-                uksort($images, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
+                uksort($arrPictures, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
             } else {
-                uksort($images, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
+                uksort($arrPictures, static fn ($a, $b): int => -strnatcasecmp(basename($a), basename($b)));
             }
         }
 
         // Add pictures to the template.
-        $template->set('images', array_values($images));
+        $template->arrPictures = array_values($arrPictures);
     }
 }

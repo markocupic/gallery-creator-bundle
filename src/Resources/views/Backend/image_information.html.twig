@@ -1,0 +1,41 @@
+<div class="long widget gc-album-info-table">
+    <h3><label for="ctrl_thumb">{{ trans.picture_info }}</label></h3>
+    <table cellpadding="0" cellspacing="0" width="100%" summary="">
+        <tr class="odd">
+            <td style="width:20%"><strong>{{ trans.picture_id }}: </strong></td>
+            <td>{{ model.id }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.picture_path }}: </strong></td>
+            <td>{{ model.path }}</td>
+        </tr>
+        <tr class="odd">
+            <td><strong>{{ trans.picture_filename }}: </strong></td>
+            <td>{{ model.filename }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.picture_date }}: </strong></td>
+            <td>{{ model.date_formatted }}</td>
+        </tr>
+        <tr class="odd">
+            <td><strong>{{ trans.picture_owner }}: </strong></td>
+            <td>{{ model.owner_name }}</td>
+        </tr>
+        <tr class="even">
+            <td><strong>{{ trans.picture_title }}: </strong></td>
+            <td>{{ model.title }}</td>
+        </tr>
+        {% if model.socialMediaSRC %}
+            <tr class="odd">
+                <td><strong>{{ trans.picture_video_href_social }}: </strong></td>
+                <td>{{ model.video_href_social }}</td>
+            </tr>
+        {% endif %}
+        {% if model.localMediaSRC %}
+            <tr class="even">
+                <td><strong>{{ trans.picture_video_href_local }}: </strong></td>
+                <td>{{ model.video_href_local }}</td>
+            </tr>
+        {% endif %}
+    </table>
+</div>

@@ -1,3 +1,0 @@
-markocupic_gallery_creator.controller:
-    resource: "@MarkocupicGalleryCreatorBundle/src/Controller"
-    type: annotation

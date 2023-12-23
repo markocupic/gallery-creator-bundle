@@ -1,4 +1,4 @@
-![Marko Cupic](docs/logo.png?raw=true "Marko Cupic")
+<p><a href="https://github.com/markocupic"><img src="src/Resources/public/images/be_content_element_logo.svg"></a></p>
 
 # Gallery Creator Bundle
 
@@ -83,19 +83,21 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Contao\CoreBundle\Twig\FragmentTemplate;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\Template;
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\AbstractContentElementController;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 
-#[AsHook(GalleryCreatorFrontendTemplateListener::HOOK, priority: 100)]
+/**
+ * @Hook(GalleryCreatorFrontendTemplateListener::HOOK, priority=100)
+ */
 class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
-    public function __invoke(AbstractContentElementController $contentElement, Fragmenttemplate $template, GalleryCreatorAlbumsModel|null $activeAlbum = null)
+    public function __invoke(AbstractContentElementController $contentElement, Template $template, ?GalleryCreatorAlbumsModel $activeAlbum = null)
     {
-        $template->set('foo', 'bar');
+        $template->foo = 'bar';
     }
 }
 
@@ -118,11 +120,13 @@ declare(strict_types=1);
 namespace App\EventListener;
 
 use Contao\BackendUser;
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\Security;
 
-#[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
+/**
+ * @Hook(GalleryCreatorImagePostInsertListener::HOOK, priority=100)
+ */
 class GalleryCreatorImagePostInsertListener
 {
     public const HOOK = 'galleryCreatorImagePostInsert';

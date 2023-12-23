@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Gallery Creator Bundle.
  *
- * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
  * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -16,18 +16,18 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\Config;
 use Contao\ContentModel;
-use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\ServiceAnnotation\ContentElement;
 use Contao\CoreBundle\String\HtmlDecoder;
-use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\Environment;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\PageModel;
 use Contao\Pagination;
 use Contao\StringUtil;
+use Contao\Template;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
@@ -39,16 +39,22 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-#[AsContentElement(category: 'gallery_creator_elements')]
+/**
+ * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements")
+ */
 class GalleryCreatorController extends AbstractGalleryCreatorController
 {
     public const TYPE = 'gallery_creator';
 
-    protected string|null $viewMode = null;
-    protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
+    protected ContaoFramework $framework;
+    protected TwigEnvironment $twig;
+    protected HtmlDecoder $htmlDecoder;
+    protected ?SymfonyResponseTagger $responseTagger;
+    protected ?string $viewMode = null;
+    protected ?GalleryCreatorAlbumsModel $activeAlbum = null;
     protected array $arrAlbumListing = [];
-    protected ContentModel|null $model;
-    protected PageModel|null $pageModel;
+    protected ?ContentModel $model;
+    protected ?PageModel $pageModel;
 
     // Adapters
     protected Adapter $config;
@@ -60,14 +66,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     private bool $showAlbumDetail = false;
     private bool $showAlbumListing = false;
 
-    public function __construct(
-        DependencyAggregate $dependencyAggregate,
-        private readonly ContaoFramework $framework,
-        private readonly TwigEnvironment $twig,
-        protected HtmlDecoder $htmlDecoder,
-        private readonly SymfonyResponseTagger|null $responseTagger,
-    ) {
+    public function __construct(DependencyAggregate $dependencyAggregate, ContaoFramework $framework, TwigEnvironment $twig, HtmlDecoder $htmlDecoder, ?SymfonyResponseTagger $responseTagger)
+    {
         parent::__construct($dependencyAggregate);
+        $this->framework = $framework;
+        $this->twig = $twig;
+        $this->htmlDecoder = $htmlDecoder;
+        $this->responseTagger = $responseTagger;
 
         // Adapters
         $this->config = $this->framework->getAdapter(Config::class);
@@ -110,7 +115,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $arrIds = $this->stringUtil->deserialize($model->gcAlbumSelection, true);
 
                 if (!empty($arrIds)) {
-                    $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', array_map('intval', $arrIds)).') ORDER BY pid');
+                    $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', $arrIds).') ORDER BY pid');
                     $this->arrAlbumListing = $this->getAlbumsByPid($pid);
                 } else {
                     return new Response('', Response::HTTP_NO_CONTENT);
@@ -159,22 +164,21 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */
-    protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
+    protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
         // Set defaults
-        $template->set('showAlbumDetail', false);
-        $template->set('showAlbumListing', false);
-        $template->set('hasBreadcrumb', false);
-        $template->set('items_per_page', $model->gcThumbsPerPage);
+        $template->showAlbumDetail = false;
+        $template->showAlbumListing = false;
+        $template->hasBreadcrumb = false;
 
         if ($this->model->gcAddBreadcrumb) {
-            $template->set('hasBreadcrumb', true);
-            $template->set('breadcrumb', $this->generateBreadcrumb());
+            $template->hasBreadcrumb = true;
+            $template->breadcrumb = $this->generateBreadcrumb();
         }
 
         if ($this->showAlbumListing) {
-            $template->set('showAlbumListing', true);
-            $template->set('listPagination', '');
+            $template->showAlbumListing = true;
+            $template->listPagination = '';
 
             // Add a CSS class to the body tag
             $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass.' gc-listing-view';
@@ -197,26 +201,26 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $limit = min($perPage + $offset, $total);
 
                 $objPagination = new Pagination($total, $perPage, $this->config->get('maxPaginationLinks'), $id);
-                $template->set('listPagination', $objPagination->generate("\n  "));
+                $template->listPagination = $objPagination->generate("\n  ");
 
                 // Paginate the result
                 $arrItems = \array_slice($arrItems, $offset, $limit);
             }
 
-            $template->set('albums', array_map(
+            $template->albums = array_map(
                 function ($id) {
                     $albumModel = $this->galleryCreatorAlbumsModel->findByPk($id);
 
                     return null !== $albumModel ? $this->getAlbumData($albumModel, $this->model) : [];
                 },
                 $arrItems
-            ));
+            );
 
-            $template->set('content', $this->model->row());
+            $template->content = $this->model->row();
         }
 
         if ($this->showAlbumDetail) {
-            $template->set('showAlbumDetail', true);
+            $template->showAlbumDetail = true;
 
             // Add a CSS class to the body tag
             $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass.' gc-detail-view';
@@ -233,10 +237,10 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $this->albumUtil->countAlbumViews($this->activeAlbum);
 
             // Add content model to template.
-            $template->set('content', $model->row());
+            $template->content = $model->row();
 
             // Get the album level
-            $template->set('level', $this->albumUtil->getAlbumLevelFromPid((int) $this->activeAlbum->pid));
+            $template->level = $this->albumUtil->getAlbumLevelFromPid((int) $this->activeAlbum->pid);
 
             // Add meta tags to the page header.
             $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
@@ -324,23 +328,20 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      *
      * @throws DoctrineDBALException
      */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, Template $template, PageModel $pageModel): void
     {
         parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
 
         // Back link
-        $template->set('backLink', $this->generateBackLink($albumModel) ?: false);
+        $template->backLink = $this->generateBackLink($albumModel) ?: false;
 
         // In the detail view, an article can optionally be added in front of the album
-        $template->set('insertArticlePre', $albumModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : false);
+        $template->insertArticlePre = $albumModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : false;
 
         // In the detail view, an article can optionally be added right after the album
-        $template->set('insertArticlePost', $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : false);
+        $template->insertArticlePost = $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : false;
     }
 
-    /**
-     * @throws \Exception
-     */
     protected function generateBreadcrumb(): string
     {
         $items = [];

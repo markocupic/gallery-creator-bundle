@@ -83,7 +83,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'delete'        => [
                 'href'            => 'act=delete',
                 'icon'            => 'delete.svg',
-                'attributes'      => 'onclick="if(!confirm(\''.$GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'].'\'))return false;Backend.getScrollOffset()"',
+                'attributes'      => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['gcDeleteConfirmAlbum'] ?? '').'\'))return false;Backend.getScrollOffset()"',
                 'button_callback' => [GalleryCreatorAlbums::class, 'buttonCbDelete'],
             ],
             'toggle'        => [

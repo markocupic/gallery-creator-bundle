@@ -40,7 +40,7 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
 /**
- * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements")
+ * @ContentElement(GalleryCreatorController::TYPE, category="gallery_creator_elements", template="ce_gallery_creator")
  */
 class GalleryCreatorController extends AbstractGalleryCreatorController
 {

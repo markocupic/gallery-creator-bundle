@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
 
 /**
- * @ContentElement(GalleryCreatorNewsController::TYPE, category="gallery_creator_elements")
+ * @ContentElement(GalleryCreatorNewsController::TYPE, category="gallery_creator_elements", template="ce_gallery_creator_news")
  */
 class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 {

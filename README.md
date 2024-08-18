@@ -1,4 +1,4 @@
-![Marko Cupic](docs/logo.png?raw=true "Marko Cupic")
+![Marko Cupic](docs/img/logo.png?raw=true "Marko Cupic")
 
 # Gallery Creator Bundle
 
@@ -21,7 +21,7 @@ Go to the **Contao Backend Settings** and select a default **album owner**, a **
 **Important**: If you keep the "album owner" field empty, the currently logged in backend user automatically becomes the album owner
   when creating a new album.
 
-![chmod](docs/chmod.png)
+![chmod](docs/img/chmod.png)
 
 ## Lightbox
  As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/).

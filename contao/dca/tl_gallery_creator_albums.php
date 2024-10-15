@@ -147,7 +147,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'filter'    => true,
             'search'    => true,
             'sorting'   => true,
-            'eval'      => ['mandatory' => true, 'tl_class' => 'w50', 'submitOnChange' => false],
+            'eval'      => ['mandatory' => true, 'tl_class' => 'w50', 'submitOnChange' => false, 'basicEntities' => true],
             'inputType' => 'text',
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
@@ -178,7 +178,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'textarea',
-            'eval'      => ['decodeEntities' => true, 'tl_class' => 'w33'],
+            'eval'      => ['decodeEntities' => true, 'tl_class' => 'w33', 'basicEntities' => true],
             'sql'       => 'text NULL',
         ],
         'date'              => [
@@ -218,7 +218,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'textarea',
-            'eval'      => ['style' => 'height:60px', 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'eval'      => ['style' => 'height:60px', 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft', 'basicEntities' => true],
             'sql'       => 'text NULL',
         ],
         'captionType'       => [
@@ -230,7 +230,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'caption'           => [
             'cols'      => 20,
-            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft'],
+            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr long', 'allowHtml' => false, 'wrap' => 'soft', 'basicEntities' => true],
             'exclude'   => true,
             'inputType' => 'textarea',
             'rows'      => 5,

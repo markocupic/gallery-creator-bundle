@@ -125,7 +125,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'eval' => ['tl_class' => 'w50'],
         ],
         'title'          => [
-            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum', 'tl_class' => 'w50'],
+            'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum', 'tl_class' => 'w50', 'basicEntities' => true],
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'text',
@@ -133,7 +133,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'caption'        => [
             'cols'      => 20,
-            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'w50', 'allowHtml' => false, 'wrap' => 'soft'],
+            'eval'      => ['style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'w50', 'allowHtml' => false, 'wrap' => 'soft', 'basicEntities' => true],
             'exclude'   => true,
             'inputType' => 'textarea',
             'rows'      => 5,

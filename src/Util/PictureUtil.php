@@ -59,8 +59,14 @@ class PictureUtil
             return null;
         }
 
-        // Get file meta data
-        $arrMeta = $this->filesStorage->getExtraMetadata($fileSystemItem->getUuid());
+        // Get file the metadata
+        $metadata = $fileSystemItem->getExtraMetadata()->getLocalized()?->getDefault();
+
+        if (null === $metadata) {
+            $arrMeta = [];
+        } else {
+            $arrMeta = $metadata->all();
+        }
 
         if (!isset($arrMeta['title'])) {
             $arrMeta['title'] = '';

@@ -36,7 +36,7 @@ class RenameColumnsMigration extends AbstractMigration
     public function shouldRun(): bool
     {
         $doMigration = false;
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->connection->createSchemaManager();
         $arrAlterations = $this->getAlterationData();
 
         foreach ($arrAlterations as $arrAlteration) {
@@ -81,7 +81,7 @@ class RenameColumnsMigration extends AbstractMigration
     {
         $resultMessages = [];
 
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->connection->createSchemaManager();
         $arrAlterations = $this->getAlterationData();
 
         foreach ($arrAlterations as $arrAlteration) {

@@ -4,12 +4,12 @@
 {% trans_default_domain 'contao_default' %}
 
 {% block album_detail_view %}
-    {% set album_detail_view_attributes = attrs(album_detail_view_attributes|default).addClass('gc-album-detail-view').set('data-album-level', level) %}
+    {% set album_detail_view_attributes = attrs(album_detail_view_attributes|default).addClass('gc-album-detail-view').set('data-album-level', level|default('0')) %}
     <article{{ album_detail_view_attributes }}>
         <div{{ attrs(album_detail_inner_attributes|default).addClass('gc-album-detail-inner') }}>
 
             {% block album_detail_article_pre %}
-                {% if insertArticlePre %}
+                {% if insertArticlePre|default %}
                     <div{{ attrs(album_detail_article_pre_attributes|default).addClass('gc-album-detail-article-pre') }}>
                         {{ insertArticlePre|raw }}
                     </div>
@@ -17,7 +17,7 @@
             {% endblock %}
 
             {% block album_detail_back_link %}
-                {% if backLink %}
+                {% if backLink|default %}
                     <div{{ attrs(album_detail_back_link_attributes|default).addClass('gc-album-detail-back-link') }}>
                         <a href="{{ backLink }}" title="{{ 'GALLERY_CREATOR.backLink'|trans }}">{{ 'GALLERY_CREATOR.backLink'|trans }}</a>
                     </div>
@@ -69,7 +69,7 @@
                 {% endblock %}
             {% endif %}
             {% block album_detail_article_post %}
-                {% if insertArticlePost %}
+                {% if insertArticlePost|default %}
                     <div{{ attrs(album_detail_article_post_attributes|default).addClass('gc-album-detail-article-post') }}>
                         {{ insertArticlePost|raw }}
                     </div>

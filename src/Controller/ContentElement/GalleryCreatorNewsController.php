@@ -95,9 +95,6 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         // Add content model to template.
         $template->set('content', $model->row());
 
-        // Add Pagination
-        $template->set('items_per_page', $model->gcThumbsPerPage);
-
         // Add meta tags to the page header.
         $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
 

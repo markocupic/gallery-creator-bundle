@@ -7,7 +7,6 @@
 {% use "@Contao/component/_figure.html.twig" %}
 
 {% block content %}
-
     {% if hasBreadcrumb and showAlbumDetail %}
         <nav class="gc-breadcrumb-nav">
             {{ breadcrumb|raw }}
@@ -17,7 +16,6 @@
     {% if showAlbumDetail %}
         {% block album_detail_view %}
             {# Do your template modification (e.g. add css classes, replace tag names, etc.) below here: #}
-
             {{ parent() }}
         {% endblock %}
     {% endif %}
@@ -25,11 +23,9 @@
     {% if showAlbumListing %}
         {% block album_list_view %}
             {# Do your template modification (e.g. add css classes, replace tag names, etc.) below here: #}
-
             {{ parent() }}
         {% endblock %}
     {% endif %}
-
 {% endblock %}
 
 {% block list_item %}

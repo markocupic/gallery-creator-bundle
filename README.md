@@ -18,10 +18,10 @@ Please use the Contao Manager or run `composer require markocupic/gallery-creato
 ## CHMOD
 Go to the **Contao Backend Settings** and select a default **album owner**, a **default album owner group** and set the default **access rights**
 
-**Important**: If you keep the "album owner" field empty, the currently logged in backend user automatically becomes the album owner
+**Important**: If you keep the "album owner" field empty, the currently logged-in backend user automatically becomes the album owner
   when creating a new album.
 
-![chmod](docs/img/chmod.png)
+![chmod](docs/img/chmod.jpg)
 
 ## Lightbox
  As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/).

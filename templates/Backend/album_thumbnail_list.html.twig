@@ -1,13 +1,22 @@
 <div class="widget clr gc-preview-thumb">
     <h3><label for="ctrl_thumb">{{ trans.album_thumb }}</label></h3>
-    <p style="margin-top:.5rem">{{ trans.drag_items_hint }}</p>
+    <p class="gc-preview-thumb--sortable-hint">{{ trans.drag_items_hint }}</p>
 
     <div>
         {% if has_album_thumbs %}
-            <ul id="gcPreviewThumbList" style="display:flex;flex-wrap:wrap">
+            <ul id="gcPreviewThumbList">
                 {% for thumb in album_thumbs %}
-                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename | escape }}">
-                        <input type="radio" name="thumb" value="{{ thumb.id }}" aria-label="{{ thumb.filename | escape }}"{{ thumb.attr_checked }}>
+                    {% set list_attributes = attrs()
+                        .addClass(thumb.class)
+                        .set('data-id', thumb.id)
+                        .set('title', thumb.filename) %}
+                    <li{{ list_attributes }}>
+                        {% set input_attributes = attrs()
+                            .set('type', 'radio')
+                            .set('name', 'thumb')
+                            .set('value', thumb.id)
+                            .set('aria-label', thumb.filename) %}
+                        <input{{ input_attributes }}{{ thumb.attr_checked }}>
                         {{ thumb.image|raw }}
                     </li>
                 {% endfor %}
@@ -18,41 +27,93 @@
             <h3>{{ trans.child_albums }}</h3>
             <ul id="gcPreviewThumbListSub" style="display:flex;flex-wrap:wrap">
                 {% for thumb in child_album_thumbs %}
-                    <li{{ thumb.class }} data-id="{{ thumb.id }}" title="{{ thumb.filename | escape }}">
-                        <input type="radio" name="thumb" value="{{ thumb.id }}" aria-label="{{ thumb.filename | escape }}"{{ thumb.attr_checked }}>
+                    {% set list_attributes = attrs()
+                        .addClass(thumb.class)
+                        .set('data-id', thumb.id)
+                        .set('title', thumb.filename) %}
+                    <li{{ list_attributes }}>
+                        {% set input_attributes = attrs()
+                            .set('type', 'radio')
+                            .set('name', 'thumb')
+                            .set('value', thumb.id)
+                            .set('aria-label', thumb.filename) %}
+                        <input{{ input_attributes }}{{ thumb.attr_checked }}>
                         {{ thumb.image|raw }}
                     </li>
                 {% endfor %}
             </ul>
         {% endif %}
-
     </div>
 </div>
 
 <script>
-    window.addEvent("domready", function () {
-        $$(".gc-preview-thumb input").addEvent("click", function () {
-            $$(".gc-preview-thumb li").removeClass("checked");
-            this.getParent("li").addClass("checked");
+    document.addEventListener("DOMContentLoaded", () => {
+
+        // -----------------------------------
+        // Check the radio on click
+        // -----------------------------------
+        document.querySelectorAll(".gc-preview-thumb input").forEach(input => {
+            input.addEventListener("click", () => {
+                document.querySelectorAll(".gc-preview-thumb li")
+                    .forEach(li => li.classList.remove("checked"));
+
+                input.closest("li").classList.add("checked");
+            });
         });
 
-        /** sort album with drag and drop */
-        new Sortables("#gcPreviewThumbList", {
-            onComplete: function () {
-                let ids = [];
-                $$("#gcPreviewThumbList > li").each(function (el) {
-                    ids.push(el.getProperty("data-id"));
-                });
-                // ajax request
-                if (ids.length > 0) {
-                    let myRequest = new Request({
-                        url: document.URL + "&isAjaxRequest=true&pictureSorting=" + ids.join(),
-                        method: "get"
-                    });
-                    // fire request (re-sort album)
-                    myRequest.send();
+
+        // -----------------------------------
+        // Drag & Drop sorting
+        // -----------------------------------
+        const list = document.querySelector("#gcPreviewThumbList");
+        let draggedEl = null;
+
+        list.querySelectorAll("li").forEach(li => {
+            li.draggable = true;
+
+            li.addEventListener("dragstart", (e) => {
+                draggedEl = li;
+                li.classList.add("dragging");
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", "");
+            });
+
+            li.addEventListener("dragend", () => {
+                li.classList.remove("dragging");
+                draggedEl = null;
+                sendNewOrder();
+            });
+
+            li.addEventListener("dragover", (e) => {
+                e.preventDefault();
+
+                const bounding = li.getBoundingClientRect();
+                const offset = bounding.top + bounding.height / 2;
+
+                if (e.clientY < offset) {
+                    list.insertBefore(draggedEl, li);
+                } else {
+                    list.insertBefore(draggedEl, li.nextSibling);
                 }
-            }
+            });
         });
+
+
+        // -----------------------------------
+        // AJAX: send new order
+        // -----------------------------------
+        function sendNewOrder() {
+            const ids = [...list.querySelectorAll("li")]
+                .map(li => li.getAttribute("data-id"));
+
+            if (ids.length === 0) return;
+
+            const url = document.URL +
+                "&isAjaxRequest=true&pictureSorting=" +
+                ids.join(",");
+
+            fetch(url, {method: "GET"})
+                .catch(err => console.error("Error:", err));
+        }
     });
 </script>

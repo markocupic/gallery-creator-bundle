@@ -1,0 +1,9 @@
+{
+  "entrypoints": {
+    "css/backend": {
+      "css": [
+        "/bundles/markocupicgallerycreator/css/backend.c3c88e86.css"
+      ]
+    }
+  }
+}

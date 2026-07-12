@@ -53,13 +53,15 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'operations'        => [
             'edit'        => [
-                'href' => 'act=edit',
-                'icon' => 'edit.svg',
+                'href'    => 'act=edit',
+                'icon'    => 'edit.svg',
+                'primary' => true,
             ],
             'delete'      => [
-                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false;Backend.getScrollOffset()"',
+                'attributes' => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"',
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
+                'primary'    => true,
             ],
             'cut'         => [
                 'href'       => 'act=paste&amp;mode=cut',
@@ -70,6 +72,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                 'attributes' => 'data-icon="gc-op-icon" onclick="Backend.getScrollOffset();"',
                 'href'       => 'key=imagerotate',
                 'icon'       => 'bundles/markocupicgallerycreator/images/rotate.svg',
+                'primary'    => true,
             ],
             'toggle'      => [
                 'href'       => 'act=toggle&amp;field=published',

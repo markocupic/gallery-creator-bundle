@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
+use Codefog\HasteBundle\UrlParser;
 use Contao\Backend;
 use Contao\Config;
 use Contao\Controller;
@@ -56,15 +57,16 @@ class GalleryCreatorPictures
     private Adapter $pictures;
 
     public function __construct(
-        private readonly ContaoFramework $framework,
-        private readonly RequestStack $requestStack,
+        private readonly CacheManager $cacheManager,
         private readonly Connection $connection,
+        private readonly ContaoFramework $framework,
         private readonly FileUtil $fileUtil,
+        private readonly ImageFactory $imageFactory,
+        private readonly RequestStack $requestStack,
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
-        private readonly ImageFactory $imageFactory,
         private readonly TwigEnvironment $twig,
-        private readonly CacheManager $cacheManager,
+        private readonly UrlParser $urlParser,
         private readonly string $projectDir,
         private readonly string $galleryCreatorUploadPath,
     ) {
@@ -104,7 +106,8 @@ class GalleryCreatorPictures
 
             if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $albumId)) {
                 $this->message->addInfo($this->translator->trans('MSC.notAllowedEditPictures', [$dc->id], 'contao_default'));
-                $this->controller->redirect($this->system->getReferer());
+                $url = $this->urlParser->removeQueryString(['key']);
+                $this->controller->redirect($url);
             }
         }
 
@@ -266,7 +269,7 @@ class GalleryCreatorPictures
         $request = $this->requestStack->getCurrentRequest();
 
         if ('imagerotate' === $request->query->get('key')) {
-            $picturesModel = $this->pictures->findByPk($dc->id);
+            $picturesModel = $this->pictures->findById($dc->id);
             $files = $this->framework->getAdapter(FilesModel::class);
 
             $filesModel = $files->findByUuid($picturesModel->uuid);
@@ -291,8 +294,9 @@ class GalleryCreatorPictures
                 ];
 
                 $this->cacheManager->invalidateTags($arrTags);
-
-                $this->controller->redirect($this->system->getReferer());
+                $url = $this->urlParser->removeQueryString(['key']);
+                $url =  $this->urlParser->addQueryString('id='.$picturesModel->pid, $url);
+                $this->controller->redirect($url);
             }
         }
     }
@@ -466,7 +470,7 @@ class GalleryCreatorPictures
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.oncut', priority: 100)]
     public function oncutCallback(DataContainer $dc): void
     {
-        $picture = $this->pictures->findByPk($dc->id);
+        $picture = $this->pictures->findById($dc->id);
 
         $album = $picture->getRelated('pid');
 
@@ -492,7 +496,7 @@ class GalleryCreatorPictures
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'fields.picture.input_field', priority: 100)]
     public function getPreviewPicture(DataContainer $dc): string
     {
-        $objImg = $this->pictures->findByPk($dc->id);
+        $objImg = $this->pictures->findById($dc->id);
 
         $files = $this->framework->getAdapter(FilesModel::class);
         $filesModel = $files->findByUuid($objImg->uuid);
@@ -523,10 +527,10 @@ class GalleryCreatorPictures
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'fields.imageInfo.input_field', priority: 100)]
     public function getImageInformationTable(DataContainer $dc): string
     {
-        $picturesModel = $this->pictures->findByPk($dc->id);
+        $picturesModel = $this->pictures->findById($dc->id);
 
         $user = $this->framework->getAdapter(UserModel::class);
-        $userModel = $user->findByPk($picturesModel->cuser);
+        $userModel = $user->findById($picturesModel->cuser);
 
         $files = $this->framework->getAdapter(FilesModel::class);
         $filesModel = $files->findByUuid($picturesModel->uuid);
@@ -580,7 +584,7 @@ class GalleryCreatorPictures
             return;
         }
 
-        $picturesModel = $this->pictures->findByPk($dc->id);
+        $picturesModel = $this->pictures->findById($dc->id);
 
         if (null === $picturesModel) {
             return;
@@ -595,7 +599,7 @@ class GalleryCreatorPictures
             $files = $this->framework->getAdapter(FilesModel::class);
             $filesModel = $files->findByUuid($uuid);
 
-            $albumsModel = $this->albums->findByPk($albumId);
+            $albumsModel = $this->albums->findById($albumId);
             $folderModel = $files->findByUuid($albumsModel->assignedDir);
 
             // Only delete images if they are located in the directory assigned to the album

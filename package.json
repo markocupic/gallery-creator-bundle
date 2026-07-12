@@ -1,0 +1,39 @@
+{
+    "name": "gallery-creator-bundle",
+    "repository": {
+        "type": "git",
+        "url": "git+github.com/markocupic/gallery-creator-bundle"
+    },
+    "scripts": {
+        "dev-server": "encore dev-server",
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production --progress"
+    },
+    "license": "MIT",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@babel/preset-env": "*",
+        "@symfony/webpack-encore": "^5.0",
+        "autoprefixer": "^10.4.21",
+        "core-js": "^3.15",
+        "css-loader": "^7.1.2",
+        "file-loader": "^6.0",
+        "postcss-loader": "^8.1.1",
+        "sass": "^1.87.0",
+        "sass-loader": "^16.0.5",
+        "style-loader": "^4.0.0"
+    },
+    "browserslist": [
+        "defaults"
+    ],
+    "description": "![Alt text](docs/logo.png?raw=true \"logo\")",
+    "version": "1.0.0",
+    "main": "postcss.config.js",
+    "directories": {
+        "doc": "docs",
+        "test": "tests"
+    },
+    "author": "Marko Cupic"
+}

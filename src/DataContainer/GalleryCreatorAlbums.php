@@ -283,7 +283,7 @@ class GalleryCreatorAlbums
                 $picturesModel = null;
 
                 foreach ($this->stringUtil->trimsplit(',', $request->query->get('pictureSorting')) as $pictureId) {
-                    $picturesModel = $this->pictures->findByPk($pictureId);
+                    $picturesModel = $this->pictures->findById($pictureId);
 
                     if (null !== $picturesModel) {
                         $picturesModel->sorting = (($count++) + 1) * 128;
@@ -471,7 +471,7 @@ class GalleryCreatorAlbums
         }
 
         foreach ($arrDeletedAlbums as $idDelAlbum) {
-            $albumsModel = $this->albums->findByPk($idDelAlbum);
+            $albumsModel = $this->albums->findById($idDelAlbum);
 
             if (null === $albumsModel) {
                 continue;
@@ -617,7 +617,7 @@ class GalleryCreatorAlbums
             return;
         }
 
-        if (null !== ($albumsModel = $this->albums->findByPk($request->query->get('id')))) {
+        if (null !== ($albumsModel = $this->albums->findById($request->query->get('id')))) {
             $albumsModel->preserveFilename = $request->request->get('preserveFilename');
             $albumsModel->save();
 
@@ -670,13 +670,13 @@ class GalleryCreatorAlbums
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (null === ($albumsModel = $this->albums->findByPk($request->query->get('id')))) {
+        if (null === ($albumsModel = $this->albums->findById($request->query->get('id')))) {
             return '';
         }
 
         // Save input
         if ('tl_gallery_creator_albums' === $request->request->get('FORM_SUBMIT')) {
-            if (null === $this->pictures->findByPk($request->request->get('thumb'))) {
+            if (null === $this->pictures->findById($request->request->get('thumb'))) {
                 $albumsModel->thumb = 0;
             } else {
                 $albumsModel->thumb = $request->request->get('thumb');
@@ -749,8 +749,8 @@ class GalleryCreatorAlbums
                     $checked = (int) $albumsModel->thumb === (int) $arrItem['id'] ? ' checked' : '';
 
                     $arrContainer[$i][$ii]['attr_checked'] = $checked;
-                    $arrContainer[$i][$ii]['class'] = \strlen($checked) ? ' class="checked"' : '';
-                    $arrContainer[$i][$ii]['filename'] = $this->stringUtil->specialchars($filesModel->name);
+                    $arrContainer[$i][$ii]['class'] = \strlen($checked) ? 'checked' : '';
+                    $arrContainer[$i][$ii]['filename'] = $filesModel->name;
                     $arrContainer[$i][$ii]['image'] = $this->image->getHtml($src, $filesModel->name);
                 }
             }
@@ -881,7 +881,7 @@ class GalleryCreatorAlbums
         foreach ($arrFiles as $arrFile) {
             $sorting += 10;
 
-            if (null !== ($picturesModel = $this->pictures->findByPk($arrFile['id']))) {
+            if (null !== ($picturesModel = $this->pictures->findById($arrFile['id']))) {
                 $picturesModel->sorting = $sorting;
                 $picturesModel->save();
             }
@@ -907,7 +907,7 @@ class GalleryCreatorAlbums
         $blnDoNotCreateDir = false;
 
         // Get current row
-        $objAlbum = $this->albums->findByPk($dc->id);
+        $objAlbum = $this->albums->findById($dc->id);
 
         // Save assigned dir if it has been defined
         if ($request->request->has('FORM_SUBMIT') && \strlen((string) $request->request->get('assignedDir'))) {
@@ -992,7 +992,7 @@ class GalleryCreatorAlbums
                 }
 
                 if ($request->query->has('albumId')) {
-                    $albumsModel = $this->albums->findByPk($request->query->get('albumId', 0));
+                    $albumsModel = $this->albums->findById($request->query->get('albumId', 0));
 
                     if (null !== $albumsModel) {
                         if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {

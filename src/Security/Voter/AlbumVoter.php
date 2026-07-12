@@ -139,7 +139,7 @@ class AlbumVoter extends Voter
             $row['cuser'] = false;
             $row['cgroup'] = false;
 
-            $parentAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findByPk($pid);
+            $parentAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($pid);
 
             while (null !== $parentAlbum && (false === $row['chmod'] && '' === $row['includeChmod']) && $pid > 0) {
                 $pid = $parentAlbum->pid;
@@ -148,7 +148,7 @@ class AlbumVoter extends Voter
                 $row['cuser'] = $parentAlbum->includeChmod ? $parentAlbum->cuser : false;
                 $row['cgroup'] = $parentAlbum->includeChmod ? $parentAlbum->cgroup : false;
 
-                $parentAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findByPk($pid);
+                $parentAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($pid);
             }
 
             // Set default values

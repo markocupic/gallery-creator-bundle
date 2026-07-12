@@ -205,7 +205,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             $template->set('albums', array_map(
                 function ($id) {
-                    $albumModel = $this->galleryCreatorAlbumsModel->findByPk($id);
+                    $albumModel = $this->galleryCreatorAlbumsModel->findById($id);
 
                     return null !== $albumModel ? $this->getAlbumData($albumModel, $this->model) : [];
                 },
@@ -291,7 +291,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         ;
 
         while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
-            $albumModel = $this->galleryCreatorAlbumsModel->findByPk($arrAlbum['id']);
+            $albumModel = $this->galleryCreatorAlbumsModel->findById($arrAlbum['id']);
 
             // #1 Do only show selected albums, if album selector has been activated in the CE settings
             // #2 Do not show protected albums to unauthorized users.

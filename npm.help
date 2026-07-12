@@ -1,0 +1,8 @@
+# Go to the project directory first
+cd vendor/markocupic/gallery-creator-bundle
+
+# Update project files (builds the node_modules directory)
+npm update
+
+# Build assets
+npm run build

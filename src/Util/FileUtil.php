@@ -26,9 +26,11 @@ use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use Doctrine\DBAL\Types\Types;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Psr\Log\LoggerInterface;
@@ -299,31 +301,45 @@ readonly class FileUtil
         }
 
         $arrPictures = [
-            'uuid' => [],
-            'path' => [],
-            'basename' => [],
+            'uuids' => [],
+            'paths' => [],
+            'basenames' => [],
         ];
 
-        $arrPictures['uuid'] = $this->connection
-            ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
-            ->fetchFirstColumn()
+        $arrPictures['uuids'] = $this->connection
+            ->fetchFirstColumn(
+                'SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?',
+                [
+                    $albumModel->id,
+                ],
+                [
+                    Types::INTEGER,
+                ],
+            )
         ;
 
-        $arrPictures['path'] = $this->connection
-            ->executeQuery('SELECT path FROM tl_files WHERE uuid = ?', [$arrPictures['uuid']])
-            ->fetchFirstColumn()
+        $arrPictures['paths'] = $this->connection
+            ->fetchFirstColumn(
+                'SELECT path FROM tl_files WHERE uuid IN(?)',
+                [
+                    $arrPictures['uuids'],
+                ],
+                [
+                    ArrayParameterType::STRING,
+                ],
+            )
         ;
 
-        $arrPictures['basename'] = array_map(static fn ($path) => basename($path), $arrPictures['path']);
+        $arrPictures['basenames'] = array_map(static fn ($path) => basename($path), $arrPictures['paths']);
 
         foreach ($images as $image) {
             // Prevent duplicate entries
-            if (\in_array($image['uuid'], $arrPictures['uuid'], false)) {
+            if (\in_array($image['uuid'], $arrPictures['uuids'], false)) {
                 continue;
             }
 
             // Prevent duplicate entries
-            if (\in_array($image['basename'], $arrPictures['basename'], true)) {
+            if (\in_array($image['basename'], $arrPictures['basenames'], true)) {
                 continue;
             }
 

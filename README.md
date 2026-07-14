@@ -1,4 +1,4 @@
-![Marko Cupic](docs/img/logo.png?raw=true "Marko Cupic")
+<img src="docs/img/logo.png" alt="Marko Cupic">
 
 # Gallery Creator Bundle
 

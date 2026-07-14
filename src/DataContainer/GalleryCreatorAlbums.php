@@ -62,13 +62,21 @@ class GalleryCreatorAlbums
 {
     // Adapters
     private Adapter $albums;
+
     private Adapter $backend;
+
     private Adapter $controller;
+
     private Adapter $image;
+
     private Adapter $message;
+
     private Adapter $pictures;
+
     private Adapter $stringUtil;
+
     private Adapter $system;
+
     private Adapter $config;
 
     /**
@@ -237,7 +245,7 @@ class GalleryCreatorAlbums
         // Allow database revise to admins only
         if (!$user->admin) {
             unset(
-                $dca['list']['global_operations']['reviseDatabase']
+                $dca['list']['global_operations']['reviseDatabase'],
             );
         } else {
             // Global operation: revise database
@@ -245,7 +253,7 @@ class GalleryCreatorAlbums
             $albumId = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums');
 
             if ($albumCount > 0) {
-                $dca['list']['global_operations']['reviseDatabase']['href'] = sprintf($dca['list']['global_operations']['reviseDatabase']['href'], $albumId);
+                $dca['list']['global_operations']['reviseDatabase']['href'] = \sprintf($dca['list']['global_operations']['reviseDatabase']['href'], $albumId);
             } else {
                 unset($dca['list']['global_operations']['reviseDatabase']);
             }
@@ -357,7 +365,7 @@ class GalleryCreatorAlbums
         }
 
         if ($blnGranted) {
-            return sprintf(
+            return \sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->backend->addToUrl($href),
                 $this->stringUtil->specialchars($title),
@@ -384,8 +392,8 @@ class GalleryCreatorAlbums
                             $translator->trans('tl_gallery_creator_albums.reviseDatabase.1', [], 'contao_default'),
                         ],
                     ],
-                ]
-            )
+                ],
+            ),
         ))->getContent();
     }
 
@@ -418,7 +426,7 @@ class GalleryCreatorAlbums
         $icon = $row['published'] ? 'album.svg' : '_album.svg';
         $alt = $row['published'] ? $this->translator->trans('MSC.published', [], 'contao_default') : $this->translator->trans('MSC.unpublished', [], 'contao_default');
         $icon = 'bundles/markocupicgallerycreator/images/'.$icon;
-        $icon = sprintf('<img height="18" width="18" data-icon="%s" src="%s" alt="%s">', $icon, $icon, $this->stringUtil->specialchars($alt));
+        $icon = \sprintf('<img height="18" width="18" data-icon="%s" src="%s" alt="%s">', $icon, $icon, $this->stringUtil->specialchars($alt));
 
         $label = str_replace('#icon#', $icon, $label);
         $label = str_replace('#count_pics#', (string) $countImages, $label);
@@ -436,7 +444,7 @@ class GalleryCreatorAlbums
             unset($arrButtons['saveNcreate'], $arrButtons['saveNclose']);
 
             // Replace the save button with the revise table button.
-            $arrButtons['save'] = sprintf(
+            $arrButtons['save'] = \sprintf(
                 '<button type="submit" name="save" id="reviseTableBtn" class="tl_submit" accesskey="s">%s</button>',
                 $this->translator->trans('tl_gallery_creator_albums.reviseTablesBtn', [], 'contao_default'),
             );
@@ -705,7 +713,7 @@ class GalleryCreatorAlbums
             $stmt = $this->connection->executeQuery(
                 'SELECT * FROM tl_gallery_creator_pictures WHERE pid IN (?) ORDER BY id',
                 [$arrChildAlbums],
-                [ArrayParameterType::INTEGER]
+                [ArrayParameterType::INTEGER],
             );
 
             while (false !== ($arrPicture = $stmt->fetchAssociative())) {
@@ -740,7 +748,7 @@ class GalleryCreatorAlbums
                     if ($file->height <= $this->config->get('gdMaxImgHeight') && $file->width <= $this->config->get('gdMaxImgWidth')) {
                         $image = $this->imageFactory->create(
                             $this->projectDir.'/'.$src,
-                            [80, 60, 'center_center']
+                            [80, 60, 'center_center'],
                         );
 
                         $src = $image->getUrl($this->projectDir);
@@ -771,8 +779,8 @@ class GalleryCreatorAlbums
                         'drag_items_hint' => $translator->trans('tl_gallery_creator_albums.thumb.1', [], 'contao_default'),
                         'child_albums' => $translator->trans('GALLERY_CREATOR.childAlbums', [], 'contao_default'),
                     ],
-                ]
-            )
+                ],
+            ),
         ))->getContent();
     }
 
@@ -812,7 +820,7 @@ class GalleryCreatorAlbums
 
                             // Rename file
                             if ($file->renameTo($newPath)) {
-                                $this->message->addInfo(sprintf('Picture with ID %s has been renamed to %s.', $picturesModel->id, $newPath));
+                                $this->message->addInfo(\sprintf('Picture with ID %s has been renamed to %s.', $picturesModel->id, $newPath));
                             }
                         }
                     }
@@ -859,7 +867,6 @@ class GalleryCreatorAlbums
                 break;
 
             case 'name_asc':
-
                 uksort($arrFiles, static fn ($a, $b): int => strnatcasecmp(basename($a), basename($b)));
                 break;
 

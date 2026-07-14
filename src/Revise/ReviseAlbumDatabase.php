@@ -69,11 +69,11 @@ class ReviseAlbumDatabase
                     $arrError = $session->get('gc_error');
 
                     if (false !== $blnCleanDb) {
-                        $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
+                        $arrError[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
                     } else {
                         // Show error-message
-                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
+                        $arrError[] = \sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
                     }
 
                     $session->set('gc_error', $arrError);
@@ -82,10 +82,10 @@ class ReviseAlbumDatabase
 
                     // If there is a data record for the file, but the file doesn't exist in the fs anymore.
                     if (false !== $blnCleanDb) {
-                        $arrError[] = sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
+                        $arrError[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
                     } else {
-                        $arrError[] = sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
+                        $arrError[] = \sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
                     }
 
                     $session->set('gc_error', $arrError);

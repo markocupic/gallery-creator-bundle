@@ -30,8 +30,11 @@ class AlbumTreeWidget extends Widget
     public const NAME = 'gcAlbumTree';
 
     protected $blnSubmitInput = true;
+
     protected $blnForAttribute = true;
+
     protected $strTemplate = 'be_widget';
+
     protected MenuItem|null $picker;
 
     public function __construct($arrAttributes = null)
@@ -64,8 +67,8 @@ class AlbumTreeWidget extends Widget
                         'mandatory' => $this->mandatory ? '1' : '',
                         'name' => $this->strName,
                     ],
-                ]
-            )
+                ],
+            ),
         ))->getContent();
     }
 
@@ -84,7 +87,7 @@ class AlbumTreeWidget extends Widget
 
         $stmt = $connection->executeQuery(
             'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY sorting',
-            [$pid, '1']
+            [$pid, '1'],
         );
 
         while (false !== ($album = $stmt->fetchAssociative())) {
@@ -98,7 +101,7 @@ class AlbumTreeWidget extends Widget
             $pickerItem = $picker->addChild('album_'.$album['id']);
             $pickerItem->setAttribute('class', 'gc-album-list-item');
 
-            $label = sprintf(
+            $label = \sprintf(
                 '<div class="gc-flex"><div class="gc-flex-left">%s</div><div class="gc-flex-right gc-text-align-right"><input type="%s" name="%s" class="%s" id="albumControlField-%s" value="%s"%s></div></div>',
                 $album['name'],
                 $this->multiple ? 'checkbox' : 'radio',

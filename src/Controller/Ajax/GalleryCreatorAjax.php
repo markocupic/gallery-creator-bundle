@@ -45,8 +45,8 @@ class GalleryCreatorAjax
         $this->framework->initialize();
 
         $arrPicture = [];
-        $pictureModel = GalleryCreatorPicturesModel::findByPk($pictureId);
-        $contentModel = ContentModel::findByPk($contentId);
+        $pictureModel = GalleryCreatorPicturesModel::findById($pictureId);
+        $contentModel = ContentModel::findById($contentId);
 
         if (null !== $pictureModel && null !== $contentModel) {
             $arrPicture = $this->pictureUtil->getPictureData($pictureModel, $contentModel);
@@ -61,8 +61,8 @@ class GalleryCreatorAjax
         $this->framework->initialize();
 
         // Do not send data if album is protected and the user has no access
-        $albumModel = GalleryCreatorAlbumsModel::findByPk($pid);
-        $contentModel = ContentModel::findByPk($contentId);
+        $albumModel = GalleryCreatorAlbumsModel::findById($pid);
+        $contentModel = ContentModel::findById($contentId);
         $json = [
             'data' => [],
             'status' => '',

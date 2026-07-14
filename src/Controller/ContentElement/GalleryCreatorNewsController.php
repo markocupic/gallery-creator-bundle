@@ -31,7 +31,9 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
     public const TYPE = 'gallery_creator_news';
 
     protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
+
     protected ContentModel|null $model = null;
+
     protected PageModel|null $pageModel = null;
 
     public function __construct(
@@ -41,12 +43,12 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         parent::__construct($dependencyAggregate);
     }
 
-    public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
+    public function __invoke(Request $request, ContentModel $model, string $section, array|null $classes = null, PageModel|null $pageModel = null): Response
     {
         // Do not parse the content element in the backend
         if ($this->scopeMatcher->isBackendRequest($request)) {
             return new Response(
-                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', [])
+                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', []),
             );
         }
 
@@ -59,7 +61,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 
         $this->activeAlbum = GalleryCreatorAlbumsModel::findOneBy(
             ['tl_gallery_creator_albums.id = ? AND tl_gallery_creator_albums.published = ?'],
-            [$this->model->gcPublishSingleAlbum, '1']
+            [$this->model->gcPublishSingleAlbum, '1'],
         );
 
         // Return empty response if the album doesn't exist
@@ -76,10 +78,10 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
     }
 
     /**
+     * @return Response|null
+     *
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
-     *
-     * @return Response|null
      */
     protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
     {

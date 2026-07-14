@@ -93,7 +93,7 @@ class PictureUtil
             $customHref = $customHref ? $staticUrl.$customHref : null;
         }
 
-        $ownerModel = UserModel::findByPk($pictureModel->cuser);
+        $ownerModel = UserModel::findById($pictureModel->cuser);
 
         // Compile list of images
         $figure = $this->studio

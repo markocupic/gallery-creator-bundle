@@ -48,12 +48,19 @@ use Twig\Environment as TwigEnvironment;
 class GalleryCreatorPictures
 {
     private Adapter $backend;
+
     private Adapter $controller;
+
     private Adapter $image;
+
     private Adapter $stringUtil;
+
     private Adapter $message;
+
     private Adapter $system;
+
     private Adapter $albums;
+
     private Adapter $pictures;
 
     public function __construct(
@@ -128,7 +135,7 @@ class GalleryCreatorPictures
                     $this->message->addInfo($this->translator->trans('MSC.notAllowedDeletePictures', [$albumId], 'contao_default'));
                     $this->controller->redirect($this->system->getReferer());
                 }
-                 break;
+                break;
 
             case 'cut':
                 $sourceAlbumId = (int) $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
@@ -197,7 +204,6 @@ class GalleryCreatorPictures
                 break;
 
             case 'overrideAll':
-
                 $id = $request->query->get('id');
 
                 if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_ADD_AND_EDIT_IMAGES, $id)) {
@@ -208,7 +214,6 @@ class GalleryCreatorPictures
                 break;
 
             case 'paste':
-
                 // New records can only be inserted with a file upload
                 if ('create' === $request->query->get('mode')) {
                     $this->message->addInfo($this->translator->trans('MSC.useFileUploadForCreatingNewPicture', [], 'contao_default'));
@@ -238,7 +243,7 @@ class GalleryCreatorPictures
                         }
                     }
                 }
-                // no break
+            // no break
             default:
                 break;
         }
@@ -295,7 +300,7 @@ class GalleryCreatorPictures
 
                 $this->cacheManager->invalidateTags($arrTags);
                 $url = $this->urlParser->removeQueryString(['key']);
-                $url =  $this->urlParser->addQueryString('id='.$picturesModel->pid, $url);
+                $url = $this->urlParser->addQueryString('id='.$picturesModel->pid, $url);
                 $this->controller->redirect($url);
             }
         }
@@ -364,7 +369,7 @@ class GalleryCreatorPictures
         }
 
         if ($blnGranted) {
-            return sprintf(
+            return \sprintf(
                 '<a href="%s" title="%s"%s>%s</a> ',
                 $this->backend->addToUrl($href.'&amp;id='.$row['id']),
                 $this->stringUtil->specialchars($title),
@@ -415,7 +420,7 @@ class GalleryCreatorPictures
         if ($arrRow['socialMediaSRC'] || $lmSRC) {
             $type = empty(trim((string) $arrRow['localMediaSRC'])) ? $this->translator->trans('GALLERY_CREATOR.localMedia', [], 'contao_default') : $this->translator->trans('GALLERY_CREATOR.socialMedia', [], 'contao_default');
             $iconSrc = 'bundles/markocupicgallerycreator/images/movie.svg';
-            $hasMovie = sprintf(
+            $hasMovie = \sprintf(
                 '<div class="block" style="margin-bottom: 10px; line-height:1.7; display: flex; flex-wrap: wrap; align-items: center;"><img src="%s" alt="has local media" style="margin-right: 6px;"> <span style="color:darkred; font-weight:500">%s:&nbsp;</span><a href="%s" data-lightbox="gc_album_%s">%s</a></div>',
                 $iconSrc,
                 $type,
@@ -436,13 +441,13 @@ class GalleryCreatorPictures
 
             $image = $this->imageFactory->create(
                 $filesModel->getAbsolutePath(),
-                [100, 0, 'proportional']
+                [100, 0, 'proportional'],
             );
 
             $src = $image->getUrl($this->projectDir);
         }
 
-        $return = sprintf(
+        $return = \sprintf(
             '<div class="cte_type %s"><strong>%s</strong> - %s [%s x %s px, %s]</div>',
             $key,
             $arrRow['headline'] ?? '',
@@ -454,9 +459,9 @@ class GalleryCreatorPictures
 
         $return .= $hasMovie;
         $return .= $blnShowThumb ? '<div class="block"><img src="'.$src.'" alt="has movie" width="100"></div>' : null;
-        $return .= sprintf(
+        $return .= \sprintf(
             '<div class="limit_height%s block">%s</div>',
-            ($config->get('thumbnails') ? ' h64' : ''),
+            $config->get('thumbnails') ? ' h64' : '',
             $this->stringUtil->specialchars($arrRow['caption']),
         );
 
@@ -504,7 +509,7 @@ class GalleryCreatorPictures
         if (null !== $filesModel) {
             $image = $this->imageFactory->create(
                 $filesModel->getAbsolutePath(),
-                [380, 0, 'proportional']
+                [380, 0, 'proportional'],
             );
 
             $src = $image->getUrl($this->projectDir);
@@ -516,8 +521,8 @@ class GalleryCreatorPictures
                         'css_class' => $GLOBALS['TL_DCA']['tl_gallery_creator_pictures']['fields']['picture']['eval']['tl_class'] ?? null,
                         'basename' => basename($filesModel->path),
                         'img_src' => $src,
-                    ]
-                )
+                    ],
+                ),
             ))->getContent();
         }
 
@@ -564,8 +569,8 @@ class GalleryCreatorPictures
                         'picture_video_href_social' => $translator->trans('tl_gallery_creator_pictures.socialMediaSRC.0', [], 'contao_default'),
                         'picture_video_href_local' => $translator->trans('tl_gallery_creator_pictures.localMediaSRC.0', [], 'contao_default'),
                     ],
-                ]
-            )
+                ],
+            ),
         ))->getContent();
     }
 

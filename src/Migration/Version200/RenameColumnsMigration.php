@@ -95,7 +95,7 @@ class RenameColumnsMigration extends AbstractMigration
                     $columns = $schemaManager->listTableColumns($strTable);
 
                     if (isset($columns[strtolower($arrAlteration['old'])]) && !isset($columns[strtolower($arrAlteration['new'])])) {
-                        $strQuery = sprintf(
+                        $strQuery = \sprintf(
                             'ALTER TABLE `%s` CHANGE `%s` `%s` %s',
                             $strTable,
                             $arrAlteration['old'],
@@ -105,7 +105,7 @@ class RenameColumnsMigration extends AbstractMigration
 
                         $this->connection->executeQuery($strQuery);
 
-                        $resultMessages[] = sprintf(
+                        $resultMessages[] = \sprintf(
                             'Rename column %s.%s to %s.%s. ',
                             $strTable,
                             $arrAlteration['old'],

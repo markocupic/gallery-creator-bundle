@@ -45,16 +45,27 @@ use Symfony\Component\HttpFoundation\RequestStack;
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
     protected AlbumUtil $albumUtil;
+
     protected Connection $connection;
+
     protected HtmlDecoder $htmlDecoder;
+
     protected InsertTagParser $insertTagParser;
+
     protected MarkdownUtil $markdownUtil;
+
     protected PictureUtil $pictureUtil;
+
     protected RequestStack $requestStack;
+
     protected ResponseContextAccessor $responseContextAccessor;
+
     protected ScopeMatcher $scopeMatcher;
+
     protected SecurityUtil $securityUtil;
+
     protected Studio $studio;
+
     protected string $projectDir;
 
     public function __construct(DependencyAggregate $dependencyAggregate)
@@ -210,13 +221,13 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $stmt = $this->connection->executeQuery(
             "SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY $strSorting",
-            [$album->id, '1']
+            [$album->id, '1'],
         );
 
         $arrChildren = [];
 
         while (false !== ($arrChild = $stmt->fetchAssociative())) {
-            $objChild = GalleryCreatorAlbumsModel::findByPk($arrChild['id']);
+            $objChild = GalleryCreatorAlbumsModel::findById($arrChild['id']);
 
             if ($blnOnlyAllowed) {
                 if ($content->gcShowAlbumSelection) {
@@ -248,7 +259,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $pageModel->description = '' !== $album->description ? StringUtil::specialchars($album->description) : StringUtil::specialchars($pageModel->description);
     }
 
-    protected function triggerGenerateFrontendTemplateHook(FragmentTemplate $template, GalleryCreatorAlbumsModel $album = null): void
+    protected function triggerGenerateFrontendTemplateHook(FragmentTemplate $template, GalleryCreatorAlbumsModel|null $album = null): void
     {
         // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
         if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
@@ -269,8 +280,6 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     }
 
     /**
-     * @param $template
-     *
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */
@@ -303,7 +312,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
                 $basename = $filesModel->name;
             }
 
-            if (null !== ($picture = GalleryCreatorPicturesModel::findByPk($rowPicture['id']))) {
+            if (null !== ($picture = GalleryCreatorPicturesModel::findById($rowPicture['id']))) {
                 if ($picture->uuid && $this->pictureUtil->pictureExists($picture)) {
                     // Prevent overriding items with same basename
                     $images[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picture, $contentModel);

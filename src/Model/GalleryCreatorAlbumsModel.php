@@ -34,7 +34,7 @@ class GalleryCreatorAlbumsModel extends Model
         return $albumsModel->getRelated('pid');
     }
 
-    public static function getChildAlbumsIds(int $parentId, string $strSorting = '', int $iterationDepth = null): array|null
+    public static function getChildAlbumsIds(int $parentId, string $strSorting = '', int|null $iterationDepth = null): array|null
     {
         $arrChildAlbumsIds = [];
 

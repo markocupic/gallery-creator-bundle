@@ -45,19 +45,28 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     public const TYPE = 'gallery_creator';
 
     protected string|null $viewMode = null;
+
     protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
+
     protected array $arrAlbumListing = [];
+
     protected ContentModel|null $model;
+
     protected PageModel|null $pageModel;
 
     // Adapters
     protected Adapter $config;
+
     protected Adapter $environment;
+
     protected Adapter $galleryCreatorAlbumsModel;
+
     protected Adapter $input;
+
     protected Adapter $stringUtil;
 
     private bool $showAlbumDetail = false;
+
     private bool $showAlbumListing = false;
 
     public function __construct(
@@ -83,12 +92,12 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function __invoke(Request $request, ContentModel $model, string $section, array $classes = null, PageModel $pageModel = null): Response
+    public function __invoke(Request $request, ContentModel $model, string $section, array|null $classes = null, PageModel|null $pageModel = null): Response
     {
         // Do not parse the content element in the backend
         if ($this->scopeMatcher->isBackendRequest($request)) {
             return new Response(
-                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', [])
+                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', []),
             );
         }
 
@@ -122,7 +131,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $albumAlias = $this->input->get('auto_item');
             $this->activeAlbum = $this->galleryCreatorAlbumsModel->findOneBy(
                 ['tl_gallery_creator_albums.alias = ? AND tl_gallery_creator_albums.published = ?'],
-                [$albumAlias, '1']
+                [$albumAlias, '1'],
             );
 
             if (null !== $this->activeAlbum && $this->securityUtil->isAuthorized($this->activeAlbum) && $this->isInSelection($this->activeAlbum)) {
@@ -209,7 +218,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
                     return null !== $albumModel ? $this->getAlbumData($albumModel, $this->model) : [];
                 },
-                $arrItems
+                $arrItems,
             ));
 
             $template->set('content', $this->model->row());
@@ -332,10 +341,10 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         $template->set('backLink', $this->generateBackLink($albumModel) ?: false);
 
         // In the detail view, an article can optionally be added in front of the album
-        $template->set('insertArticlePre', $albumModel->insertArticlePre ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : false);
+        $template->set('insertArticlePre', $albumModel->insertArticlePre ? \sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : false);
 
         // In the detail view, an article can optionally be added right after the album
-        $template->set('insertArticlePost', $albumModel->insertArticlePost ? sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : false);
+        $template->set('insertArticlePost', $albumModel->insertArticlePost ? \sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : false);
     }
 
     /**

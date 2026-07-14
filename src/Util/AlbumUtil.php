@@ -81,7 +81,7 @@ class AlbumUtil
 
         while ($hasParent) {
             ++$level;
-            $parentAlbumModel = GalleryCreatorAlbumsModel::findByPk($pid);
+            $parentAlbumModel = GalleryCreatorAlbumsModel::findById($pid);
 
             if (0 === ($pid = (int) $parentAlbumModel->pid)) {
                 $hasParent = false;

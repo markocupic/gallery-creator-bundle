@@ -27,8 +27,8 @@ class GalleryCreatorFrontendTemplateListener
 {
     public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
-    public function __invoke(AbstractContentElementController $contentElement, FragmentTemplate $template, GalleryCreatorAlbumsModel $albumsModel = null): void
+    public function __invoke(AbstractContentElementController $contentElement, FragmentTemplate $template, GalleryCreatorAlbumsModel|null $albumsModel = null): void
     {
-        //$template->set('foo, 'bar');
+        // $template->set('foo, 'bar');
     }
 }

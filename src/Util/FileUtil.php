@@ -143,12 +143,12 @@ class FileUtil
         // Get the next sorting value
         $sortingVal = $this->connection->fetchOne(
             'SELECT MAX(sorting) + 10 AS sortingVal FROM tl_gallery_creator_pictures WHERE pid = ?',
-            [$albumModel->id]
+            [$albumModel->id],
         );
 
         if (!$albumModel->preserveFilename && false === $blnExternalFile) {
             // Generate a generic file name
-            $newFilepath = sprintf('%s/alb%s_img%s.%s', $assignedDir, $albumModel->id, $insertId, $file->extension);
+            $newFilepath = \sprintf('%s/alb%s_img%s.%s', $assignedDir, $albumModel->id, $insertId, $file->extension);
             $file->renameTo($newFilepath);
         }
 
@@ -174,8 +174,8 @@ class FileUtil
 
             if ($this->logger) {
                 $this->logger->info(
-                    sprintf('Added a new picture with ID %s to the album "%s".', $insertId, $albumModel->name),
-                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)]
+                    \sprintf('Added a new picture with ID %s to the album "%s".', $insertId, $albumModel->name),
+                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)],
                 );
             }
 
@@ -183,15 +183,15 @@ class FileUtil
         }
 
         if (true === $blnExternalFile) {
-            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileNotFound'], $file->path));
+            Message::addError(\sprintf($GLOBALS['TL_LANG']['ERR']['fileNotFound'], $file->path));
         } else {
-            Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $file->path));
+            Message::addError(\sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $file->path));
         }
 
         if ($this->logger) {
             $this->logger->info(
-                sprintf('Unable to create a new image in: %s!', $file->path),
-                ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
+                \sprintf('Unable to create a new image in: %s!', $file->path),
+                ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)],
             );
         }
 
@@ -267,7 +267,7 @@ class FileUtil
                 }
 
                 if (!$this->isValidFileName($file->name)) {
-                    Message::addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $file->extension));
+                    Message::addError(\sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $file->extension));
                 }
 
                 $images[$file->path] = ['uuid' => $filesModel->uuid, 'basename' => $file->basename, 'path' => $file->path];
@@ -311,12 +311,12 @@ class FileUtil
         $arrPictures['uuid'] = $this->connection
             ->executeQuery('SELECT uuid FROM tl_gallery_creator_pictures WHERE pid = ?', [$albumModel->id])
             ->fetchFirstColumn()
-            ;
+        ;
 
         $arrPictures['path'] = $this->connection
             ->executeQuery('SELECT path FROM tl_files WHERE uuid = ?', [$arrPictures['uuid']])
             ->fetchFirstColumn()
-            ;
+        ;
 
         $arrPictures['basename'] = array_map(static fn ($path) => basename($path), $arrPictures['path']);
 
@@ -401,7 +401,7 @@ class FileUtil
                         $_FILES[$strName]['name'],
                         implode(', ', $this->galleryCreatorValidExtensions),
                     ],
-                    'contao_default'
+                    'contao_default',
                 );
 
                 Message::addError($error);
@@ -424,7 +424,7 @@ class FileUtil
                                 $_FILES[$strName]['name'][$i],
                                 implode(', ', $this->galleryCreatorValidExtensions),
                             ],
-                            'contao_default'
+                            'contao_default',
                         );
 
                         // Send error message

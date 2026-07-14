@@ -40,13 +40,12 @@ class AlbumVoter extends Voter
     }
 
     /**
-     * @param $attribute
      * @param GalleryCreatorAlbumsModel|int $subject
      */
     protected function supports($attribute, $subject): bool
     {
         if (\is_scalar($subject)) {
-            if (null !== ($album = GalleryCreatorAlbumsModel::findByPk($subject))) {
+            if (null !== ($album = GalleryCreatorAlbumsModel::findById($subject))) {
                 $subject = $album;
             }
         }
@@ -87,7 +86,7 @@ class AlbumVoter extends Voter
         }
 
         // Convert id to object if $subject is an album id.
-        if (null === ($album = GalleryCreatorAlbumsModel::findByPk($albumId))) {
+        if (null === ($album = GalleryCreatorAlbumsModel::findById($albumId))) {
             throw new \Exception('Album with id '.$albumId.' not found.');
         }
 
@@ -107,7 +106,7 @@ class AlbumVoter extends Voter
             return $this->isAllowed($album, self::ALBUM_PERMISSIONS[$field], $user);
         }
 
-        throw new \Exception(sprintf('Permission "%s" not found.', $field));
+        throw new \Exception(\sprintf('Permission "%s" not found.', $field));
     }
 
     /**
@@ -164,6 +163,6 @@ class AlbumVoter extends Voter
             }
         }
 
-        return [(int) ($row['cuser'] ?? null), (int) ($row['cgroup'] ?? null), StringUtil::deserialize(($row['chmod'] ?? null), true)];
+        return [(int) ($row['cuser'] ?? null), (int) ($row['cgroup'] ?? null), StringUtil::deserialize($row['chmod'] ?? null, true)];
     }
 }

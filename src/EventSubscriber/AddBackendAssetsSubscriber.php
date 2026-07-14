@@ -24,9 +24,8 @@ class AddBackendAssetsSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly Packages     $packages,
-    )
-    {
+        private readonly Packages $packages,
+    ) {
     }
 
     public static function getSubscribedEvents(): array

@@ -936,7 +936,7 @@ class GalleryCreatorAlbums
         // Remove invalid characters
         $strAlias = preg_replace('/[^a-z0-9_\-]/', '', $strAlias);
 
-        // If alias already exists add the album-id to the alias
+        // If alias already exists, add the album-id to the alias
         $result = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id != ? AND alias = ?', [$dc->activeRecord->id, $strAlias]);
 
         if ($result) {

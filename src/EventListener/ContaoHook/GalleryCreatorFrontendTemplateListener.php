@@ -25,7 +25,7 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 #[AsHook(GalleryCreatorFrontendTemplateListener::HOOK, priority: 100)]
 class GalleryCreatorFrontendTemplateListener
 {
-    public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
+    public const string HOOK = 'galleryCreatorGenerateFrontendTemplate';
 
     public function __invoke(AbstractContentElementController $contentElement, FragmentTemplate $template, GalleryCreatorAlbumsModel|null $albumsModel = null): void
     {

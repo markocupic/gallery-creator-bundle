@@ -28,14 +28,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GalleryCreatorAjax
+readonly class GalleryCreatorAjax
 {
     public function __construct(
-        private readonly ContaoFramework $framework,
-        private readonly Connection $connection,
-        private readonly SecurityUtil $securityUtil,
-        private readonly AlbumUtil $albumUtil,
-        private readonly PictureUtil $pictureUtil,
+        private ContaoFramework $framework,
+        private Connection $connection,
+        private SecurityUtil $securityUtil,
+        private AlbumUtil $albumUtil,
+        private PictureUtil $pictureUtil,
     ) {
     }
 

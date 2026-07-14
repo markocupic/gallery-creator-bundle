@@ -28,6 +28,7 @@ use Contao\Input;
 use Contao\PageModel;
 use Contao\Pagination;
 use Contao\StringUtil;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
@@ -42,7 +43,7 @@ use Twig\Error\SyntaxError;
 #[AsContentElement(category: 'gallery_creator_elements')]
 class GalleryCreatorController extends AbstractGalleryCreatorController
 {
-    public const TYPE = 'gallery_creator';
+    public const string TYPE = 'gallery_creator';
 
     protected string|null $viewMode = null;
 
@@ -119,7 +120,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $arrIds = $this->stringUtil->deserialize($model->gcAlbumSelection, true);
 
                 if (!empty($arrIds)) {
-                    $pid = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_albums WHERE id IN('.implode(',', array_map('intval', $arrIds)).') ORDER BY pid');
+                    $pid = $this->connection->fetchOne(
+                        'SELECT pid FROM tl_gallery_creator_albums WHERE id IN(?) ORDER BY pid',
+                        array_map('intval', $arrIds),
+                        [
+                            ArrayParameterType::INTEGER,
+                        ],
+                    );
                     $this->arrAlbumListing = $this->getAlbumsByPid($pid);
                 } else {
                     return new Response('', Response::HTTP_NO_CONTENT);
@@ -302,7 +309,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
             $albumModel = $this->galleryCreatorAlbumsModel->findById($arrAlbum['id']);
 
-            // #1 Do only show selected albums, if album selector has been activated in the CE settings
+            // #1 Do only show selected albums if album selector has been activated in the CE settings
             // #2 Do not show protected albums to unauthorized users.
             if (!$this->isInSelection($albumModel) || !$this->securityUtil->isAuthorized($albumModel)) {
                 continue;
@@ -316,7 +323,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
     protected function isInSelection(GalleryCreatorAlbumsModel $albumModel): bool
     {
-        //  Do only show selected albums, if selection has been activated then
+        //  Do only show selected albums if selection has been activated then
         if ($this->model->gcShowAlbumSelection) {
             $arrSelection = $this->stringUtil->deserialize($this->model->gcAlbumSelection, true);
 
@@ -337,7 +344,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     {
         parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
 
-        // Back link
+        // Backlink
         $template->set('backLink', $this->generateBackLink($albumModel) ?: false);
 
         // In the detail view, an article can optionally be added in front of the album

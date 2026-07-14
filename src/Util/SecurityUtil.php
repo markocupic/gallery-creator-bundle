@@ -22,18 +22,18 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class SecurityUtil
+readonly class SecurityUtil
 {
     public function __construct(
-        private readonly ContaoFramework $framework,
-        private readonly RequestStack $requestStack,
-        private readonly ScopeMatcher $scopeMatcher,
-        private readonly Security $security,
+        private ContaoFramework $framework,
+        private RequestStack $requestStack,
+        private ScopeMatcher $scopeMatcher,
+        private Security $security,
     ) {
     }
 
     /**
-     * Check if a logged in frontend user
+     * Check if a logged-in frontend user
      * has access to a protected album.
      */
     public function isAuthorized(GalleryCreatorAlbumsModel $albumsModel): bool

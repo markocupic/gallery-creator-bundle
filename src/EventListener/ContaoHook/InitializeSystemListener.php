@@ -25,16 +25,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 #[AsHook(InitializeSystemListener::HOOK, priority: 100)]
 class InitializeSystemListener
 {
-    public const HOOK = 'initializeSystem';
+    public const string HOOK = 'initializeSystem';
 
-    private RequestStack $requestStack;
-
-    private ScopeMatcher $scopeMatcher;
-
-    public function __construct(RequestStack $requestStack, ScopeMatcher $scopeMatcher)
-    {
-        $this->requestStack = $requestStack;
-        $this->scopeMatcher = $scopeMatcher;
+    public function __construct(
+        private readonly RequestStack $requestStack,
+        private readonly ScopeMatcher $scopeMatcher,
+    ) {
     }
 
     public function __invoke(): void

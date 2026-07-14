@@ -24,13 +24,13 @@ use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class ReviseAlbumDatabase
+readonly class ReviseAlbumDatabase
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
-        private readonly Connection $connection,
-        private readonly string $projectDir,
-        private readonly string $galleryCreatorUploadPath,
+        private RequestStack $requestStack,
+        private Connection $connection,
+        private string $projectDir,
+        private string $galleryCreatorUploadPath,
     ) {
     }
 

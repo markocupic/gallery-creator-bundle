@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class AlbumVoter extends Voter
 {
-    private const ALBUM_PERMISSIONS = [
+    private const array ALBUM_PERMISSIONS = [
         'can_edit_album' => 1,
         'can_add_child_albums' => 2,
         'can_delete_album' => 3,
@@ -122,7 +122,7 @@ class AlbumVoter extends Voter
             $permission[] = 'g'.$flag;
         }
 
-        if ($cuser === (int) $user->id) {
+        if ($cuser === $user->id) {
             $permission[] = 'u'.$flag;
         }
 

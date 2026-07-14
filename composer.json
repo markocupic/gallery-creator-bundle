@@ -25,7 +25,7 @@
     "require": {
         "contao/core-bundle": "^5.3",
         "symfony/webpack-encore-bundle": "^v2.4",
-        "php": "^8.1",
+        "php": "^8.3",
         "codefog/contao-haste": "^5.0",
         "jaybizzle/crawler-detect": "^1.2",
         "league/commonmark": "^2.3"

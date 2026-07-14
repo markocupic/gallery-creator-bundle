@@ -21,7 +21,7 @@ use Doctrine\DBAL\Exception;
 
 class RenameColumnsMigration extends AbstractMigration
 {
-    private const ALTERATION_TYPE_RENAME_COLUMN = 'alteration_type_rename_column';
+    private const string ALTERATION_TYPE_RENAME_COLUMN = 'alteration_type_rename_column';
 
     public function __construct(
         private readonly Connection $connection,

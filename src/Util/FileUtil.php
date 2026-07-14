@@ -37,16 +37,16 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class FileUtil
+readonly class FileUtil
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
-        private readonly Connection $connection,
-        private readonly TranslatorInterface $translator,
-        private readonly string $projectDir,
-        private readonly bool $galleryCreatorCopyImagesOnImport,
-        private readonly array $galleryCreatorValidExtensions,
-        private readonly LoggerInterface|null $logger = null,
+        private RequestStack $requestStack,
+        private Connection $connection,
+        private TranslatorInterface $translator,
+        private string $projectDir,
+        private bool $galleryCreatorCopyImagesOnImport,
+        private array $galleryCreatorValidExtensions,
+        private LoggerInterface|null $logger = null,
     ) {
     }
 
@@ -108,7 +108,7 @@ class FileUtil
             throw new ResponseException(new JsonResponse('Aborted script, because we found no file model for '.$file->path.'.', 400));
         }
 
-        // Get the folder that is assigned to the album
+        // Get the folder assigned to the album
         $objFolder = FilesModel::findByUuid($albumModel->assignedDir);
         $assignedDir = null;
 
@@ -122,7 +122,7 @@ class FileUtil
             throw new ResponseException(new JsonResponse('Aborted script, because there is no upload directory assigned to the Album with ID '.$albumModel->id, 400));
         }
 
-        // Check if the file is stored on the album directory or if it is stored in an external directory
+        // Check if the file is stored in the album directory or if it is stored in an external directory
         $blnExternalFile = false;
 
         if ($request->query->has('importFromFilesystem')) {
@@ -159,7 +159,7 @@ class FileUtil
             $pictureModel->sorting = $sortingVal;
             $pictureModel->save();
 
-            // Use this picture as the album preview image, if the album doesn't have one.
+            // Use this picture as the album preview image if the album doesn't have one.
             if (!$albumModel->thumb) {
                 $albumModel->thumb = $insertId;
                 $albumModel->save();
@@ -172,12 +172,10 @@ class FileUtil
                 }
             }
 
-            if ($this->logger) {
-                $this->logger->info(
-                    \sprintf('Added a new picture with ID %s to the album "%s".', $insertId, $albumModel->name),
-                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)],
-                );
-            }
+            $this->logger?->info(
+                \sprintf('Added a new picture with ID %s to the album "%s".', $insertId, $albumModel->name),
+                ['contao' => new ContaoContext(__METHOD__, ContaoContext::GENERAL)],
+            );
 
             return true;
         }
@@ -188,12 +186,10 @@ class FileUtil
             Message::addError(\sprintf($GLOBALS['TL_LANG']['ERR']['uploadError'], $file->path));
         }
 
-        if ($this->logger) {
-            $this->logger->info(
-                \sprintf('Unable to create a new image in: %s!', $file->path),
-                ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)],
-            );
-        }
+        $this->logger?->info(
+            \sprintf('Unable to create a new image in: %s!', $file->path),
+            ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)],
+        );
 
         return false;
     }

@@ -114,7 +114,7 @@ class AlbumTreeWidget extends Widget
 
             $pickerItem->setLabel($label);
 
-            // Allow html in labels
+            // Allow HTML in labels
             $pickerItem->setExtra('safe_label', true);
 
             // Add children

@@ -27,15 +27,15 @@ use Contao\UserModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class PictureUtil
+readonly class PictureUtil
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
-        private readonly ScopeMatcher $scopeMatcher,
-        private readonly Studio $studio,
-        private readonly VirtualFilesystem $filesStorage,
-        private readonly bool $galleryCreatorReadExifMetaData,
-        private readonly string $projectDir,
+        private RequestStack $requestStack,
+        private ScopeMatcher $scopeMatcher,
+        private Studio $studio,
+        private VirtualFilesystem $filesStorage,
+        private bool $galleryCreatorReadExifMetaData,
+        private string $projectDir,
     ) {
     }
 
@@ -80,7 +80,7 @@ class PictureUtil
         $socialMediaSrc = null;
 
         if ($request && $this->scopeMatcher->isFrontendRequest($request)) {
-            // e.g. youtube or vimeo
+            // e.g., YouTube or Vimeo
             $customHref = $pictureModel->socialMediaSRC ?: null;
             $socialMediaSrc = $pictureModel->socialMediaSRC ?: null;
 

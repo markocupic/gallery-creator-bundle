@@ -19,10 +19,10 @@ use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
-class Content
+readonly class Content
 {
     public function __construct(
-        private readonly Connection $connection,
+        private Connection $connection,
     ) {
     }
 

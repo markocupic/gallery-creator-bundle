@@ -20,11 +20,11 @@ use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class AlbumUtil
+readonly class AlbumUtil
 {
     public function __construct(
-        private readonly ScopeMatcher $scopeMatcher,
-        private readonly RequestStack $requestStack,
+        private ScopeMatcher $scopeMatcher,
+        private RequestStack $requestStack,
     ) {
     }
 
@@ -44,7 +44,7 @@ class AlbumUtil
             return;
         }
 
-        // Keep visitors data in the db unless 50 other users have visited the album
+        // Keep visitor's data in the db unless 50 other users have visited the album
         if (50 === \count($arrVisitors)) {
             // Slice last item
             $arrVisitors = \array_slice($arrVisitors, 0, \count($arrVisitors) - 1);
@@ -67,7 +67,7 @@ class AlbumUtil
 
     /**
      * Return the level of an album or child album
-     * (level_1, level_2, level_3,...).
+     * (level_1, level_2, level_3, ...).
      */
     public function getAlbumLevelFromPid(int $pid): int
     {
@@ -83,7 +83,7 @@ class AlbumUtil
             ++$level;
             $parentAlbumModel = GalleryCreatorAlbumsModel::findById($pid);
 
-            if (0 === ($pid = (int) $parentAlbumModel->pid)) {
+            if (0 === ($pid = $parentAlbumModel->pid)) {
                 $hasParent = false;
             }
         }

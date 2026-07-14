@@ -26,21 +26,21 @@ use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-final class DependencyAggregate
+final readonly class DependencyAggregate
 {
     public function __construct(
-        public readonly AlbumUtil $albumUtil,
-        public readonly Connection $connection,
-        public readonly HtmlDecoder $htmlDecoder,
-        public readonly InsertTagParser $insertTagParser,
-        public readonly MarkdownUtil $markdownUtil,
-        public readonly PictureUtil $pictureUtil,
-        public readonly RequestStack $requestStack,
-        public readonly ResponseContextAccessor $responseContextAccessor,
-        public readonly ScopeMatcher $scopeMatcher,
-        public readonly SecurityUtil $securityUtil,
-        public readonly Studio $studio,
-        public readonly string $projectDir,
+        public AlbumUtil $albumUtil,
+        public Connection $connection,
+        public HtmlDecoder $htmlDecoder,
+        public InsertTagParser $insertTagParser,
+        public MarkdownUtil $markdownUtil,
+        public PictureUtil $pictureUtil,
+        public RequestStack $requestStack,
+        public ResponseContextAccessor $responseContextAccessor,
+        public ScopeMatcher $scopeMatcher,
+        public SecurityUtil $securityUtil,
+        public Studio $studio,
+        public string $projectDir,
     ) {
     }
 }

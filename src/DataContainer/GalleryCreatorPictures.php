@@ -469,7 +469,7 @@ class GalleryCreatorPictures
     }
 
     /**
-     * Move file to the correct directory, when cutting & pasting images
+     * Move file to the correct directory, when cutting and pasting images
      * from one album into another.
      */
     #[AsCallback(table: 'tl_gallery_creator_pictures', target: 'config.oncut', priority: 100)]

@@ -31,12 +31,12 @@ use League\CommonMark\MarkdownConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class MarkdownUtil
+readonly class MarkdownUtil
 {
     public function __construct(
-        private readonly ContaoFramework $framework,
-        private readonly RequestStack $requestStack,
-        private readonly InsertTagParser $insertTagParser,
+        private ContaoFramework $framework,
+        private RequestStack $requestStack,
+        private InsertTagParser $insertTagParser,
     ) {
     }
 
@@ -52,7 +52,7 @@ class MarkdownUtil
     }
 
     /**
-     * Hint: This is protected on purpose, so you can override it for your app specific requirements.
+     * Hint: This is protected on purpose, so you can override it for your app-specific requirements.
      * If you want to provide an extension with additional logic, consider providing your own special
      * content element for that.
      */

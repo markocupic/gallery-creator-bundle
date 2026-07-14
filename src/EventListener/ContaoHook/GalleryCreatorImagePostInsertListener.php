@@ -24,13 +24,10 @@ use Symfony\Bundle\SecurityBundle\Security;
 #[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
 class GalleryCreatorImagePostInsertListener
 {
-    public const HOOK = 'galleryCreatorImagePostInsert';
+    public const string HOOK = 'galleryCreatorImagePostInsert';
 
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(private readonly Security $security)
     {
-        $this->security = $security;
     }
 
     public function __invoke(GalleryCreatorPicturesModel $picturesModel): void

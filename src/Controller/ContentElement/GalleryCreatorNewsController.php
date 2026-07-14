@@ -28,7 +28,7 @@ use Twig\Environment as TwigEnvironment;
 #[AsContentElement(category: 'gallery_creator_elements')]
 class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 {
-    public const TYPE = 'gallery_creator_news';
+    public const string TYPE = 'gallery_creator_news';
 
     protected GalleryCreatorAlbumsModel|null $activeAlbum = null;
 
@@ -78,8 +78,6 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
     }
 
     /**
-     * @return Response|null
-     *
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */

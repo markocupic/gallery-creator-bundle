@@ -136,7 +136,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $arrCssClasses = [];
         $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $album->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums((int) $album->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($album->id) ? 'gc-has-child-album' : null;
         $arrCssClasses[] = !$pictureCount ? 'gc-empty-album' : null;
 
         // Do not show child albums, in news elements

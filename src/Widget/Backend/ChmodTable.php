@@ -19,7 +19,7 @@ use Contao\Widget;
 
 class ChmodTable extends Widget
 {
-    public const NAME = 'gcAlbumChmod';
+    public const string NAME = 'gcAlbumChmod';
 
     /**
      * Submit user input.
@@ -36,11 +36,9 @@ class ChmodTable extends Widget
     protected $strTemplate = 'be_widget';
 
     /**
-     * Generate the widget and return it as string.
-     *
-     * @return string
+     * Generate the widget and return it as a string.
      */
-    public function generate()
+    public function generate(): string
     {
         $arrObjects = ['u' => 'cuser', 'g' => 'cgroup', 'w' => 'cworld'];
 

@@ -79,6 +79,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                 'href'       => 'act=toggle&amp;field=published',
                 'attributes' => 'onclick="Backend.getScrollOffset();"',
                 'icon'       => 'visible.svg',
+                'primary'    => true,
             ],
             'uploadImages'               => [
                 'attributes' => 'data-icon="gc-op-icon"',

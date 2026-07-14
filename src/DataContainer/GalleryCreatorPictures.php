@@ -608,7 +608,7 @@ class GalleryCreatorPictures
             $folderModel = $files->findByUuid($albumsModel->assignedDir);
 
             // Only delete images if they are located in the directory assigned to the album
-            if (null !== $folderModel && null !== $filesModel && strstr($filesModel->path, $folderModel->path)) {
+            if (null !== $folderModel && null !== $filesModel && str_starts_with($filesModel->path, $folderModel->path)) {
                 // Delete file from filesystem
                 $file = new File($filesModel->path);
                 $file->delete();

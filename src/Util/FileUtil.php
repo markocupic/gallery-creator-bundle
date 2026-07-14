@@ -128,7 +128,7 @@ readonly class FileUtil
         $blnExternalFile = false;
 
         if ($request->query->has('importFromFilesystem')) {
-            $blnExternalFile = !strstr($file->dirname, $assignedDir);
+            $blnExternalFile = !str_starts_with($file->dirname, $assignedDir);
         }
 
         // New record

@@ -11,7 +11,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="MultipageForms Test Suite">
+        <testsuite name="Gallery Creator Test Suite">
             <directory>../../tests</directory>
         </testsuite>
     </testsuites>

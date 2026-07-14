@@ -6,4 +6,4 @@ cd..
 cd..
 cd..
 cd..
-php -d memory_limit=-1 vendor/bin/phpstan analyse vendor/markocupic/gallery-creator-bundle/src vendor/markocupic/gallery-creator-bundle/tests
+php -d memory_limit=-1 vendor/bin/phpstan analyse vendor/markocupic/sac-event-tool-bundle/src vendor/markocupic/sac-event-tool-bundle/tests

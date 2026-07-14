@@ -34,9 +34,23 @@ readonly class Content
     {
         $arrOpt = [];
 
+        $schemaManager = $this->connection->createSchemaManager();
+
+        $columns = $schemaManager->listTableColumns('tl_gallery_creator_albums');
+
         $arrContent = $this->connection->fetchAssociative('SELECT * FROM tl_content WHERE id = ?', [$dc->activeRecord->id]);
 
-        $strSorting = !$arrContent['gcSorting'] || !$arrContent['gcSortingDirection'] ? 'date DESC' : $arrContent['gcSorting'].' '.$arrContent['gcSortingDirection'];
+        // Prevent SQL injection
+        if (!\array_key_exists(strtolower($arrContent['gcSorting']), $columns)) {
+            $arrContent['gcSorting'] = 'date';
+        }
+
+        // Prevent SQL injection
+        if (!\in_array($arrContent['gcSortingDirection'], ['ASC', 'DESC'], true)) {
+            $arrContent['gcSortingDirection'] = 'DESC';
+        }
+
+        $strSorting = $arrContent['gcSorting'].' '.$arrContent['gcSortingDirection'];
 
         $stmt = $this->connection->executeQuery('SELECT * FROM tl_gallery_creator_albums WHERE published = ? ORDER BY '.$strSorting, ['1']);
 

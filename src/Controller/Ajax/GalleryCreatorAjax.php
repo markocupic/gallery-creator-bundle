@@ -83,11 +83,15 @@ readonly class GalleryCreatorAjax
         // Init visit counter
         $this->albumUtil->countAlbumViews($albumModel);
 
-        // Sorting direction
-        $sorting = $contentModel->gcPictureSorting.' '.$contentModel->gcPictureSortingDirection;
+        // Prevent SQL injection
+        $schemaManager = $this->connection->createSchemaManager();
+        $columns = $schemaManager->listTableColumns(GalleryCreatorPicturesModel::getTable());
+        $sortColumn = \array_key_exists(strtolower($contentModel->gcPictureSorting), $columns) ? $contentModel->gcPictureSorting : 'id';
+        $sortDirection = 'ASC' === $contentModel->gcPictureSortingDirection ? 'ASC' : 'DESC';
+        $strSorting = $sortColumn.' '.$sortDirection;
 
         $stmt = $this->connection->executeQuery(
-            'SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY '.$sorting,
+            \sprintf('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY %s', $strSorting),
             ['1', $pid],
         );
 

@@ -297,17 +297,20 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
     {
         $arrIDS = [];
 
-        $strSorting = empty($this->model->gcSorting) || empty($this->model->gcSortingDirection) ? 't.date DESC' : $this->model->gcSorting.' '.$this->model->gcSortingDirection;
+        // Prevent SQL injection
+        $schemaManager = $this->connection->createSchemaManager();
+        $columns = $schemaManager->listTableColumns(GalleryCreatorAlbumsModel::getTable());
+        $sortColumn = \array_key_exists(strtolower($this->model->gcSorting), $columns) ? $this->model->gcSorting : 'date';
+        $sortDirection = 'ASC' === $this->model->gcSortingDirection ? 'ASC' : 'DESC';
+        $strSorting = $sortColumn.' '.$sortDirection;
 
-        $stmt = $this->connection
-            ->executeQuery(
-                'SELECT id,pid FROM tl_gallery_creator_albums AS t WHERE t.pid = ? AND t.published = ? ORDER BY '.$strSorting,
-                [$pid, '1'],
-            )
-        ;
+        $albums = $this->connection->fetchAllAssociative(
+            \sprintf('SELECT id,pid FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY %s', $strSorting),
+            [$pid, '1'],
+        );
 
-        while (false !== ($arrAlbum = $stmt->fetchAssociative())) {
-            $albumModel = $this->galleryCreatorAlbumsModel->findById($arrAlbum['id']);
+        foreach ($albums as $album) {
+            $albumModel = $this->galleryCreatorAlbumsModel->findById($album['id']);
 
             // #1 Do only show selected albums if album selector has been activated in the CE settings
             // #2 Do not show protected albums to unauthorized users.
@@ -315,7 +318,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 continue;
             }
 
-            $arrIDS[] = (int) $arrAlbum['id'];
+            $arrIDS[] = (int) $album['id'];
         }
 
         return $arrIDS;

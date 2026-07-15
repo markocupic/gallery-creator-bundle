@@ -47,7 +47,7 @@ class AddDefaultChmodMigration extends AbstractMigration
             $columns = $schemaManager->listTableColumns('tl_gallery_creator_albums');
 
             if (isset($columns['chmod'])) {
-                if ($this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE chmod = ?', [''])) {
+                if ($this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE chmod = ?', [0])) {
                     $doMigration = true;
                 }
             }

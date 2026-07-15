@@ -145,7 +145,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'filter'    => true,
             'inputType' => 'checkbox',
             'eval'      => ['doNotCopy' => true],
-            'sql'       => "char(1) NOT NULL default '1'",
+            'sql'       => ['type' => 'boolean', 'default' => true]
         ],
         'name'              => [
             'filter'    => true,
@@ -271,8 +271,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         'includeChmod'      => [
             'exclude'   => true,
             'inputType' => 'checkbox',
-            'eval'      => ['submitOnChange' => true, 'isBoolean' => true],
-            'sql'       => "char(1) NOT NULL default ''",
+            'eval'      => ['submitOnChange' => true],
+            'sql'       => ['type' => 'boolean', 'default' => false]
         ],
         'cuser'             => [
             'filter'     => true,
@@ -313,10 +313,10 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'protected'         => [
             'filter'    => true,
-            'eval'      => ['submitOnChange' => true, 'isBoolean' => true, 'tl_class' => 'clr'],
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr'],
             'exclude'   => true,
             'inputType' => 'checkbox',
-            'sql'       => "char(1) NOT NULL default ''",
+            'sql'       => ['type' => 'boolean', 'default' => false]
         ],
         'groups'            => [
             'filter'     => true,
@@ -336,9 +336,9 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'sql'       => "smallint(5) unsigned NOT NULL default '1600'",
         ],
         'preserveFilename'  => [
-            'eval'      => ['doNotShow' => true, 'isBoolean' => true, 'submitOnChange' => true],
+            'eval'      => ['doNotShow' => true, 'submitOnChange' => true],
             'inputType' => 'checkbox',
-            'sql'       => "char(1) NOT NULL default '1'",
+            'sql'       => ['type' => 'boolean', 'default' => true]
         ],
         'multiSRC'          => [
             'eval'      => ['multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],

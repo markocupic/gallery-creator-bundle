@@ -61,7 +61,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 
         $this->activeAlbum = GalleryCreatorAlbumsModel::findOneBy(
             ['tl_gallery_creator_albums.id = ? AND tl_gallery_creator_albums.published = ?'],
-            [$this->model->gcPublishSingleAlbum, '1'],
+            [$this->model->gcPublishSingleAlbum, 1],
         );
 
         // Return empty response if the album doesn't exist

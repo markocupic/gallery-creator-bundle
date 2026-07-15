@@ -135,7 +135,7 @@ readonly class FileUtil
         $pictureModel = new GalleryCreatorPicturesModel();
         $pictureModel->tstamp = time();
         $pictureModel->pid = $albumModel->id;
-        $pictureModel->externalFile = $blnExternalFile ? '1' : '';
+        $pictureModel->externalFile = $blnExternalFile ? 1 : 0;
 
         // Set the file uuid before the model is saved the first time!!!
         $pictureModel->uuid = $filesModel->uuid;

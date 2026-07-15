@@ -52,7 +52,7 @@ readonly class Content
 
         $strSorting = $arrContent['gcSorting'].' '.$arrContent['gcSortingDirection'];
 
-        $stmt = $this->connection->executeQuery('SELECT * FROM tl_gallery_creator_albums WHERE published = ? ORDER BY '.$strSorting, ['1']);
+        $stmt = $this->connection->executeQuery('SELECT * FROM tl_gallery_creator_albums WHERE published = ? ORDER BY '.$strSorting, [1]);
 
         while (false !== ($album = $stmt->fetchAssociative())) {
             $arrOpt[$album['id']] = '[ID '.$album['id'].'] '.$album['name'];

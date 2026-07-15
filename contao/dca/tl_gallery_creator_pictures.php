@@ -118,7 +118,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'eval'      => ['doNotCopy' => true],
             'filter'    => true,
             'inputType' => 'checkbox',
-            'sql'       => "char(1) NOT NULL default '1'",
+            'sql'       => ['type' => 'boolean', 'default' => true],
             'toggle'    => true,
         ],
         'picture'        => [
@@ -161,11 +161,11 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'        => 'int(10) NOT NULL default 0',
         ],
         'addCustomThumb' => [
-            'eval'      => ['submitOnChange' => true, 'isBoolean' => true],
+            'eval'      => ['submitOnChange' => true],
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'checkbox',
-            'sql'       => "char(1) NOT NULL default ''",
+            'sql'       => ['type' => 'boolean', 'default' => false]
         ],
         'customThumb'    => [
             'eval'      => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
@@ -189,8 +189,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'       => 'binary(16) NULL',
         ],
         'externalFile'   => [
-            'eval' => ['isBoolean' => true],
-            'sql'  => "char(1) NOT NULL default ''",
+            'sql' => ['type' => 'boolean', 'default' => false]
         ],
     ],
 ];

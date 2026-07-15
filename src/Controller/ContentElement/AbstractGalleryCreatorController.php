@@ -120,7 +120,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         $pictureCount = $this->connection
             ->fetchOne(
                 'SELECT COUNT(id) AS pictureCount FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
-                [$album->id, '1'],
+                [$album->id, 1],
             )
         ;
 
@@ -221,7 +221,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
 
         $stmt = $this->connection->executeQuery(
             "SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY $strSorting",
-            [$album->id, '1'],
+            [$album->id, 1],
         );
 
         $arrChildren = [];
@@ -297,7 +297,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->where('t.pid = :pid')
             ->andWhere('t.published = :published')
             ->orderBy(...$arrSorting)
-            ->setParameter('published', '1')
+            ->setParameter('published', 1)
             ->setParameter('pid', $album->id)
             ->executeQuery()
         ;

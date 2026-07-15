@@ -140,7 +140,7 @@ class AlbumVoter extends Voter
 
             $parentAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($pid);
 
-            while (null !== $parentAlbum && (false === $row['chmod'] && '' === $row['includeChmod']) && $pid > 0) {
+            while (null !== $parentAlbum && (false === $row['chmod'] && !$row['includeChmod']) && $pid > 0) {
                 $pid = $parentAlbum->pid;
 
                 $row['chmod'] = $parentAlbum->includeChmod ? $parentAlbum->chmod : false;

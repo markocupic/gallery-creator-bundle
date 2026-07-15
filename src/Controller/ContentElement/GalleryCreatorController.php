@@ -138,7 +138,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $albumAlias = $this->input->get('auto_item');
             $this->activeAlbum = $this->galleryCreatorAlbumsModel->findOneBy(
                 ['tl_gallery_creator_albums.alias = ? AND tl_gallery_creator_albums.published = ?'],
-                [$albumAlias, '1'],
+                [$albumAlias, 1],
             );
 
             if (null !== $this->activeAlbum && $this->securityUtil->isAuthorized($this->activeAlbum) && $this->isInSelection($this->activeAlbum)) {
@@ -306,7 +306,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         $albums = $this->connection->fetchAllAssociative(
             \sprintf('SELECT id,pid FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY %s', $strSorting),
-            [$pid, '1'],
+            [$pid, 1],
         );
 
         foreach ($albums as $album) {

@@ -92,7 +92,7 @@ readonly class GalleryCreatorAjax
 
         $stmt = $this->connection->executeQuery(
             \sprintf('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY %s', $strSorting),
-            ['1', $pid],
+            [1, $pid],
         );
 
         while (false !== ($arrPicture = $stmt->fetchAssociative())) {

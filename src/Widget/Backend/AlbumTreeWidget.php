@@ -87,7 +87,7 @@ class AlbumTreeWidget extends Widget
 
         $stmt = $connection->executeQuery(
             'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY sorting',
-            [$pid, '1'],
+            [$pid, 1],
         );
 
         while (false !== ($album = $stmt->fetchAssociative())) {

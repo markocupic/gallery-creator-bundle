@@ -34,9 +34,8 @@ class AlbumVoter extends Voter
         'can_move_images' => 7,
     ];
 
-    public function __construct(
-        private readonly ContaoFramework $framework,
-    ) {
+    public function __construct(private readonly ContaoFramework $framework)
+    {
     }
 
     /**

@@ -21,9 +21,8 @@ use Doctrine\DBAL\Exception;
 
 readonly class Content
 {
-    public function __construct(
-        private Connection $connection,
-    ) {
+    public function __construct(private Connection $connection)
+    {
     }
 
     /**

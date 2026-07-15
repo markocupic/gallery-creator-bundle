@@ -47,7 +47,7 @@
    id="g685">
 	<path
    d="M 85.414,11.8 H 4.586 C 2.053,11.8 0,13.853 0,16.386 V 73.614 C 0,76.147 2.053,78.2 4.586,78.2 H 85.414 C 87.947,78.2 90,76.147 90,73.614 V 16.386 C 90,13.853 87.947,11.8 85.414,11.8 Z M 36.475,25.917 c 3.922,0 7.101,3.179 7.101,7.101 0,3.922 -3.179,7.101 -7.101,7.101 -3.922,0 -7.101,-3.179 -7.101,-7.101 0.001,-3.922 3.18,-7.101 7.101,-7.101 z M 81.269,73.163 H 8.731 c -2.273,0 -4.116,-1.843 -4.116,-4.116 l 15.26,-18.195 c 2.753,-3.282 7.745,-3.448 10.71,-0.355 l 0.963,1.005 c 2.991,3.12 8.038,2.919 10.771,-0.43 l 7.714,-9.451 c 2.809,-3.441 8.034,-3.542 10.973,-0.21 l 24.38,27.637 c -10e-4,2.272 -1.844,4.115 -4.117,4.115 z"
-   style="opacity:1;fill:#000000;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none"
+   style="opacity:1;fill:#4169E1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none"
    stroke-linecap="round"
    id="path683" />
 </g>

@@ -1,2 +1,2 @@
-/*! For license information please see gallery_creator_be.f903050d.js.LICENSE.txt */
+/*! For license information please see gallery_creator_be.d2a39443.js.LICENSE.txt */
 document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("CheckAllGcPublishAlbums");if(!e)return;const c=document.querySelectorAll(".album-control-field");e.addEventListener("click",()=>{const t=e.checked;c.forEach(e=>{e.checked=t})}),c.forEach(e=>{e.addEventListener("click",()=>{const c=e.closest("li");if(!c)return;c.querySelectorAll("input").forEach(c=>{c.checked=e.checked})})})});

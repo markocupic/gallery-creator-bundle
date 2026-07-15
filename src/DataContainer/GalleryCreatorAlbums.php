@@ -739,7 +739,7 @@ class GalleryCreatorAlbums
                     if (file_exists($filesModel->getAbsolutePath())) {
                         $file = new File($filesModel->path);
                     } else {
-                        $placeholder = 'web/bundles/markocupicgallerycreator/images/placeholder.png';
+                        $placeholder = 'public/bundles/markocupicgallerycreator/images/placeholder.png';
                         $file = new File($placeholder);
                     }
 

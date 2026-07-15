@@ -219,15 +219,15 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     {
         $strSorting = $content->gcSorting.' '.$content->gcSortingDirection;
 
-        $stmt = $this->connection->executeQuery(
+        $childAlbums = $this->connection->fetchAllAssociative(
             "SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY $strSorting",
             [$album->id, 1],
         );
 
         $arrChildren = [];
 
-        while (false !== ($arrChild = $stmt->fetchAssociative())) {
-            $objChild = GalleryCreatorAlbumsModel::findById($arrChild['id']);
+        foreach ($childAlbums as $childAlbum) {
+            $objChild = GalleryCreatorAlbumsModel::findById($childAlbum['id']);
 
             if ($blnOnlyAllowed) {
                 if ($content->gcShowAlbumSelection) {
@@ -291,7 +291,7 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
         // Sort by name will be done below.
         $arrSorting[0] = str_replace('name', 'id', $arrSorting[0]);
 
-        $stmt = $this->connection->createQueryBuilder()
+        $dataPictures = $this->connection->createQueryBuilder()
             ->select('*')
             ->from('tl_gallery_creator_pictures', 't')
             ->where('t.pid = :pid')
@@ -299,23 +299,23 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->orderBy(...$arrSorting)
             ->setParameter('published', 1)
             ->setParameter('pid', $album->id)
-            ->executeQuery()
+            ->fetchAllAssociative()
         ;
 
         $images = [];
 
-        while (false !== ($rowPicture = $stmt->fetchAssociative())) {
-            $filesModel = FilesModel::findByUuid($rowPicture['uuid']);
+        foreach ($dataPictures as $dataPicture) {
+            $filesModel = FilesModel::findByUuid($dataPicture['uuid']);
             $basename = 'undefined';
 
             if (null !== $filesModel) {
                 $basename = $filesModel->name;
             }
 
-            if (null !== ($picture = GalleryCreatorPicturesModel::findById($rowPicture['id']))) {
+            if (null !== ($picture = GalleryCreatorPicturesModel::findById($dataPicture['id']))) {
                 if ($picture->uuid && $this->pictureUtil->pictureExists($picture)) {
                     // Prevent overriding items with same basename
-                    $images[$basename.'-id-'.$rowPicture['id']] = $this->pictureUtil->getPictureData($picture, $contentModel);
+                    $images[$basename.'-id-'.$dataPicture['id']] = $this->pictureUtil->getPictureData($picture, $contentModel);
                 }
             }
         }

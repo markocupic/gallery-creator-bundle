@@ -90,31 +90,31 @@ readonly class GalleryCreatorAjax
         $sortDirection = 'ASC' === $contentModel->gcPictureSortingDirection ? 'ASC' : 'DESC';
         $strSorting = $sortColumn.' '.$sortDirection;
 
-        $stmt = $this->connection->executeQuery(
+        $pictures = $this->connection->fetchAllAssociative(
             \sprintf('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY %s', $strSorting),
             [1, $pid],
         );
 
-        while (false !== ($arrPicture = $stmt->fetchAssociative())) {
-            if (null === ($filesModel = FilesModel::findByUuid($arrPicture['uuid']))) {
+        foreach ($pictures as $picture) {
+            if (null === ($filesModel = FilesModel::findByUuid($picture['uuid']))) {
                 continue;
             }
 
             $localMediaModel = null;
 
-            if (!empty($arrPicture['localMediaSRC'])) {
-                $localMediaModel = FilesModel::findByUuid($arrPicture['localMediaSRC']);
+            if (!empty($picture['localMediaSRC'])) {
+                $localMediaModel = FilesModel::findByUuid($picture['localMediaSRC']);
             }
 
             $href = $filesModel->path;
-            $href = !empty($arrPicture['socialMediaSRC']) ? $arrPicture['socialMediaSRC'] : $href;
+            $href = !empty($picture['socialMediaSRC']) ? $picture['socialMediaSRC'] : $href;
             $href = $localMediaModel ? $localMediaModel->path : $href;
 
-            $arrPicture['href'] = $href;
-            $arrPicture['caption'] = StringUtil::specialchars($arrPicture['caption']);
-            $arrPicture['uuid'] = StringUtil::binToUuid($filesModel->uuid);
+            $picture['href'] = $href;
+            $picture['caption'] = StringUtil::specialchars($picture['caption']);
+            $picture['uuid'] = StringUtil::binToUuid($filesModel->uuid);
 
-            $json['data'][] = $arrPicture;
+            $json['data'][] = $picture;
         }
         $json['status'] = 'success';
 

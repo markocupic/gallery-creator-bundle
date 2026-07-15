@@ -697,12 +697,12 @@ class GalleryCreatorAlbums
 
         // Generate picture list
         $id = $request->query->get('id');
-        $stmt = $this->connection->executeQuery('SELECT * FROM tl_gallery_creator_pictures WHERE pid = ? ORDER BY sorting', [$id]);
+        $pictures = $this->connection->fetchAllAssociative('SELECT * FROM tl_gallery_creator_pictures WHERE pid = ? ORDER BY sorting', [$id]);
 
-        while (false !== ($arrPicture = $stmt->fetchAssociative())) {
+        foreach ($pictures as $picture) {
             $arrAlbums[] = [
-                'uuid' => $arrPicture['uuid'],
-                'id' => $arrPicture['id'],
+                'uuid' => $picture['uuid'],
+                'id' => $picture['id'],
             ];
         }
 
@@ -710,16 +710,16 @@ class GalleryCreatorAlbums
         $arrChildIds = $this->albums->getChildAlbumsIds((int) $request->query->get('id'));
 
         if (!empty($arrChildIds)) {
-            $stmt = $this->connection->executeQuery(
+            $pictures = $this->connection->fetchAllAssociative(
                 'SELECT * FROM tl_gallery_creator_pictures WHERE pid IN (?) ORDER BY id',
                 [$arrChildAlbums],
                 [ArrayParameterType::INTEGER],
             );
 
-            while (false !== ($arrPicture = $stmt->fetchAssociative())) {
+            foreach ($pictures as $picture) {
                 $arrChildAlbums[] = [
-                    'uuid' => $arrPicture['uuid'],
-                    'id' => $arrPicture['id'],
+                    'uuid' => $picture['uuid'],
+                    'id' => $picture['id'],
                 ];
             }
         }

@@ -85,12 +85,12 @@ class AlbumTreeWidget extends Widget
     {
         $connection = System::getContainer()->get('database_connection');
 
-        $stmt = $connection->executeQuery(
+        $albums = $connection->fetchAllAssociative(
             'SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY sorting',
             [$pid, 1],
         );
 
-        while (false !== ($album = $stmt->fetchAssociative())) {
+        foreach ($albums as $album) {
             if ($this->multiple) {
                 $checked = \in_array($album['id'], StringUtil::deserialize($this->value, true), false) ? ' checked' : '';
             } else {

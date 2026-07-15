@@ -98,29 +98,29 @@ readonly class ReviseAlbumDatabase
          * Checks whether the albums defined in the content element still exist.
          * If not, these are removed from the array.
          */
-        $stmtContent = $this->connection->executeQuery('SELECT * FROM tl_content WHERE type = ?', ['gallery_creator']);
+        $contents = $this->connection->fetchAllAssociative('SELECT * FROM tl_content WHERE type = ?', ['gallery_creator']);
 
-        while (false !== ($arrContent = $stmtContent->fetchAssociative())) {
-            $newArr = [];
-            $arrAlbums = StringUtil::deserialize($arrContent['gcAlbumSelection'], true);
+        foreach ($contents as $content) {
+            $newIds = [];
+            $albumIds = StringUtil::deserialize($content['gcAlbumSelection'], true);
 
-            foreach ($arrAlbums as $AlbumId) {
-                if (0 === (int) $AlbumId) {
+            foreach ($albumIds as $albumId) {
+                if (0 === (int) $albumId) {
                     // "0" means: "show them all"
                     continue;
                 }
 
-                $id = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id = ?', [$AlbumId]);
+                $id = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id = ?', [$albumId]);
 
                 if (false !== $id) {
-                    $newArr[] = $id;
+                    $newIds[] = $id;
                 }
             }
 
             $this->connection->update(
                 'tl_content',
-                ['tl_content.gcAlbumSelection' => serialize($newArr)],
-                ['tl_content.id' => $arrContent['id']],
+                ['tl_content.gcAlbumSelection' => serialize($newIds)],
+                ['tl_content.id' => $content['id']],
             );
         }
     }

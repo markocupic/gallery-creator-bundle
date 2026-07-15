@@ -6,5 +6,3 @@ cd..
 cd..
 
 ../../../vendor\bin\ecs check src --config tools/ecs/config/default.php
-
-cd tools/ecs/batch/fix

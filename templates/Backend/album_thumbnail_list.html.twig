@@ -1,7 +1,6 @@
 <div class="widget clr gc-preview-thumb">
     <h3><label for="ctrl_thumb">{{ trans.album_thumb }}</label></h3>
     <p class="gc-preview-thumb--sortable-hint">{{ trans.drag_items_hint }}</p>
-
     <div>
         {% if has_album_thumbs %}
             <ul id="gcPreviewThumbList">
@@ -22,7 +21,6 @@
                 {% endfor %}
             </ul>
         {% endif %}
-
         {% if has_child_album_thumbs %}
             <h3>{{ trans.child_albums }}</h3>
             <ul id="gcPreviewThumbListSub" style="display:flex;flex-wrap:wrap">
@@ -45,7 +43,6 @@
         {% endif %}
     </div>
 </div>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
@@ -97,7 +94,6 @@
                 }
             });
         });
-
 
         // -----------------------------------
         // AJAX: send new order

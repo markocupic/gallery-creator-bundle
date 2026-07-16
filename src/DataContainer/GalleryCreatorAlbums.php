@@ -423,7 +423,7 @@ class GalleryCreatorAlbums
     {
         $countImages = $this->connection->fetchOne('SELECT count(id) as countImg FROM tl_gallery_creator_pictures WHERE pid = ?', [$row['id']]);
 
-        $icon = $row['published'] ? 'album.svg' : '_album.svg';
+        $icon = $row['published'] ? 'album.svg' : 'album_.svg';
         $alt = $row['published'] ? $this->translator->trans('MSC.published', [], 'contao_default') : $this->translator->trans('MSC.unpublished', [], 'contao_default');
         $icon = 'bundles/markocupicgallerycreator/images/'.$icon;
         $icon = \sprintf('<img height="18" width="18" data-icon="%s" src="%s" alt="%s">', $icon, $icon, $this->stringUtil->specialchars($alt));
@@ -739,7 +739,7 @@ class GalleryCreatorAlbums
                     if (file_exists($filesModel->getAbsolutePath())) {
                         $file = new File($filesModel->path);
                     } else {
-                        $placeholder = 'public/bundles/markocupicgallerycreator/images/placeholder.png';
+                        $placeholder = 'public/bundles/markocupicgallerycreator/images/placeholder.svg';
                         $file = new File($placeholder);
                     }
 

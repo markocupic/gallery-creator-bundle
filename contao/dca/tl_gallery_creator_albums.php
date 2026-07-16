@@ -54,7 +54,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
                 'class'      => 'gc-gop-icon gc-gop-revise-database',
                 // Complete the href attribute in GalleryCreatorAlbums::onloadCbSetUpPalettes()
                 'href'       => 'act=edit&table&key=reviseDatabase&id=%s',
-                'icon'       => 'bundles/markocupicgallerycreator/images/revise_database.svg',
+                'icon'       => 'bundles/markocupicgallerycreator/images/database_check.svg',
             ],
         ],
         'operations'        => [
@@ -84,7 +84,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
             'uploadImages'               => [
                 'attributes' => 'data-icon="gc-op-icon"',
                 'href'       => 'act=edit&key=fileUpload',
-                'icon'       => 'bundles/markocupicgallerycreator/images/add_image.svg',
+                'icon'       => 'bundles/markocupicgallerycreator/images/image_up.svg',
                 'primary'    => true,
             ],
             'importImagesFromFilesystem' => [

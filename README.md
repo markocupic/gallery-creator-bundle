@@ -1,4 +1,4 @@
-<img src="docs/img/logo.png" alt="Marko Cupic">
+<img src="docs/img/logo.svg" width="300" alt="Marko Cupic">
 
 # Gallery Creator Bundle
 

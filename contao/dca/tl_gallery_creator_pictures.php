@@ -41,12 +41,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'global_operations' => [
             'fileUpload' => [
-                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
+                'attributes' => 'data-action="contao--scroll-offset#store" accesskey="e"',
                 'class'      => 'gc-gop-icon gc-gop-upload-img',
                 'href'       => 'act=edit&table=tl_gallery_creator_albums&key=fileUpload',
             ],
             'all'        => [
-                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
+                'attributes' => 'data-action="contao--scroll-offset#store" accesskey="e"',
                 'class'      => 'header_edit_all',
                 'href'       => 'act=select',
             ],
@@ -58,26 +58,27 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
                 'primary' => true,
             ],
             'delete'      => [
-                'attributes' => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"',
+                'attributes' => 'data-action="contao--scroll-offset#store" onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;"',
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
                 'primary'    => true,
             ],
             'cut'         => [
+                'attributes' => 'data-action="contao--scroll-offset#store"',
                 'href'       => 'act=paste&amp;mode=cut',
                 'icon'       => 'cut.svg',
-                'attributes' => 'onclick="Backend.getScrollOffset()"',
             ],
             'imagerotate' => [
-                'attributes' => 'data-icon="gc-op-icon" onclick="Backend.getScrollOffset();"',
+                'attributes' => 'data-icon="gc-op-icon" data-action="contao--scroll-offset#store"',
                 'href'       => 'key=imagerotate',
                 'icon'       => 'bundles/markocupicgallerycreator/images/rotate.svg',
                 'primary'    => true,
             ],
             'toggle'      => [
+                'attributes' => 'data-action="contao--scroll-offset#store"',
                 'href'       => 'act=toggle&amp;field=published',
-                'attributes' => 'onclick="Backend.getScrollOffset();"',
                 'icon'       => 'visible.svg',
+                'primary'    => true,
             ],
             'show'        => [
                 'href' => 'act=show',
@@ -103,7 +104,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'eval'       => ['doNotShow' => true],
             'foreignKey' => 'tl_gallery_creator_albums.alias',
             'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
-            'sql'        => "int(10) unsigned NOT NULL default '0'",
+            'sql'        => 'int(10) unsigned NOT NULL default 0',
         ],
         'uuid'           => [
             'sql' => 'binary(16) NULL',
@@ -112,7 +113,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql' => 'int(10) unsigned NOT NULL default 0',
         ],
         'tstamp'         => [
-            'sql' => "int(10) unsigned NOT NULL default '0'",
+            'sql' => 'int(10) unsigned NOT NULL default 0',
         ],
         'published'      => [
             'eval'      => ['doNotCopy' => true],
@@ -130,8 +131,8 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         'title'          => [
             'eval'      => ['allowHtml' => false, 'decodeEntities' => true, 'rgxp' => 'alnum', 'tl_class' => 'w50', 'basicEntities' => true],
             'exclude'   => true,
-            'search'    => true,
             'inputType' => 'text',
+            'search'    => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
         'caption'        => [
@@ -149,7 +150,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'filter'    => true,
             'inputType' => 'text',
             'sorting'   => true,
-            'sql'       => "int(10) unsigned NOT NULL default '0'",
+            'sql'       => 'int(10) unsigned NOT NULL default 0',
         ],
         'cuser'          => [
             'default'    => System::getContainer()->get('security.helper')->getUser() instanceof BackendUser ? System::getContainer()->get('security.helper')->getUser()->id : 0,
@@ -165,7 +166,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'exclude'   => true,
             'filter'    => true,
             'inputType' => 'checkbox',
-            'sql'       => ['type' => 'boolean', 'default' => false]
+            'sql'       => ['type' => 'boolean', 'default' => false],
         ],
         'customThumb'    => [
             'eval'      => ['fieldType' => 'radio', 'files' => true, 'filesOnly' => true, 'extensions' => System::getContainer()->getParameter('markocupic_gallery_creator.valid_extensions')],
@@ -189,7 +190,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'sql'       => 'binary(16) NULL',
         ],
         'externalFile'   => [
-            'sql' => ['type' => 'boolean', 'default' => false]
+            'sql' => ['type' => 'boolean', 'default' => false],
         ],
     ],
 ];

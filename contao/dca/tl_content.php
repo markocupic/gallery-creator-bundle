@@ -82,7 +82,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcAlbumsPerPage'] = [
     'eval'      => ['rgxp' => 'digit', 'tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'text',
-    'sql'       => "smallint(5) unsigned NOT NULL default '0'",
+    'sql'       => "smallint(5) unsigned NOT NULL default 0",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcSizeAlbumListing'] = [
@@ -114,7 +114,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gcThumbsPerPage'] = [
     'eval'      => ['rgxp' => 'digit', 'tl_class' => 'clr'],
     'exclude'   => true,
     'inputType' => 'text',
-    'sql'       => "smallint(5) unsigned NOT NULL default '0'",
+    'sql'       => "smallint(5) unsigned NOT NULL default 0",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gcShowAlbumSelection'] = [

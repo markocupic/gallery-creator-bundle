@@ -22,18 +22,18 @@ PaletteManipulator::create()
 
 // Fields
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gcDefaultUser'] = [
-    'inputType'  => 'select',
-    'foreignKey' => 'tl_user.username',
     'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
+    'foreignKey' => 'tl_user.username',
+    'inputType'  => 'select',
 ];
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gcDefaultGroup'] = [
-    'inputType'  => 'select',
-    'foreignKey' => 'tl_user_group.name',
     'eval'       => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
+    'foreignKey' => 'tl_user_group.name',
+    'inputType'  => 'select',
 ];
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['gcDefaultChmod'] = [
-    'inputType' => ChmodTable::NAME,
     'eval'      => ['tl_class' => 'clr'],
+    'inputType' => ChmodTable::NAME,
 ];

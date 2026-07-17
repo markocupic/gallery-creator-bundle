@@ -6,7 +6,7 @@
             <ul id="gcPreviewThumbList">
                 {% for thumb in album_thumbs %}
                     {% set list_attributes = attrs()
-                        .addClass(thumb.class)
+                        .addClass(thumb.class|default(''))
                         .set('data-id', thumb.id)
                         .set('title', thumb.filename) %}
                     <li{{ list_attributes }}>
@@ -26,7 +26,7 @@
             <ul id="gcPreviewThumbListSub" style="display:flex;flex-wrap:wrap">
                 {% for thumb in child_album_thumbs %}
                     {% set list_attributes = attrs()
-                        .addClass(thumb.class)
+                        .addClass(thumb.class|default(''))
                         .set('data-id', thumb.id)
                         .set('title', thumb.filename) %}
                     <li{{ list_attributes }}>

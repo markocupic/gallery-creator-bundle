@@ -122,7 +122,7 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 if (!empty($arrIds)) {
                     $pid = $this->connection->fetchOne(
                         'SELECT pid FROM tl_gallery_creator_albums WHERE id IN(?) ORDER BY pid',
-                        array_map('intval', $arrIds),
+                        [array_map('intval', $arrIds)],
                         [
                             ArrayParameterType::INTEGER,
                         ],

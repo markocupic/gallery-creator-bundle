@@ -1,5 +1,6 @@
 {
     "require": {
+        "contao/core-bundle": "^5.7",
         "phpstan/phpstan": "^2.2"
     },
     "config": {

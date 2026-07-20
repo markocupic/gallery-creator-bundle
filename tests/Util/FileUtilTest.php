@@ -261,7 +261,10 @@ class FileUtilTest extends ContaoTestCase
             ->willReturn(null)
         ;
 
-        $framework = $this->mockContaoFramework([FilesModel::class => $filesAdapter]);
+        $framework = $this->mockContaoFramework([
+            FilesModel::class => $filesAdapter,
+            Message::class => $this->mockAdapter(['addError']),
+        ]);
 
         $connection = $this->createMock(Connection::class);
         $connection
@@ -347,7 +350,7 @@ class FileUtilTest extends ContaoTestCase
         $fileUtil->importFromFilesystem($this->album(), ['dup-uuid']);
     }
 
-    private function createFileUtil(ContaoFramework $framework, Connection|null $connection = null, EventDispatcherInterface|null $eventDispatcher = null, Filesystem|null $filesystem = null, RequestStack|null $requestStack = null, Security|null $security = null, TranslatorInterface|null $translator = null, bool $copyImagesOnImport = false, array $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'],): FileUtil
+    private function createFileUtil(ContaoFramework $framework, Connection|null $connection = null, EventDispatcherInterface|null $eventDispatcher = null, Filesystem|null $filesystem = null, RequestStack|null $requestStack = null, Security|null $security = null, TranslatorInterface|null $translator = null, bool $copyImagesOnImport = false, array $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']): FileUtil
     {
         return new FileUtil(
             $connection ?? $this->createMock(Connection::class),
@@ -463,7 +466,11 @@ class FileUtilTest extends ContaoTestCase
             'dirname' => 'files/album',
             'extension' => 'jpg',
         ]);
-        $file->method('getModel')->willReturn($filesModel);
+
+        $file
+            ->method('getModel')
+            ->willReturn($filesModel)
+        ;
 
         return $file;
     }

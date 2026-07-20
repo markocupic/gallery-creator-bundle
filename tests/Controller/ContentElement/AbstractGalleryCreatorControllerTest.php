@@ -17,6 +17,7 @@ namespace Markocupic\GalleryCreatorBundle\Tests\Controller\ContentElement;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\FilesModel;
 use Contao\TestCase\ContaoTestCase;
+use Markocupic\GalleryCreatorBundle\Controller\ContentElement\AbstractGalleryCreatorController;
 use Markocupic\GalleryCreatorBundle\Controller\ContentElement\GalleryCreatorController;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
@@ -98,7 +99,10 @@ class AbstractGalleryCreatorControllerTest extends ContaoTestCase
 
     private function setProperty(object $object, string $name, mixed $value): void
     {
-        (new \ReflectionProperty($object, $name))->setValue($object, $value);
+        // Readonly properties may only be initialized from the scope of the class that
+        // declares them, so build the ReflectionProperty from the abstract controller.
+        $property = new \ReflectionProperty(AbstractGalleryCreatorController::class, $name);
+        $property->setValue($object, $value);
     }
 
     private function framework(object|null $picturesModel, object|null $filesModel = null): ContaoFramework

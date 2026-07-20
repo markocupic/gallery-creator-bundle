@@ -4,13 +4,11 @@
 {% trans_default_domain 'contao_default' %}
 
 {% block album_component %}
-    {% if album.href|default %}
-    {%
-        set album_href_attributes = attrs(album_href_attributes|default)
-          .set('href', album.href)
-          .set('title', album.meta.getTitle())
-          .addClass('gc-album-list-link')
-    %}
+    {% if album.data.href|default %}
+        {% set album_href_attributes = attrs(album_href_attributes|default)
+            .set('href', album.data.href)
+            .set('title', album.metadata.getTitle())
+            .addClass('gc-album-list-link') %}
     {% endif %}
 
     <article{{ attrs(album_inner_attributes|default).addClass('gc-album-list-inner') }}>
@@ -19,7 +17,7 @@
                 {% if album_href_attributes|default %}
                 <a{{ album_href_attributes }}>
                     {% endif %}
-                    {% if album.figure.build|default %}{% with {figure: album.figure.build} %}{{ block('figure_component') }}{% endwith %}{% endif %}
+                    {% if album.figure|default %}{% with {figure: album.figure} %}{{ block('figure_component') }}{% endwith %}{% endif %}
                     {% if album_href_attributes|default %}
                 </a>
                 {% endif %}
@@ -32,49 +30,51 @@
                     <a{{ album_href_attributes }}>
                 {% endif %}
                 {% set album_title_tag = album_title_tag|default('h4') %}
-                <{{ album_title_tag }}{{ attrs(album_name_attributes|default).addClass('gc-album-list-name') }}>{% block album_name %}{{ album.name }}{% endblock %}</{{ album_title_tag }}>
+                <{{ album_title_tag }}{{ attrs(album_name_attributes|default).addClass('gc-album-list-name') }}>{% block album_name %}{{ album.data.name }}{% endblock %}</{{ album_title_tag }}>
                 {% if album_href_attributes|default %}
                     </a>
                 {% endif %}
             {% endblock %}
 
             {% block album_date %}
-                <div{{ attrs(album_date_attributes|default).addClass('gc-album-list-date') }}><time datetime="{{ album.datimFormatted }}">{{ album.dateFormatted }}</time></div>
+                <div{{ attrs(album_date_attributes|default).addClass('gc-album-list-date') }}>
+                    <time datetime="{{ album.data.datimFormatted }}">{{ album.data.dateFormatted }}</time>
+                </div>
             {% endblock %}
 
-            {% if album.location|default %}
+            {% if album.data.location|default %}
                 {% block album_location %}
-                    <div{{ attrs(album_location_attributes|default).addClass('gc-album-list-location') }}>{{ 'GALLERY_CREATOR.location'|trans }}: {{ album.location }}</div>
+                    <div{{ attrs(album_location_attributes|default).addClass('gc-album-list-location') }}>{{ 'GALLERY_CREATOR.location'|trans }}: {{ album.data.location }}</div>
                 {% endblock %}
             {% endif %}
 
-            {% if album.photographer|default %}
+            {% if album.data.photographer|default %}
                 {% block album_photographer %}
-                    <div{{ attrs(album_photographer_attributes|default).addClass('gc-album-list-photographer') }}>{{ 'GALLERY_CREATOR.photographerName'|trans }}: {{ album.photographer }}</div>
+                    <div{{ attrs(album_photographer_attributes|default).addClass('gc-album-list-photographer') }}>{{ 'GALLERY_CREATOR.photographerName'|trans }}: {{ album.data.photographer }}</div>
                 {% endblock %}
             {% endif %}
 
-            {% if album.teaser|default %}
+            {% if album.data.teaser|default %}
                 {% block album_teaser %}
-                    <div{{ attrs(album_teaser_attributes|default).addClass('gc-album-list-teaser') }}>{{ album.teaser|raw|nl2br }}</div>
+                    <div{{ attrs(album_teaser_attributes|default).addClass('gc-album-list-teaser') }}>{{ album.data.teaser|raw|nl2br }}</div>
                 {% endblock %}
             {% endif %}
 
-            {% if album.pictureCount|default(0) %}
+            {% if album.data.pictureCount|default(0) %}
                 {% block album_picture_count %}
-                    <div{{ attrs(album_picture_count_attributes|default).addClass('gc-album-list-picture-count') }}>{{ album.pictureCount }} {{ 'GALLERY_CREATOR.pictures'|trans }}</div>
+                    <div{{ attrs(album_picture_count_attributes|default).addClass('gc-album-list-picture-count') }}>{{ album.data.pictureCount }} {{ 'GALLERY_CREATOR.pictures'|trans }}</div>
                 {% endblock %}
             {% endif %}
 
-            {% if album.visitors|default(0) %}
+            {% if album.data.visitors|default(0) %}
                 {% block album_visitors %}
-                    <div{{ attrs(album_visitors_attributes|default).addClass('gc-album-list-visitors') }}>{{ album.visitors }} {{ 'GALLERY_CREATOR.visitors'|trans }}</div>
+                    <div{{ attrs(album_visitors_attributes|default).addClass('gc-album-list-visitors') }}>{{ album.data.visitors }} {{ 'GALLERY_CREATOR.visitors'|trans }}</div>
                 {% endblock %}
             {% endif %}
 
-            {% if album.hasChildAlbums|default %}
+            {% if album.data.hasChildAlbums|default %}
                 {% block album_child_album_count %}
-                    <div{{ attrs(album_child_album_attributes|default).addClass('gc-album-list-child-album-count') }}>{{ album.childAlbumCount }} {{ 'GALLERY_CREATOR.childAlbums'|trans }}</div>
+                    <div{{ attrs(album_child_album_attributes|default).addClass('gc-album-list-child-album-count') }}>{{ album.data.childAlbumCount }} {{ 'GALLERY_CREATOR.childAlbums'|trans }}</div>
                 {% endblock %}
             {% endif %}
 

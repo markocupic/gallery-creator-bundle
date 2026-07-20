@@ -2,39 +2,29 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of Gallery Creator Bundle.
- *
- * (c) Marko Cupic <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/markocupic/gallery-creator-bundle
- */
-
 namespace Markocupic\GalleryCreatorBundle\Util;
 
 use Contao\ContentModel;
+use Contao\CoreBundle\Asset\ContaoContext;
 use Contao\CoreBundle\File\Metadata;
-use Contao\CoreBundle\Filesystem\FilesystemUtil;
-use Contao\CoreBundle\Filesystem\VirtualFilesystem;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Image\Studio\Studio;
-use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\File;
 use Contao\FilesModel;
-use Contao\System;
-use Contao\UserModel;
+use Contao\StringUtil;
+use Markocupic\GalleryCreatorBundle\Dto\GalleryPictureDto;
+use Markocupic\GalleryCreatorBundle\Filesystem\FilesystemItemResolver;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Path;
 
 readonly class PictureUtil
 {
     public function __construct(
-        private RequestStack $requestStack,
-        private ScopeMatcher $scopeMatcher,
+        #[Autowire('@contao.assets.files_context')]
+        private ContaoContext $filesContext,
+        private ContaoFramework $framework,
+        private FilesystemItemResolver $filesystemItemResolver,
         private Studio $studio,
-        private VirtualFilesystem $filesStorage,
-        private bool $galleryCreatorReadExifMetaData,
         private string $projectDir,
     ) {
     }
@@ -42,117 +32,106 @@ readonly class PictureUtil
     /**
      * @throws \Exception
      */
-    public function getPictureData(GalleryCreatorPicturesModel $pictureModel, ContentModel $contentElementModel): array|null
+    public function getPictureData(GalleryCreatorPicturesModel $picturesModel, ContentModel $contentElementModel): GalleryPictureDto|null
     {
-        $staticUrl = System::getContainer()->get('contao.assets.files_context')->getStaticUrl();
+        $filesModel = $this->framework->getAdapter(FilesModel::class)
+            ->findByUuid($picturesModel->uuid)
+        ;
 
-        $request = $this->requestStack->getCurrentRequest();
-
-        $filesystemIterator = FilesystemUtil::listContentsFromSerialized($this->filesStorage, $pictureModel->uuid);
-        $fileSystemItem = $filesystemIterator->first();
-
-        if (null === $fileSystemItem || !$fileSystemItem->isFile()) {
+        if (null === $filesModel) {
             return null;
         }
 
-        if (null === ($filesModel = FilesModel::findByUuid($pictureModel->uuid))) {
-            return null;
-        }
+        $socialMediaSrc = $picturesModel->socialMediaSRC ?: '';
 
-        // Get file the metadata
-        $metadata = $fileSystemItem->getExtraMetadata()->getLocalized()?->getDefault();
+        $localMediaModel = $this->framework->getAdapter(FilesModel::class)
+            ->findByUuid($picturesModel->localMediaSRC)
+        ;
 
-        if (null === $metadata) {
-            $arrMeta = [];
-        } else {
-            $arrMeta = $metadata->all();
-        }
+        $customLinkHref = match (true) {
+            '' !== $socialMediaSrc => $socialMediaSrc,
+            null !== $localMediaModel => Path::join($this->getBasePath(), $localMediaModel->path),
+            default => null,
+        };
 
-        if (!isset($arrMeta['title'])) {
-            $arrMeta['title'] = '';
-        }
+        $metadata = $this->getMetadata($picturesModel);
 
-        // Override file meta title with the picture caption
-        $arrMeta['title'] = $pictureModel->caption ?? $arrMeta['title'];
-
-        $customHref = '';
-        $localMediaSrc = null;
-        $socialMediaSrc = null;
-
-        if ($request && $this->scopeMatcher->isFrontendRequest($request)) {
-            // e.g., YouTube or Vimeo
-            $customHref = $pictureModel->socialMediaSRC ?: null;
-            $socialMediaSrc = $pictureModel->socialMediaSRC ?: null;
-
-            // Local media
-            if (null !== ($objMovieFile = FilesModel::findByUuid($pictureModel->localMediaSRC))) {
-                $customHref = $objMovieFile->path;
-                $localMediaSrc = $staticUrl.$objMovieFile->path;
-            }
-
-            $customHref = $customHref ? $staticUrl.$customHref : null;
-        }
-
-        $ownerModel = UserModel::findById($pictureModel->cuser);
-
-        // Compile list of images
-        $figure = $this->studio
+        $figureBuilder = $this->studio
             ->createFigureBuilder()
             ->setSize($contentElementModel->gcSizeDetailView)
             ->setLightboxGroupIdentifier('lb'.$contentElementModel->id)
             ->enableLightbox((bool) $contentElementModel->gcFullSize)
-            ->setOverwriteMetadata(new Metadata($arrMeta))
-            ->fromUuid($filesModel->uuid)
-            ->setMetadata(new Metadata($arrMeta))
+            ->setOverwriteMetadata($metadata)
+            ->setMetadata($metadata)
         ;
 
-        if ($customHref) {
-            $figure->setLinkHref($customHref);
+        if ($picturesModel->addCustomThumb && $picturesModel->customThumb) {
+            $figureBuilder->fromUuid($picturesModel->customThumb);
+        } else {
+            $figureBuilder->fromUuid($filesModel->uuid);
         }
 
-        // Build the array
-        return [
-            'row_owner' => $ownerModel ? $ownerModel->row() : [],
-            'row_files' => $filesModel->row(),
-            'row_picture' => $pictureModel->row(),
-            'row_album' => $pictureModel->getRelated('pid')->row(),
-            'local_media_src' => $localMediaSrc,
-            'social_media_src' => $socialMediaSrc,
-            'exif_data' => $this->galleryCreatorReadExifMetaData ? $this->getExif(new File($filesModel->path)) : [],
-            'figure' => [
-                'build' => $figure->build(),
-                'uuid' => $filesModel->uuid,
-                'size' => $contentElementModel->gcSizeDetailView,
-                'enable_lightbox' => (bool) $contentElementModel->gcFullSize,
-                'meta_data' => new Metadata($arrMeta),
-            ],
-        ];
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getExif(File $file): array
-    {
-        // Exif
-        try {
-            $exif = \is_callable('exif_read_data') ? exif_read_data($this->projectDir.'/'.$file->path) : ['info' => "The function 'exif_read_data()' is not available on this server."];
-        } catch (\Exception $e) {
-            $exif = ['info' => "The function 'exif_read_data()' is not available on this server."];
+        if ($customLinkHref) {
+            $figureBuilder->setLinkHref(StringUtil::ampersand($customLinkHref));
         }
 
-        return $exif;
+        return new GalleryPictureDto(
+            framework: $this->framework,
+            pictureId: $picturesModel->id,
+            projectDir: $this->projectDir,
+            figure: $figureBuilder->build(),
+            metadata: $metadata,
+            localMediaModel: $localMediaModel,
+            socialMediaSrc: $socialMediaSrc,
+        );
     }
 
     public function pictureExists(GalleryCreatorPicturesModel $picturesModel): bool
     {
-        $filesystemIterator = FilesystemUtil::listContentsFromSerialized($this->filesStorage, $picturesModel->uuid);
-        $fileSystemItem = $filesystemIterator->first();
+        $fileSystemItem = $this->filesystemItemResolver->first($picturesModel->uuid);
+
+        return null !== $fileSystemItem && $fileSystemItem->isFile();
+    }
+
+    private function getBasePath(): string
+    {
+        return $this->filesContext->getStaticUrl();
+    }
+
+    private function getMetadata(GalleryCreatorPicturesModel $picturesModel): Metadata|null
+    {
+        $fileSystemItem = $this->filesystemItemResolver->first($picturesModel->uuid);
 
         if (null === $fileSystemItem || !$fileSystemItem->isFile()) {
-            return false;
+            return null;
         }
 
-        return true;
+        $filesModel = $this->framework->getAdapter(FilesModel::class)
+            ->findByUuid($picturesModel->uuid)
+        ;
+
+        if (null === $filesModel) {
+            return null;
+        }
+
+        $meta = $fileSystemItem->getExtraMetadata()
+            ->getLocalized()
+            ?->getDefault()
+        ;
+
+        $arrMeta = null === $meta ? [] : $meta->all();
+
+        $arrMeta['title'] = match (true) {
+            '' !== $picturesModel->title => $picturesModel->title,
+            '' !== $picturesModel->caption => $picturesModel->caption,
+            default => $arrMeta['title'] ?? '',
+        };
+
+        $arrMeta['caption'] = match (true) {
+            '' !== $picturesModel->caption => $picturesModel->caption,
+            default => $arrMeta['caption'] ?? '',
+        };
+
+        return new Metadata($arrMeta);
     }
 }

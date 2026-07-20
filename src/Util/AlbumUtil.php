@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Util;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\StringUtil;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
@@ -23,45 +24,46 @@ use Symfony\Component\HttpFoundation\RequestStack;
 readonly class AlbumUtil
 {
     public function __construct(
+        private ContaoFramework $framework,
         private ScopeMatcher $scopeMatcher,
         private RequestStack $requestStack,
+        private CrawlerDetect $crawlerDetect = new CrawlerDetect(),
     ) {
     }
 
     public function countAlbumViews(GalleryCreatorAlbumsModel $albumModel): void
     {
-        $crawlerDetect = new CrawlerDetect();
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!$request || !$this->scopeMatcher->isFrontendRequest($request) || $crawlerDetect->isCrawler()) {
+        if (!$request || !$this->scopeMatcher->isFrontendRequest($request) || $this->crawlerDetect->isCrawler() || empty($request->getClientIp())) {
             return;
         }
 
-        $arrVisitors = StringUtil::deserialize($albumModel->visitorsDetails, true);
+        $visitors = $this->framework->getAdapter(StringUtil::class)->deserialize($albumModel->visitorsDetails, true);
 
-        if (\in_array(md5((string) $_SERVER['REMOTE_ADDR']), $arrVisitors, true)) {
+        if (\in_array(md5($request->getClientIp()), $visitors, true)) {
             // Return if the visitor is already registered
             return;
         }
 
         // Keep visitor's data in the db unless 50 other users have visited the album
-        if (50 === \count($arrVisitors)) {
+        if (50 === \count($visitors)) {
             // Slice last item
-            $arrVisitors = \array_slice($arrVisitors, 0, \count($arrVisitors) - 1);
+            $visitors = \array_slice($visitors, 0, \count($visitors) - 1);
         }
 
-        $newVisitor = md5((string) $_SERVER['REMOTE_ADDR']);
+        $newVisitor = md5($request->getClientIp());
 
-        if (!empty($arrVisitors)) {
+        if (!empty($visitors)) {
             // Insert the element to arrays first position
-            array_unshift($arrVisitors, $newVisitor);
+            array_unshift($visitors, $newVisitor);
         } else {
-            $arrVisitors[] = $newVisitor;
+            $visitors[] = $newVisitor;
         }
 
         // Update database
         $albumModel->visitors = ++$albumModel->visitors;
-        $albumModel->visitorsDetails = serialize($arrVisitors);
+        $albumModel->visitorsDetails = serialize($visitors);
         $albumModel->save();
     }
 
@@ -81,7 +83,7 @@ readonly class AlbumUtil
 
         while ($hasParent) {
             ++$level;
-            $parentAlbumModel = GalleryCreatorAlbumsModel::findById($pid);
+            $parentAlbumModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($pid);
 
             if (0 === ($pid = $parentAlbumModel->pid)) {
                 $hasParent = false;

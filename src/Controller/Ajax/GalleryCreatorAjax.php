@@ -45,8 +45,8 @@ readonly class GalleryCreatorAjax
         $this->framework->initialize();
 
         $arrPicture = [];
-        $pictureModel = GalleryCreatorPicturesModel::findById($pictureId);
-        $contentModel = ContentModel::findById($contentId);
+        $pictureModel = $this->framework->getAdapter(GalleryCreatorPicturesModel::class)->findById($pictureId);
+        $contentModel = $this->framework->getAdapter(ContentModel::class)->findById($contentId);
 
         if (null !== $pictureModel && null !== $contentModel) {
             $arrPicture = $this->pictureUtil->getPictureData($pictureModel, $contentModel);
@@ -61,8 +61,8 @@ readonly class GalleryCreatorAjax
         $this->framework->initialize();
 
         // Do not send data if album is protected and the user has no access
-        $albumModel = GalleryCreatorAlbumsModel::findById($pid);
-        $contentModel = ContentModel::findById($contentId);
+        $albumModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($pid);
+        $contentModel = $this->framework->getAdapter(ContentModel::class)->findById($contentId);
         $json = [
             'data' => [],
             'status' => '',
@@ -91,19 +91,25 @@ readonly class GalleryCreatorAjax
         $strSorting = $sortColumn.' '.$sortDirection;
 
         $pictures = $this->connection->fetchAllAssociative(
-            \sprintf('SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY %s', $strSorting),
-            [1, $pid],
+            "SELECT * FROM tl_gallery_creator_pictures WHERE published = ? AND pid = ? ORDER BY $strSorting",
+            [
+                1,
+                $pid,
+            ],
         );
 
+        $filesAdapter = $this->framework->getAdapter(FilesModel::class);
+        $stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
+
         foreach ($pictures as $picture) {
-            if (null === ($filesModel = FilesModel::findByUuid($picture['uuid']))) {
+            if (null === ($filesModel = $filesAdapter->findByUuid($picture['uuid']))) {
                 continue;
             }
 
             $localMediaModel = null;
 
             if (!empty($picture['localMediaSRC'])) {
-                $localMediaModel = FilesModel::findByUuid($picture['localMediaSRC']);
+                $localMediaModel = $filesAdapter->findByUuid($picture['localMediaSRC']);
             }
 
             $href = $filesModel->path;
@@ -111,8 +117,8 @@ readonly class GalleryCreatorAjax
             $href = $localMediaModel ? $localMediaModel->path : $href;
 
             $picture['href'] = $href;
-            $picture['caption'] = StringUtil::specialchars($picture['caption']);
-            $picture['uuid'] = StringUtil::binToUuid($filesModel->uuid);
+            $picture['caption'] = $stringUtilAdapter->specialchars($picture['caption']);
+            $picture['uuid'] = $stringUtilAdapter->binToUuid($filesModel->uuid);
 
             $json['data'][] = $picture;
         }

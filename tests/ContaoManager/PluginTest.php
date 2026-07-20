@@ -40,7 +40,7 @@ class PluginTest extends ContaoTestCase
             [
                 ContaoCoreBundle::class,
             ],
-            $bundles[0]->getLoadAfter()
+            $bundles[0]->getLoadAfter(),
         );
     }
 }

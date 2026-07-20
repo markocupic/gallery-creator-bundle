@@ -18,193 +18,184 @@ use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
 use Contao\CoreBundle\File\Metadata;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Image\Studio\Studio;
 use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
-use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\String\HtmlDecoder;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\Date;
 use Contao\FilesModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use Markocupic\GalleryCreatorBundle\Dto\GalleryAlbumDto;
+use Markocupic\GalleryCreatorBundle\Listing\AlbumListingService;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
 use Markocupic\GalleryCreatorBundle\Util\AlbumUtil;
 use Markocupic\GalleryCreatorBundle\Util\MarkdownUtil;
 use Markocupic\GalleryCreatorBundle\Util\PictureUtil;
 use Markocupic\GalleryCreatorBundle\Util\SecurityUtil;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractGalleryCreatorController extends AbstractContentElementController
 {
-    protected AlbumUtil $albumUtil;
-
-    protected Connection $connection;
-
-    protected HtmlDecoder $htmlDecoder;
-
-    protected InsertTagParser $insertTagParser;
-
-    protected MarkdownUtil $markdownUtil;
-
-    protected PictureUtil $pictureUtil;
-
-    protected RequestStack $requestStack;
-
-    protected ResponseContextAccessor $responseContextAccessor;
-
-    protected ScopeMatcher $scopeMatcher;
-
-    protected SecurityUtil $securityUtil;
-
-    protected Studio $studio;
-
-    protected string $projectDir;
-
-    public function __construct(DependencyAggregate $dependencyAggregate)
-    {
-        $this->albumUtil = $dependencyAggregate->albumUtil;
-        $this->connection = $dependencyAggregate->connection;
-        $this->htmlDecoder = $dependencyAggregate->htmlDecoder;
-        $this->insertTagParser = $dependencyAggregate->insertTagParser;
-        $this->markdownUtil = $dependencyAggregate->markdownUtil;
-        $this->pictureUtil = $dependencyAggregate->pictureUtil;
-        $this->projectDir = $dependencyAggregate->projectDir;
-        $this->requestStack = $dependencyAggregate->requestStack;
-        $this->responseContextAccessor = $dependencyAggregate->responseContextAccessor;
-        $this->scopeMatcher = $dependencyAggregate->scopeMatcher;
-        $this->securityUtil = $dependencyAggregate->securityUtil;
-        $this->studio = $dependencyAggregate->studio;
+    public function __construct(
+        protected readonly AlbumListingService $albumListingService,
+        protected readonly AlbumUtil $albumUtil,
+        protected readonly Connection $connection,
+        protected readonly ContaoFramework $framework,
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly Filesystem $filesystem,
+        protected readonly HtmlDecoder $htmlDecoder,
+        protected readonly InsertTagParser $insertTagParser,
+        protected readonly MarkdownUtil $markdownUtil,
+        protected readonly PictureUtil $pictureUtil,
+        protected readonly RequestStack $requestStack,
+        protected readonly ResponseContextAccessor $responseContextAccessor,
+        protected readonly SecurityUtil $securityUtil,
+        protected readonly Studio $studio,
+        protected readonly string $projectDir,
+    ) {
     }
 
-    public function overridePageMetaData(GalleryCreatorAlbumsModel $objAlbum): void
+    public function overridePageMetaData(GalleryCreatorAlbumsModel $albumModel): void
     {
-        // Overwrite the page metadata (see #2853, #4955 and #87)
         $responseContext = $this->responseContextAccessor->getResponseContext();
 
         if ($responseContext && $responseContext->has(HtmlHeadBag::class)) {
             /** @var HtmlHeadBag $htmlHeadBag */
             $htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
 
-            if ($objAlbum->pageTitle) {
-                $htmlHeadBag->setTitle($objAlbum->pageTitle); // Already stored decoded
-            } elseif ($objAlbum->title) {
-                $htmlHeadBag->setTitle($this->htmlDecoder->inputEncodedToPlainText($objAlbum->title));
+            if ($albumModel->pageTitle) {
+                $htmlHeadBag->setTitle($albumModel->pageTitle); // Already stored decoded
+            } elseif ($albumModel->title) {
+                $htmlHeadBag->setTitle($this->htmlDecoder->inputEncodedToPlainText($albumModel->title));
             }
 
-            if ($objAlbum->description) {
-                $htmlHeadBag->setMetaDescription($this->htmlDecoder->inputEncodedToPlainText($objAlbum->description));
-            } elseif ($objAlbum->teaser) {
-                $htmlHeadBag->setMetaDescription($this->htmlDecoder->inputEncodedToPlainText($objAlbum->teaser));
+            if ($albumModel->description) {
+                $htmlHeadBag->setMetaDescription($this->htmlDecoder->inputEncodedToPlainText($albumModel->description));
+            } elseif ($albumModel->teaser) {
+                $htmlHeadBag->setMetaDescription($this->htmlDecoder->inputEncodedToPlainText($albumModel->teaser));
             }
 
-            if ($objAlbum->robots) {
-                $htmlHeadBag->setMetaRobots($objAlbum->robots);
+            if ($albumModel->robots) {
+                $htmlHeadBag->setMetaRobots($albumModel->robots);
             }
         }
     }
 
-    public function getAlbumData(GalleryCreatorAlbumsModel $album, ContentModel $content): array
+    public function getAlbumData(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel): GalleryAlbumDto
     {
-        /** @var PageModel $page */
-        $page = $this->requestStack->getCurrentRequest()->attributes->get('pageModel');
+        /** @var PageModel $pageModel */
+        $pageModel = $this->requestStack->getCurrentRequest()->attributes->get('pageModel');
 
         // Count images
         $pictureCount = $this->connection
             ->fetchOne(
                 'SELECT COUNT(id) AS pictureCount FROM tl_gallery_creator_pictures WHERE pid = ? AND published = ?',
-                [$album->id, 1],
+                [
+                    $albumModel->id,
+                    1,
+                ],
             )
         ;
 
+        $stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
+
         // Image size
-        $size = StringUtil::deserialize($content->gcSizeAlbumListing);
+        $size = $stringUtilAdapter->deserialize($contentModel->gcSizeAlbumListing);
         $arrSize = !empty($size) && \is_array($size) ? $size : null;
 
-        $params = '/'.$album->alias;
-        $href = StringUtil::ampersand($page->getFrontendUrl($params));
+        $params = '/'.$albumModel->alias;
+        $href = $stringUtilAdapter->ampersand($pageModel->getFrontendUrl($params));
 
         /** @var FilesModel $previewImage */
-        $previewImage = $this->getAlbumPreviewThumb($album);
+        $previewImage = $this->getAlbumPreviewThumb($albumModel);
 
         $arrCssClasses = [];
-        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid((int) $album->pid);
-        $arrCssClasses[] = GalleryCreatorAlbumsModel::hasChildAlbums($album->id) ? 'gc-has-child-album' : null;
+        $arrCssClasses[] = 'gc-level-'.$this->albumUtil->getAlbumLevelFromPid($albumModel->pid);
+        $arrCssClasses[] = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->hasChildAlbums($albumModel->id) ? 'gc-has-child-album' : null;
         $arrCssClasses[] = !$pictureCount ? 'gc-empty-album' : null;
 
         // Do not show child albums, in news elements
-        if (GalleryCreatorNewsController::TYPE === $content->type) {
+        if (GalleryCreatorNewsController::TYPE === $contentModel->type) {
             $childAlbums = null;
         } else {
-            $childAlbums = $this->getChildAlbums($album, $content, true);
+            $childAlbums = $this->getChildAlbums($albumModel, $contentModel, true);
         }
 
         $childAlbumCount = null !== $childAlbums ? \count($childAlbums) : 0;
 
-        $strTeaser = $this->insertTagParser->replaceInline(nl2br((string) $album->teaser));
-        $strCaption = $this->insertTagParser->replaceInline(nl2br((string) $album->caption));
-        $strMarkdown = 'markdown' === $album->captionType && $album->markdownCaption ? $this->markdownUtil->parse($album->markdownCaption) : null;
+        $teaserText = $this->insertTagParser->replaceInline(nl2br((string) $albumModel->teaser));
+        $captionText = $this->insertTagParser->replaceInline(nl2br((string) $albumModel->caption));
+        $markdownText = 'markdown' === $albumModel->captionType && $albumModel->markdownCaption ? $this->markdownUtil->parse($albumModel->markdownCaption) : null;
 
         // Meta
         $arrMeta = [];
-        $arrMeta['alt'] = StringUtil::specialchars($album->name);
-        $arrMeta['caption'] = $strTeaser;
-        $arrMeta['title'] = StringUtil::specialchars($album->name);
+        $arrMeta['alt'] = $albumModel->name;
+        $arrMeta['caption'] = $teaserText;
+        $arrMeta['title'] = $albumModel->name;
+        $metadata = new Metadata($arrMeta);
 
-        // Compile list of images
+        // Build the figure
+        $figure = null;
+
         if ($previewImage) {
             $figure = $this->studio
                 ->createFigureBuilder()
                 ->setSize($arrSize)
                 ->enableLightbox(false)
-                ->setOverwriteMetadata(new Metadata($arrMeta))
+                ->setOverwriteMetadata($metadata)
                 ->fromUuid($previewImage->uuid)
-                ->setMetadata(new Metadata($arrMeta))
+                ->setMetadata($metadata)
+                ->build()
             ;
         }
 
-        $arrAlbum = $album->row();
-        $arrAlbum['teaser'] = $strTeaser;
-        $arrAlbum['caption'] = $strCaption;
-        $arrAlbum['markdownCaption'] = $strMarkdown ?: false;
-        $arrAlbum['dateFormatted'] = Date::parse(Config::get('dateFormat'), $album->date);
-        $arrAlbum['datimFormatted'] = Date::parse(Config::get('datimFormat'), $album->date);
-        $arrAlbum['meta'] = new Metadata($arrMeta);
+        $dateAdapter = $this->framework->getAdapter(Date::class);
+        $configAdapter = $this->framework->getAdapter(Config::class);
+
+        $arrAlbum = $albumModel->row();
+        $arrAlbum['teaser'] = $teaserText;
+        $arrAlbum['caption'] = $captionText;
+        $arrAlbum['markdownCaption'] = $markdownText ?: false;
+        $arrAlbum['dateFormatted'] = $dateAdapter->parse($configAdapter->get('dateFormat'), $albumModel->date);
+        $arrAlbum['datimFormatted'] = $dateAdapter->parse($configAdapter->get('datimFormat'), $albumModel->date);
+        $arrAlbum['metadata'] = $metadata;
         $arrAlbum['href'] = $href;
         $arrAlbum['pictureCount'] = $pictureCount;
         $arrAlbum['cssClass'] = !(empty(implode(' ', array_filter($arrCssClasses)))) ? implode(' ', array_filter($arrCssClasses)) : false;
         $arrAlbum['hasChildAlbums'] = (bool) $childAlbumCount;
         $arrAlbum['childAlbumCount'] = $childAlbums ? \count($childAlbums) : 0;
         $arrAlbum['childAlbums'] = $childAlbums;
-        $arrAlbum['figure'] = [
-            'build' => isset($figure) ? $figure->build() : null,
-            'uuid' => isset($figure) ? $previewImage->uuid : null,
-            'size' => $arrSize,
-            'enable_lightbox' => false,
-            'meta_data' => new Metadata($arrMeta),
-        ];
 
-        return $arrAlbum;
+        return new GalleryAlbumDto(
+            figure: $figure,
+            metadata: $metadata,
+            data: $arrAlbum,
+        );
     }
 
-    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $album): FilesModel|null
+    public function getAlbumPreviewThumb(GalleryCreatorAlbumsModel $albumModel): FilesModel|null
     {
-        $picture = GalleryCreatorPicturesModel::findOneById($album->thumb);
+        $picturesModel = $this->framework->getAdapter(GalleryCreatorPicturesModel::class)->findOneById($albumModel->thumb);
 
-        if (null === $picture || !$picture->published) {
+        if (null === $picturesModel || !$picturesModel->published) {
             return null;
         }
 
-        $files = FilesModel::findByUuid($picture->uuid);
+        $files = $this->framework->getAdapter(FilesModel::class)->findByUuid($picturesModel->uuid);
 
-        if (null === $files || !is_file($this->projectDir.'/'.$files->path)) {
+        if (null === $files || !$this->filesystem->exists(Path::makeAbsolute($files->path, $this->projectDir))) {
             return null;
         }
 
@@ -215,37 +206,25 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      * @throws Exception
      * @throws DoctrineDBALDriverException
      */
-    public function getChildAlbums(GalleryCreatorAlbumsModel $album, ContentModel $content, bool $blnOnlyAllowed = false): array|null
+    public function getChildAlbums(GalleryCreatorAlbumsModel $albumModel, ContentModel $content, bool $blnOnlyAllowed = false): array|null
     {
-        $strSorting = $content->gcSorting.' '.$content->gcSortingDirection;
-
-        $childAlbums = $this->connection->fetchAllAssociative(
-            "SELECT * FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY $strSorting",
-            [$album->id, 1],
-        );
+        $albumsAdapter = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
 
         $arrChildren = [];
 
-        foreach ($childAlbums as $childAlbum) {
-            $objChild = GalleryCreatorAlbumsModel::findById($childAlbum['id']);
+        foreach ($this->albumListingService->getSortedAlbumIds($content, (int) $albumModel->id) as $id) {
+            $childAlbum = $albumsAdapter->findById($id);
 
-            if ($blnOnlyAllowed) {
-                if ($content->gcShowAlbumSelection) {
-                    $arrAllowed = StringUtil::deserialize($content->gcAlbumSelection, true);
-
-                    if (!\in_array($objChild->id, $arrAllowed, false)) {
-                        continue;
-                    }
-
-                    if (!$this->securityUtil->isAuthorized($objChild)) {
-                        continue;
-                    }
-                }
+            if (null === $childAlbum) {
+                continue;
             }
 
-            if (null !== $objChild) {
-                $arrChildren[] = $this->getAlbumData($objChild, $content);
+            // Skip albums outside the selection or protected from the current user
+            if ($blnOnlyAllowed && (!$this->albumListingService->isInSelection($content, $childAlbum) || !$this->securityUtil->isAuthorized($childAlbum))) {
+                continue;
             }
+
+            $arrChildren[] = $this->getAlbumData($childAlbum, $content);
         }
 
         return !empty($arrChildren) ? $arrChildren : null;
@@ -254,19 +233,10 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
     /**
      * Add meta tags to the page header.
      */
-    protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $album): void
+    protected function addMetaTagsToPage(PageModel $pageModel, GalleryCreatorAlbumsModel $albumModel): void
     {
-        $pageModel->description = '' !== $album->description ? StringUtil::specialchars($album->description) : StringUtil::specialchars($pageModel->description);
-    }
-
-    protected function triggerGenerateFrontendTemplateHook(FragmentTemplate $template, GalleryCreatorAlbumsModel|null $album = null): void
-    {
-        // Trigger the galleryCreatorGenerateFrontendTemplate - HOOK
-        if (isset($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate']) && \is_array($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'])) {
-            foreach ($GLOBALS['TL_HOOKS']['galleryCreatorGenerateFrontendTemplate'] as $callback) {
-                System::importStatic($callback[0])->{$callback[1]}($this, $template, $album);
-            }
-        }
+        $stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
+        $pageModel->description = '' !== $albumModel->description ? $stringUtilAdapter->specialchars($albumModel->description) : $stringUtilAdapter->specialchars($pageModel->description);
     }
 
     /**
@@ -274,19 +244,22 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
      *
      * @throws DoctrineDBALException
      */
-    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $album, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
+    protected function addAlbumToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
     {
-        $template->set('album', $this->getAlbumData($album, $contentModel));
+        $template->set('album', $this->getAlbumData($albumModel, $contentModel));
     }
 
     /**
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
      */
-    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $album, ContentModel $contentModel, FragmentTemplate $template, PageModel $pageModel): void
+    protected function addAlbumPicturesToTemplate(GalleryCreatorAlbumsModel $albumModel, ContentModel $contentModel, FragmentTemplate $template): void
     {
         // Picture sorting
-        $arrSorting = empty($contentModel->gcPictureSorting) || empty($contentModel->gcPictureSortingDirection) ? ['sorting', 'ASC'] : [$contentModel->gcPictureSorting, $contentModel->gcPictureSortingDirection];
+        $arrSorting = match (true) {
+            empty($contentModel->gcPictureSorting), empty($contentModel->gcPictureSortingDirection) => ['sorting', 'ASC'],
+            default => [$contentModel->gcPictureSorting, $contentModel->gcPictureSortingDirection],
+        };
 
         // Sort by name will be done below.
         $arrSorting[0] = str_replace('name', 'id', $arrSorting[0]);
@@ -298,24 +271,24 @@ abstract class AbstractGalleryCreatorController extends AbstractContentElementCo
             ->andWhere('t.published = :published')
             ->orderBy(...$arrSorting)
             ->setParameter('published', 1)
-            ->setParameter('pid', $album->id)
+            ->setParameter('pid', $albumModel->id)
             ->fetchAllAssociative()
         ;
 
         $images = [];
 
         foreach ($dataPictures as $dataPicture) {
-            $filesModel = FilesModel::findByUuid($dataPicture['uuid']);
+            $filesModel = $this->framework->getAdapter(FilesModel::class)->findByUuid($dataPicture['uuid']);
             $basename = 'undefined';
 
             if (null !== $filesModel) {
                 $basename = $filesModel->name;
             }
 
-            if (null !== ($picture = GalleryCreatorPicturesModel::findById($dataPicture['id']))) {
-                if ($picture->uuid && $this->pictureUtil->pictureExists($picture)) {
+            if (null !== ($picturesModel = $this->framework->getAdapter(GalleryCreatorPicturesModel::class)->findById($dataPicture['id']))) {
+                if ($picturesModel->uuid && $this->pictureUtil->pictureExists($picturesModel)) {
                     // Prevent overriding items with same basename
-                    $images[$basename.'-id-'.$dataPicture['id']] = $this->pictureUtil->getPictureData($picture, $contentModel);
+                    $images[$basename.'-id-'.$dataPicture['id']] = $this->pictureUtil->getPictureData($picturesModel, $contentModel);
                 }
             }
         }

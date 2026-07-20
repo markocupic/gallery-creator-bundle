@@ -2,9 +2,41 @@
 <xliff version="1.1">
   <file datatype="php" original="vendor/markocupic/gallery-creator-bundle/src/Resources/contao/languages/en/tl_content.php" source-language="en" target-language="nl">
     <body>
+      <trans-unit id="tl_content.pagination_legend">
+        <source>Pagination settings</source>
+        <target>Paginering-instellingen</target>
+      </trans-unit>
       <trans-unit id="tl_content.miscellaneous_legend">
         <source>Miscellaneous settings</source>
         <target>Diverse instellingen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.album_listing_legend">
+        <source>Album listing legend</source>
+        <target>Albumoverzicht</target>
+      </trans-unit>
+      <trans-unit id="tl_content.picture_listing_legend">
+        <source>Picture listing legend</source>
+        <target>Afbeeldingoverzicht</target>
+      </trans-unit>
+      <trans-unit id="tl_content.album_selection_legend">
+        <source>Album selection legend</source>
+        <target>Albumselectie</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAddBreadcrumb.0">
+        <source>Display a breadcrumb</source>
+        <target>Toon een breadcrumb</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcAddBreadcrumb.1">
+        <source>Display a breadcrumb.</source>
+        <target>Toon een breadcrumb.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowAlbumSelection.0">
+        <source>Show a selection</source>
+        <target>Toon een selectie</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcShowAlbumSelection.1">
+        <source>Show a selection of albums.</source>
+        <target>Toon een selectie van albums.</target>
       </trans-unit>
       <trans-unit id="tl_content.gcAlbumSelection.0">
         <source>Select one or more albums</source>
@@ -13,6 +45,14 @@
       <trans-unit id="tl_content.gcAlbumSelection.1">
         <source>Selected albums will be displayed in the frontend.</source>
         <target>Geselecteerde albums worden weergegeven in het frontend.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.0">
+        <source>Select one album</source>
+        <target>Selecteer één album</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPublishSingleAlbum.1">
+        <source>The selected album will be displayed in the frontend.</source>
+        <target>Het geselecteerde album wordt in de frontend weergegeven.</target>
       </trans-unit>
       <trans-unit id="tl_content.gcAlbumsPerPage.0">
         <source>Items per page in the album listing</source>
@@ -46,6 +86,30 @@
         <source>DESC: descending, ASC: ascending</source>
         <target>DESC: aflopend (descending), ASC: oplopend (ascending)</target>
       </trans-unit>
+      <trans-unit id="tl_content.gcSortingDirection.DESC">
+        <source>Ascending</source>
+        <target>Oplopend</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingDirection.ASC">
+        <source>Descending</source>
+        <target>Aflopend</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSorting.0">
+        <source>Picture sorting</source>
+        <target>Sortering van afbeeldingen</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSorting.1">
+        <source>The pictures will be sorted according to the selected field.</source>
+        <target>De afbeeldingen worden gesorteerd op het geselecteerde veld.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSortingDirection.0">
+        <source>Sort sequence</source>
+        <target>Sorteervolgorde</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcPictureSortingDirection.1">
+        <source>DESC: descending, ASC: ascending</source>
+        <target>DESC: aflopend, ASC: oplopend</target>
+      </trans-unit>
       <trans-unit id="tl_content.gcSizeDetailView.0">
         <source>Detail view: Thumbnail width and height</source>
         <target>Detailweergave: thumbnail breedte en hoogte</target>
@@ -69,6 +133,46 @@
       <trans-unit id="tl_content.gcFullSize.1">
         <source>Open the full-size image in a lightbox or in a new browser window.</source>
         <target>Open de afbeelding op ware grootte in een lightbox of de link in een nieuw browser venster.</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.sorting">
+        <source>Backend-module sorting (sorting)</source>
+        <target>Sortering backend-module (sorting)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.id">
+        <source>ID</source>
+        <target>ID</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.date">
+        <source>Date of creation (date)</source>
+        <target>Aanmaakdatum (date)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.name">
+        <source>Name (name)</source>
+        <target>Naam (name)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.cuser">
+        <source>Owner (cuser)</source>
+        <target>Eigenaar (cuser)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.caption">
+        <source>Caption (caption)</source>
+        <target>Bijschrift (caption)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.title">
+        <source>Image-title (title)</source>
+        <target>Afbeeldingstitel (title)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.tstamp">
+        <source>Revision date (tstamp)</source>
+        <target>Wijzigingsdatum (tstamp)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.alias">
+        <source>Album alias (alias)</source>
+        <target>Albumalias (alias)</target>
+      </trans-unit>
+      <trans-unit id="tl_content.gcSortingField.visitors">
+        <source>Number of visitors (visitors)</source>
+        <target>Aantal bezoekers (visitors)</target>
       </trans-unit>
     </body>
   </file>

@@ -1,7 +1,7 @@
 # EditorConfig is awesome: http://EditorConfig.org
 
 # top-most EditorConfig file
-root = false
+root = true
 
 # Unix-style newlines with a newline ending every file
 [*]
@@ -16,9 +16,9 @@ indent_size = 4
 [*.{html5,svg,min.css,min.js}]
 insert_final_newline = false
 
-[*/public/**.{css,js,php}]
+[/public/**.{css,js,php}]
 indent_style = tab
 
-[*/contao/**.html5]
+[/contao/languages/**/**.xlf]
 indent_style = space
 indent_size = 2

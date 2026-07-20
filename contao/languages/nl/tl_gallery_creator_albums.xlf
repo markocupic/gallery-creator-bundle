@@ -6,6 +6,22 @@
         <source>Album settings</source>
         <target>Album informatie</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.meta_legend">
+        <source>Metadata</source>
+        <target>Metadata</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.details_legend">
+        <source>Album details</source>
+        <target>Albumdetails</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.caption_legend">
+        <source>Album caption settings</source>
+        <target>Instellingen albumbijschrift</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploadDir_legend">
+        <source>Upload directory settings</source>
+        <target>Instellingen uploadmap</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protection_legend">
         <source>Protect album</source>
         <target>Bescherm album</target>
@@ -13,6 +29,26 @@
       <trans-unit id="tl_gallery_creator_albums.upload_settings_legend">
         <source>Image settings</source>
         <target>Beeldinstellingen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insert_article_legend">
+        <source>Insert articles before or after the album</source>
+        <target>Artikelen voor of na het album invoegen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploader_legend">
+        <source>Uploader</source>
+        <target>Uploader</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.maintenance">
+        <source>Revise tables</source>
+        <target>Tabellen herzien</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.album_preview_thumb_legend">
+        <source>Picture and sorting settings</source>
+        <target>Afbeeldings- en sorteerinstellingen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.gallery_creator_chmod_legend">
+        <source>Album access rights</source>
+        <target>Albumtoegangsrechten</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.id.0">
         <source>Album-ID</source>
@@ -26,6 +62,22 @@
         <source>The album alias defines although the album folder name.</source>
         <target>De album alias wordt gebruikt i.p.v. het album ID.</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pageTitle.0">
+        <source>Page title</source>
+        <target>Paginatitel</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.pageTitle.1">
+        <source>Here you can add a custom meta title to overwrite the default page title.</source>
+        <target>Hier kun je een aangepaste metatitel toevoegen om de standaard paginatitel te overschrijven.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.robots.0">
+        <source>Robots tag</source>
+        <target>Robots-tag</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.robots.1">
+        <source>Here you can overwrite how search engines handle the event.</source>
+        <target>Hier kun je bepalen hoe zoekmachines de pagina behandelen.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.published.0">
         <source>Publish album</source>
         <target>Publiceer album</target>
@@ -34,13 +86,65 @@
         <source>Date of creation</source>
         <target>Aanmaakdatum</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.location.0">
+        <source>Event location</source>
+        <target>Evenementlocatie</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.location.1">
+        <source>Set the event location.</source>
+        <target>Stel de evenementlocatie in.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.teaser.0">
+        <source>Event teaser</source>
+        <target>Evenement-teaser</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.teaser.1">
+        <source>The event teaser can be shown in an album list instead of the full album-caption.</source>
+        <target>De evenement-teaser kan in een albumlijst worden getoond in plaats van het volledige albumbijschrift.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.description.0">
+        <source>Meta page description</source>
+        <target>Meta-paginabeschrijving</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.description.1">
+        <source>Here you can enter a short description of the page which will be evaluated by search engines like Google or Yahoo. Search engines usually indicate between 150 and 300 characters.</source>
+        <target>Hier kun je een korte beschrijving van de pagina invoeren die door zoekmachines zoals Google of Yahoo wordt geëvalueerd. Zoekmachines tonen doorgaans tussen de 150 en 300 tekens.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.name.0">
         <source>Album name</source>
         <target>Naam album</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name.1">
+        <source>Here you can define the album name.</source>
+        <target>Hier kun je de albumnaam bepalen.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.photographer.0">
+        <source>Photographer</source>
+        <target>Fotograaf</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.photographer.1">
+        <source>Please add photographers names.</source>
+        <target>Voeg de namen van de fotografen toe.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.captionType.0">
+        <source>Album caption type</source>
+        <target>Type albumbijschrift</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.captionType.1">
+        <source>Select the caption type, please.</source>
+        <target>Selecteer het type bijschrift.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.caption.0">
         <source>Album-caption</source>
         <target>Opmerkingen album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.markdownCaption.0">
+        <source>Album-caption (markdown)</source>
+        <target>Albumbijschrift (markdown)</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.markdownCaption.1">
+        <source>Use markdown to style the album caption. https://www.markdownguide.org/basic-syntax</source>
+        <target>Gebruik markdown om het albumbijschrift op te maken. https://www.markdownguide.org/basic-syntax</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.thumb.0">
         <source>Thumbnail</source>
@@ -50,17 +154,85 @@
         <source>Drag the items to re-order them.</source>
         <target>De thumbnail die in de album preview wordt weergegeven.</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.includeChmod.0">
+        <source>Assign access rights</source>
+        <target>Toegangsrechten toewijzen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.includeChmod.1">
+        <source>Access rights determine what back end users are allowed to do with the album.</source>
+        <target>Toegangsrechten bepalen wat backend-gebruikers met het album mogen doen.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.cuser.0">
-        <source>Default owner</source>
+        <source>Album owner</source>
         <target>Eigenaar album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cuser.1">
+        <source>Please select the album owner.</source>
+        <target>Selecteer de albumeigenaar.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cgroup.0">
+        <source>Album owner group</source>
+        <target>Eigenaarsgroep van het album</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.cgroup.1">
+        <source>Please select the album owner group.</source>
+        <target>Selecteer de eigenaarsgroep van het album.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.chmod.0">
+        <source>Access rights</source>
+        <target>Toegangsrechten</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.chmod.1">
+        <source>Please select the access rights for the album and its childalbums.</source>
+        <target>Selecteer de toegangsrechten voor het album en de subalbums.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.protected.0">
         <source>Protect album</source>
         <target>Bescherm album</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.protected.1">
+        <source>Allow the album to logged in front end users only.</source>
+        <target>Sta het album alleen toe voor ingelogde frontend-gebruikers.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.groups.0">
         <source>Allowed frontend groups</source>
         <target>Toon dit album alleen aan bepaalde gebruikersgroepen.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.groups.1">
+        <source>Allow watching the album to these member groups only.</source>
+        <target>Sta het bekijken van het album alleen toe aan deze ledengroepen.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePre.0">
+        <source>Insert article optionally before the album</source>
+        <target>Optioneel een artikel vóór het album invoegen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePre.1">
+        <source>Insert the id of the article that you optionally like have displayed in the detail view.</source>
+        <target>Voer de ID in van het artikel dat je eventueel in de detailweergave wilt tonen.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePost.0">
+        <source>Insert article optionally after the album</source>
+        <target>Optioneel een artikel ná het album invoegen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.insertArticlePost.1">
+        <source>Insert the id of the article that you optionally like have displayed in the detail view.</source>
+        <target>Voer de ID in van het artikel dat je eventueel in de detailweergave wilt tonen.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.fileUpload.0">
+        <source>File Upload</source>
+        <target>Bestandsupload</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.fileUpload.1">
+        <source>Browse your local computer and select the files you want to upload to the server.</source>
+        <target>Blader op je computer en selecteer de bestanden die je naar de server wilt uploaden.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploader.0">
+        <source>Uploader</source>
+        <target>Uploader</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.uploader.1">
+        <source>Please choose the uploader.</source>
+        <target>Kies de uploader.</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.imageResolution.0">
         <source>Image width</source>
@@ -78,6 +250,58 @@
         <source>Otherwise the filename will be generated automatically.</source>
         <target>Anders wordt de bestandsnaam automatisch gegenereerd.</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.visitors.0">
+        <source>Number of visitors</source>
+        <target>Aantal bezoekers</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.visitors.1">
+        <source>Set the number of album visitors.</source>
+        <target>Stel het aantal albumbezoekers in.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.sortBy.0">
+        <source>Re-order images by</source>
+        <target>Afbeeldingen opnieuw ordenen op</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.sortBy.1">
+        <source>Please choose the sort order.</source>
+        <target>Kies de sorteervolgorde.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.assignedDir.0">
+        <source>Assigned directory</source>
+        <target>Toegewezen map</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.assignedDir.1">
+        <source>New images will be uploaded to this directory.</source>
+        <target>Nieuwe afbeeldingen worden naar deze map geüpload.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.filePrefix.0">
+        <source>Rename all pictures and use a prefix</source>
+        <target>Alle afbeeldingen hernoemen met een voorvoegsel</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.filePrefix.1">
+        <source>Enter a valid file prefix to rename all pictures of this album (e.g. "me-in-paris-2012").</source>
+        <target>Voer een geldig bestandsvoorvoegsel in om alle afbeeldingen van dit album te hernoemen (bijv. "ik-in-parijs-2012").</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.0">
+        <source>Accepted files</source>
+        <target>Geaccepteerde bestanden</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.acceptedFiles.1">
+        <source>Accepted files: %s.</source>
+        <target>Geaccepteerde bestanden: %s.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseTablesBtn">
+        <source>Revise database</source>
+        <target>Database herzien</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseDatabase.0">
+        <source>Revise tables</source>
+        <target>Tabellen herzien</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.reviseDatabase.1">
+        <source>Remove orphaned/incorrect entries</source>
+        <target>Verwijder verweesde/onjuiste items</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.new.0">
         <source>New album</source>
         <target>Nieuw album</target>
@@ -94,6 +318,14 @@
         <source>Edit and list pictures of album with ID %s.</source>
         <target>Bewerk album ID %s.</target>
       </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.editheader.0">
+        <source>Change album settings</source>
+        <target>Albuminstellingen wijzigen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.editheader.1">
+        <source>Change the album settings with ID %s.</source>
+        <target>Wijzig de albuminstellingen met ID %s.</target>
+      </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.delete.0">
         <source>Delete album</source>
         <target>Wis album</target>
@@ -101,6 +333,14 @@
       <trans-unit id="tl_gallery_creator_albums.delete.1">
         <source>Delete album with ID %s.</source>
         <target>Wis album ID %s.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.toggle.0">
+        <source>Toggle visibility</source>
+        <target>Zichtbaarheid schakelen</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.toggle.1">
+        <source>Toggle visibility of album ID %s</source>
+        <target>Zichtbaarheid van album ID %s schakelen</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.uploadImages.0">
         <source>Upload images</source>
@@ -141,6 +381,34 @@
       <trans-unit id="tl_gallery_creator_albums.pasteinto.1">
         <source>Paste into album ID %s</source>
         <target>Plak in album ID %s.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.no_scaling">
+        <source>Do not scale images during the upload process.</source>
+        <target>Afbeeldingen niet schalen tijdens het uploaden.</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name_asc">
+        <source>File name (ascending)</source>
+        <target>Bestandsnaam (oplopend)</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.name_desc">
+        <source>File name (descending)</source>
+        <target>Bestandsnaam (aflopend)</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.date_asc">
+        <source>Date (ascending)</source>
+        <target>Datum (oplopend)</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.date_desc">
+        <source>Date (descending)</source>
+        <target>Datum (aflopend)</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.custom">
+        <source>Custom order</source>
+        <target>Aangepaste volgorde</target>
+      </trans-unit>
+      <trans-unit id="tl_gallery_creator_albums.messages.reviseDatabase">
+        <source>Revise tables: Clean the database from damaged/invalid/orphaned entries.</source>
+        <target>Tabellen herzien: Maak de database schoon van beschadigde/ongeldige/verweesde items.</target>
       </trans-unit>
     </body>
   </file>

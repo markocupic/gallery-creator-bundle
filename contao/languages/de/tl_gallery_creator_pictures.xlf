@@ -135,8 +135,8 @@
         <target>Alternativ zum Grossbild einen Film oder einen Sound von einer Social-Media-Plattform wiedergeben</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.socialMediaSRC.1">
-        <source>Add the full embed path to the source: https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&amp;amp;wmode=transparent</source>
-        <target>Geben Sie den vollen Pfad zum Medium an: https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&amp;amp;wmode=transparent</target>
+        <source>Add the full embed path to the source: https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&amp;wmode=transparent</source>
+        <target>Geben Sie den vollen Pfad zum Medium an: https://www.youtube.com/embed/VOJyrQa_WR4?rel=0&amp;wmode=transparent</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_pictures.localMediaSRC.0">
         <source>Embed a movie or a sound located on the contao file system.</source>

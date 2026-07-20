@@ -29,8 +29,8 @@
 {% endblock %}
 
 {% block list_item %}
-    {% if showAlbumDetail and item.figure.build|default %}
-        {% with {figure: item.figure.build} %}{{ block('figure_component') }}{% endwith %}
+    {% if showAlbumDetail and item.figure|default %}
+        {% with {figure: item.figure} %}{{ block('figure_component') }}{% endwith %}
     {% endif %}
 {% endblock %}
 

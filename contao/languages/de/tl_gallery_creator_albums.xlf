@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.album_preview_thumb_legend">
         <source>Picture and sorting settings</source>
-        <target>Vorschau-Thumbnail-Einstellungen &amp;amp; Sortierreihenfolge</target>
+        <target>Vorschau-Thumbnail-Einstellungen &amp; Sortierreihenfolge</target>
       </trans-unit>
       <trans-unit id="tl_gallery_creator_albums.gallery_creator_chmod_legend">
         <source>Album access rights</source>

@@ -44,7 +44,7 @@ class AlbumVoter extends Voter
     protected function supports($attribute, $subject): bool
     {
         if (\is_scalar($subject)) {
-            if (null !== ($album = GalleryCreatorAlbumsModel::findById($subject))) {
+            if (null !== ($album = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($subject))) {
                 $subject = $album;
             }
         }
@@ -54,7 +54,7 @@ class AlbumVoter extends Voter
             return false;
         }
 
-        $arrPermission = StringUtil::trimsplit('.', $attribute);
+        $arrPermission = $this->framework->getAdapter(StringUtil::class)->trimsplit('.', $attribute);
 
         if (!\is_array($arrPermission) || 2 !== \count($arrPermission)) {
             return false;
@@ -85,7 +85,7 @@ class AlbumVoter extends Voter
         }
 
         // Convert id to object if $subject is an album id.
-        if (null === ($album = GalleryCreatorAlbumsModel::findById($albumId))) {
+        if (null === ($album = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($albumId))) {
             throw new \Exception('Album with id '.$albumId.' not found.');
         }
 
@@ -93,11 +93,7 @@ class AlbumVoter extends Voter
             return true;
         }
 
-        if (!$album->includeChmod) {
-            return false;
-        }
-
-        $permission = StringUtil::trimsplit('.', $attribute);
+        $permission = $this->framework->getAdapter(StringUtil::class)->trimsplit('.', $attribute);
 
         $field = $permission[1];
 

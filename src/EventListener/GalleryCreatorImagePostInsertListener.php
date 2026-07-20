@@ -12,30 +12,29 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/gallery-creator-bundle
  */
 
-namespace Markocupic\GalleryCreatorBundle\EventListener\ContaoHook;
+namespace Markocupic\GalleryCreatorBundle\EventListener;
 
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Event\ImagePostInsertEvent;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 /**
  * This is a demo class!
  */
-#[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
+#[AsEventListener(priority: 100)]
 class GalleryCreatorImagePostInsertListener
 {
-    public const string HOOK = 'galleryCreatorImagePostInsert';
-
     public function __construct(private readonly Security $security)
     {
     }
 
-    public function __invoke(GalleryCreatorPicturesModel $picturesModel): void
+    public function __invoke(ImagePostInsertEvent $event): void
     {
         /*
+        $picturesModel = $event->getPicturesModel();
         $user = $this->security->getUser();
 
-        // E.g automatically add a caption to the uploaded image
+        // E.g. automatically add a caption to the uploaded image
         if ($user instanceof BackendUser && $user->name) {
             $picturesModel->caption = 'Holidays '.date('Y').', Photo: '.$user->name;
             $picturesModel->save();

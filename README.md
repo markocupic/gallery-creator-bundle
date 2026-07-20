@@ -2,58 +2,63 @@
 
 # Gallery Creator Bundle
 
-## Frontend and backend extension for [Contao CMS](https://www.contao.org)
+[![Latest Version](https://img.shields.io/packagist/v/markocupic/gallery-creator-bundle.svg?style=flat-square)](https://packagist.org/packages/markocupic/gallery-creator-bundle)
+[![Total Downloads](https://img.shields.io/packagist/dt/markocupic/gallery-creator-bundle.svg?style=flat-square)](https://packagist.org/packages/markocupic/gallery-creator-bundle)
+[![License](https://img.shields.io/packagist/l/markocupic/gallery-creator-bundle.svg?style=flat-square)](https://github.com/markocupic/gallery-creator-bundle/blob/3.x/LICENSE)
 
-This extension can be used to create, display and manage photo albums in your [Contao](https://www.contao.org) installation.
- The Gallery Creator Bundle offers an album listing and an album detail view.
- Since version 2.0.0 [markdown](https://www.markdownguide.org/) can be used to
-  create the album description.
+**Frontend and backend extension for [Contao CMS](https://www.contao.org).**
+
+This extension lets you create, display and manage photo albums in your
+[Contao](https://www.contao.org) installation. It ships with an **album listing** and an
+**album detail view**, supports nested (child) albums, per-album access rights, and
+[Markdown](https://www.markdownguide.org/) album descriptions.
 
 https://user-images.githubusercontent.com/1525166/154361326-cc4dc4c0-60c5-41e3-a0dc-a41fcd3d242e.mp4
 
+## Table of contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Upgrading](#upgrading)
+- [Configuration](#configuration)
+- [Access rights (CHMOD)](#access-rights-chmod)
+- [Lightbox](#lightbox)
+- [Styling (CSS)](#styling-css)
+- [Frontend templates](#frontend-templates)
+- [Extending the bundle](#extending-the-bundle)
+  - [GenerateFrontendTemplateEvent](#generatefrontendtemplateevent)
+  - [ImagePostInsertEvent](#imagepostinsertevent)
+- [Running the tests](#running-the-tests)
+
+## Requirements
+
+- Contao `^5.3`
+- PHP `^8.3`
+
 ## Installation
-Please use the Contao Manager or run `composer require markocupic/gallery-creator-bundle`
-  in your CLI to install the extension.
 
-## CHMOD
-Go to the **Contao Backend Settings** and select a default **album owner**, a **default album owner group** and set the default **access rights**
+Use the **Contao Manager** or run the following command in your CLI:
 
-**Important**: If you keep the "album owner" field empty, the currently logged-in backend user automatically becomes the album owner
-  when creating a new album.
-
-![chmod](docs/img/chmod.jpg)
-
-## Lightbox
- As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/).
- Simply run the `composer require inspiredminds/contao-glightbox` command in your CLI.
- Please ensure, that you have activated the lightbox template
- in the layout settings of your theme in the Contao backend.
-
-## CSS
-Gallery Creator will add the `.gc-listing-view` and/or the `.gc-detail-view` to the
-  body tag. This will help you display or hide items you don't want to show in both modes (listing- & detail-view).
-
+```bash
+composer require markocupic/gallery-creator-bundle
 ```
-/** SASS
- * Do not display ce elements headline in detail mode
- *
- */
-body.gc-detail-view {
-  .ce_gallery_creator {
-    h2:not([class^="gc-album-detail-name"]) {
-      display: none;
-    }
-  }
-}
-```
+
+## Upgrading
+
+> ⚠️ **Upgrading to 3.3.0?**
+> This release contains **breaking changes** to the frontend Twig templates and
+> **removes** the legacy `galleryCreatorGenerateFrontendTemplate` and
+> `galleryCreatorImagePostInsert` hooks (replaced by Symfony events).
+> Please read the [**UPGRADE.md**](UPGRADE.md) before updating, especially if you have
+> customized any templates or used one of these hooks.
 
 ## Configuration
-This gallery extension is shipped with a default configuration.
- If you want to override these settings, you
- can do this in your common configuration file located in `config/config.yml`.
+
+The bundle ships with a default configuration. To override it, add your settings to your
+project configuration (e.g. `config/config.yaml`):
 
 ```yaml
-# config/config.yml
+# config/config.yaml
 # Gallery Creator (default settings)
 markocupic_gallery_creator:
   upload_path: 'files/gallery_creator_albums'
@@ -63,18 +68,73 @@ markocupic_gallery_creator:
 
 # Contao configuration
 contao:
- url_suffix: ''
- #....
+  url_suffix: ''
+  #....
 ```
 
-## "galleryCreatorGenerateFrontendTemplate" - Hook
-Use the "galleryCreatorGenerateFrontendTemplate" hook to adapt the frontend output.
+## Access rights (CHMOD)
 
-The "galleryCreatorGenerateFrontendTemplate" hook is triggered before the gallery creator
- front end template is parsed.
- It passes the content element object, the template object and the album object of
- the active album (if there is one).
- The "galleryCreatorGenerateFrontendTemplate" hook expects no return value.
+Go to the **Contao backend settings** and select a default **album owner**, a default
+**album owner group** and the default **access rights**.
+
+**Important:** If you leave the "album owner" field empty, the currently logged-in backend
+user automatically becomes the album owner when creating a new album.
+
+![chmod](docs/img/chmod.jpg)
+
+## Lightbox
+
+As a lightbox we strongly recommend [Glightbox](https://biati-digital.github.io/glightbox/):
+
+```bash
+composer require inspiredminds/contao-glightbox
+```
+
+Make sure you have activated the lightbox template in the layout settings of your theme in
+the Contao backend.
+
+## Styling (CSS)
+
+Gallery Creator adds the `.gc-listing-view` and/or the `.gc-detail-view` class to the
+`<body>` tag. This helps you show or hide items depending on the current mode (listing vs.
+detail view).
+
+```scss
+// SASS: do not display the content element headline in detail mode
+body.gc-detail-view {
+  .ce_gallery_creator {
+    h2:not([class^="gc-album-detail-name"]) {
+      display: none;
+    }
+  }
+}
+```
+
+## Frontend templates
+
+The frontend output is rendered with Contao Twig components. You can override any of the
+shipped templates in your project's `contao/templates/` directory:
+
+- `content_element/gallery_creator.html.twig`
+- `content_element/gallery_creator_news.html.twig`
+- `component/_album.html.twig`
+- `component/_album_detail_view.html.twig`
+- `component/_album_list_view.html.twig`
+
+> If you override these templates, be aware that the template variables changed in 3.3.0.
+> See [UPGRADE.md](UPGRADE.md) for the details.
+
+## Extending the bundle
+
+### GenerateFrontendTemplateEvent
+
+Use the `GenerateFrontendTemplateEvent` to adapt the frontend output. It is dispatched
+right before the gallery frontend template is rendered and carries the content element
+controller, the template, the current request and the active album (if there is one).
+Listeners mutate the template in place; no return value is expected.
+
+> This replaces the removed `galleryCreatorGenerateFrontendTemplate` hook (see
+> [UPGRADE.md](UPGRADE.md)).
 
 ```php
 <?php
@@ -83,32 +143,32 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Contao\CoreBundle\Twig\FragmentTemplate;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Event\GenerateFrontendTemplateEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsHook(GalleryCreatorFrontendTemplateListener::HOOK, priority: 100)]
+#[AsEventListener(priority: 100)]
 class GalleryCreatorFrontendTemplateListener
 {
-    public const HOOK = 'galleryCreatorGenerateFrontendTemplate';
-
-    public function __invoke(AbstractContentElementController $contentElement, Fragmenttemplate $template, GalleryCreatorAlbumsModel|null $activeAlbum = null)
+    public function __invoke(GenerateFrontendTemplateEvent $event): void
     {
+        $template = $event->getTemplate();
+        $activeAlbum = $event->getAlbumsModel();
+        $contentElement = $event->getContentElement();
+        $request = $event->getRequest();
+
         $template->set('foo', 'bar');
     }
 }
-
 ```
 
+### ImagePostInsertEvent
 
-## "galleryCreatorImagePostInsert" - Hook
-Use the "galleryCreatorImagePostInsert" hook to adapt the picture entity
-  when uploading new images to an album.
+Use the `ImagePostInsertEvent` to adapt the picture entity when uploading new images to an
+album. It is dispatched right after an image has been uploaded and written to the database
+and carries the pictures model. Listeners mutate the model in place; no return value is
+expected.
 
-The "galleryCreatorImagePostInsert" is executed right after an image
-  has been uploaded and has been written to the database.
-  It passes the pictures model and expects no return value.
+> This replaces the removed `galleryCreatorImagePostInsert` hook (see [UPGRADE.md](UPGRADE.md)).
 
 ```php
 <?php
@@ -118,24 +178,20 @@ declare(strict_types=1);
 namespace App\EventListener;
 
 use Contao\BackendUser;
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Event\ImagePostInsertEvent;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsHook(GalleryCreatorImagePostInsertListener::HOOK, priority: 100)]
+#[AsEventListener(priority: 100)]
 class GalleryCreatorImagePostInsertListener
 {
-    public const HOOK = 'galleryCreatorImagePostInsert';
-
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(private readonly Security $security)
     {
-        $this->security = $security;
     }
 
-    public function __invoke(GalleryCreatorPicturesModel $picturesModel): void
+    public function __invoke(ImagePostInsertEvent $event): void
     {
+        $picturesModel = $event->getPicturesModel();
         $user = $this->security->getUser();
 
         // Automatically add a caption to the uploaded image
@@ -147,5 +203,10 @@ class GalleryCreatorImagePostInsertListener
 }
 ```
 
+## Running the tests
+
+```bash
+vendor/bin/phpunit
+```
 
 Have fun!

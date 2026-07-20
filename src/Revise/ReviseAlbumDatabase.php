@@ -14,81 +14,90 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Revise;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\FilesModel;
-use Contao\Folder;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class ReviseAlbumDatabase
 {
     public function __construct(
-        private RequestStack $requestStack,
+        private ContaoFramework $framework,
         private Connection $connection,
+        private Filesystem $filesystem,
+        private RequestStack $requestStack,
+        private TranslatorInterface $translator,
         private string $projectDir,
         private string $galleryCreatorUploadPath,
     ) {
     }
 
     /**
-     * @throws Exception
      * @throws DoctrineDBALException
      */
     public function run(GalleryCreatorAlbumsModel $albumModel, bool $blnCleanDb = false): void
     {
         $request = $this->requestStack->getCurrentRequest();
+
+        if (null === $request) {
+            return;
+        }
+
         $session = $request->getSession();
         $session->set('gc_error', []);
 
         // Create the upload directory if it doesn't exist.
-        new Folder($this->galleryCreatorUploadPath);
+        $this->filesystem->mkdir(Path::makeAbsolute($this->galleryCreatorUploadPath, $this->projectDir));
 
         // Check for valid pid
         if ((int) $albumModel->pid > 0) {
-            $objParentAlb = $albumModel->getRelated('pid');
+            $parentAlbum = $albumModel->getRelated('pid');
 
-            if (null === $objParentAlb) {
+            if (null === $parentAlbum) {
                 $albumModel->pid = null;
                 $albumModel->save();
             }
         }
 
         // Try to identify entries with no uuid via path
-        $picturesModel = GalleryCreatorPicturesModel::findByPid($albumModel->id);
+        $picturesModel = $this->framework->getAdapter(GalleryCreatorPicturesModel::class)->findByPid($albumModel->id);
 
         if (null !== $picturesModel) {
             while ($picturesModel->next()) {
                 // Get parent album
-                $filesModel = FilesModel::findByUuid($picturesModel->uuid);
+                $filesModel = $this->framework->getAdapter(FilesModel::class)->findByUuid($picturesModel->uuid);
 
                 if (null === $filesModel) {
-                    $arrError = $session->get('gc_error');
+                    $errors = $session->get('gc_error');
 
-                    if (false !== $blnCleanDb) {
-                        $arrError[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
+                    if ($blnCleanDb) {
+                        $errors[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
                     } else {
                         // Show error-message
-                        $arrError[] = \sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
+                        $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, $albumModel->alias], 'contao_default');
                     }
 
-                    $session->set('gc_error', $arrError);
-                } elseif (!is_file($this->projectDir.'/'.$filesModel->path)) {
-                    $arrError = $session->get('gc_error');
+                    $session->set('gc_error', $errors);
+                } elseif (!$this->filesystem->exists(Path::makeAbsolute($filesModel->path, $this->projectDir))) {
+                    $errors = $session->get('gc_error');
 
                     // If there is a data record for the file, but the file doesn't exist in the fs anymore.
-                    if (false !== $blnCleanDb) {
-                        $arrError[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
+                    if ($blnCleanDb) {
+                        $errors[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
                     } else {
-                        $arrError[] = \sprintf($GLOBALS['TL_LANG']['ERR']['linkToNotExistingFile'], $picturesModel->id, $albumModel->alias);
+                        $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, $albumModel->alias], 'contao_default');
                     }
 
-                    $session->set('gc_error', $arrError);
+                    $session->set('gc_error', $errors);
                 }
             }
         }
@@ -102,18 +111,18 @@ readonly class ReviseAlbumDatabase
 
         foreach ($contents as $content) {
             $newIds = [];
-            $albumIds = StringUtil::deserialize($content['gcAlbumSelection'], true);
+            $albumIds = $this->framework->getAdapter(StringUtil::class)->deserialize($content['gcAlbumSelection'], true);
 
             foreach ($albumIds as $albumId) {
                 if (0 === (int) $albumId) {
-                    // "0" means: "show them all"
+                    // "0" means: "show all album items"
                     continue;
                 }
 
                 $id = $this->connection->fetchOne('SELECT id FROM tl_gallery_creator_albums WHERE id = ?', [$albumId]);
 
                 if (false !== $id) {
-                    $newIds[] = $id;
+                    $newIds[] = (int) $id;
                 }
             }
 

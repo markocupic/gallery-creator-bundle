@@ -16,10 +16,12 @@ namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
 use Contao\ContentModel;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\PageModel;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
+use Markocupic\GalleryCreatorBundle\Event\GenerateFrontendTemplateEvent;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,19 +38,12 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
 
     protected PageModel|null $pageModel = null;
 
-    public function __construct(
-        DependencyAggregate $dependencyAggregate,
-        private readonly TwigEnvironment $twig,
-    ) {
-        parent::__construct($dependencyAggregate);
-    }
-
     public function __invoke(Request $request, ContentModel $model, string $section, array|null $classes = null, PageModel|null $pageModel = null): Response
     {
         // Do not parse the content element in the backend
-        if ($this->scopeMatcher->isBackendRequest($request)) {
+        if ($this->container->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
             return new Response(
-                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', []),
+                $this->container->get('twig')->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig'),
             );
         }
 
@@ -77,6 +72,14 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         return parent::__invoke($request, $this->model, $section, $classes);
     }
 
+    public static function getSubscribedServices(): array
+    {
+        return [
+            'contao.routing.scope_matcher' => ScopeMatcher::class,
+            'twig' => TwigEnvironment::class,
+        ] + parent::getSubscribedServices();
+    }
+
     /**
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
@@ -84,7 +87,7 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
     protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
     {
         // Add the picture collection and the pagination to the template.
-        $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
+        $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template);
 
         // Augment template with more properties.
         $this->addAlbumToTemplate($this->activeAlbum, $model, $template, $this->pageModel);
@@ -98,8 +101,8 @@ class GalleryCreatorNewsController extends AbstractGalleryCreatorController
         // Add meta tags to the page header.
         $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
 
-        // Trigger gcGenerateFrontendTemplateHook
-        $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
+        // Dispatch the GenerateFrontendTemplateEvent
+        $this->eventDispatcher->dispatch(new GenerateFrontendTemplateEvent($this, $template, $request, $this->activeAlbum));
 
         return $template->getResponse();
     }

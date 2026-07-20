@@ -14,31 +14,27 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
-use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
-use Contao\CoreBundle\Exception\PageNotFoundException;
-use Contao\CoreBundle\Framework\Adapter;
-use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\CoreBundle\String\HtmlDecoder;
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Twig\FragmentTemplate;
-use Contao\Environment;
-use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\PageModel;
-use Contao\Pagination;
 use Contao\StringUtil;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
+use Markocupic\GalleryCreatorBundle\Breadcrumb\BreadcrumbGenerator;
+use Markocupic\GalleryCreatorBundle\Dto\PaginationResultDto;
+use Markocupic\GalleryCreatorBundle\Event\GenerateFrontendTemplateEvent;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
+use Markocupic\GalleryCreatorBundle\Pagination\AlbumListPaginator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment as TwigEnvironment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 #[AsContentElement(category: 'gallery_creator_elements')]
 class GalleryCreatorController extends AbstractGalleryCreatorController
@@ -51,83 +47,54 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
     protected array $arrAlbumListing = [];
 
-    protected ContentModel|null $model;
+    protected ContentModel|null $model = null;
 
-    protected PageModel|null $pageModel;
-
-    // Adapters
-    protected Adapter $config;
-
-    protected Adapter $environment;
-
-    protected Adapter $galleryCreatorAlbumsModel;
-
-    protected Adapter $input;
-
-    protected Adapter $stringUtil;
+    protected PageModel|null $pageModel = null;
 
     private bool $showAlbumDetail = false;
 
     private bool $showAlbumListing = false;
 
-    public function __construct(
-        DependencyAggregate $dependencyAggregate,
-        private readonly ContaoFramework $framework,
-        private readonly TwigEnvironment $twig,
-        protected HtmlDecoder $htmlDecoder,
-        private readonly SymfonyResponseTagger|null $responseTagger,
-    ) {
-        parent::__construct($dependencyAggregate);
-
-        // Adapters
-        $this->config = $this->framework->getAdapter(Config::class);
-        $this->environment = $this->framework->getAdapter(Environment::class);
-        $this->galleryCreatorAlbumsModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
-        $this->input = $this->framework->getAdapter(Input::class);
-        $this->stringUtil = $this->framework->getAdapter(StringUtil::class);
-    }
-
     /**
      * @throws DoctrineDBALException
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function __invoke(Request $request, ContentModel $model, string $section, array|null $classes = null, PageModel|null $pageModel = null): Response
     {
         // Do not parse the content element in the backend
-        if ($this->scopeMatcher->isBackendRequest($request)) {
+        if ($this->container->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
             return new Response(
-                $this->twig->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', []),
+                $this->container->get('twig')->render('@MarkocupicGalleryCreator/Backend/backend_element_view.html.twig', []),
             );
         }
 
         $this->model = $model;
         $this->pageModel = $pageModel;
 
-        // Set the item from the auto_item parameter and remove auto_item from unused route parameters
-        if (isset($_GET['auto_item']) && '' !== $_GET['auto_item']) {
-            $this->input->setGet('auto_item', $_GET['auto_item']);
-        }
+        $listing = $this->albumListingService;
+        $isAuthorized = fn (GalleryCreatorAlbumsModel $album): bool => $this->securityUtil->isAuthorized($album);
 
         // It's important to call Input::get('auto_item') at least once,
         // otherwise Contao throws a Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-        if (!$this->input->get('auto_item')) {
+        if (!$this->framework->getAdapter(Input::class)->get('auto_item')) {
             if (!$model->gcShowAlbumSelection) {
-                $this->arrAlbumListing = $this->getAlbumsByPid(0);
+                $this->arrAlbumListing = $listing->getVisibleAlbumIds($model, 0, $isAuthorized);
             } else {
                 // Find the pid of the root album
-                $arrIds = $this->stringUtil->deserialize($model->gcAlbumSelection, true);
+                $arrIds = $this->framework->getAdapter(StringUtil::class)->deserialize($model->gcAlbumSelection, true);
 
                 if (!empty($arrIds)) {
                     $pid = $this->connection->fetchOne(
                         'SELECT pid FROM tl_gallery_creator_albums WHERE id IN(?) ORDER BY pid',
-                        [array_map('intval', $arrIds)],
+                        [
+                            array_map('intval', $arrIds),
+                        ],
                         [
                             ArrayParameterType::INTEGER,
                         ],
                     );
-                    $this->arrAlbumListing = $this->getAlbumsByPid($pid);
+                    $this->arrAlbumListing = $listing->getVisibleAlbumIds($model, (int) $pid, $isAuthorized);
                 } else {
                     return new Response('', Response::HTTP_NO_CONTENT);
                 }
@@ -135,13 +102,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
             $this->showAlbumListing = true;
         } else {
-            $albumAlias = $this->input->get('auto_item');
-            $this->activeAlbum = $this->galleryCreatorAlbumsModel->findOneBy(
+            $albumAlias = $this->framework->getAdapter(Input::class)->get('auto_item');
+            $this->activeAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findOneBy(
                 ['tl_gallery_creator_albums.alias = ? AND tl_gallery_creator_albums.published = ?'],
                 [$albumAlias, 1],
             );
 
-            if (null !== $this->activeAlbum && $this->securityUtil->isAuthorized($this->activeAlbum) && $this->isInSelection($this->activeAlbum)) {
+            if (null !== $this->activeAlbum && $this->securityUtil->isAuthorized($this->activeAlbum) && $listing->isInSelection($model, $this->activeAlbum)) {
                 $this->showAlbumDetail = true;
 
                 // Show album listing if active album contains child albums
@@ -150,11 +117,11 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
 
-            $this->arrAlbumListing = $this->getAlbumsByPid($this->activeAlbum->id);
+            $this->arrAlbumListing = $listing->getVisibleAlbumIds($model, (int) $this->activeAlbum->id, $isAuthorized);
         }
 
         // Tag the albums
-        if ($this->responseTagger) {
+        if ($this->getResponseTagger()) {
             $arrIds = $this->arrAlbumListing;
 
             if ($this->activeAlbum) {
@@ -162,10 +129,21 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
                 $arrIds = array_unique($arrIds);
             }
 
-            $this->responseTagger->addTags(array_map(static fn ($id) => 'contao.db.tl_gallery_creator_albums.'.$id, $arrIds));
+            $this->getResponseTagger()->addTags(array_map(static fn ($id) => 'contao.db.tl_gallery_creator_albums.'.$id, $arrIds));
         }
 
         return parent::__invoke($request, $this->model, $section, $classes);
+    }
+
+    public static function getSubscribedServices(): array
+    {
+        return [
+            AlbumListPaginator::class => AlbumListPaginator::class,
+            BreadcrumbGenerator::class => BreadcrumbGenerator::class,
+            'contao.routing.scope_matcher' => ScopeMatcher::class,
+            '?fos_http_cache.http.symfony_response_tagger' => SymfonyResponseTagger::class,
+            'twig' => TwigEnvironment::class,
+        ] + parent::getSubscribedServices();
     }
 
     /**
@@ -174,6 +152,8 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
      *
      * @throws DoctrineDBALDriverException
      * @throws DoctrineDBALException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
     {
@@ -185,50 +165,38 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
 
         if ($this->model->gcAddBreadcrumb) {
             $template->set('hasBreadcrumb', true);
-            $template->set('breadcrumb', $this->generateBreadcrumb());
+            $template->set('breadcrumb', $this->container->get(BreadcrumbGenerator::class)->generate(
+                $this->activeAlbum,
+                $this->pageModel,
+                fn (GalleryCreatorAlbumsModel $album): bool => $this->albumListingService->isInSelection($this->model, $album) && $this->securityUtil->isAuthorized($album),
+            ));
         }
 
         if ($this->showAlbumListing) {
             $template->set('showAlbumListing', true);
-            $template->set('listPagination', '');
 
             // Add a CSS class to the body tag
             $this->pageModel->loadDetails()->cssClass = $this->pageModel->loadDetails()->cssClass.' gc-listing-view';
 
-            $arrItems = $this->arrAlbumListing;
+            /** @var PaginationResultDto $pagination */
+            $pagination = $this->container->get(AlbumListPaginator::class)->paginate(
+                $this->arrAlbumListing,
+                (int) $this->model->gcAlbumsPerPage,
+                'page_g'.$this->model->id,
+            );
 
-            $perPage = (int) $this->model->gcAlbumsPerPage;
+            $pagedAlbumIds = $pagination->items;
 
-            if ($perPage > 0) {
-                $id = 'page_g'.$this->model->id;
-                $page = $this->input->get($id) ?? 1;
-                $total = \count($arrItems);
-
-                // Do not index or cache the page if the page number is outside the range
-                if ($page < 1 || $page > max(ceil($total / $perPage), 1)) {
-                    throw new PageNotFoundException('Page not found: '.$this->environment->get('uri'));
-                }
-
-                $offset = ($page - 1) * $perPage;
-                $limit = min($perPage + $offset, $total);
-
-                $objPagination = new Pagination($total, $perPage, $this->config->get('maxPaginationLinks'), $id);
-                $template->set('listPagination', $objPagination->generate("\n  "));
-
-                // Paginate the result
-                $arrItems = \array_slice($arrItems, $offset, $limit);
-            }
+            $template->set('listPagination', $pagination->markup);
 
             $template->set('albums', array_map(
                 function ($id) {
-                    $albumModel = $this->galleryCreatorAlbumsModel->findById($id);
+                    $albumModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($id);
 
                     return null !== $albumModel ? $this->getAlbumData($albumModel, $this->model) : [];
                 },
-                $arrItems,
+                $pagedAlbumIds,
             ));
-
-            $template->set('content', $this->model->row());
         }
 
         if ($this->showAlbumDetail) {
@@ -240,16 +208,13 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $this->overridePageMetaData($this->activeAlbum);
 
             // Add the picture collection and the pagination to the template.
-            $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
+            $this->addAlbumPicturesToTemplate($this->activeAlbum, $this->model, $template);
 
             // Augment template with more properties.
             $this->addAlbumToTemplate($this->activeAlbum, $this->model, $template, $this->pageModel);
 
             // Count views
             $this->albumUtil->countAlbumViews($this->activeAlbum);
-
-            // Add content model to template.
-            $template->set('content', $model->row());
 
             // Get the album level
             $template->set('level', $this->albumUtil->getAlbumLevelFromPid((int) $this->activeAlbum->pid));
@@ -258,84 +223,10 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
             $this->addMetaTagsToPage($this->pageModel, $this->activeAlbum);
         }
 
-        // Trigger gcGenerateFrontendTemplateHook
-        $this->triggerGenerateFrontendTemplateHook($template, $this->activeAlbum);
+        // Dispatch the GenerateFrontendTemplateEvent
+        $this->eventDispatcher->dispatch(new GenerateFrontendTemplateEvent($this, $template, $request, $this->activeAlbum));
 
         return $template->getResponse();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    protected function generateBackLink(GalleryCreatorAlbumsModel $albumModel): string
-    {
-        // Generate the link to the parent album
-        if (null !== ($parentAlbum = $this->galleryCreatorAlbumsModel->getParentAlbum($albumModel))) {
-            if ($this->model->gcShowAlbumSelection) {
-                if ($this->isInSelection($parentAlbum)) {
-                    $params = '/'.$parentAlbum->alias;
-
-                    return $this->stringUtil->ampersand($this->pageModel->getFrontendUrl($params));
-                }
-            } else {
-                $params = '/'.$parentAlbum->alias;
-
-                return $this->stringUtil->ampersand($this->pageModel->getFrontendUrl($params));
-            }
-        }
-
-        // Generate the link to the startup overview
-        $url = $this->pageModel->getFrontendUrl();
-
-        return $this->stringUtil->ampersand($url);
-    }
-
-    /**
-     * @throws DoctrineDBALException
-     */
-    protected function getAlbumsByPid($pid = 0): array
-    {
-        $arrIDS = [];
-
-        // Prevent SQL injection
-        $schemaManager = $this->connection->createSchemaManager();
-        $columns = $schemaManager->listTableColumns(GalleryCreatorAlbumsModel::getTable());
-        $sortColumn = \array_key_exists(strtolower($this->model->gcSorting), $columns) ? $this->model->gcSorting : 'date';
-        $sortDirection = 'ASC' === $this->model->gcSortingDirection ? 'ASC' : 'DESC';
-        $strSorting = $sortColumn.' '.$sortDirection;
-
-        $albums = $this->connection->fetchAllAssociative(
-            \sprintf('SELECT id,pid FROM tl_gallery_creator_albums WHERE pid = ? AND published = ? ORDER BY %s', $strSorting),
-            [$pid, 1],
-        );
-
-        foreach ($albums as $album) {
-            $albumModel = $this->galleryCreatorAlbumsModel->findById($album['id']);
-
-            // #1 Do only show selected albums if album selector has been activated in the CE settings
-            // #2 Do not show protected albums to unauthorized users.
-            if (!$this->isInSelection($albumModel) || !$this->securityUtil->isAuthorized($albumModel)) {
-                continue;
-            }
-
-            $arrIDS[] = (int) $album['id'];
-        }
-
-        return $arrIDS;
-    }
-
-    protected function isInSelection(GalleryCreatorAlbumsModel $albumModel): bool
-    {
-        //  Do only show selected albums if selection has been activated then
-        if ($this->model->gcShowAlbumSelection) {
-            $arrSelection = $this->stringUtil->deserialize($this->model->gcAlbumSelection, true);
-
-            if (!\in_array($albumModel->id, $arrSelection, false)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -348,96 +239,34 @@ class GalleryCreatorController extends AbstractGalleryCreatorController
         parent::addAlbumToTemplate($albumModel, $contentModel, $template, $pageModel);
 
         // Backlink
-        $template->set('backLink', $this->generateBackLink($albumModel) ?: false);
+        $template->set('backLink', $this->generateBackLink($albumModel, $contentModel, $pageModel) ?: false);
 
         // In the detail view, an article can optionally be added in front of the album
-        $template->set('insertArticlePre', $albumModel->insertArticlePre ? \sprintf('{{insert_article::%s}}', $albumModel->insertArticlePre) : false);
+        $template->set('insertArticlePre', $albumModel->insertArticlePre ? "{{insert_article::$albumModel->insertArticlePre}}" : false);
 
         // In the detail view, an article can optionally be added right after the album
-        $template->set('insertArticlePost', $albumModel->insertArticlePost ? \sprintf('{{insert_article::%s}}', $albumModel->insertArticlePost) : false);
+        $template->set('insertArticlePost', $albumModel->insertArticlePost ? "{{insert_article::$albumModel->insertArticlePost}}" : false);
     }
 
-    /**
-     * @throws \Exception
-     */
-    protected function generateBreadcrumb(): string
+    private function generateBackLink(GalleryCreatorAlbumsModel $albumModel, ContentModel $model, PageModel $pageModel): string
     {
-        $items = [];
+        $stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
 
-        $template = new FrontendTemplate('mod_breadcrumb');
-
-        $album = $this->activeAlbum;
-
-        while (null !== $album) {
-            if (!$this->isInSelection($album) || !$this->securityUtil->isAuthorized($album)) {
-                break;
+        // Generate the link to the parent album
+        if (null !== ($parentAlbum = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->getParentAlbum($albumModel))) {
+            if (!$model->gcShowAlbumSelection || $this->albumListingService->isInSelection($model, $parentAlbum)) {
+                return $stringUtilAdapter->ampersand($pageModel->getFrontendUrl('/'.$parentAlbum->alias));
             }
-
-            $item = [];
-            $item['class'] = 'gc-breadcrumb-item';
-            $item['link'] = $this->htmlDecoder->inputEncodedToPlainText($album->name);
-            $item['name'] = $this->htmlDecoder->inputEncodedToPlainText($album->name);
-
-            if ($album->id === $this->activeAlbum->id) {
-                $item['isActive'] = true;
-            } else {
-                $item['title'] = $this->stringUtil->specialchars($album->name);
-                $params = '/'.$album->alias;
-                $item['href'] = $this->stringUtil->ampersand($this->pageModel->getFrontendUrl($params));
-            }
-            $items[] = $item;
-
-            $album = $this->galleryCreatorAlbumsModel->getParentAlbum($album);
         }
 
-        // Add root
-        $item = [];
-        $item['class'] = 'gc-breadcrumb-item gc-breadcrumb-root-item';
-        $item['name'] = $this->htmlDecoder->inputEncodedToPlainText($this->pageModel->title);
-        $item['link'] = $this->htmlDecoder->inputEncodedToPlainText($this->pageModel->title);
-        $item['title'] = null;
-        $item['href'] = null;
-        $item['isActive'] = false;
+        // Generate the link to the startup overview
+        return $stringUtilAdapter->ampersand($pageModel->getFrontendUrl());
+    }
 
-        if ($this->activeAlbum) {
-            $item['title'] = $this->stringUtil->specialchars($this->pageModel->title);
-            $item['href'] = $this->stringUtil->ampersand($this->pageModel->getFrontendUrl());
-        } else {
-            $item['isActive'] = true;
-        }
-
-        $items[] = $item;
-
-        $items = array_reverse($items);
-
-        $this->galleryCreatorAlbumsModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
-
-        $htmlDecoder = $this->htmlDecoder;
-
-        $template->getSchemaOrgData = static function () use ($items, $htmlDecoder): array {
-            $jsonLd = [
-                '@type' => 'BreadcrumbList',
-                'itemListElement' => [],
-            ];
-
-            $position = 0;
-
-            foreach ($items as $item) {
-                $jsonLd['itemListElement'][] = [
-                    '@type' => 'ListItem',
-                    'position' => ++$position,
-                    'item' => [
-                        '@id' => isset($item['href']) ?: './',
-                        'name' => $htmlDecoder->inputEncodedToPlainText($item['link']),
-                    ],
-                ];
-            }
-
-            return $jsonLd;
-        };
-
-        $template->items = $items;
-
-        return $template->getResponse()->getContent();
+    private function getResponseTagger(): SymfonyResponseTagger|null
+    {
+        return $this->container->has('fos_http_cache.http.symfony_response_tagger')
+            ? $this->container->get('fos_http_cache.http.symfony_response_tagger')
+            : null;
     }
 }

@@ -4,15 +4,15 @@
 
 {% block content %}
     {% block album_detail_view %}
-        {# Do your template modification (e.g. add css classes, replace tag names, etc.) below here: #}
+        {# Add your template modifications (e.g. add css classes, replace tag names, etc.) below here: #}
 
         {{ parent() }}
     {% endblock %}
 {% endblock %}
 
 {% block list_item %}
-    {% if showAlbumDetail and item.figure.build|default %}
-        {% with {figure: item.figure.build} %}{{ block('figure_component') }}{% endwith %}
+    {% if showAlbumDetail and item.figure|default %}
+        {% with {figure: item.figure} %}{{ block('figure_component') }}{% endwith %}
     {% endif %}
 {% endblock %}
 

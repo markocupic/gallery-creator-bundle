@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\GalleryCreatorBundle\Controller\ContentElement;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Image\Studio\Studio;
 use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
@@ -30,6 +31,7 @@ final readonly class DependencyAggregate
 {
     public function __construct(
         public AlbumUtil $albumUtil,
+        public ContaoFramework $framework,
         public Connection $connection,
         public HtmlDecoder $htmlDecoder,
         public InsertTagParser $insertTagParser,

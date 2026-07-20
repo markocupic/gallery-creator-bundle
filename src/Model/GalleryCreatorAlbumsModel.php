@@ -41,7 +41,7 @@ class GalleryCreatorAlbumsModel extends Model
         if ('' === $strSorting) {
             $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid = ? ORDER BY sorting';
         } else {
-            $strSql = 'SELECT id FROM tl_gallery_creator_albums WHERE pid = ? ORDER BY '.$strSorting;
+            $strSql = "SELECT id FROM tl_gallery_creator_albums WHERE pid = ? ORDER BY $strSorting";
         }
 
         $objAlbums = Database::getInstance()

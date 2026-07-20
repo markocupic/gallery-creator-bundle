@@ -43,7 +43,7 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
             'fileUpload' => [
                 'attributes' => 'data-action="contao--scroll-offset#store" accesskey="e"',
                 'class'      => 'gc-gop-icon gc-gop-upload-img',
-                'href'       => 'act=edit&table=tl_gallery_creator_albums&key=fileUpload',
+                'href'       => 'act=edit&amp;table=tl_gallery_creator_albums&amp;key=fileUpload',
             ],
             'all'        => [
                 'attributes' => 'data-action="contao--scroll-offset#store" accesskey="e"',

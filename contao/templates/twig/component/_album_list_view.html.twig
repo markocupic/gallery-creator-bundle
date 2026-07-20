@@ -15,10 +15,10 @@
                 {% set album_list_item_tag = album_list_item_tag|default('li') %}
                 {% set album_list_item_attributes = attrs(album_list_item_attributes|default)
                     .addClass('gc-album-list-item')
-                    .set('data-id', album.id) %}
+                    .set('data-id', album.data.id) %}
 
-                {% if album.cssClass|default %}
-                    {% set album_list_item_attributes = attrs(album_list_item_attributes|default).addClass(album.cssClass) %}
+                {% if album.data.cssClass|default %}
+                    {% set album_list_item_attributes = attrs(album_list_item_attributes|default).addClass(album.data.cssClass) %}
                 {% endif %}
 
                 <{{ album_list_item_tag }}{{ album_list_item_attributes }}>

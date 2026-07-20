@@ -48,6 +48,7 @@ use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
 use Markocupic\GalleryCreatorBundle\Security\GalleryCreatorAlbumPermissions;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -536,7 +537,7 @@ class GalleryCreatorAlbums
 
         $translator = $this->system->getContainer()->get('translator');
 
-        if (!is_writable($this->projectDir.'/'.$this->galleryCreatorUploadPath)) {
+        if (!is_writable(Path::join($this->projectDir, $this->galleryCreatorUploadPath))) {
             $this->message->addError($translator->trans('ERR.dirNotWriteable', [$this->galleryCreatorUploadPath], 'contao_default'));
         }
     }

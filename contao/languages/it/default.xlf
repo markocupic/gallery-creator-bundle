@@ -6,6 +6,10 @@
         <source>Could not find file "%s".</source>
         <target>Il file "%s" non è presente nel tuo server.</target>
       </trans-unit>
+      <trans-unit id="ERR.linkToNotExistingFile">
+        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.</source>
+        <target>La voce del database con ID %s in "tl_gallery_pictures" rimanda a un file inesistente. Pulisci il database o verifica l'esistenza del file nell'album con alias: %s.</target>
+      </trans-unit>
       <trans-unit id="ERR.uploadError">
         <source>The file "%s" could not been uploaded</source>
         <target>Il file "%s" non può essere caricato.</target>
@@ -13,6 +17,74 @@
       <trans-unit id="ERR.dirNotWriteable">
         <source>The directory "%s" is not writeable. Check chmod settings.</source>
         <target>La directory "%s" non ha i permessi di scritura. Controllare i settaggi chmod.</target>
+      </trans-unit>
+      <trans-unit id="ERR.notAllowedFilenameOrExtension">
+        <source>Invalid file name or extension: =&gt; %s. Please check the list of supported file extensions (%s).</source>
+        <target>Nome file o estensione non validi: =&gt; %s. Controlla l'elenco delle estensioni di file supportate (%s).</target>
+      </trans-unit>
+      <trans-unit id="ERR.rotateImageError">
+        <source>Error while trying to rotate picture "%s".</source>
+        <target>Errore durante il tentativo di ruotare l'immagine "%s".</target>
+      </trans-unit>
+      <trans-unit id="MSC.useFileUploadForCreatingNewPicture">
+        <source>Use the file upload button to create a new entry.</source>
+        <target>Usa il pulsante di caricamento file per creare una nuova voce.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedEditAlbum">
+        <source>Not enough permissions to edit the album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per modificare l'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedDeleteAlbum">
+        <source>Not enough permissions to delete album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per eliminare l'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedMoveAlbum">
+        <source>Not enough permissions to move album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per spostare l'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedAddChildAlbum">
+        <source>Not enough permissions to add a child album to album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per aggiungere un sotto-album all'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedEditPictures">
+        <source>Not enough permissions to edit pictures inside album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per modificare le immagini nell'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedDeletePictures">
+        <source>Not enough permissions to delete pictures inside album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per eliminare le immagini nell'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedAddPictures">
+        <source>Not enough permissions to add pictures to album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per aggiungere immagini all'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="MSC.notAllowedMovePictures">
+        <source>Not enough permissions to move pictures inside album with ID %d.</source>
+        <target>Autorizzazioni insufficienti per spostare le immagini nell'album con ID %d.</target>
+      </trans-unit>
+      <trans-unit id="WARNING.setDefaultChmod">
+        <source>Please set your Gallery Creator default access rights in the Contao Backend settings.</source>
+        <target>Imposta i diritti di accesso predefiniti di Gallery Creator nelle impostazioni del backend di Contao.</target>
+      </trans-unit>
+      <trans-unit id="CONFIRM.gcDeleteConfirmAlbum">
+        <source>Do you really want to delete album with ID %s? Attention. All image-files in the assigned directory will be deleted too.</source>
+        <target>Vuoi davvero eliminare l'album con ID %s? Attenzione: verranno eliminati anche tutti i file immagine nella directory assegnata.</target>
+      </trans-unit>
+      <trans-unit id="CONFIRM.gcDeleteConfirmPicture">
+        <source>Do you really want to delete picture with ID %s? Attention. The image-file will be deleted too.</source>
+        <target>Vuoi davvero eliminare l'immagine con ID %s? Attenzione: verrà eliminato anche il file immagine.</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.backLink">
+        <source>back</source>
+        <target>indietro</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.childAlbums">
+        <source>Child albums</source>
+        <target>Sotto-album</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.childAlbumsOf">
+        <source>Child albums of</source>
+        <target>Sotto-album di</target>
       </trans-unit>
       <trans-unit id="GALLERY_CREATOR.pictures">
         <source>pictures</source>
@@ -22,6 +94,10 @@
         <source>contains</source>
         <target>contiene</target>
       </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.visitors">
+        <source>visitors</source>
+        <target>visitatori</target>
+      </trans-unit>
       <trans-unit id="GALLERY_CREATOR.feAuthenticationError.0">
         <source>Authentication error</source>
         <target>Errore di autenticazione</target>
@@ -29,6 +105,58 @@
       <trans-unit id="GALLERY_CREATOR.feAuthenticationError.1">
         <source>You tried to enter a protected album. Please log in as a frontend user or check your member-rights.</source>
         <target>Hai cercato di accedere a un album protetto. Prego effettua il login come utente frontend o controlla i tuoi permessi.</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.photographerName">
+        <source>Photographers name</source>
+        <target>Nome del fotografo</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.location">
+        <source>Location</source>
+        <target>Luogo</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.selectAllAlbums">
+        <source>Select all albums.</source>
+        <target>Seleziona tutti gli album.</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.localMedia">
+        <source>Replace image with a movie or sound from the Contao filesystem.</source>
+        <target>Sostituisci l'immagine con un video o un audio dal filesystem di Contao.</target>
+      </trans-unit>
+      <trans-unit id="GALLERY_CREATOR.socialMedia">
+        <source>Replace image with a social media.</source>
+        <target>Sostituisci l'immagine con un contenuto da un social media.</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.gcDefaultChmod">
+        <source>Gallery Creator default access rights</source>
+        <target>Diritti di accesso predefiniti di Gallery Creator</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.editalbum">
+        <source>edit album</source>
+        <target>modifica album</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.addchildalbums">
+        <source>add child albums</source>
+        <target>aggiungi sotto-album</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.deletealbum">
+        <source>delete album</source>
+        <target>elimina album</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.movealbum">
+        <source>move album</source>
+        <target>sposta album</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.addandeditimages">
+        <source>add and edit images</source>
+        <target>aggiungi e modifica immagini</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.deleteimages">
+        <source>delete images</source>
+        <target>elimina immagini</target>
+      </trans-unit>
+      <trans-unit id="CHMOD.moveimages">
+        <source>move images</source>
+        <target>sposta immagini</target>
       </trans-unit>
     </body>
   </file>

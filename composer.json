@@ -23,17 +23,18 @@
         "forum": "https://community.contao.org/de/showthread.php?22634-gallery_creator"
     },
     "require": {
-        "contao/core-bundle": "^5.3",
-        "symfony/webpack-encore-bundle": "^v2.4",
         "php": "^8.3",
+        "contao/core-bundle": "^5.3",
         "codefog/contao-haste": "^5.0",
+        "friendsofsymfony/http-cache-bundle": "^3.4",
         "jaybizzle/crawler-detect": "^1.2",
-        "league/commonmark": "^2.3"
+        "league/commonmark": "^2.3",
+        "symfony/webpack-encore-bundle": "^v2.4"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.12",
-        "markocupic/easy-coding-standard": "^13.0",
         "contao/test-case": "^5.7",
+        "markocupic/easy-coding-standard": "^13.0",
         "phpunit/phpunit": "^12.4"
     },
     "autoload": {

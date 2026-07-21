@@ -109,12 +109,60 @@ class GalleryCreatorAlbums
         $this->stringUtil = $this->framework->getAdapter(StringUtil::class);
         $this->system = $this->framework->getAdapter(System::class);
         $this->config = $this->framework->getAdapter(Config::class);
+    }
 
+    #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
+    public function reviseTables(DataContainer $dc): void
+    {
         $request = $this->requestStack->getCurrentRequest();
 
-        if ($request->query->has('isAjaxRequest') && $request->query->has('checkTables') && $request->query->has('getAlbumIDS')) {
-            $this->reviseTables();
+        if (!$request->query->has('isAjaxRequest')) {
+            return;
         }
+
+        if (!$request->query->has('checkTables') && !$request->query->has('getAlbumIDS')) {
+            return;
+        }
+
+        $user = $this->security->getUser();
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request->getSession();
+
+        // Revise table in the backend
+        if ($request->query->has('getAlbumIDS')) {
+            $arrIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()');
+
+            throw new ResponseException(new JsonResponse(['ids' => $arrIds]));
+        }
+
+        $albumId = (int) $request->query->get('albumId');
+
+        if ($albumId < 1) {
+            throw new ResponseException(new JsonResponse(['errors' => 'Invalid album ID ['.$albumId.'] detected']));
+        }
+
+        $albumsModel = $this->albums->findById($albumId);
+
+        if (null === $albumsModel) {
+            throw new ResponseException(new JsonResponse(['errors' => 'Invalid album ID ['.$albumId.'] detected']));
+        }
+
+        // Delete damaged data records
+        $blnCleanDb = $user->admin && $request->query->has('reviseTables');
+
+        $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
+
+        if (!empty($session->get('gc_error'))) {
+            $arrErrors = $session->get('gc_error');
+            $session->remove('gc_error');
+            if (!empty($arrErrors)) {
+                throw new ResponseException(new JsonResponse(['errors' => $arrErrors]));
+            }
+        }
+
+        $session->remove('gc_error');
+
+        throw new ResponseException(new JsonResponse([], Response::HTTP_NO_CONTENT));
     }
 
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
@@ -468,28 +516,28 @@ class GalleryCreatorAlbums
     public function ondeleteCallback(DataContainer $dc, int $undoId): void
     {
         // Also delete child albums
-        $arrDeletedAlbums = $this->albums->getChildAlbumsIds((int) $dc->id);
-        $arrDeletedAlbums = array_merge([$dc->id], $arrDeletedAlbums ?? []);
+        $deletableAlbumIds = $this->albums->getChildAlbumsIds((int) $dc->id);
+        $deletableAlbumIds = array_merge([$dc->id], $deletableAlbumIds ?? []);
 
         // Abort deletion, if user is not the owner of an album in the selection
-        foreach ($arrDeletedAlbums as $idDelAlbum) {
-            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_ALBUM, $idDelAlbum)) {
-                $this->message->addError($this->translator->trans('MSC.notAllowedDeleteAlbum', [$idDelAlbum], 'contao_default'));
+        foreach ($deletableAlbumIds as $albumId) {
+            if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_ALBUM, $albumId)) {
+                $this->message->addError($this->translator->trans('MSC.notAllowedDeleteAlbum', [$albumId], 'contao_default'));
                 $this->controller->redirect($this->system->getReferer());
             }
         }
 
-        foreach ($arrDeletedAlbums as $idDelAlbum) {
-            $albumsModel = $this->albums->findById($idDelAlbum);
+        foreach ($deletableAlbumIds as $albumId) {
+            $albumsModel = $this->albums->findById($albumId);
 
             if (null === $albumsModel) {
                 continue;
             }
 
             // Remove all pictures from the database
-            $picturesModel = $this->pictures->findByPid($idDelAlbum);
+            $picturesModel = $this->pictures->findByPid($albumId);
 
-            $files = $this->framework->getAdapter(FilesModel::class);
+            $filesAdapter = $this->framework->getAdapter(FilesModel::class);
 
             if (null !== $picturesModel) {
                 while ($picturesModel->next()) {
@@ -497,20 +545,20 @@ class GalleryCreatorAlbums
 
                     // Delete the picture from the filesystem if it is not used by another album
                     if (null !== $this->pictures->findOneByUuid($fileUuid)) {
-                        $filesModel = $files->findOneByUuid($fileUuid);
+                        $filesModel = $filesAdapter->findOneByUuid($fileUuid);
 
                         if (null !== $filesModel) {
-                            $file = new File($filesModel->path);
+                            $file = $this->framework->createInstance(File::class, [$filesModel->path]);
                             $file->delete();
                         }
                     }
                 }
             }
 
-            $filesModel = $files->findOneByUuid($albumsModel->assignedDir);
+            $filesModel = $filesAdapter->findOneByUuid($albumsModel->assignedDir);
 
             if (null !== $filesModel) {
-                $finder = new Finder();
+                $finder = $this->framework->createInstance(Finder::class);
                 $finder->in($filesModel->getAbsolutePath())
                     ->depth('== 0')
                     ->notName('.public')
@@ -518,7 +566,8 @@ class GalleryCreatorAlbums
 
                 if (!$finder->hasResults()) {
                     // Remove the folder if empty
-                    (new Folder($filesModel->path))->delete();
+                    $folder = $this->framework->createInstance(Folder::class, [$filesModel->path]);
+                    $folder->delete();
                 }
             }
         }
@@ -528,17 +577,15 @@ class GalleryCreatorAlbums
     public function checkAlbumFolder(DataContainer $dc): void
     {
         // Create the upload directory if it doesn't already exist
-        $objFolder = new Folder($this->galleryCreatorUploadPath);
-        $objFolder->unprotect();
+        $folder = $this->framework->createInstance(Folder::class, [$this->galleryCreatorUploadPath]);
+        $folder->unprotect();
 
-        $dbafs = $this->framework->getAdapter(Dbafs::class);
-
-        $dbafs->addResource($this->galleryCreatorUploadPath, false);
-
-        $translator = $this->system->getContainer()->get('translator');
+        $this->framework->getAdapter(Dbafs::class)
+            ->addResource($this->galleryCreatorUploadPath, false)
+        ;
 
         if (!is_writable(Path::join($this->projectDir, $this->galleryCreatorUploadPath))) {
-            $this->message->addError($translator->trans('ERR.dirNotWriteable', [$this->galleryCreatorUploadPath], 'contao_default'));
+            $this->message->addError($this->translator->trans('ERR.dirNotWriteable', [$this->galleryCreatorUploadPath], 'contao_default'));
         }
     }
 
@@ -978,53 +1025,5 @@ class GalleryCreatorAlbums
         $user = $this->security->getUser();
 
         $this->connection->update('tl_user', ['gcImageResolution' => $value], ['id' => $user->id]);
-    }
-
-    /**
-     * @throws DoctrineDBALException
-     * @throws Exception
-     */
-    private function reviseTables(): void
-    {
-        $user = $this->security->getUser();
-        $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
-
-        if ($request->query->has('isAjaxRequest')) {
-            // Revise table in the backend
-            if ($request->query->has('checkTables')) {
-                if ($request->query->has('getAlbumIDS')) {
-                    $arrIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_gallery_creator_albums ORDER BY RAND()');
-
-                    throw new ResponseException(new JsonResponse(['ids' => $arrIds]));
-                }
-
-                if ($request->query->has('albumId')) {
-                    $albumsModel = $this->albums->findById($request->query->get('albumId', 0));
-
-                    if (null !== $albumsModel) {
-                        if ($request->query->has('checkTables') || $request->query->has('reviseTables')) {
-                            // Delete damaged data records
-                            $blnCleanDb = $user->admin && $request->query->has('reviseTables');
-
-                            $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
-
-                            if ($session->has('gc_error') && \is_array($session->get('gc_error'))) {
-                                if (!empty($session->get('gc_error'))) {
-                                    $arrErrors = $session->get('gc_error');
-
-                                    if (!empty($arrErrors)) {
-                                        throw new ResponseException(new JsonResponse(['errors' => $arrErrors]));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $session->remove('gc_error');
-                }
-            }
-
-            throw new ResponseException(new Response('', Response::HTTP_NO_CONTENT));
-        }
     }
 }

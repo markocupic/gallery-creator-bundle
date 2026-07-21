@@ -66,6 +66,8 @@ readonly class ReviseAlbumDatabase
             }
         }
 
+        $stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
+
         // Try to identify entries with no uuid via path
         $picturesModel = $this->framework->getAdapter(GalleryCreatorPicturesModel::class)->findByPid($albumModel->id);
 
@@ -82,19 +84,19 @@ readonly class ReviseAlbumDatabase
                         $picturesModel->delete();
                     } else {
                         // Show error-message
-                        $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, $albumModel->alias], 'contao_default');
+                        $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, 'UUID: '.$stringUtilAdapter->binToUuid($picturesModel->uuid), $albumModel->alias], 'contao_default');
                     }
 
                     $session->set('gc_error', $errors);
                 } elseif (!$this->filesystem->exists(Path::makeAbsolute($filesModel->path, $this->projectDir))) {
                     $errors = $session->get('gc_error');
 
-                    // If there is a data record for the file, but the file doesn't exist in the fs anymore.
+                    // If there is a data record for the file, but the file doesn't exist in the filesystem anymore.
                     if ($blnCleanDb) {
                         $errors[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
                     } else {
-                        $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, $albumModel->alias], 'contao_default');
+                        $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, $filesModel->path, $albumModel->alias], 'contao_default');
                     }
 
                     $session->set('gc_error', $errors);

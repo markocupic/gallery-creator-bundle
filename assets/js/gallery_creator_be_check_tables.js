@@ -162,7 +162,6 @@ class GalleryCreatorBeCheckTables {
    */
   displayErrors(errors) {
     let messageBox = document.querySelector(".tl_message");
-
     // Create message box if missing
     if (!messageBox) {
       messageBox = document.createElement("div");

@@ -6,7 +6,7 @@
         <source>Could not find file "%s".</source>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.</source>
+        <source>The database entry for the image with ID %s in "tl_gallery_creator_pictures" refers to a file that does not exist. Please clean up the database or verify the existence of the file "%s" in the album with the album alias "%s".</source>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
         <source>The file "%s" could not been uploaded</source>

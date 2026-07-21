@@ -7,8 +7,8 @@
         <target>Il file "%s" non è presente nel tuo server.</target>
       </trans-unit>
       <trans-unit id="ERR.linkToNotExistingFile">
-        <source>The db-entry with ID %s in "tl_gallery_pictures" links to a not existing file. Please clean up the database or check the existence of te file in the album with alias: %s.</source>
-        <target>La voce del database con ID %s in "tl_gallery_pictures" rimanda a un file inesistente. Pulisci il database o verifica l'esistenza del file nell'album con alias: %s.</target>
+        <source>The database entry for the image with ID %s in "tl_gallery_creator_pictures" refers to a file that does not exist. Please clean up the database or verify the existence of the file "%s" in the album with the album alias "%s".</source>
+        <target>La voce di database per l’immagine con ID %s in "tl_gallery_creator_pictures" fa riferimento a un file inesistente. Si prega di ripulire il database oppure verificare l’esistenza del file "%s" nell’album con l’alias dell’album "%s".</target>
       </trans-unit>
       <trans-unit id="ERR.uploadError">
         <source>The file "%s" could not been uploaded</source>

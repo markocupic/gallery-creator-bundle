@@ -33,12 +33,12 @@ class AddBackendAssetsSubscriber implements EventSubscriberInterface
         return [KernelEvents::REQUEST => 'onKernelRequest'];
     }
 
-    public function onKernelRequest(RequestEvent $e): void
+    public function onKernelRequest(RequestEvent $event): void
     {
-        $request = $e->getRequest();
+        $request = $event->getRequest();
 
         if ($request && $this->scopeMatcher->isBackendRequest($request)) {
-            if ('gallery_creator' === $request->query->get('do') && 2 === \count($_GET)) {
+            if ('gallery_creator' === $request->query->get('do') && 1 === $request->query->count()) {
                 // Check tables script
                 $GLOBALS['TL_JAVASCRIPT'][] = $this->packages->getUrl('js/gallery_creator_be_check_tables.js', 'markocupic_gallery_creator');
             }

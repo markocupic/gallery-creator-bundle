@@ -86,23 +86,22 @@ class GalleryCreatorBeReviseTables {
 
     // Button click handler
     this.button.addEventListener("click", (event) => {
-      if (this.checkbox.checked) {
-        event.preventDefault();
+      event.preventDefault();
 
-        // Fade out elements (CSS class required)
-        this.button.classList.add("fade-out");
-        this.checkbox.classList.add("fade-out");
-        this.labelCheckbox.classList.add("fade-out");
+      // Fade out elements (CSS class required)
+      this.button.classList.add("fade-out");
+      this.checkbox.classList.add("fade-out");
+      this.labelCheckbox.classList.add("fade-out");
 
-        this.start();
-      }
+      this.run(document.querySelector('input[name="REQUEST_TOKEN"]').value);
+
     });
   }
 
   /**
    * Kick off the process
    */
-  start() {
+  async run(csrfToken) {
     this.intRequestDone = 0;
     this.errors = 0;
     this.albumIDS = null;
@@ -116,7 +115,8 @@ class GalleryCreatorBeReviseTables {
     p.textContent = "Please wait a moment...";
     this.statusBox.appendChild(p);
 
-    this.getAlbumIDS();
+    await this.getAlbumIDS();
+    await this.reviseTables(csrfToken);
   }
 
   /**
@@ -132,7 +132,6 @@ class GalleryCreatorBeReviseTables {
       const data = await response.json();
       if (data && data.ids) {
         this.albumIDS = data.ids;
-        this.reviseTables();
       }
     } catch (err) {
       console.error("Error fetching album IDs:", err);
@@ -143,16 +142,27 @@ class GalleryCreatorBeReviseTables {
    * Fire a request for each album.
    * Display error messages in the backend.
    */
-  async reviseTables() {
-    if (!this.albumIDS) return;
+  async reviseTables(csrfToken) {
+    if (!this.albumIDS) {
+      console.error("No album IDs found.");
+      return;
+    }
 
     for (const albumId of this.albumIDS) {
-
       try {
-        const response = await fetch(
-            document.URL + "&isAjaxRequest=true&checkTables=true&reviseTables=true&albumId=" + albumId,
-            {method: "GET"}
-        );
+        const response = await fetch(document.URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            FORM_SUBMIT: "tl_gallery_creator_albums",
+            REQUEST_TOKEN: csrfToken,
+            reviseTables: "true",
+            cleanDb: this.checkbox.checked ? "1" : "",
+            albumId: albumId,
+          })
+        });
 
         const data = await response.json();
 
@@ -174,9 +184,17 @@ class GalleryCreatorBeReviseTables {
       this.intRequestDone++;
 
       // Display status message
+      this.statusBox.innerHTML = ''
       const p = document.createElement("p");
       p.textContent = "Check album with ID " + albumId + ".";
       this.statusBox.appendChild(p);
+      window.setTimeout(() => {
+        try {
+          p.remove();
+        } catch (e) {
+          // nope
+        }
+      }, 1000);
 
       // If all requests are done
       if (this.intRequestDone === this.albumIDS.length) {

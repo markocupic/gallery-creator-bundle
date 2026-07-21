@@ -21,9 +21,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DoctrineDBALException;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Revise\Exception\ReviseAlbumException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class ReviseAlbumDatabase
@@ -32,7 +32,6 @@ readonly class ReviseAlbumDatabase
         private ContaoFramework $framework,
         private Connection $connection,
         private Filesystem $filesystem,
-        private RequestStack $requestStack,
         private TranslatorInterface $translator,
         private string $projectDir,
         private string $galleryCreatorUploadPath,
@@ -44,14 +43,7 @@ readonly class ReviseAlbumDatabase
      */
     public function run(GalleryCreatorAlbumsModel $albumModel, bool $blnCleanDb = false): void
     {
-        $request = $this->requestStack->getCurrentRequest();
-
-        if (null === $request) {
-            return;
-        }
-
-        $session = $request->getSession();
-        $session->set('gc_error', []);
+        $errors = [];
 
         // Create the upload directory if it doesn't exist.
         $this->filesystem->mkdir(Path::makeAbsolute($this->galleryCreatorUploadPath, $this->projectDir));
@@ -77,8 +69,6 @@ readonly class ReviseAlbumDatabase
                 $filesModel = $this->framework->getAdapter(FilesModel::class)->findByUuid($picturesModel->uuid);
 
                 if (null === $filesModel) {
-                    $errors = $session->get('gc_error');
-
                     if ($blnCleanDb) {
                         $errors[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
                         $picturesModel->delete();
@@ -86,11 +76,7 @@ readonly class ReviseAlbumDatabase
                         // Show error-message
                         $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, 'UUID: '.$stringUtilAdapter->binToUuid($picturesModel->uuid), $albumModel->alias], 'contao_default');
                     }
-
-                    $session->set('gc_error', $errors);
                 } elseif (!$this->filesystem->exists(Path::makeAbsolute($filesModel->path, $this->projectDir))) {
-                    $errors = $session->get('gc_error');
-
                     // If there is a data record for the file, but the file doesn't exist in the filesystem anymore.
                     if ($blnCleanDb) {
                         $errors[] = \sprintf('Deleted data record with ID %s in Album "%s".', $picturesModel->id, $albumModel->name);
@@ -98,8 +84,6 @@ readonly class ReviseAlbumDatabase
                     } else {
                         $errors[] = $this->translator->trans('ERR.linkToNotExistingFile', [$picturesModel->id, $filesModel->path, $albumModel->alias], 'contao_default');
                     }
-
-                    $session->set('gc_error', $errors);
                 }
             }
         }
@@ -133,6 +117,10 @@ readonly class ReviseAlbumDatabase
                 ['tl_content.gcAlbumSelection' => serialize($newIds)],
                 ['tl_content.id' => $content['id']],
             );
+        }
+
+        if (!empty($errors)) {
+            throw new ReviseAlbumException(json_encode($errors));
         }
     }
 }

@@ -22,38 +22,64 @@ use Contao\TestCase\ContaoTestCase;
 use Doctrine\DBAL\Connection;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Revise\Exception\ReviseAlbumException;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ReviseAlbumDatabaseTest extends ContaoTestCase
 {
-    public function testReturnsEarlyWithoutRequest(): void
+    public function testCreatesUploadDirectory(): void
     {
-        $connection = $this->createMock(Connection::class);
-        $connection
-            ->expects($this->never())
-            ->method('fetchAllAssociative')
+        $filesystem = $this->createMock(Filesystem::class);
+        $filesystem
+            ->expects($this->once())
+            ->method('mkdir')
+            ->with(Path::makeAbsolute('files/gallery_creator', '/project'))
         ;
 
-        $service = $this->createService(
-            $this->mockContaoFramework(),
-            $connection,
-            $this->createMock(Filesystem::class),
-            new RequestStack(),
-            $this->createMock(TranslatorInterface::class),
-        );
+        $framework = $this->mockContaoFramework([
+            GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
+            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            StringUtil::class => $this->stringUtilAdapter([]),
+        ]);
+
+        $service = $this->createService($framework, $this->emptyConnection(), $filesystem, $this->createMock(TranslatorInterface::class));
 
         $service->run($this->mockAlbum());
 
         $this->addToAssertionCount(1);
     }
 
-    public function testAddsErrorWhenLinkedFileIsMissing(): void
+    public function testResetsInvalidParentAlbum(): void
+    {
+        $album = $this->mockAlbum(['pid' => 5]);
+        $album
+            ->method('getRelated')
+            ->with('pid')
+            ->willReturn(null)
+        ;
+
+        $album
+            ->expects($this->once())
+            ->method('save')
+        ;
+
+        $framework = $this->mockContaoFramework([
+            GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
+            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            StringUtil::class => $this->stringUtilAdapter([]),
+        ]);
+
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $this->createMock(TranslatorInterface::class));
+
+        $service->run($album);
+
+        $this->assertNull($album->pid);
+    }
+
+    public function testThrowsWhenLinkedFileIsMissing(): void
     {
         $collection = new Collection([$this->mockPicture(7, 'missing-uuid')], GalleryCreatorPicturesModel::getTable());
 
@@ -75,12 +101,14 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             ->willReturn('LINK_ERROR')
         ;
 
-        $session = $this->session();
-        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $this->requestStack($session), $translator);
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $translator);
 
-        $service->run($this->mockAlbum(), false);
-
-        $this->assertSame(['LINK_ERROR'], $session->get('gc_error'));
+        try {
+            $service->run($this->mockAlbum(), false);
+            $this->fail(ReviseAlbumException::class.' was not thrown.');
+        } catch (ReviseAlbumException $e) {
+            $this->assertSame(['LINK_ERROR'], json_decode($e->getMessage(), true));
+        }
     }
 
     public function testDeletesRecordWhenCleaningDb(): void
@@ -111,17 +139,19 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             ->method('trans')
         ;
 
-        $session = $this->session();
-        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $this->requestStack($session), $translator);
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $translator);
 
-        $service->run($this->mockAlbum(), true);
-
-        $errors = $session->get('gc_error');
-        $this->assertCount(1, $errors);
-        $this->assertStringContainsString('Deleted data record with ID 7', $errors[0]);
+        try {
+            $service->run($this->mockAlbum(), true);
+            $this->fail(ReviseAlbumException::class.' was not thrown.');
+        } catch (ReviseAlbumException $e) {
+            $errors = json_decode($e->getMessage(), true);
+            $this->assertCount(1, $errors);
+            $this->assertStringContainsString('Deleted data record with ID 7', $errors[0]);
+        }
     }
 
-    public function testAddsErrorWhenFileVanishedFromFilesystem(): void
+    public function testThrowsWhenFileVanishedFromFilesystem(): void
     {
         $collection = new Collection([$this->mockPicture(7, 'present-uuid')], GalleryCreatorPicturesModel::getTable());
 
@@ -151,25 +181,19 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             ->willReturn('LINK_ERROR')
         ;
 
-        $session = $this->session();
-        $service = $this->createService($framework, $this->emptyConnection(), $filesystem, $this->requestStack($session), $translator);
+        $service = $this->createService($framework, $this->emptyConnection(), $filesystem, $translator);
+
+        $this->expectException(ReviseAlbumException::class);
+        $this->expectExceptionMessage(json_encode(['LINK_ERROR']));
 
         $service->run($this->mockAlbum(), false);
-
-        $this->assertSame(['LINK_ERROR'], $session->get('gc_error'));
     }
 
     public function testRemovesOrphanedAlbumIdsFromContentElements(): void
     {
         // No pictures to process.
-        $picturesAdapter = $this->mockAdapter(['findByPid']);
-        $picturesAdapter
-            ->method('findByPid')
-            ->willReturn(null)
-        ;
-
         $framework = $this->mockContaoFramework([
-            GalleryCreatorPicturesModel::class => $picturesAdapter,
+            GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
             FilesModel::class => $this->mockAdapter(['findByUuid']),
             StringUtil::class => $this->stringUtilAdapter([5, 99]),
         ]);
@@ -203,27 +227,41 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             )
         ;
 
-        $service = $this->createService($framework, $connection, $this->createMock(Filesystem::class), $this->requestStack($this->session()), $this->createMock(TranslatorInterface::class));
+        $service = $this->createService($framework, $connection, $this->createMock(Filesystem::class), $this->createMock(TranslatorInterface::class));
 
         $service->run($this->mockAlbum(), false);
 
         $this->assertSame(serialize([5]), $captured['tl_content.gcAlbumSelection']);
     }
 
-    private function createService(ContaoFramework $framework, Connection $connection, Filesystem $filesystem, RequestStack $requestStack, TranslatorInterface $translator): ReviseAlbumDatabase
+    public function testDoesNotThrowWhenEverythingIsValid(): void
+    {
+        $framework = $this->mockContaoFramework([
+            GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
+            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            StringUtil::class => $this->stringUtilAdapter([]),
+        ]);
+
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $this->createMock(TranslatorInterface::class));
+
+        $service->run($this->mockAlbum());
+
+        $this->addToAssertionCount(1);
+    }
+
+    private function createService(ContaoFramework $framework, Connection $connection, Filesystem $filesystem, TranslatorInterface $translator): ReviseAlbumDatabase
     {
         return new ReviseAlbumDatabase(
             $framework,
             $connection,
             $filesystem,
-            $requestStack,
             $translator,
             '/project',
             'files/gallery_creator',
         );
     }
 
-    private function picturesAdapter(Collection $collection): object
+    private function picturesAdapter(Collection|null $collection): object
     {
         $adapter = $this->mockAdapter(['findByPid']);
         $adapter
@@ -239,10 +277,15 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
      */
     private function stringUtilAdapter(array $deserializeReturn): object
     {
-        $adapter = $this->mockAdapter(['deserialize']);
+        $adapter = $this->mockAdapter(['deserialize', 'binToUuid']);
         $adapter
             ->method('deserialize')
             ->willReturn($deserializeReturn)
+        ;
+
+        $adapter
+            ->method('binToUuid')
+            ->willReturn('uuid-string')
         ;
 
         return $adapter;
@@ -267,29 +310,17 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
         ]);
     }
 
-    private function mockAlbum(): GalleryCreatorAlbumsModel
+    /**
+     * @param array<string, mixed> $properties
+     */
+    private function mockAlbum(array $properties = []): GalleryCreatorAlbumsModel
     {
         return $this->mockClassWithProperties(GalleryCreatorAlbumsModel::class, [
             'id' => 10,
             'pid' => 0,
             'alias' => 'my-album',
             'name' => 'My Album',
+            ...$properties,
         ]);
-    }
-
-    private function session(): Session
-    {
-        return new Session(new MockArraySessionStorage());
-    }
-
-    private function requestStack(Session $session): RequestStack
-    {
-        $request = new Request();
-        $request->setSession($session);
-
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
-
-        return $requestStack;
     }
 }

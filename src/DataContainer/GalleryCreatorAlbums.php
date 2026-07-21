@@ -44,6 +44,7 @@ use Doctrine\DBAL\Exception as DoctrineDBALException;
 use FOS\HttpCacheBundle\CacheManager;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorAlbumsModel;
 use Markocupic\GalleryCreatorBundle\Model\GalleryCreatorPicturesModel;
+use Markocupic\GalleryCreatorBundle\Revise\Exception\ReviseAlbumException;
 use Markocupic\GalleryCreatorBundle\Revise\ReviseAlbumDatabase;
 use Markocupic\GalleryCreatorBundle\Security\GalleryCreatorAlbumPermissions;
 use Markocupic\GalleryCreatorBundle\Util\FileUtil;
@@ -114,19 +115,54 @@ class GalleryCreatorAlbums
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
     public function reviseTables(DataContainer $dc): void
     {
-        $request = $this->requestStack->getCurrentRequest();
-
-        if (!$request->query->has('isAjaxRequest')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return;
         }
 
-        if (!$request->query->has('checkTables') && !$request->query->has('getAlbumIDS')) {
+        $request = $this->requestStack->getCurrentRequest();
+        $allowed = false;
+
+        if ($request->query->has('isAjaxRequest') && 'GET' === $request->getMethod()) {
+            if ($request->query->has('checkTables')) {
+                $allowed = true;
+            } elseif ($request->query->has('getAlbumIDS')) {
+                // Both gallery_creator_be_revise_tables.js and gallery_creator_be_check_tables.js
+                // are fetching the album IDs using the GET method.
+                $allowed = true;
+            }
+        } elseif ( // Check if the request is from the gallery_creator_be_revise_tables.js script.
+            'POST' === $request->getMethod()
+            && 'tl_gallery_creator_albums' === $request->request->get('FORM_SUBMIT')
+            && 'true' === $request->request->get('reviseTables')
+            && $request->request->has('albumId')
+        ) {
+            // Process the request from the gallery_creator_be_revise_tables.js script.
+            $albumId = $request->request->get('albumId', 0);
+
+            $albumsModel = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class)->findById($albumId);
+
+            try {
+                if (null === $albumsModel) {
+                    throw new ResponseException(new JsonResponse(['errors' => ['Invalid album ID']]));
+                }
+
+                // Delete damaged data records
+                $blnCleanDb = (bool) $request->request->get('cleanDb');
+
+                $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
+            } catch (ReviseAlbumException $e) {
+                throw new ResponseException(new JsonResponse(['errors' => json_decode($e->getMessage())]));
+            }
+
+            // All ok! No errors were found in the album database.
+            throw new ResponseException(new JsonResponse(['errors' => []]));
+        }
+
+        if (!$allowed) {
             return;
         }
 
-        $user = $this->security->getUser();
         $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
 
         // Revise table in the backend
         if ($request->query->has('getAlbumIDS')) {
@@ -135,7 +171,7 @@ class GalleryCreatorAlbums
             throw new ResponseException(new JsonResponse(['ids' => $arrIds]));
         }
 
-        $albumId = (int) $request->query->get('albumId');
+        $albumId = (int) $request->query->get('albumId', 0);
 
         if ($albumId < 1) {
             throw new ResponseException(new JsonResponse(['errors' => 'Invalid album ID ['.$albumId.'] detected']));
@@ -147,20 +183,11 @@ class GalleryCreatorAlbums
             throw new ResponseException(new JsonResponse(['errors' => 'Invalid album ID ['.$albumId.'] detected']));
         }
 
-        // Delete damaged data records
-        $blnCleanDb = $user->admin && $request->query->has('reviseTables');
-
-        $this->reviseAlbumDatabase->run($albumsModel, $blnCleanDb);
-
-        if (!empty($session->get('gc_error'))) {
-            $arrErrors = $session->get('gc_error');
-            $session->remove('gc_error');
-            if (!empty($arrErrors)) {
-                throw new ResponseException(new JsonResponse(['errors' => $arrErrors]));
-            }
+        try {
+            $this->reviseAlbumDatabase->run($albumsModel, false);
+        } catch (ReviseAlbumException $e) {
+            throw new ResponseException(new JsonResponse(['errors' => json_decode($e->getMessage())]));
         }
-
-        $session->remove('gc_error');
 
         throw new ResponseException(new JsonResponse([], Response::HTTP_NO_CONTENT));
     }

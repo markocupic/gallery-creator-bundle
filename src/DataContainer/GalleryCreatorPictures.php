@@ -391,7 +391,7 @@ class GalleryCreatorPictures
         $files = $this->framework->getAdapter(FilesModel::class);
         $filesModel = $files->findByUuid($arrRow['uuid']);
 
-        if (!is_file($this->projectDir.'/'.$filesModel->path)) {
+        if (null === $filesModel || !is_file($this->projectDir.'/'.$filesModel->path)) {
             return '';
         }
 

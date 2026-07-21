@@ -66,10 +66,6 @@ markocupic_gallery_creator:
   read_exif_meta_data: false
   valid_extensions: ['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg', 'svgz']
 
-# Contao configuration
-contao:
-  url_suffix: ''
-  #....
 ```
 
 ## Access rights (CHMOD)
@@ -133,7 +129,7 @@ right before the gallery frontend template is rendered and carries the content e
 controller, the template, the current request and the active album (if there is one).
 Listeners mutate the template in place; no return value is expected.
 
-> This replaces the removed `galleryCreatorGenerateFrontendTemplate` hook (see
+> This replaces the in version 3.0.0 removed `galleryCreatorGenerateFrontendTemplate` hook (see
 > [UPGRADE.md](UPGRADE.md)).
 
 ```php
@@ -168,7 +164,7 @@ album. It is dispatched right after an image has been uploaded and written to th
 and carries the pictures model. Listeners mutate the model in place; no return value is
 expected.
 
-> This replaces the removed `galleryCreatorImagePostInsert` hook (see [UPGRADE.md](UPGRADE.md)).
+> This replaces the in version 3.0.0 removed `galleryCreatorImagePostInsert` hook (see [UPGRADE.md](UPGRADE.md)).
 
 ```php
 <?php
@@ -201,12 +197,6 @@ class GalleryCreatorImagePostInsertListener
         }
     }
 }
-```
-
-## Running the tests
-
-```bash
-vendor/bin/phpunit
 ```
 
 Have fun!

@@ -1,5 +1,10 @@
 {
   "entrypoints": {
+    "stimulus_backend": {
+      "js": [
+        "/bundles/markocupicgallerycreator/stimulus_backend.d0a97559.js"
+      ]
+    },
     "css/backend": {
       "css": [
         "/bundles/markocupicgallerycreator/css/backend.f06fc690.css"

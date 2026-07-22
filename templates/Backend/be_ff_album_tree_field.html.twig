@@ -1,8 +1,8 @@
-<div id="{{ id }}" class="tl_checkbox_container tl_gc_album_tree_widget">
+<div id="{{ id }}" class="tl_checkbox_container tl_gc_album_tree_widget" data-controller="contao--check-all">
     <input type="hidden" name="{{ input.name | escape }}" value="">
     {% if input.multiple %}
         <div class="tl_select_trigger">
-            <label for="tl_select_trigger" class="tl_select_label">{{ 'MSC.selectAll'|trans({}, 'contao_default') }}</label> <input type="checkbox" id="tl_select_trigger" onclick="Backend.toggleCheckboxGroup(this,'{{ id }}')" class="tl_checkbox">
+            <label for="tl_select_trigger" class="tl_select_label">{{ 'MSC.selectAll'|trans({}, 'contao_default') }}</label> <input type="checkbox" id="tl_select_trigger" data-action="contao--check-all#toggleAll" class="tl_checkbox">
         </div>
         <br>
     {% endif %}

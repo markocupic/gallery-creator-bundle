@@ -102,7 +102,7 @@ class AlbumTreeWidget extends Widget
             $pickerItem->setAttribute('class', 'gc-album-list-item');
 
             $label = \sprintf(
-                '<div class="gc-flex"><div class="gc-flex-left">%s</div><div class="gc-flex-right gc-text-align-right"><input type="%s" name="%s" class="%s" id="albumControlField-%s" value="%s"%s></div></div>',
+                '<div class="gc-flex"><div class="gc-flex-left">%s</div><div class="gc-flex-right gc-text-align-right"><input type="%s" name="%s" class="%s" id="albumControlField-%s" data-contao--check-all-target="input" data-action="contao--check-all#toggleInput" value="%s"%s></div></div>',
                 $album['name'],
                 $this->multiple ? 'checkbox' : 'radio',
                 $this->multiple ? $this->strName.'[]' : $this->strName,

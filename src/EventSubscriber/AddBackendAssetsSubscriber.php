@@ -38,17 +38,11 @@ class AddBackendAssetsSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
 
         if ($request && $this->scopeMatcher->isBackendRequest($request)) {
-            if ('gallery_creator' === $request->query->get('do') && 1 === $request->query->count()) {
-                // Check tables script
-                $GLOBALS['TL_JAVASCRIPT'][] = $this->packages->getUrl('js/gallery_creator_be_check_tables.js', 'markocupic_gallery_creator');
-            }
-
-            // Revise table script
-            if ('gallery_creator' === $request->query->get('do') && 'reviseDatabase' === $request->query->get('key')) {
-                $GLOBALS['TL_JAVASCRIPT'][] = $this->packages->getUrl('js/gallery_creator_be_revise_tables.js', 'markocupic_gallery_creator');
-            }
-
-            $GLOBALS['TL_JAVASCRIPT'][] = $this->packages->getUrl('js/gallery_creator_be.js', 'markocupic_gallery_creator');
+            // The Stimulus application is loaded across the whole backend. Each
+            // controller attaches its data-controller attribute to #main by
+            // itself (static afterLoad) and gates its own behaviour, so no
+            // per-page bootstrap scripts are required.
+            $GLOBALS['TL_JAVASCRIPT'][] = $this->packages->getUrl('stimulus_backend.js', 'markocupic_gallery_creator');
             $GLOBALS['TL_CSS'][] = $this->packages->getUrl('css/backend.css', 'markocupic_gallery_creator');
         }
     }

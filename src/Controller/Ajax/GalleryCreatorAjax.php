@@ -39,7 +39,7 @@ readonly class GalleryCreatorAjax
     ) {
     }
 
-    #[Route('/_gallery_creator/get_image/{pictureId}/{contentId}', name: self::class.'\getImage', defaults: ['scope' => 'frontend'])]
+    #[Route('/_gallery_creator/get_image/{pictureId}/{contentId}', name: self::class.'\getImage', methods: ['GET'], defaults: ['_scope' => 'frontend'])]
     public function getImage(int $pictureId, int $contentId): Response
     {
         $this->framework->initialize();

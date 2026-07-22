@@ -1,10 +1,8 @@
 {
+  "stimulus_backend.js": "/bundles/markocupicgallerycreator/stimulus_backend.d0a97559.js",
   "css/backend.css": "/bundles/markocupicgallerycreator/css/backend.f06fc690.css",
   "images/be_content_element_logo.svg": "/bundles/markocupicgallerycreator/images/be_content_element_logo.svg",
-  "js/gallery_creator_be_revise_tables.js": "/bundles/markocupicgallerycreator/js/gallery_creator_be_revise_tables.91f87541.js",
-  "js/gallery_creator_be_check_tables.js": "/bundles/markocupicgallerycreator/js/gallery_creator_be_check_tables.f12990a8.js",
   "images/placeholder.svg": "/bundles/markocupicgallerycreator/images/placeholder.svg",
-  "js/gallery_creator_be.js": "/bundles/markocupicgallerycreator/js/gallery_creator_be.d2a39443.js",
   "images/album.svg": "/bundles/markocupicgallerycreator/images/album.svg",
   "images/album_.svg": "/bundles/markocupicgallerycreator/images/album_.svg",
   "images/import_from_filesystem.svg": "/bundles/markocupicgallerycreator/images/import_from_filesystem.svg",
@@ -15,5 +13,6 @@
   "images/database_check.svg": "/bundles/markocupicgallerycreator/images/database_check.svg",
   "images/rotate.svg": "/bundles/markocupicgallerycreator/images/rotate.svg",
   "images/rotate_.svg": "/bundles/markocupicgallerycreator/images/rotate_.svg",
+  "stimulus_backend.d0a97559.js.map": "/bundles/markocupicgallerycreator/stimulus_backend.d0a97559.js.map",
   "backend.f06fc690.css.map": "/bundles/markocupicgallerycreator/css/backend.f06fc690.css.map"
 }

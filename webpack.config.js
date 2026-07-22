@@ -5,14 +5,12 @@ Encore
     .setPublicPath('/bundles/markocupicgallerycreator')
     .setManifestKeyPrefix('')
 
+    .addEntry('stimulus_backend', './assets/stimulus_backend.js') // Register Stimulus controllers for the backend
+
+
     .copyFiles({
       from: './assets/images',
       to: 'images/[path][name].[ext]'
-    })
-
-    .copyFiles({
-      from: './assets/js',
-      to: 'js/[path][name].[hash:8].[ext]'
     })
 
     .disableSingleRuntimeChunk()

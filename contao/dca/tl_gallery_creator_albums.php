@@ -44,12 +44,12 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'global_operations' => [
             'all'            => [
-                'attributes' => 'data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'class'      => 'header_edit_all',
                 'href'       => 'act=select',
             ],
             'reviseDatabase' => [
-                'attributes' => 'data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'class'      => 'gc-gop-icon gc-gop-revise-database',
                 // Complete the href attribute in GalleryCreatorAlbums::onloadCbSetUpPalettes()
                 'href'       => 'act=edit&table&key=reviseDatabase&id=%s',
@@ -58,49 +58,50 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_albums'] = [
         ],
         'operations'        => [
             'editheader'                 => [
-                'attributes'   => 'data-icon="gc-op-icon"',
+                'attributes'   => 'data-action="contao--scroll-offset#store contao--operations-menu#close" data-icon="gc-op-icon"',
                 'href'         => 'act=edit',
                 'icon'         => 'edit.svg',
                 'primary'      => true,
                 'showInHeader' => true,
             ],
             'edit'                       => [
-                'attributes'   => 'data-icon="gc-op-icon"',
+                'attributes'   => 'data-action="contao--operations-menu#close" data-icon="gc-op-icon"',
                 'href'         => 'table=tl_gallery_creator_pictures',
                 'icon'         => 'children.svg',
                 'primary'      => true,
                 'showInHeader' => false,
             ],
             'delete'                     => [
-                'attributes' => 'data-action="contao--scroll-offset#store" onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close" onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false"',
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
             ],
             'toggle'                     => [
-                'attributes' => 'data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'href'       => 'act=toggle&amp;field=published',
                 'icon'       => 'visible.svg',
                 'primary'    => true,
             ],
             'uploadImages'               => [
-                'attributes' => 'data-icon="gc-op-icon"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close" data-icon="gc-op-icon"',
                 'href'       => 'act=edit&key=fileUpload',
                 'icon'       => 'bundles/markocupicgallerycreator/images/image_up.svg',
                 'primary'    => true,
             ],
             'importImagesFromFilesystem' => [
-                'attributes' => 'data-icon="gc-op-icon"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close" data-icon="gc-op-icon"',
                 'href'       => 'id=%s&act=edit&table=tl_gallery_creator_albums&key=importImagesFromFilesystem',
                 'icon'       => 'bundles/markocupicgallerycreator/images/import_from_filesystem.svg',
             ],
             'cut'                        => [
-                'attributes' => 'data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'href'       => 'act=paste&mode=cut',
                 'icon'       => 'cut.svg',
             ],
             'show'                       => [
-                'href' => 'act=show',
-                'icon' => 'show.svg',
+                'attributes' => 'contao--operations-menu#close"',
+                'href'       => 'act=show',
+                'icon'       => 'show.svg',
             ],
         ],
     ],

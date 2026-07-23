@@ -331,7 +331,7 @@ class GalleryCreatorAlbums
             return $this->image->getHtml($icon).' ';
         }
 
-        return '<a href="'.$this->backend->addToUrl($href).'" title="'.$this->stringUtil->specialchars($title).'" onclick="Backend.getScrollOffset();return AjaxRequest.toggleField(this,true)">'.$this->image->getHtml($icon, $label, 'data-icon="'.$this->image->getPath('visible.svg').'" data-icon-disabled="'.$this->image->getPath('invisible.svg').'" data-state="'.($row['published'] ? 1 : 0).'"').'</a> ';
+        return '<a href="'.$this->backend->addToUrl($href).'" title="'.$this->stringUtil->specialchars($title).'" data-action="contao--scroll-offset#store" onclick="return AjaxRequest.toggleField(this,true)">'.$this->image->getHtml($icon, $label, 'data-icon="'.$this->image->getPath('visible.svg').'" data-icon-disabled="'.$this->image->getPath('invisible.svg').'" data-state="'.($row['published'] ? 1 : 0).'"').'</a> ';
     }
 
     /**

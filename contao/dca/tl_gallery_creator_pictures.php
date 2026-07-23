@@ -41,46 +41,48 @@ $GLOBALS['TL_DCA']['tl_gallery_creator_pictures'] = [
         ],
         'global_operations' => [
             'fileUpload' => [
-                'attributes' => 'data-action="contao--scroll-offset#store" accesskey="e"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close" accesskey="e"',
                 'class'      => 'gc-gop-icon gc-gop-upload-img',
                 'href'       => 'act=edit&amp;table=tl_gallery_creator_albums&amp;key=fileUpload',
             ],
             'all'        => [
-                'attributes' => 'data-action="contao--scroll-offset#store" accesskey="e"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close" accesskey="e"',
                 'class'      => 'header_edit_all',
                 'href'       => 'act=select',
             ],
         ],
         'operations'        => [
             'edit'        => [
+                'attributes' => 'data-action="contao--operations-menu#close"',
                 'href'    => 'act=edit',
                 'icon'    => 'edit.svg',
                 'primary' => true,
             ],
             'delete'      => [
-                'attributes' => 'data-action="contao--scroll-offset#store" onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close" onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;"',
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
                 'primary'    => true,
             ],
             'cut'         => [
-                'attributes' => 'data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'href'       => 'act=paste&amp;mode=cut',
                 'icon'       => 'cut.svg',
             ],
             'imagerotate' => [
-                'attributes' => 'data-icon="gc-op-icon" data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-icon="gc-op-icon" data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'href'       => 'key=imagerotate',
                 'icon'       => 'bundles/markocupicgallerycreator/images/rotate.svg',
                 'primary'    => true,
             ],
             'toggle'      => [
-                'attributes' => 'data-action="contao--scroll-offset#store"',
+                'attributes' => 'data-action="contao--scroll-offset#store contao--operations-menu#close"',
                 'href'       => 'act=toggle&amp;field=published',
                 'icon'       => 'visible.svg',
                 'primary'    => true,
             ],
             'show'        => [
+                'attributes' => 'contao--operations-menu#close"',
                 'href' => 'act=show',
                 'icon' => 'show.svg',
             ],

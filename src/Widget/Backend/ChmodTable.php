@@ -63,7 +63,7 @@ class ChmodTable extends Widget
             // Add checkboxes
             for ($j = 1; $j <= 7; ++$j) {
                 $return .= '
-      <td><input type="checkbox" name="'.$this->strName.'[]" value="'.StringUtil::specialchars($k.$j).'"'.static::optionChecked($k.$j, $this->varValue).' onfocus="Backend.getScrollOffset()"></td>';
+      <td><input type="checkbox" name="'.$this->strName.'[]" value="'.StringUtil::specialchars($k.$j).'"'.static::optionChecked($k.$j, $this->varValue).' data-action="contao--scroll-offset#store"></td>';
             }
 
             $return .= '

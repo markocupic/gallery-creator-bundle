@@ -71,7 +71,15 @@ export default class extends Controller {
     return 2 === size && 'tl_gallery_creator_albums' === params.get('table');
   }
 
+  beforeCache() {
+    this.#cleanup();
+  }
+
   disconnect() {
+    this.#cleanup();
+  }
+
+  #cleanup() {
     // Cancel any pending status-box timeouts
     this.timeouts?.forEach((id) => window.clearTimeout(id));
     this.timeouts?.clear();
@@ -183,12 +191,12 @@ export default class extends Controller {
   }
 
   #displayErrors(errors) {
-    let messageBox = document.querySelector('.gc--check-tables-error-box');
+    let messageBox = document.querySelector('.gc-check-tables-error-box');
 
     if (!messageBox) {
       messageBox = document.createElement('div');
       messageBox.classList.add('tl_message');
-      messageBox.classList.add('gc--check-tables-error-box');
+      messageBox.classList.add('gc-check-tables-error-box');
 
       document.getElementById('tl_buttons')?.insertAdjacentElement('afterend', messageBox);
     }

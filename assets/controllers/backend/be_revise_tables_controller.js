@@ -62,7 +62,15 @@ export default class extends Controller {
     this.button.addEventListener('click', this.onButtonClick);
   }
 
+  beforeCache() {
+    this.#cleanUp();
+  }
+
   disconnect() {
+    this.#cleanUp();
+  }
+
+  #cleanUp() {
     this.button?.removeEventListener('click', this.onButtonClick);
     this.timeouts.forEach((id) => window.clearTimeout(id));
     this.timeouts.clear();

@@ -39,13 +39,13 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             ->with(Path::makeAbsolute('files/gallery_creator', '/project'))
         ;
 
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
-            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            FilesModel::class => $this->createAdapterStub(['findByUuid']),
             StringUtil::class => $this->stringUtilAdapter([]),
         ]);
 
-        $service = $this->createService($framework, $this->emptyConnection(), $filesystem, $this->createMock(TranslatorInterface::class));
+        $service = $this->createService($framework, $this->emptyConnection(), $filesystem, $this->createStub(TranslatorInterface::class));
 
         $service->run($this->mockAlbum());
 
@@ -54,7 +54,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
 
     public function testResetsInvalidParentAlbum(): void
     {
-        $album = $this->mockAlbum(['pid' => 5]);
+        $album = $this->mockAlbum(['pid' => 5], true);
         $album
             ->method('getRelated')
             ->with('pid')
@@ -66,13 +66,13 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             ->method('save')
         ;
 
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
-            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            FilesModel::class => $this->createAdapterStub(['findByUuid']),
             StringUtil::class => $this->stringUtilAdapter([]),
         ]);
 
-        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $this->createMock(TranslatorInterface::class));
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createStub(Filesystem::class), $this->createStub(TranslatorInterface::class));
 
         $service->run($album);
 
@@ -83,25 +83,25 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
     {
         $collection = new Collection([$this->mockPicture(7, 'missing-uuid')], GalleryCreatorPicturesModel::getTable());
 
-        $filesAdapter = $this->mockAdapter(['findByUuid']);
+        $filesAdapter = $this->createAdapterStub(['findByUuid']);
         $filesAdapter
             ->method('findByUuid')
             ->willReturn(null)
         ;
 
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter($collection),
             FilesModel::class => $filesAdapter,
             StringUtil::class => $this->stringUtilAdapter([]),
         ]);
 
-        $translator = $this->createMock(TranslatorInterface::class);
+        $translator = $this->createStub(TranslatorInterface::class);
         $translator
             ->method('trans')
             ->willReturn('LINK_ERROR')
         ;
 
-        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $translator);
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createStub(Filesystem::class), $translator);
 
         try {
             $service->run($this->mockAlbum(), false);
@@ -113,7 +113,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
 
     public function testDeletesRecordWhenCleaningDb(): void
     {
-        $picture = $this->mockPicture(7, 'missing-uuid');
+        $picture = $this->mockPicture(7, 'missing-uuid', true);
         $picture
             ->expects($this->once())
             ->method('delete')
@@ -121,13 +121,13 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
 
         $collection = new Collection([$picture], GalleryCreatorPicturesModel::getTable());
 
-        $filesAdapter = $this->mockAdapter(['findByUuid']);
+        $filesAdapter = $this->createAdapterStub(['findByUuid']);
         $filesAdapter
             ->method('findByUuid')
             ->willReturn(null)
         ;
 
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter($collection),
             FilesModel::class => $filesAdapter,
             StringUtil::class => $this->stringUtilAdapter([]),
@@ -139,7 +139,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             ->method('trans')
         ;
 
-        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $translator);
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createStub(Filesystem::class), $translator);
 
         try {
             $service->run($this->mockAlbum(), true);
@@ -155,27 +155,27 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
     {
         $collection = new Collection([$this->mockPicture(7, 'present-uuid')], GalleryCreatorPicturesModel::getTable());
 
-        $filesModel = $this->mockClassWithProperties(FilesModel::class, ['path' => 'files/gone.jpg']);
-        $filesAdapter = $this->mockAdapter(['findByUuid']);
+        $filesModel = $this->createClassWithPropertiesStub(FilesModel::class, ['path' => 'files/gone.jpg']);
+        $filesAdapter = $this->createAdapterStub(['findByUuid']);
         $filesAdapter
             ->method('findByUuid')
             ->willReturn($filesModel)
         ;
 
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter($collection),
             FilesModel::class => $filesAdapter,
             StringUtil::class => $this->stringUtilAdapter([]),
         ]);
 
         // The database record exists, but the file is gone from disk.
-        $filesystem = $this->createMock(Filesystem::class);
+        $filesystem = $this->createStub(Filesystem::class);
         $filesystem
             ->method('exists')
             ->willReturn(false)
         ;
 
-        $translator = $this->createMock(TranslatorInterface::class);
+        $translator = $this->createStub(TranslatorInterface::class);
         $translator
             ->method('trans')
             ->willReturn('LINK_ERROR')
@@ -192,9 +192,9 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
     public function testRemovesOrphanedAlbumIdsFromContentElements(): void
     {
         // No pictures to process.
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
-            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            FilesModel::class => $this->createAdapterStub(['findByUuid']),
             StringUtil::class => $this->stringUtilAdapter([5, 99]),
         ]);
 
@@ -227,7 +227,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
             )
         ;
 
-        $service = $this->createService($framework, $connection, $this->createMock(Filesystem::class), $this->createMock(TranslatorInterface::class));
+        $service = $this->createService($framework, $connection, $this->createStub(Filesystem::class), $this->createStub(TranslatorInterface::class));
 
         $service->run($this->mockAlbum(), false);
 
@@ -236,13 +236,13 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
 
     public function testDoesNotThrowWhenEverythingIsValid(): void
     {
-        $framework = $this->mockContaoFramework([
+        $framework = $this->createContaoFrameworkStub([
             GalleryCreatorPicturesModel::class => $this->picturesAdapter(null),
-            FilesModel::class => $this->mockAdapter(['findByUuid']),
+            FilesModel::class => $this->createAdapterStub(['findByUuid']),
             StringUtil::class => $this->stringUtilAdapter([]),
         ]);
 
-        $service = $this->createService($framework, $this->emptyConnection(), $this->createMock(Filesystem::class), $this->createMock(TranslatorInterface::class));
+        $service = $this->createService($framework, $this->emptyConnection(), $this->createStub(Filesystem::class), $this->createStub(TranslatorInterface::class));
 
         $service->run($this->mockAlbum());
 
@@ -263,7 +263,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
 
     private function picturesAdapter(Collection|null $collection): object
     {
-        $adapter = $this->mockAdapter(['findByPid']);
+        $adapter = $this->createAdapterStub(['findByPid']);
         $adapter
             ->method('findByPid')
             ->willReturn($collection)
@@ -277,7 +277,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
      */
     private function stringUtilAdapter(array $deserializeReturn): object
     {
-        $adapter = $this->mockAdapter(['deserialize', 'binToUuid']);
+        $adapter = $this->createAdapterStub(['deserialize', 'binToUuid']);
         $adapter
             ->method('deserialize')
             ->willReturn($deserializeReturn)
@@ -293,7 +293,7 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
 
     private function emptyConnection(): Connection
     {
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createStub(Connection::class);
         $connection
             ->method('fetchAllAssociative')
             ->willReturn([])
@@ -302,25 +302,33 @@ class ReviseAlbumDatabaseTest extends ContaoTestCase
         return $connection;
     }
 
-    private function mockPicture(int $id, string $uuid): GalleryCreatorPicturesModel
+    private function mockPicture(int $id, string $uuid, bool $asMock = false): GalleryCreatorPicturesModel
     {
-        return $this->mockClassWithProperties(GalleryCreatorPicturesModel::class, [
+        $properties = [
             'id' => $id,
             'uuid' => $uuid,
-        ]);
+        ];
+
+        return $asMock
+            ? $this->createClassWithPropertiesMock(GalleryCreatorPicturesModel::class, $properties)
+            : $this->createClassWithPropertiesStub(GalleryCreatorPicturesModel::class, $properties);
     }
 
     /**
      * @param array<string, mixed> $properties
      */
-    private function mockAlbum(array $properties = []): GalleryCreatorAlbumsModel
+    private function mockAlbum(array $properties = [], bool $asMock = false): GalleryCreatorAlbumsModel
     {
-        return $this->mockClassWithProperties(GalleryCreatorAlbumsModel::class, [
+        $properties = [
             'id' => 10,
             'pid' => 0,
             'alias' => 'my-album',
             'name' => 'My Album',
             ...$properties,
-        ]);
+        ];
+
+        return $asMock
+            ? $this->createClassWithPropertiesMock(GalleryCreatorAlbumsModel::class, $properties)
+            : $this->createClassWithPropertiesStub(GalleryCreatorAlbumsModel::class, $properties);
     }
 }

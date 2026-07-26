@@ -16,7 +16,6 @@ namespace Markocupic\GalleryCreatorBundle\DataContainer;
 
 use Contao\Automator;
 use Contao\Backend;
-use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\Controller;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
@@ -37,6 +36,7 @@ use Contao\Image;
 use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Validator;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
@@ -100,13 +100,14 @@ class GalleryCreatorAlbums
         // Adapters
         $this->albums = $this->framework->getAdapter(GalleryCreatorAlbumsModel::class);
         $this->backend = $this->framework->getAdapter(Backend::class);
+        $this->config = $this->framework->getAdapter(Config::class);
         $this->controller = $this->framework->getAdapter(Controller::class);
         $this->image = $this->framework->getAdapter(Image::class);
         $this->message = $this->framework->getAdapter(Message::class);
         $this->pictures = $this->framework->getAdapter(GalleryCreatorPicturesModel::class);
         $this->stringUtil = $this->framework->getAdapter(StringUtil::class);
         $this->system = $this->framework->getAdapter(System::class);
-        $this->config = $this->framework->getAdapter(Config::class);
+        $this->validator = $this->framework->getAdapter(Validator::class);
     }
 
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'config.onload', priority: 100)]
@@ -393,22 +394,36 @@ class GalleryCreatorAlbums
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'fields.fileUpload.input_field', priority: 100)]
     public function getFileUploadWidget(): string
     {
-        // Create the template object
-        $objTemplate = new BackendTemplate('be_gc_uploader');
-
         $fileUpload = $this->framework->getAdapter(FileUpload::class);
 
-        // Maximum uploaded size
-        $objTemplate->maxUploadedSize = $fileUpload->getMaxUploadSize();
+        // Maximum uploaded size (bytes)
+        $maxUploadedSize = $fileUpload->getMaxUploadSize();
 
         // Allowed extensions
-        $objTemplate->strAccepted = implode(',', array_map(static fn ($el) => '.'.$el, $this->galleryCreatorValidExtensions));
+        $strAccepted = implode(',', array_map(static fn ($el) => '.'.$el, $this->galleryCreatorValidExtensions));
 
-        // $_FILES['file']
-        $objTemplate->strName = 'file';
+        // Register the Dropzone assets (only needed on the upload screen).
+        $GLOBALS['TL_CSS'][] = 'assets/dropzone/css/dropzone.min.css';
+        $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone/js/dropzone.min.js';
 
-        // Return the parsed uploader template
-        return $objTemplate->parse();
+        return (new Response(
+            $this->twig->render(
+                '@MarkocupicGalleryCreator/Backend/be_dropzone_uploader.html.twig',
+                [
+                    'param_name' => 'file',
+                    'max_filesize' => (int) round($maxUploadedSize / 1024 / 1024),
+                    'accepted_files' => $strAccepted,
+                    'trans' => [
+                        'fileupload_label' => $this->translator->trans('tl_files.fileupload.0', [], 'contao_default'),
+                        'dropzone' => $this->translator->trans('tl_files.dropzone', [], 'contao_default'),
+                        'file_too_big' => $this->translator->trans('tl_files.dropzoneFileTooBig', [], 'contao_default'),
+                        'invalid_type' => $this->translator->trans('tl_files.dropzoneInvalidType', [], 'contao_default'),
+                        'fileupload_hint' => $this->translator->trans('tl_files.fileupload.1', [$this->system->getReadableSize($maxUploadedSize), $this->config->get('gdMaxImgWidth').'x'.$this->config->get('gdMaxImgHeight')], 'contao_default'),
+                        'accepted_files_hint' => $this->translator->trans('tl_gallery_creator_albums.acceptedFiles.1', [$strAccepted], 'contao_default'),
+                    ],
+                ],
+            ),
+        ))->getContent();
     }
 
     #[AsCallback(table: 'tl_gallery_creator_albums', target: 'list.label.label', priority: 100)]
@@ -563,17 +578,25 @@ class GalleryCreatorAlbums
 
         $files = $this->framework->getAdapter(FilesModel::class);
 
-        // Return if the album directory does not exist.
-        $objUploadDir = $files->findOneByUuid($albumsModel->assignedDir);
+        $uploadPathUuid = $this->validator->isBinaryUuid($albumsModel->assignedDir) ? $albumsModel->assignedDir : $this->stringUtil->uuidToBin($albumsModel->assignedDir);
 
-        if (null === $objUploadDir || !is_dir($this->projectDir.'/'.$objUploadDir->path)) {
+        // Return if the album directory does not exist.
+        $objUploadDir = $files->findOneByUuid($uploadPathUuid);
+
+        if (null === $objUploadDir) {
+            $this->message->addError('No upload directory defined in the album settings!');
+
+            return;
+        }
+
+        if (null === $objUploadDir || !is_dir(Path::join($this->projectDir, $objUploadDir->path))) {
             $this->message->addError('No upload directory defined in the album settings!');
 
             return;
         }
 
         // Return if there is no upload
-        if (!isset($_FILES[$strName])) {
+        if (!$request->files->has($strName)) {
             return;
         }
 

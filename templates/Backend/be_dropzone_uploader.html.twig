@@ -1,0 +1,20 @@
+<div class="long widget"
+     data-controller="gc--backend--be-dropzone-uploader"
+     data-gc--backend--be-dropzone-uploader-param-name-value="{{ param_name }}"
+     data-gc--backend--be-dropzone-uploader-max-filesize-value="{{ max_filesize }}"
+     data-gc--backend--be-dropzone-uploader-accepted-files-value="{{ accepted_files }}"
+     data-gc--backend--be-dropzone-uploader-file-too-big-value="{{ trans.file_too_big }}"
+     data-gc--backend--be-dropzone-uploader-invalid-type-value="{{ trans.invalid_type }}">
+    <h3>{{ trans.fileupload_label }}</h3>
+    <input type="hidden" name="action" value="fileUpload">
+    <div class="fallback">
+        <input type="file" name="{{ param_name }}[]" multiple>
+    </div>
+    <div class="dropzone">
+        <div class="dz-default dz-message">
+            <span>{{ trans.dropzone }}</span>
+        </div>
+        <div class="dropzone-previews"></div>
+    </div>
+    <p class="tl_help tl_tip">{{ trans.fileupload_hint }} {{ trans.accepted_files_hint }}</p>
+</div>

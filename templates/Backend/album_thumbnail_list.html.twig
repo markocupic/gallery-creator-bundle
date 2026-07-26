@@ -1,4 +1,4 @@
-<div class="widget clr gc-preview-thumb">
+<div class="widget clr gc-preview-thumb" data-controller="gc--backend--be-album-thumbnail-list">
     <h3><label for="ctrl_thumb">{{ trans.album_thumb }}</label></h3>
     <p class="gc-preview-thumb--sortable-hint">{{ trans.drag_items_hint }}</p>
     <div>
@@ -43,73 +43,3 @@
         {% endif %}
     </div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-        // -----------------------------------
-        // Check the radio on click
-        // -----------------------------------
-        document.querySelectorAll(".gc-preview-thumb input").forEach(input => {
-            input.addEventListener("click", () => {
-                document.querySelectorAll(".gc-preview-thumb li")
-                    .forEach(li => li.classList.remove("checked"));
-
-                input.closest("li").classList.add("checked");
-            });
-        });
-
-
-        // -----------------------------------
-        // Drag & Drop sorting
-        // -----------------------------------
-        const list = document.querySelector("#gcPreviewThumbList");
-        let draggedEl = null;
-
-        list.querySelectorAll("li").forEach(li => {
-            li.draggable = true;
-
-            li.addEventListener("dragstart", (e) => {
-                draggedEl = li;
-                li.classList.add("dragging");
-                e.dataTransfer.effectAllowed = "move";
-                e.dataTransfer.setData("text/plain", "");
-            });
-
-            li.addEventListener("dragend", () => {
-                li.classList.remove("dragging");
-                draggedEl = null;
-                sendNewOrder();
-            });
-
-            li.addEventListener("dragover", (e) => {
-                e.preventDefault();
-
-                const bounding = li.getBoundingClientRect();
-                const offset = bounding.top + bounding.height / 2;
-
-                if (e.clientY < offset) {
-                    list.insertBefore(draggedEl, li);
-                } else {
-                    list.insertBefore(draggedEl, li.nextSibling);
-                }
-            });
-        });
-
-        // -----------------------------------
-        // AJAX: send new order
-        // -----------------------------------
-        function sendNewOrder() {
-            const ids = [...list.querySelectorAll("li")]
-                .map(li => li.getAttribute("data-id"));
-
-            if (ids.length === 0) return;
-
-            const url = document.URL +
-                "&isAjaxRequest=true&pictureSorting=" +
-                ids.join(",");
-
-            fetch(url, {method: "GET"})
-                .catch(err => console.error("Error:", err));
-        }
-    });
-</script>

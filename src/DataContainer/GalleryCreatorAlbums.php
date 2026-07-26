@@ -65,6 +65,8 @@ class GalleryCreatorAlbums
 
     private Adapter $backend;
 
+    private Adapter $config;
+
     private Adapter $controller;
 
     private Adapter $image;
@@ -77,7 +79,7 @@ class GalleryCreatorAlbums
 
     private Adapter $system;
 
-    private Adapter $config;
+    private Adapter $validator;
 
     /**
      * @throws DoctrineDBALException

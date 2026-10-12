@@ -131,7 +131,7 @@ class GalleryCreatorPictures
             case 'delete':
                 $albumId = $this->connection->fetchOne('SELECT pid FROM tl_gallery_creator_pictures WHERE id = ?', [$dc->id]);
 
-                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $dc->id)) {
+                if (!$this->security->isGranted(GalleryCreatorAlbumPermissions::USER_CAN_DELETE_IMAGES, $albumId)) {
                     $this->message->addInfo($this->translator->trans('MSC.notAllowedDeletePictures', [$albumId], 'contao_default'));
                     $this->controller->redirect($this->system->getReferer());
                 }
